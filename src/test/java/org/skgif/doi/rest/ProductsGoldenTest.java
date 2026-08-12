@@ -185,6 +185,17 @@ class ProductsGoldenTest {
                 "expected/crossref-journal-article-with-funder-out.json");
     }
 
+    /**
+     * DOI 10.1007/978-3-319-66787-4_9 - a real book chapter ({@code type: "book-chapter"})
+     * whose {@code container-title[]} has two entries (LNCS series, then the actual proceedings
+     * title) - proves the mapper takes index 0 (the series) at the golden-output level.
+     */
+    @Test
+    void getProductById_matchesExpectedJsonLd_bookChapter() throws IOException {
+        assertMatchesExpectedCrossrefJsonLd("10.1007/978-3-319-66787-4_9", "crossref-book-chapter.json",
+                "expected/crossref-book-chapter-out.json");
+    }
+
     private void assertMatchesExpectedDataCiteJsonLd(String doi, String dataCiteFixture, String expectedJsonLdResource)
             throws IOException {
         when(dataCiteClient.getDoi(eq(doi))).thenReturn(loadDataCiteFixture(dataCiteFixture));

@@ -116,6 +116,26 @@ class CrossrefProductsResourceTest {
                         Matchers.equalTo("00tmb7y09"));
     }
 
+    /**
+     * DOI 10.1007/978-3-319-66787-4_9 - a real book chapter ({@code type: "book-chapter"})
+     * whose {@code container-title[]} has two entries (series, then book title), unlike the
+     * single-entry journal-article fixtures above.
+     */
+    @Test
+    void getProductById_returnsSkgIfEnvelope_bookChapter() throws IOException {
+        when(crossrefClient.getWork(eq("10.1007/978-3-319-66787-4_9")))
+                .thenReturn(loadFixture("crossref-book-chapter.json"));
+
+        given()
+                .when().get(BASE + "/crossref/products/10.1007/978-3-319-66787-4_9")
+                .then()
+                .statusCode(200)
+                .body("'@graph'[0].local_identifier", Matchers.equalTo("https://doi.org/10.1007/978-3-319-66787-4_9"))
+                .body("'@graph'[0].product_type", Matchers.equalTo("literature"))
+                .body("'@graph'[0].manifestations[0].biblio.in.name",
+                        Matchers.equalTo("Lecture Notes in Computer Science"));
+    }
+
     @Test
     void getProductById_notFound_returns404WithRfc7807Error() {
         when(crossrefClient.getWork(any())).thenThrow(new NotFoundException());

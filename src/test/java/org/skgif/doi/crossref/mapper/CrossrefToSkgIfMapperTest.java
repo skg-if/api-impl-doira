@@ -250,6 +250,46 @@ class CrossrefToSkgIfMapperTest {
         assertEquals("10.13039/501100007601", fundingAgency.getIdentifiers().get(0).getValue());
     }
 
+    // crossref-book-chapter.json: a real book chapter (DOI 10.1007/978-3-319-66787-4_9,
+    // type: "book-chapter") - unlike every other fixture, its container-title[] has two
+    // entries (the LNCS series title, then the actual proceedings/book title), and it's the
+    // first fixture to exercise the mapper's new publisher-as-contribution behaviour.
+
+    @Test
+    void mapsCoreFieldsFromRealBookChapter() throws IOException {
+        Product product = mapFixture("crossref-book-chapter.json");
+
+        assertEquals("https://doi.org/10.1007/978-3-319-66787-4_9", product.getLocalIdentifier());
+        assertEquals(Product.ProductTypeEnum.LITERATURE, product.getProductType());
+        assertEquals("10.1007/978-3-319-66787-4_9", product.getIdentifiers().get(0).getValue());
+    }
+
+    @Test
+    void mapsVenueFromFirstContainerTitleEntryNotTheBookTitle() throws IOException {
+        // container-title is ["Lecture Notes in Computer Science", "Cryptographic Hardware and
+        // Embedded Systems - CHES 2017"] - the mapper only ever looks at index 0, so the venue
+        // ends up named after the series, not the actual proceedings/book.
+        Product product = mapFixture("crossref-book-chapter.json");
+
+        assertEquals("Lecture Notes in Computer Science",
+                product.getManifestations().get(0).getBiblio().getIn().getName());
+    }
+
+    @Test
+    void mapsPublisherAsTrailingPublisherRoleContribution() throws IOException {
+        Product product = mapFixture("crossref-book-chapter.json");
+
+        // 6 authors, so the publisher contribution the mapper now appends must be the 7th,
+        // ranked after every author.
+        List<ProductContribution> contributions = product.getContributions();
+        assertEquals(7, contributions.size());
+        ProductContribution publisherContribution = contributions.get(6);
+        assertEquals(ProductContribution.RoleEnum.PUBLISHER, publisherContribution.getRole());
+        assertEquals(7, publisherContribution.getRank());
+        assertEquals("Springer International Publishing", publisherContribution.getBy().getName());
+        assertTrue(publisherContribution.getBy().getLocalIdentifier().startsWith("otf___"));
+    }
+
     @Test
     void mapsAbstractStrippingJatsXmlTags() throws IOException {
         Product product = mapFixture("crossref-journal-article-with-funder.json");
