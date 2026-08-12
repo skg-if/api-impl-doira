@@ -31,9 +31,9 @@ public final class ResourceTypeMapping {
         putAll(map, Product.ProductTypeEnum.LITERATURE, "Book", "BookChapter", "ConferencePaper",
                 "ConferenceProceeding", "DataPaper", "Dissertation", "JournalArticle", "Journal", "Preprint",
                 "Report", "Text", "PeerReview", "StudyRegistration", "OutputManagementPlan");
-        putAll(map, Product.ProductTypeEnum.RESEARCH_DATA, "Dataset", "Collection", "Image", "Sound",
+        putAll(map, Product.ProductTypeEnum.RESEARCH_DATA, "Dataset", "Collection", "Image");
+        putAll(map, Product.ProductTypeEnum.OTHER, "Event", "Service", "Project", "Other", "Sound",
                 "PhysicalObject", "Model", "Audiovisual", "InteractiveResource", "Standard");
-        putAll(map, Product.ProductTypeEnum.OTHER, "Event", "Service", "Project", "Other");
         return Map.copyOf(map);
     }
 

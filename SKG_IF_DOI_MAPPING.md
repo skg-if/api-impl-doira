@@ -60,17 +60,17 @@ golden-JSON comparison test exists for this case, so no "expected output" file c
 |---|---|
 | `research software` | `Software`, `ComputationalNotebook`, `Workflow` |
 | `literature` | `Book`, `BookChapter`, `ConferencePaper`, `ConferenceProceeding`, `DataPaper`, `Dissertation`, `JournalArticle`, `Journal`, `Preprint`, `Report`, `Text`, `PeerReview`, `StudyRegistration`, `OutputManagementPlan` |
-| `research data` | `Dataset`, `Collection`, `Image`, `Sound`, `PhysicalObject`, `Model`, `Audiovisual`, `InteractiveResource`, `Standard` |
-| `other` | `Event`, `Service`, `Project`, `Other`, and anything unrecognized |
+| `research data` | `Dataset`, `Collection`, `Image` |
+| `other` | `Event`, `Service`, `Project`, `Other`, `Sound`, `PhysicalObject`, `Model`, `Audiovisual`, `InteractiveResource`, `Standard`, and anything unrecognized |
 | *(routed to Grants, not a Product)* | `Award` |
 
 **Crossref `type` → SKG-IF `product_type`:**
 
 | SKG-IF `product_type` | Crossref values |
 |---|---|
-| `research data` | `dataset`, `database`, `standard` |
+| `research data` | `dataset` |
 | `literature` | `journal-article`, `book`, `book-chapter`, `book-section`, `book-part`, `book-series`, `book-set`, `book-track`, `monograph`, `edited-book`, `reference-book`, `reference-entry`, `proceedings`, `proceedings-article`, `proceedings-series`, `report`, `report-series`, `report-component`, `dissertation`, `peer-review`, `posted-content`, `journal`, `journal-issue`, `journal-volume`, `component` |
-| `other` | `other`, and anything unrecognized |
+| `other` | `other`, `database`, `standard`, and anything unrecognized |
 | *(routed to Grants, not a Product)* | `grant` |
 | `research software` | *(unreachable - Crossref has no software type)* |
 

@@ -29,13 +29,13 @@ public final class CrossrefTypeMapping {
 
     private static Map<String, Product.ProductTypeEnum> buildMap() {
         Map<String, Product.ProductTypeEnum> map = new HashMap<>();
-        putAll(map, Product.ProductTypeEnum.RESEARCH_DATA, "dataset", "database", "standard");
+        putAll(map, Product.ProductTypeEnum.RESEARCH_DATA, "dataset");
         putAll(map, Product.ProductTypeEnum.LITERATURE, "journal-article", "book", "book-chapter",
                 "book-section", "book-part", "book-series", "book-set", "book-track", "monograph",
                 "edited-book", "reference-book", "reference-entry", "proceedings", "proceedings-article",
                 "proceedings-series", "report", "report-series", "report-component", "dissertation",
                 "peer-review", "posted-content", "journal", "journal-issue", "journal-volume", "component");
-        putAll(map, Product.ProductTypeEnum.OTHER, "other");
+        putAll(map, Product.ProductTypeEnum.OTHER, "other", "database", "standard");
         return Map.copyOf(map);
     }
 
