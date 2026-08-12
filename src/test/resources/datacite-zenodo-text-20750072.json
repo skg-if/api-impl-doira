@@ -1,0 +1,172 @@
+{
+  "data": {
+    "id": "10.5281/zenodo.20750072",
+    "type": "dois",
+    "attributes": {
+      "doi": "10.5281/zenodo.20750072",
+      "prefix": "10.5281",
+      "suffix": "zenodo.20750072",
+      "identifiers": [],
+      "alternateIdentifiers": [],
+      "creators": [
+        {
+          "name": "Siddiqui, Dr. Tameer",
+          "nameType": "Personal",
+          "givenName": "Dr. Tameer",
+          "familyName": "Siddiqui",
+          "affiliation": [
+            "Rosie's Law Initiative"
+          ],
+          "nameIdentifiers": []
+        }
+      ],
+      "titles": [
+        {
+          "title": "More Than Property: A Bio-Psycho-Social-Legal Framework for Welfare Assessment and Legal Interpretation in Companion Animal Disputes"
+        }
+      ],
+      "publisher": "Zenodo",
+      "container": {},
+      "publicationYear": 2026,
+      "subjects": [
+        {
+          "subject": "Companion Animal Custody"
+        },
+        {
+          "subject": "Policy Framework"
+        },
+        {
+          "subject": "Animal Law"
+        }
+      ],
+      "contributors": [],
+      "dates": [
+        {
+          "date": "2026-06-18",
+          "dateType": "Issued"
+        },
+        {
+          "date": "2026-06-18",
+          "dateType": "Issued"
+        }
+      ],
+      "language": "en",
+      "types": {
+        "ris": "RPRT",
+        "bibtex": "article",
+        "citeproc": "article-journal",
+        "schemaOrg": "ScholarlyArticle",
+        "resourceType": "",
+        "resourceTypeGeneral": "Text"
+      },
+      "relatedIdentifiers": [
+        {
+          "relationType": "HasVersion",
+          "relatedIdentifier": "10.5281/zenodo.20750073",
+          "relatedIdentifierType": "DOI"
+        }
+      ],
+      "relatedItems": [],
+      "sizes": [],
+      "formats": [],
+      "version": "1.0",
+      "rightsList": [
+        {
+          "rights": "Creative Commons Attribution 4.0 International",
+          "rightsUri": "https://creativecommons.org/licenses/by/4.0/legalcode",
+          "schemeUri": "https://spdx.org/licenses/",
+          "rightsIdentifier": "cc-by-4.0",
+          "rightsIdentifierScheme": "SPDX"
+        },
+        {
+          "rights": "Tameer Siddiqui",
+          "rightsUri": "http://rightsstatements.org/vocab/InC/1.0/"
+        }
+      ],
+      "descriptions": [
+        {
+          "description": "This white paper, titled 'More Than Property: A Bio-Psycho-Social-Legal Framework for Welfare Assessment and Legal Interpretation in Companion Animal Disputes,' provides a comprehensive policy framework for the Rosie's Law Initiative, focusing on the legal interpretation of companion animal custody.",
+          "descriptionType": "Abstract"
+        }
+      ],
+      "geoLocations": [],
+      "fundingReferences": [],
+      "xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHJlc291cmNlIHhtbG5zOnhzaT0iaHR0cDovL3d3dy53My5vcmcvMjAwMS9YTUxTY2hlbWEtaW5zdGFuY2UiIHhtbG5zPSJodHRwOi8vZGF0YWNpdGUub3JnL3NjaGVtYS9rZXJuZWwtNCIgeHNpOnNjaGVtYUxvY2F0aW9uPSJodHRwOi8vZGF0YWNpdGUub3JnL3NjaGVtYS9rZXJuZWwtNCBodHRwOi8vc2NoZW1hLmRhdGFjaXRlLm9yZy9tZXRhL2tlcm5lbC00L21ldGFkYXRhLnhzZCI+CiAgPGlkZW50aWZpZXIgaWRlbnRpZmllclR5cGU9IkRPSSI+MTAuNTI4MS9aRU5PRE8uMjA3NTAwNzI8L2lkZW50aWZpZXI+CiAgPGNyZWF0b3JzPgogICAgPGNyZWF0b3I+CiAgICAgIDxjcmVhdG9yTmFtZSBuYW1lVHlwZT0iUGVyc29uYWwiPlNpZGRpcXVpLCBEci4gVGFtZWVyPC9jcmVhdG9yTmFtZT4KICAgICAgPGdpdmVuTmFtZT5Eci4gVGFtZWVyPC9naXZlbk5hbWU+CiAgICAgIDxmYW1pbHlOYW1lPlNpZGRpcXVpPC9mYW1pbHlOYW1lPgogICAgICA8YWZmaWxpYXRpb24+Um9zaWUncyBMYXcgSW5pdGlhdGl2ZTwvYWZmaWxpYXRpb24+CiAgICA8L2NyZWF0b3I+CiAgPC9jcmVhdG9ycz4KICA8dGl0bGVzPgogICAgPHRpdGxlPk1vcmUgVGhhbiBQcm9wZXJ0eTogQSBCaW8tUHN5Y2hvLVNvY2lhbC1MZWdhbCBGcmFtZXdvcmsgZm9yIFdlbGZhcmUgQXNzZXNzbWVudCBhbmQgTGVnYWwgSW50ZXJwcmV0YXRpb24gaW4gQ29tcGFuaW9uIEFuaW1hbCBEaXNwdXRlczwvdGl0bGU+CiAgPC90aXRsZXM+CiAgPHB1Ymxpc2hlcj5aZW5vZG88L3B1Ymxpc2hlcj4KICA8cHVibGljYXRpb25ZZWFyPjIwMjY8L3B1YmxpY2F0aW9uWWVhcj4KICA8cmVzb3VyY2VUeXBlIHJlc291cmNlVHlwZUdlbmVyYWw9IlRleHQiLz4KICA8c3ViamVjdHM+CiAgICA8c3ViamVjdD5Db21wYW5pb24gQW5pbWFsIEN1c3RvZHk8L3N1YmplY3Q+CiAgICA8c3ViamVjdD5Qb2xpY3kgRnJhbWV3b3JrPC9zdWJqZWN0PgogICAgPHN1YmplY3Q+QW5pbWFsIExhdzwvc3ViamVjdD4KICA8L3N1YmplY3RzPgogIDxkYXRlcz4KICAgIDxkYXRlIGRhdGVUeXBlPSJJc3N1ZWQiPjIwMjYtMDYtMTg8L2RhdGU+CiAgICA8ZGF0ZSBkYXRlVHlwZT0iSXNzdWVkIj4yMDI2LTA2LTE4PC9kYXRlPgogIDwvZGF0ZXM+CiAgPGxhbmd1YWdlPmVuZzwvbGFuZ3VhZ2U+CiAgPHJlbGF0ZWRJZGVudGlmaWVycz4KICAgIDxyZWxhdGVkSWRlbnRpZmllciByZWxhdGVkSWRlbnRpZmllclR5cGU9IkRPSSIgcmVsYXRpb25UeXBlPSJIYXNWZXJzaW9uIj4xMC41MjgxL3plbm9kby4yMDc1MDA3MzwvcmVsYXRlZElkZW50aWZpZXI+CiAgPC9yZWxhdGVkSWRlbnRpZmllcnM+CiAgPHNpemVzLz4KICA8Zm9ybWF0cy8+CiAgPHZlcnNpb24+MS4wPC92ZXJzaW9uPgogIDxyaWdodHNMaXN0PgogICAgPHJpZ2h0cyByaWdodHNVUkk9Imh0dHBzOi8vY3JlYXRpdmVjb21tb25zLm9yZy9saWNlbnNlcy9ieS80LjAvbGVnYWxjb2RlIiByaWdodHNJZGVudGlmaWVyPSJjYy1ieS00LjAiIHJpZ2h0c0lkZW50aWZpZXJTY2hlbWU9InNwZHgiPkNyZWF0aXZlIENvbW1vbnMgQXR0cmlidXRpb24gNC4wIEludGVybmF0aW9uYWw8L3JpZ2h0cz4KICAgIDxyaWdodHMgcmlnaHRzVVJJPSJodHRwOi8vcmlnaHRzc3RhdGVtZW50cy5vcmcvdm9jYWIvSW5DLzEuMC8iPlRhbWVlciBTaWRkaXF1aTwvcmlnaHRzPgogIDwvcmlnaHRzTGlzdD4KICA8ZGVzY3JpcHRpb25zPgogICAgPGRlc2NyaXB0aW9uIGRlc2NyaXB0aW9uVHlwZT0iQWJzdHJhY3QiPlRoaXMgd2hpdGUgcGFwZXIsIHRpdGxlZCAnTW9yZSBUaGFuIFByb3BlcnR5OiBBIEJpby1Qc3ljaG8tU29jaWFsLUxlZ2FsIEZyYW1ld29yayBmb3IgV2VsZmFyZSBBc3Nlc3NtZW50IGFuZCBMZWdhbCBJbnRlcnByZXRhdGlvbiBpbiBDb21wYW5pb24gQW5pbWFsIERpc3B1dGVzLCcgcHJvdmlkZXMgYSBjb21wcmVoZW5zaXZlIHBvbGljeSBmcmFtZXdvcmsgZm9yIHRoZSBSb3NpZSdzIExhdyBJbml0aWF0aXZlLCBmb2N1c2luZyBvbiB0aGUgbGVnYWwgaW50ZXJwcmV0YXRpb24gb2YgY29tcGFuaW9uIGFuaW1hbCBjdXN0b2R5LjwvZGVzY3JpcHRpb24+CiAgPC9kZXNjcmlwdGlvbnM+CjwvcmVzb3VyY2U+Cg==",
+      "url": "https://zenodo.org/doi/10.5281/zenodo.20750072",
+      "contentUrl": null,
+      "metadataVersion": 1,
+      "schemaVersion": "http://datacite.org/schema/kernel-4",
+      "source": "api",
+      "isActive": true,
+      "state": "findable",
+      "reason": null,
+      "viewCount": 0,
+      "viewsOverTime": [],
+      "downloadCount": 0,
+      "downloadsOverTime": [],
+      "referenceCount": 0,
+      "citationCount": 0,
+      "citationsOverTime": [],
+      "partCount": 0,
+      "partOfCount": 0,
+      "versionCount": 2,
+      "versionOfCount": 1,
+      "created": "2026-06-18T16:19:33.000Z",
+      "registered": "2026-06-18T16:19:33.000Z",
+      "published": "2026",
+      "updated": "2026-08-12T07:21:38.000Z"
+    },
+    "relationships": {
+      "client": {
+        "data": {
+          "id": "cern.zenodo",
+          "type": "clients"
+        }
+      },
+      "provider": {
+        "data": {
+          "id": "cern",
+          "type": "providers"
+        }
+      },
+      "media": {
+        "data": {
+          "id": "10.5281/zenodo.20750072",
+          "type": "media"
+        }
+      },
+      "references": {
+        "data": []
+      },
+      "citations": {
+        "data": []
+      },
+      "parts": {
+        "data": []
+      },
+      "partOf": {
+        "data": []
+      },
+      "versions": {
+        "data": [
+          {
+            "id": "10.5281/zenodo.20750073",
+            "type": "dois"
+          },
+          {
+            "id": "10.5281/zenodo.20750072",
+            "type": "dois"
+          }
+        ]
+      },
+      "versionOf": {
+        "data": [
+          {
+            "id": "10.5281/zenodo.20750072",
+            "type": "dois"
+          }
+        ]
+      }
+    }
+  }
+}

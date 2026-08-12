@@ -1,0 +1,262 @@
+{
+  "data": {
+    "id": "10.5281/zenodo.21826016",
+    "type": "dois",
+    "attributes": {
+      "doi": "10.5281/zenodo.21826016",
+      "prefix": "10.5281",
+      "suffix": "zenodo.21826016",
+      "identifiers": [],
+      "alternateIdentifiers": [],
+      "creators": [
+        {
+          "name": "Luong Thi Minh-Hue",
+          "nameType": "Personal",
+          "familyName": "Luong Thi Minh-Hue",
+          "affiliation": [
+            "Thai Nguyen University of Information and Communication Technology"
+          ],
+          "nameIdentifiers": []
+        },
+        {
+          "name": "Nguyen The-Vinh",
+          "nameType": "Personal",
+          "familyName": "Nguyen The-Vinh",
+          "affiliation": [
+            "Thai Nguyen University of Information and Communication Technology"
+          ],
+          "nameIdentifiers": []
+        }
+      ],
+      "titles": [
+        {
+          "title": "VLM chart-judgment audit: code and experimental artifacts"
+        }
+      ],
+      "publisher": "Zenodo",
+      "container": {},
+      "publicationYear": 2026,
+      "subjects": [
+        {
+          "subject": "vision-language models"
+        },
+        {
+          "subject": "natural language to visualization"
+        },
+        {
+          "subject": "chart evaluation"
+        },
+        {
+          "subject": "model judge"
+        },
+        {
+          "subject": "NL2Vis"
+        },
+        {
+          "subject": "reproducibility"
+        }
+      ],
+      "contributors": [],
+      "dates": [
+        {
+          "date": "2026-08-12",
+          "dateType": "Issued"
+        }
+      ],
+      "language": "en",
+      "types": {
+        "ris": "COMP",
+        "bibtex": "misc",
+        "citeproc": "article",
+        "schemaOrg": "SoftwareSourceCode",
+        "resourceType": "",
+        "resourceTypeGeneral": "Software"
+      },
+      "relatedIdentifiers": [
+        {
+          "relationType": "HasVersion",
+          "relatedIdentifier": "10.5281/zenodo.21826017",
+          "relatedIdentifierType": "DOI"
+        },
+        {
+          "relationType": "HasVersion",
+          "relatedIdentifier": "10.5281/zenodo.21890105",
+          "relatedIdentifierType": "DOI"
+        },
+        {
+          "relationType": "HasVersion",
+          "relatedIdentifier": "10.5281/zenodo.21896616",
+          "relatedIdentifierType": "DOI"
+        },
+        {
+          "relationType": "HasVersion",
+          "relatedIdentifier": "10.5281/zenodo.21890264",
+          "relatedIdentifierType": "DOI"
+        },
+        {
+          "relationType": "HasVersion",
+          "relatedIdentifier": "10.5281/zenodo.21897218",
+          "relatedIdentifierType": "DOI"
+        },
+        {
+          "relationType": "HasVersion",
+          "relatedIdentifier": "10.5281/zenodo.21899344",
+          "relatedIdentifierType": "DOI"
+        },
+        {
+          "relationType": "HasVersion",
+          "relatedIdentifier": "10.5281/zenodo.21885237",
+          "relatedIdentifierType": "DOI"
+        },
+        {
+          "relationType": "HasVersion",
+          "relatedIdentifier": "10.5281/zenodo.21896606",
+          "relatedIdentifierType": "DOI"
+        },
+        {
+          "relationType": "HasVersion",
+          "relatedIdentifier": "10.5281/zenodo.21896559",
+          "relatedIdentifierType": "DOI"
+        },
+        {
+          "relationType": "HasVersion",
+          "relatedIdentifier": "10.5281/zenodo.21896584",
+          "relatedIdentifierType": "DOI"
+        },
+        {
+          "relationType": "HasVersion",
+          "relatedIdentifier": "10.5281/zenodo.21899595",
+          "relatedIdentifierType": "DOI"
+        }
+      ],
+      "relatedItems": [],
+      "sizes": [],
+      "formats": [],
+      "version": "1.0.11",
+      "rightsList": [
+        {
+          "rights": "Creative Commons Attribution 4.0 International",
+          "rightsUri": "https://creativecommons.org/licenses/by/4.0/legalcode",
+          "schemeUri": "https://spdx.org/licenses/",
+          "rightsIdentifier": "cc-by-4.0",
+          "rightsIdentifierScheme": "SPDX"
+        }
+      ],
+      "descriptions": [
+        {
+          "description": "Code, execution instructions, retained vision-language-model outputs, controlled test cases, and derived results for the study A behavioral sensitivity audit of vision-language judgments for visible query-chart consistency. The deposit contains no manuscript or submission correspondence.",
+          "descriptionType": "Abstract"
+        }
+      ],
+      "geoLocations": [],
+      "fundingReferences": [],
+      "xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHJlc291cmNlIHhtbG5zOnhzaT0iaHR0cDovL3d3dy53My5vcmcvMjAwMS9YTUxTY2hlbWEtaW5zdGFuY2UiIHhtbG5zPSJodHRwOi8vZGF0YWNpdGUub3JnL3NjaGVtYS9rZXJuZWwtNCIgeHNpOnNjaGVtYUxvY2F0aW9uPSJodHRwOi8vZGF0YWNpdGUub3JnL3NjaGVtYS9rZXJuZWwtNCBodHRwOi8vc2NoZW1hLmRhdGFjaXRlLm9yZy9tZXRhL2tlcm5lbC00L21ldGFkYXRhLnhzZCI+CiAgPGlkZW50aWZpZXIgaWRlbnRpZmllclR5cGU9IkRPSSI+MTAuNTI4MS9aRU5PRE8uMjE4MjYwMTY8L2lkZW50aWZpZXI+CiAgPGNyZWF0b3JzPgogICAgPGNyZWF0b3I+CiAgICAgIDxjcmVhdG9yTmFtZSBuYW1lVHlwZT0iUGVyc29uYWwiPkx1b25nIFRoaSBNaW5oLUh1ZTwvY3JlYXRvck5hbWU+CiAgICAgIDxmYW1pbHlOYW1lPkx1b25nIFRoaSBNaW5oLUh1ZTwvZmFtaWx5TmFtZT4KICAgICAgPGFmZmlsaWF0aW9uPlRoYWkgTmd1eWVuIFVuaXZlcnNpdHkgb2YgSW5mb3JtYXRpb24gYW5kIENvbW11bmljYXRpb24gVGVjaG5vbG9neTwvYWZmaWxpYXRpb24+CiAgICA8L2NyZWF0b3I+CiAgICA8Y3JlYXRvcj4KICAgICAgPGNyZWF0b3JOYW1lIG5hbWVUeXBlPSJQZXJzb25hbCI+Tmd1eWVuIFRoZS1WaW5oPC9jcmVhdG9yTmFtZT4KICAgICAgPGZhbWlseU5hbWU+Tmd1eWVuIFRoZS1WaW5oPC9mYW1pbHlOYW1lPgogICAgICA8YWZmaWxpYXRpb24+VGhhaSBOZ3V5ZW4gVW5pdmVyc2l0eSBvZiBJbmZvcm1hdGlvbiBhbmQgQ29tbXVuaWNhdGlvbiBUZWNobm9sb2d5PC9hZmZpbGlhdGlvbj4KICAgIDwvY3JlYXRvcj4KICA8L2NyZWF0b3JzPgogIDx0aXRsZXM+CiAgICA8dGl0bGU+VkxNIGNoYXJ0LWp1ZGdtZW50IGF1ZGl0OiBjb2RlIGFuZCBleHBlcmltZW50YWwgYXJ0aWZhY3RzPC90aXRsZT4KICA8L3RpdGxlcz4KICA8cHVibGlzaGVyPlplbm9kbzwvcHVibGlzaGVyPgogIDxwdWJsaWNhdGlvblllYXI+MjAyNjwvcHVibGljYXRpb25ZZWFyPgogIDxyZXNvdXJjZVR5cGUgcmVzb3VyY2VUeXBlR2VuZXJhbD0iU29mdHdhcmUiLz4KICA8c3ViamVjdHM+CiAgICA8c3ViamVjdD52aXNpb24tbGFuZ3VhZ2UgbW9kZWxzPC9zdWJqZWN0PgogICAgPHN1YmplY3Q+bmF0dXJhbCBsYW5ndWFnZSB0byB2aXN1YWxpemF0aW9uPC9zdWJqZWN0PgogICAgPHN1YmplY3Q+Y2hhcnQgZXZhbHVhdGlvbjwvc3ViamVjdD4KICAgIDxzdWJqZWN0Pm1vZGVsIGp1ZGdlPC9zdWJqZWN0PgogICAgPHN1YmplY3Q+TkwyVmlzPC9zdWJqZWN0PgogICAgPHN1YmplY3Q+cmVwcm9kdWNpYmlsaXR5PC9zdWJqZWN0PgogIDwvc3ViamVjdHM+CiAgPGRhdGVzPgogICAgPGRhdGUgZGF0ZVR5cGU9Iklzc3VlZCI+MjAyNi0wOC0xMjwvZGF0ZT4KICA8L2RhdGVzPgogIDxsYW5ndWFnZT5lbmc8L2xhbmd1YWdlPgogIDxyZWxhdGVkSWRlbnRpZmllcnM+CiAgICA8cmVsYXRlZElkZW50aWZpZXIgcmVsYXRlZElkZW50aWZpZXJUeXBlPSJET0kiIHJlbGF0aW9uVHlwZT0iSGFzVmVyc2lvbiI+MTAuNTI4MS96ZW5vZG8uMjE4MjYwMTc8L3JlbGF0ZWRJZGVudGlmaWVyPgogICAgPHJlbGF0ZWRJZGVudGlmaWVyIHJlbGF0ZWRJZGVudGlmaWVyVHlwZT0iRE9JIiByZWxhdGlvblR5cGU9Ikhhc1ZlcnNpb24iPjEwLjUyODEvemVub2RvLjIxODkwMTA1PC9yZWxhdGVkSWRlbnRpZmllcj4KICAgIDxyZWxhdGVkSWRlbnRpZmllciByZWxhdGVkSWRlbnRpZmllclR5cGU9IkRPSSIgcmVsYXRpb25UeXBlPSJIYXNWZXJzaW9uIj4xMC41MjgxL3plbm9kby4yMTg5NjYxNjwvcmVsYXRlZElkZW50aWZpZXI+CiAgICA8cmVsYXRlZElkZW50aWZpZXIgcmVsYXRlZElkZW50aWZpZXJUeXBlPSJET0kiIHJlbGF0aW9uVHlwZT0iSGFzVmVyc2lvbiI+MTAuNTI4MS96ZW5vZG8uMjE4OTAyNjQ8L3JlbGF0ZWRJZGVudGlmaWVyPgogICAgPHJlbGF0ZWRJZGVudGlmaWVyIHJlbGF0ZWRJZGVudGlmaWVyVHlwZT0iRE9JIiByZWxhdGlvblR5cGU9Ikhhc1ZlcnNpb24iPjEwLjUyODEvemVub2RvLjIxODk3MjE4PC9yZWxhdGVkSWRlbnRpZmllcj4KICAgIDxyZWxhdGVkSWRlbnRpZmllciByZWxhdGVkSWRlbnRpZmllclR5cGU9IkRPSSIgcmVsYXRpb25UeXBlPSJIYXNWZXJzaW9uIj4xMC41MjgxL3plbm9kby4yMTg5OTM0NDwvcmVsYXRlZElkZW50aWZpZXI+CiAgICA8cmVsYXRlZElkZW50aWZpZXIgcmVsYXRlZElkZW50aWZpZXJUeXBlPSJET0kiIHJlbGF0aW9uVHlwZT0iSGFzVmVyc2lvbiI+MTAuNTI4MS96ZW5vZG8uMjE4ODUyMzc8L3JlbGF0ZWRJZGVudGlmaWVyPgogICAgPHJlbGF0ZWRJZGVudGlmaWVyIHJlbGF0ZWRJZGVudGlmaWVyVHlwZT0iRE9JIiByZWxhdGlvblR5cGU9Ikhhc1ZlcnNpb24iPjEwLjUyODEvemVub2RvLjIxODk2NjA2PC9yZWxhdGVkSWRlbnRpZmllcj4KICAgIDxyZWxhdGVkSWRlbnRpZmllciByZWxhdGVkSWRlbnRpZmllclR5cGU9IkRPSSIgcmVsYXRpb25UeXBlPSJIYXNWZXJzaW9uIj4xMC41MjgxL3plbm9kby4yMTg5NjU1OTwvcmVsYXRlZElkZW50aWZpZXI+CiAgICA8cmVsYXRlZElkZW50aWZpZXIgcmVsYXRlZElkZW50aWZpZXJUeXBlPSJET0kiIHJlbGF0aW9uVHlwZT0iSGFzVmVyc2lvbiI+MTAuNTI4MS96ZW5vZG8uMjE4OTY1ODQ8L3JlbGF0ZWRJZGVudGlmaWVyPgogICAgPHJlbGF0ZWRJZGVudGlmaWVyIHJlbGF0ZWRJZGVudGlmaWVyVHlwZT0iRE9JIiByZWxhdGlvblR5cGU9Ikhhc1ZlcnNpb24iPjEwLjUyODEvemVub2RvLjIxODk5NTk1PC9yZWxhdGVkSWRlbnRpZmllcj4KICA8L3JlbGF0ZWRJZGVudGlmaWVycz4KICA8c2l6ZXMvPgogIDxmb3JtYXRzLz4KICA8dmVyc2lvbj4xLjAuMTE8L3ZlcnNpb24+CiAgPHJpZ2h0c0xpc3Q+CiAgICA8cmlnaHRzIHJpZ2h0c1VSST0iaHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LzQuMC9sZWdhbGNvZGUiIHJpZ2h0c0lkZW50aWZpZXI9ImNjLWJ5LTQuMCIgcmlnaHRzSWRlbnRpZmllclNjaGVtZT0ic3BkeCI+Q3JlYXRpdmUgQ29tbW9ucyBBdHRyaWJ1dGlvbiA0LjAgSW50ZXJuYXRpb25hbDwvcmlnaHRzPgogIDwvcmlnaHRzTGlzdD4KICA8ZGVzY3JpcHRpb25zPgogICAgPGRlc2NyaXB0aW9uIGRlc2NyaXB0aW9uVHlwZT0iQWJzdHJhY3QiPkNvZGUsIGV4ZWN1dGlvbiBpbnN0cnVjdGlvbnMsIHJldGFpbmVkIHZpc2lvbi1sYW5ndWFnZS1tb2RlbCBvdXRwdXRzLCBjb250cm9sbGVkIHRlc3QgY2FzZXMsIGFuZCBkZXJpdmVkIHJlc3VsdHMgZm9yIHRoZSBzdHVkeSBBIGJlaGF2aW9yYWwgc2Vuc2l0aXZpdHkgYXVkaXQgb2YgdmlzaW9uLWxhbmd1YWdlIGp1ZGdtZW50cyBmb3IgdmlzaWJsZSBxdWVyeS1jaGFydCBjb25zaXN0ZW5jeS4gVGhlIGRlcG9zaXQgY29udGFpbnMgbm8gbWFudXNjcmlwdCBvciBzdWJtaXNzaW9uIGNvcnJlc3BvbmRlbmNlLjwvZGVzY3JpcHRpb24+CiAgPC9kZXNjcmlwdGlvbnM+CjwvcmVzb3VyY2U+Cg==",
+      "url": "https://zenodo.org/doi/10.5281/zenodo.21826016",
+      "contentUrl": null,
+      "metadataVersion": 10,
+      "schemaVersion": "http://datacite.org/schema/kernel-4",
+      "source": "api",
+      "isActive": true,
+      "state": "findable",
+      "reason": null,
+      "viewCount": 0,
+      "viewsOverTime": [],
+      "downloadCount": 0,
+      "downloadsOverTime": [],
+      "referenceCount": 0,
+      "citationCount": 0,
+      "citationsOverTime": [],
+      "partCount": 0,
+      "partOfCount": 0,
+      "versionCount": 11,
+      "versionOfCount": 0,
+      "created": "2026-08-06T15:07:00.000Z",
+      "registered": "2026-08-06T15:07:01.000Z",
+      "published": "2026",
+      "updated": "2026-08-12T07:46:30.000Z"
+    },
+    "relationships": {
+      "client": {
+        "data": {
+          "id": "cern.zenodo",
+          "type": "clients"
+        }
+      },
+      "provider": {
+        "data": {
+          "id": "cern",
+          "type": "providers"
+        }
+      },
+      "media": {
+        "data": {
+          "id": "10.5281/zenodo.21826016",
+          "type": "media"
+        }
+      },
+      "references": {
+        "data": []
+      },
+      "citations": {
+        "data": []
+      },
+      "parts": {
+        "data": []
+      },
+      "partOf": {
+        "data": []
+      },
+      "versions": {
+        "data": [
+          {
+            "id": "10.5281/zenodo.21826017",
+            "type": "dois"
+          },
+          {
+            "id": "10.5281/zenodo.21885237",
+            "type": "dois"
+          },
+          {
+            "id": "10.5281/zenodo.21890105",
+            "type": "dois"
+          },
+          {
+            "id": "10.5281/zenodo.21890264",
+            "type": "dois"
+          },
+          {
+            "id": "10.5281/zenodo.21896559",
+            "type": "dois"
+          },
+          {
+            "id": "10.5281/zenodo.21896584",
+            "type": "dois"
+          },
+          {
+            "id": "10.5281/zenodo.21896606",
+            "type": "dois"
+          },
+          {
+            "id": "10.5281/zenodo.21896616",
+            "type": "dois"
+          },
+          {
+            "id": "10.5281/zenodo.21897218",
+            "type": "dois"
+          },
+          {
+            "id": "10.5281/zenodo.21899344",
+            "type": "dois"
+          },
+          {
+            "id": "10.5281/zenodo.21899595",
+            "type": "dois"
+          }
+        ]
+      },
+      "versionOf": {
+        "data": []
+      }
+    }
+  }
+}
