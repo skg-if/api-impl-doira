@@ -6,9 +6,9 @@ import java.util.Set;
 
 /**
  * Translates the SKG-IF {@code filter} query syntax into a DataCite REST API {@code query}
- * string for the {@code /grants} endpoint - see {@link FilterQuerySyntax} for the shared
+ * string for the {@code /datacite/grants} endpoint - see {@link FilterQuerySyntax} for the shared
  * comma-splitting mechanics, and {@link ProductFilters} for the equivalent on {@code
- * /products}. Only a modest, explicitly-supported subset of the spec's Grant filter keys is
+ * /datacite/products}. Only a modest, explicitly-supported subset of the spec's Grant filter keys is
  * implemented - per the spec, "each filter implementation is optional" and unsupported filters
  * must 422.
  *

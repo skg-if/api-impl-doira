@@ -53,7 +53,7 @@ class GrantsResourceTest {
                 .thenReturn(loadFixture("datacite-award-ardc-83eg-9981.json"));
 
         given()
-                .when().get(BASE + "/grants/10.3565/83eg-9981")
+                .when().get(BASE + "/datacite/grants/10.3565/83eg-9981")
                 .then()
                 .statusCode(200)
                 .body("@context", org.hamcrest.Matchers.hasSize(3))
@@ -71,7 +71,7 @@ class GrantsResourceTest {
     /**
      * Full JSON-LD output regression test, mirroring {@code ProductsResourceTest}'s: the actual
      * response body must exactly match (structurally) the checked-in document under
-     * {@code expected/grant-award-ardc-83eg-9981.json} - a real Award DOI from the Australian
+     * {@code expected/datacite-grant-award-ardc-83eg-9981.json} - a real Award DOI from the Australian
      * Research Data Commons, chosen as a clean, minimal real-world example (single ROR-bearing
      * creator as funding_agency, single ROR-bearing organisational contributor as both a
      * contribution and a beneficiary, no funding_references/dates/rights_list noise).
@@ -83,12 +83,12 @@ class GrantsResourceTest {
                 .thenReturn(loadFixture("datacite-award-ardc-83eg-9981.json"));
 
         String actualBody = given()
-                .when().get(BASE + "/grants/10.3565/83eg-9981")
+                .when().get(BASE + "/datacite/grants/10.3565/83eg-9981")
                 .then()
                 .statusCode(200)
                 .extract().asString();
 
-        compareOrWriteGolden(objectMapper.readTree(actualBody), "expected/grant-award-ardc-83eg-9981.json");
+        compareOrWriteGolden(objectMapper.readTree(actualBody), "expected/datacite-grant-award-ardc-83eg-9981.json");
     }
 
     private void compareOrWriteGolden(JsonNode actual, String expectedResource) throws IOException {
@@ -112,7 +112,7 @@ class GrantsResourceTest {
         when(dataCiteClient.getDoi(any())).thenThrow(new NotFoundException());
 
         given()
-                .when().get(BASE + "/grants/10.9999/does-not-exist")
+                .when().get(BASE + "/datacite/grants/10.9999/does-not-exist")
                 .then()
                 .statusCode(404)
                 .body("status", equalTo("404"))
@@ -120,8 +120,8 @@ class GrantsResourceTest {
     }
 
     /**
-     * A non-Award DOI (a product) requested via {@code /grants} must 404, pointing the caller
-     * at {@code /products} instead - the inverse of {@code
+     * A non-Award DOI (a product) requested via {@code /datacite/grants} must 404, pointing the
+     * caller at {@code /datacite/products} instead - the inverse of {@code
      * ProductsResourceTest#getProductById_awardDoi_returns404PointingToGrants}.
      */
     @Test
@@ -130,17 +130,17 @@ class GrantsResourceTest {
                 .thenReturn(loadFixture("datacite-esrf-dc-2493599001.json"));
 
         given()
-                .when().get(BASE + "/grants/10.15151/esrf-dc-2493599001")
+                .when().get(BASE + "/datacite/grants/10.15151/esrf-dc-2493599001")
                 .then()
                 .statusCode(404)
                 .body("status", equalTo("404"))
-                .body("detail", containsString("/products/10.15151/esrf-dc-2493599001"));
+                .body("detail", containsString("/datacite/products/10.15151/esrf-dc-2493599001"));
     }
 
     @Test
     void getGrants_invalidFilter_returns422() {
         given()
-                .when().get(BASE + "/grants?filter=bogus_filter:xyz")
+                .when().get(BASE + "/datacite/grants?filter=bogus_filter:xyz")
                 .then()
                 .statusCode(422)
                 .body("status", equalTo("422"))
@@ -158,7 +158,7 @@ class GrantsResourceTest {
         listResponse.meta = meta;
         when(dataCiteClient.listDois(any(), any(), anyInt(), anyInt())).thenReturn(listResponse);
 
-        given().when().get(BASE + "/grants").then().statusCode(200);
+        given().when().get(BASE + "/datacite/grants").then().statusCode(200);
 
         ArgumentCaptor<String> queryCaptor = ArgumentCaptor.forClass(String.class);
         verify(dataCiteClient).listDois(any(), queryCaptor.capture(), anyInt(), anyInt());
@@ -179,7 +179,7 @@ class GrantsResourceTest {
         when(dataCiteClient.listDois(any(), any(), anyInt(), anyInt())).thenReturn(listResponse);
 
         given()
-                .when().get(BASE + "/grants?page_size=5")
+                .when().get(BASE + "/datacite/grants?page_size=5")
                 .then()
                 .statusCode(200)
                 .body("meta.entity_type", equalTo("search_result_page"))
@@ -187,6 +187,6 @@ class GrantsResourceTest {
                 .body("'@graph'[0].local_identifier", equalTo("https://doi.org/10.3565/83eg-9981"))
                 .body("meta.api_items[0].local_identifier", equalTo("https://doi.org/10.3565/83eg-9981"))
                 .body("meta.api_items[0].urls[0].href",
-                        equalTo("http://localhost:8081/skg-if/api/grants/10.3565/83eg-9981"));
+                        equalTo("http://localhost:8081/skg-if/api/datacite/grants/10.3565/83eg-9981"));
     }
 }

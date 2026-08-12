@@ -3,18 +3,18 @@ package org.skgif.doi.rest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.skgif.doi.datacite.DataCiteClient;
-import org.skgif.doi.datacite.ResourceTypeMapping;
-import org.skgif.doi.datacite.dto.DataCiteDoiData;
-import org.skgif.doi.datacite.dto.DataCiteDoiListResponse;
-import org.skgif.doi.datacite.dto.DataCiteDoiResponse;
+import org.skgif.doi.crossref.CrossrefClient;
+import org.skgif.doi.crossref.CrossrefTypeMapping;
+import org.skgif.doi.crossref.dto.CrossrefWork;
+import org.skgif.doi.crossref.dto.CrossrefWorkListResponse;
+import org.skgif.doi.crossref.dto.CrossrefWorkResponse;
+import org.skgif.doi.crossref.mapper.CrossrefToSkgIfMapper;
 import org.skgif.doi.generated.model.ApiItem;
+import org.skgif.doi.generated.model.Grant;
 import org.skgif.doi.generated.model.MetaSearch;
 import org.skgif.doi.generated.model.MetaSearchPartOf;
 import org.skgif.doi.generated.model.MetaSingleEntity;
-import org.skgif.doi.generated.model.Product;
 import org.skgif.doi.generated.model.SearchResultPage;
-import org.skgif.doi.datacite.mapper.DataCiteToSkgIfMapper;
 import org.skgif.doi.util.LocalIdentifiers;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
@@ -35,29 +35,21 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * SKG-IF Products endpoint, backed live by the DataCite REST API (no local storage). Serves
- * any DataCite DOI except {@code resourceTypeGeneral: "Award"} ones, which are grants, not
- * products - see {@link GrantsResource}.
- *
- * <p>This does not implement the generated {@code ProductApi} interface: openapi-generator's
- * merge of the spec's {@code @context} anyOf (two fixed context URLs + an {@code @base} object)
- * collapses to a type that can only hold the {@code @base} object, dropping the two required
- * context URLs. The JSON-LD envelope (@context/meta/@graph) is therefore assembled by hand here
- * (via {@link JsonLdResponses}) with Jackson, while the generated {@code Product}/{@code
- * MetaSingleEntity}/{@code MetaSearch}/{@code Error} models (which generated correctly) are
- * used for everything nested inside it.
+ * SKG-IF Grants endpoint, backed live by the Crossref REST API - the Crossref-provider sibling
+ * of {@link GrantsResource}. Serves only Crossref DOIs with {@code type: "grant"}; every other
+ * Crossref DOI is a product, see {@link CrossrefProductsResource}.
  */
-@Path("/datacite/products")
-public class ProductsResource {
+@Path("/crossref/grants")
+public class CrossrefGrantsResource {
 
-    private static final String RESOURCE_PATH = "/datacite/products";
+    private static final String RESOURCE_PATH = "/crossref/grants";
 
     @Inject
     @RestClient
-    DataCiteClient dataCiteClient;
+    CrossrefClient crossrefClient;
 
     @Inject
-    DataCiteToSkgIfMapper mapper;
+    CrossrefToSkgIfMapper mapper;
 
     @Inject
     LocalIdentifiers localIdentifiers;
@@ -71,11 +63,11 @@ public class ProductsResource {
     @ConfigProperty(name = "skgif.context.base")
     String fallbackContextBase;
 
-    // Optional<String>, not String: SmallRye Config treats a blank configured value as "no
-    // value" for a plain String property, which throws at startup unless it's Optional (or
-    // has a defaultValue) - and blank is exactly this property's own documented default.
-    @ConfigProperty(name = "datacite.prefix")
-    Optional<String> dataCitePrefix;
+    @ConfigProperty(name = "crossref.prefix")
+    Optional<String> crossrefPrefix;
+
+    @ConfigProperty(name = "crossref.mailto")
+    Optional<String> crossrefMailto;
 
     @ConfigProperty(name = "skgif.default-page-size")
     int defaultPageSize;
@@ -83,40 +75,40 @@ public class ProductsResource {
     @GET
     @Path("/{local_identifier: .+}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getProductById(@PathParam("local_identifier") String localIdentifierParam,
+    public Response getGrantById(@PathParam("local_identifier") String localIdentifierParam,
             @Context UriInfo uriInfo) {
         String doi = localIdentifiers.toDoi(localIdentifierParam);
 
-        DataCiteDoiData data;
+        CrossrefWork work;
         try {
-            DataCiteDoiResponse response = dataCiteClient.getDoi(doi);
-            data = response != null ? response.data : null;
+            CrossrefWorkResponse response = crossrefClient.getWork(doi);
+            work = response != null ? response.message : null;
         } catch (WebApplicationException e) {
             if (e.getResponse().getStatus() == 404) {
                 return notFound(localIdentifierParam);
             }
             throw e;
         }
-        if (data == null || data.attributes == null) {
+        if (work == null || work.doi == null) {
             return notFound(localIdentifierParam);
         }
-        if (ResourceTypeMapping.isAward(data.attributes)) {
-            return JsonLdResponses.notFound("No product found for local_identifier '" + localIdentifierParam
-                    + "' - this DOI is a grant award, see /datacite/grants/" + localIdentifierParam);
+        if (!CrossrefTypeMapping.isGrant(work)) {
+            return JsonLdResponses.notFound("No grant found for local_identifier '" + localIdentifierParam
+                    + "' - this DOI is a product, see /crossref/products/" + localIdentifierParam);
         }
 
-        Product product = mapper.toProduct(data.attributes);
+        Grant grant = mapper.toGrant(work);
         String selfHref = JsonLdResponses.selfLink(uriInfo, RESOURCE_PATH, doi);
 
         MetaSingleEntity meta = new MetaSingleEntity()
                 .localIdentifier(selfHref)
                 .entityType(MetaSingleEntity.EntityTypeEnum.SINGLE_ENTITY);
 
-        String contextBase = JsonLdResponses.contextBaseFor(data, sandboxBaseUrl, fallbackContextBase);
+        String contextBase = JsonLdResponses.contextBaseFor(Optional.<String>empty(), sandboxBaseUrl, fallbackContextBase);
         ObjectNode root = JsonLdResponses.envelope(objectMapper, contextBase);
         root.set("meta", objectMapper.valueToTree(meta));
         ArrayNode graph = objectMapper.createArrayNode();
-        graph.add(objectMapper.valueToTree(product));
+        graph.add(objectMapper.valueToTree(grant));
         root.set("@graph", graph);
 
         return Response.ok(root).build();
@@ -124,49 +116,55 @@ public class ProductsResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getProducts(
+    public Response getGrants(
             @QueryParam("filter") String filter,
             @QueryParam("page") String page,
             @QueryParam("page_size") Integer pageSize,
             @Context UriInfo uriInfo) {
 
-        String query;
+        CrossrefFilters.ParsedFilter parsed;
         try {
-            query = ProductFilters.toDataCiteQuery(filter);
+            parsed = CrossrefFilters.toGrantsQuery(filter);
         } catch (FilterQuerySyntax.UnsupportedFilterException e) {
             return JsonLdResponses.invalidFilter(uriInfo, e.getMessage());
         }
-        // Awards are grants, not products - never let them leak into /datacite/products results.
-        String awardExclusion = "NOT types.resourceTypeGeneral:" + ResourceTypeMapping.AWARD;
-        query = query == null ? awardExclusion : query + " AND " + awardExclusion;
 
         int pageNumber = parsePage(page);
         int size = pageSize != null && pageSize > 0 ? pageSize : defaultPageSize;
-        String prefix = dataCitePrefix.filter(p -> !p.isBlank()).orElse(null);
+        int offset = (pageNumber - 1) * size;
+        String mailto = crossrefMailto.filter(m -> !m.isBlank()).orElse(null);
 
-        DataCiteDoiListResponse response = dataCiteClient.listDois(prefix, query, size, pageNumber);
+        // /crossref/grants only ever serves type:grant records - Crossref's own filter=, unlike
+        // DataCite's Lucene query, has no negation operator, but a positive AND is trivial.
+        String crossrefFilter = withPrefix(withGrantType(parsed.filter));
 
-        List<Product> products = new ArrayList<>();
+        CrossrefWorkListResponse response = crossrefClient.listWorks(crossrefFilter, parsed.queryTitle,
+                parsed.queryBibliographic, size, offset, mailto);
+
+        List<Grant> grants = new ArrayList<>();
         List<ApiItem> apiItems = new ArrayList<>();
-        if (response.data != null) {
-            for (DataCiteDoiData item : response.data) {
-                if (item.attributes == null) {
-                    continue;
+        long totalResults = 0;
+        if (response.message != null) {
+            totalResults = response.message.totalResults;
+            if (response.message.items != null) {
+                for (CrossrefWork work : response.message.items) {
+                    if (work.doi == null || !CrossrefTypeMapping.isGrant(work)) {
+                        continue;
+                    }
+                    grants.add(mapper.toGrant(work));
+                    apiItems.add(JsonLdResponses.apiItem(localIdentifiers.toFullLocalIdentifier(work.doi),
+                            JsonLdResponses.selfLink(uriInfo, RESOURCE_PATH, work.doi)));
                 }
-                products.add(mapper.toProduct(item.attributes));
-                apiItems.add(JsonLdResponses.apiItem(localIdentifiers.toFullLocalIdentifier(item.attributes.doi),
-                        JsonLdResponses.selfLink(uriInfo, RESOURCE_PATH, item.attributes.doi)));
             }
         }
 
-        long total = response.meta != null ? response.meta.total : products.size();
         String selfPageHref = JsonLdResponses.pageLink(uriInfo, RESOURCE_PATH, filter, pageNumber, size);
 
         MetaSearch meta = new MetaSearch()
                 .localIdentifier(selfPageHref)
                 .entityType(MetaSearch.EntityTypeEnum.SEARCH_RESULT_PAGE)
                 .apiItems(apiItems);
-        if (hasMorePages(response, pageNumber)) {
+        if (offset + size < totalResults) {
             meta.nextPage(new SearchResultPage()
                     .localIdentifier(JsonLdResponses.pageLink(uriInfo, RESOURCE_PATH, filter, pageNumber + 1, size))
                     .entityType(SearchResultPage.EntityTypeEnum.SEARCH_RESULT_PAGE));
@@ -179,20 +177,30 @@ public class ProductsResource {
         meta.partOf(new MetaSearchPartOf()
                 .localIdentifier(JsonLdResponses.collectionLink(uriInfo, RESOURCE_PATH, filter))
                 .entityType(MetaSearchPartOf.EntityTypeEnum.SEARCH_RESULT)
-                .totalItems((int) total));
+                .totalItems((int) totalResults));
 
-        String contextBase = JsonLdResponses.contextBaseFor(response.data, sandboxBaseUrl, fallbackContextBase);
+        String contextBase = JsonLdResponses.contextBaseFor(Optional.<String>empty(), sandboxBaseUrl, fallbackContextBase);
         ObjectNode root = JsonLdResponses.envelope(objectMapper, contextBase);
         root.set("meta", objectMapper.valueToTree(meta));
         ArrayNode graph = objectMapper.createArrayNode();
-        products.forEach(p -> graph.add(objectMapper.valueToTree(p)));
+        grants.forEach(g -> graph.add(objectMapper.valueToTree(g)));
         root.set("@graph", graph);
 
         return Response.ok(root).build();
     }
 
-    private boolean hasMorePages(DataCiteDoiListResponse response, int currentPage) {
-        return response.meta != null && currentPage < response.meta.totalPages;
+    private String withGrantType(String filter) {
+        String clause = "type:" + CrossrefTypeMapping.GRANT;
+        return filter == null ? clause : filter + "," + clause;
+    }
+
+    private String withPrefix(String filter) {
+        String prefix = crossrefPrefix.filter(p -> !p.isBlank()).orElse(null);
+        if (prefix == null) {
+            return filter;
+        }
+        String prefixClause = "prefix:" + prefix;
+        return filter == null ? prefixClause : filter + "," + prefixClause;
     }
 
     private int parsePage(String page) {
@@ -208,6 +216,6 @@ public class ProductsResource {
     }
 
     private Response notFound(String requestedId) {
-        return JsonLdResponses.notFound("No product found for local_identifier '" + requestedId + "'");
+        return JsonLdResponses.notFound("No grant found for local_identifier '" + requestedId + "'");
     }
 }

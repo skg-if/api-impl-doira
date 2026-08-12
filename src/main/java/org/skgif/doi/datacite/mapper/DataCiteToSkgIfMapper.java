@@ -616,10 +616,11 @@ public class DataCiteToSkgIfMapper {
             String scheme = related.relatedIdentifierType != null
                     ? related.relatedIdentifierType.toLowerCase()
                     : "url";
-            // A related product with a DOI is identified by that DOI directly, consistent with
-            // how this API identifies its own products; anything else falls back to otf.
+            // A related product with a DOI is identified by the full https://doi.org/... URL,
+            // consistent with how this API identifies its own products; anything else falls
+            // back to otf.
             String localIdentifier = "doi".equals(scheme)
-                    ? related.relatedIdentifier
+                    ? localIdentifiers.toFullLocalIdentifier(related.relatedIdentifier)
                     : otf(attributes.doi, related.relatedIdentifier);
             result.add(new ProductsRelatedCitesInner()
                     .localIdentifier(localIdentifier)

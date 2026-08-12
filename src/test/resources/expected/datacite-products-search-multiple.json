@@ -3,18 +3,18 @@
     "@base" : "https://w3id.org/skg-if/sandbox/inist.esrf/"
   } ],
   "meta" : {
-    "local_identifier" : "http://localhost:8081/skg-if/api/products?page=2&page_size=2",
+    "local_identifier" : "http://localhost:8081/skg-if/api/datacite/products?page=2&page_size=2",
     "entity_type" : "search_result_page",
     "prev_page" : {
-      "local_identifier" : "http://localhost:8081/skg-if/api/products?page=1&page_size=2",
+      "local_identifier" : "http://localhost:8081/skg-if/api/datacite/products?page=1&page_size=2",
       "entity_type" : "search_result_page"
     },
     "next_page" : {
-      "local_identifier" : "http://localhost:8081/skg-if/api/products?page=3&page_size=2",
+      "local_identifier" : "http://localhost:8081/skg-if/api/datacite/products?page=3&page_size=2",
       "entity_type" : "search_result_page"
     },
     "part_of" : {
-      "local_identifier" : "http://localhost:8081/skg-if/api/products",
+      "local_identifier" : "http://localhost:8081/skg-if/api/datacite/products",
       "entity_type" : "search_result",
       "total_items" : 5
     },
@@ -23,7 +23,7 @@
       "urls" : [ {
         "entity_type" : "link",
         "rel" : "self",
-        "href" : "http://localhost:8081/skg-if/api/products/10.15151/esrf-dc-2493599001",
+        "href" : "http://localhost:8081/skg-if/api/datacite/products/10.15151/esrf-dc-2493599001",
         "media_type" : "link"
       } ]
     }, {
@@ -31,7 +31,7 @@
       "urls" : [ {
         "entity_type" : "link",
         "rel" : "self",
-        "href" : "http://localhost:8081/skg-if/api/products/10.15151/esrf-es-2210534378",
+        "href" : "http://localhost:8081/skg-if/api/datacite/products/10.15151/esrf-es-2210534378",
         "media_type" : "link"
       } ]
     } ]

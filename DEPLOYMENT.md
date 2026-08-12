@@ -34,7 +34,7 @@ branch, tagged both `latest` and the branch/tag slug. To build and test locally:
 mvn package
 docker build -f src/main/docker/Dockerfile.jvm -t puma-skg-if-api:local .
 docker run -p 8080:8080 puma-skg-if-api:local
-curl "http://localhost:8080/skg-if/api/products?page_size=1"
+curl "http://localhost:8080/skg-if/api/datacite/products?page_size=1"
 ```
 
 ## Tools Hub runbook
@@ -74,7 +74,7 @@ curl "http://localhost:8080/skg-if/api/products?page_size=1"
    route/URL OKD assigned to the container, then:
 
    ```bash
-   curl "https://<assigned-route>/skg-if/api/products?page_size=5"
+   curl "https://<assigned-route>/skg-if/api/datacite/products?page_size=5"
    ```
 
    Confirm the response matches what `mvn quarkus:dev` returns locally.

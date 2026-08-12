@@ -9,7 +9,7 @@ import org.skgif.doi.generated.model.Product;
 
 /**
  * Translates the SKG-IF {@code filter} query syntax into a DataCite REST API {@code query}
- * string for the {@code /products} endpoint - see {@link FilterQuerySyntax} for the shared
+ * string for the {@code /datacite/products} endpoint - see {@link FilterQuerySyntax} for the shared
  * comma-splitting mechanics. Only a modest, explicitly-supported subset of the spec's filter
  * keys is implemented - per the spec, "each filter implementation is optional" and unsupported
  * filters must 422.

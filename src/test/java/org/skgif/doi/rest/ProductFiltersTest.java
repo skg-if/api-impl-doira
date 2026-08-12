@@ -94,7 +94,7 @@ class ProductFiltersTest {
     @Test
     void toDataCiteQuery_productType_award_isNotAValidProductType_noMatch() {
         // "award" isn't a value of SKG-IF's product_type enum at all (Awards are grants, routed
-        // to /grants instead - see ProductsResource) - a filter requesting it is well-formed
+        // to /datacite/grants instead - see ProductsResource) - a filter requesting it is well-formed
         // but can never match.
         assertEquals("doi:\"__no_match__\"", ProductFilters.toDataCiteQuery("product_type:award"));
     }

@@ -41,10 +41,10 @@ import java.util.Optional;
  * hand-assembled (via {@link JsonLdResponses}) rather than implementing the generated {@code
  * GrantApi} interface directly.
  */
-@Path("/grants")
+@Path("/datacite/grants")
 public class GrantsResource {
 
-    private static final String RESOURCE_PATH = "/grants";
+    private static final String RESOURCE_PATH = "/datacite/grants";
 
     @Inject
     @RestClient
@@ -96,7 +96,7 @@ public class GrantsResource {
         }
         if (!ResourceTypeMapping.isAward(data.attributes)) {
             return JsonLdResponses.notFound("No grant found for local_identifier '" + localIdentifierParam
-                    + "' - this DOI is a product, see /products/" + localIdentifierParam);
+                    + "' - this DOI is a product, see /datacite/products/" + localIdentifierParam);
         }
 
         Grant grant = mapper.toGrant(data.attributes);
@@ -130,7 +130,7 @@ public class GrantsResource {
         } catch (FilterQuerySyntax.UnsupportedFilterException e) {
             return JsonLdResponses.invalidFilter(uriInfo, e.getMessage());
         }
-        // /grants only ever serves Award-type DOIs.
+        // /datacite/grants only ever serves Award-type DOIs.
         String awardInclusion = "types.resourceTypeGeneral:" + ResourceTypeMapping.AWARD;
         query = query == null ? awardInclusion : query + " AND " + awardInclusion;
 

@@ -57,7 +57,7 @@ class ProductsResourceTest {
         when(dataCiteClient.getDoi(eq("10.15151/esrf-dc-2493599001"))).thenReturn(loadFixture());
 
         given()
-                .when().get(BASE + "/products/10.15151/esrf-dc-2493599001")
+                .when().get(BASE + "/datacite/products/10.15151/esrf-dc-2493599001")
                 .then()
                 .statusCode(200)
                 .body("@context", org.hamcrest.Matchers.hasSize(3))
@@ -80,7 +80,7 @@ class ProductsResourceTest {
         when(dataCiteClient.getDoi(eq("10.15151/esrf-dc-2493599001"))).thenReturn(loadFixture());
 
         given()
-                .when().get(BASE + "/products/https:/doi.org/10.15151/esrf-dc-2493599001")
+                .when().get(BASE + "/datacite/products/https:/doi.org/10.15151/esrf-dc-2493599001")
                 .then()
                 .statusCode(200)
                 .body("'@graph'[0].local_identifier", equalTo("https://doi.org/10.15151/esrf-dc-2493599001"));
@@ -91,7 +91,7 @@ class ProductsResourceTest {
         when(dataCiteClient.getDoi(any())).thenThrow(new NotFoundException());
 
         given()
-                .when().get(BASE + "/products/10.9999/does-not-exist")
+                .when().get(BASE + "/datacite/products/10.9999/does-not-exist")
                 .then()
                 .statusCode(404)
                 .body("status", equalTo("404"))
@@ -99,8 +99,9 @@ class ProductsResourceTest {
     }
 
     /**
-     * Award-type DOIs are grants, not products - {@code /products/{id}} must 404 rather than
-     * exposing them, and the error should point the caller at {@code /grants} instead.
+     * Award-type DOIs are grants, not products - {@code /datacite/products/{id}} must 404
+     * rather than exposing them, and the error should point the caller at
+     * {@code /datacite/grants} instead.
      */
     @Test
     void getProductById_awardDoi_returns404PointingToGrants() throws IOException {
@@ -108,11 +109,11 @@ class ProductsResourceTest {
                 .thenReturn(loadFixture("datacite-award-ardc-83eg-9981.json"));
 
         given()
-                .when().get(BASE + "/products/10.3565/83eg-9981")
+                .when().get(BASE + "/datacite/products/10.3565/83eg-9981")
                 .then()
                 .statusCode(404)
                 .body("status", equalTo("404"))
-                .body("detail", containsString("/grants/10.3565/83eg-9981"));
+                .body("detail", containsString("/datacite/grants/10.3565/83eg-9981"));
     }
 
     @Test
@@ -126,7 +127,7 @@ class ProductsResourceTest {
         listResponse.meta = meta;
         when(dataCiteClient.listDois(any(), any(), anyInt(), anyInt())).thenReturn(listResponse);
 
-        given().when().get(BASE + "/products").then().statusCode(200);
+        given().when().get(BASE + "/datacite/products").then().statusCode(200);
 
         ArgumentCaptor<String> queryCaptor = ArgumentCaptor.forClass(String.class);
         verify(dataCiteClient).listDois(any(), queryCaptor.capture(), anyInt(), anyInt());
@@ -137,7 +138,7 @@ class ProductsResourceTest {
     @Test
     void getProducts_invalidFilter_returns422() {
         given()
-                .when().get(BASE + "/products?filter=bogus_filter:xyz")
+                .when().get(BASE + "/datacite/products?filter=bogus_filter:xyz")
                 .then()
                 .statusCode(422)
                 .body("status", equalTo("422"))
@@ -153,13 +154,13 @@ class ProductsResourceTest {
     @Test
     void getProductById_matchesExpectedJsonLd_esrfDc2493599001() throws IOException {
         assertMatchesExpectedJsonLd("10.15151/esrf-dc-2493599001", "datacite-esrf-dc-2493599001.json",
-                "expected/product-esrf-dc-2493599001.json");
+                "expected/datacite-product-esrf-dc-2493599001.json");
     }
 
     @Test
     void getProductById_matchesExpectedJsonLd_esrfEs2210534378_withAffiliationsAndFunding() throws IOException {
         assertMatchesExpectedJsonLd("10.15151/esrf-es-2210534378", "datacite-esrf-es-2210534378.json",
-                "expected/product-esrf-es-2210534378.json");
+                "expected/datacite-product-esrf-es-2210534378.json");
     }
 
     /**
@@ -186,12 +187,12 @@ class ProductsResourceTest {
         when(dataCiteClient.listDois(any(), any(), anyInt(), anyInt())).thenReturn(listResponse);
 
         String actualBody = given()
-                .when().get(BASE + "/products?page=2&page_size=2")
+                .when().get(BASE + "/datacite/products?page=2&page_size=2")
                 .then()
                 .statusCode(200)
                 .extract().asString();
 
-        compareOrWriteGolden(new ObjectMapper().readTree(actualBody), "expected/products-search-multiple.json");
+        compareOrWriteGolden(new ObjectMapper().readTree(actualBody), "expected/datacite-products-search-multiple.json");
     }
 
     private void assertMatchesExpectedJsonLd(String doi, String dataCiteFixture, String expectedJsonLdResource)
@@ -201,7 +202,7 @@ class ProductsResourceTest {
             when(dataCiteClient.getDoi(eq(doi))).thenReturn(objectMapper.readValue(in, DataCiteDoiResponse.class));
         }
 
-        String actualBody = given().when().get(BASE + "/products/" + doi).then().statusCode(200).extract().asString();
+        String actualBody = given().when().get(BASE + "/datacite/products/" + doi).then().statusCode(200).extract().asString();
         compareOrWriteGolden(objectMapper.readTree(actualBody), expectedJsonLdResource);
     }
 
@@ -234,7 +235,7 @@ class ProductsResourceTest {
         when(dataCiteClient.listDois(any(), any(), anyInt(), anyInt())).thenReturn(listResponse);
 
         given()
-                .when().get(BASE + "/products?page_size=5")
+                .when().get(BASE + "/datacite/products?page_size=5")
                 .then()
                 .statusCode(200)
                 .body("meta.entity_type", equalTo("search_result_page"))
@@ -246,6 +247,6 @@ class ProductsResourceTest {
                 // full golden-file diff can be easy to skim past.
                 .body("meta.api_items[0].local_identifier", equalTo("https://doi.org/10.15151/esrf-dc-2493599001"))
                 .body("meta.api_items[0].urls[0].href",
-                        equalTo("http://localhost:8081/skg-if/api/products/10.15151/esrf-dc-2493599001"));
+                        equalTo("http://localhost:8081/skg-if/api/datacite/products/10.15151/esrf-dc-2493599001"));
     }
 }

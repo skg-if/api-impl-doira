@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import java.util.List;
+import java.util.Optional;
 import org.skgif.doi.datacite.dto.DataCiteDoiData;
 import org.skgif.doi.generated.model.ApiItem;
 import org.skgif.doi.generated.model.Error;
@@ -66,6 +67,19 @@ final class JsonLdResponses {
                 .map(JsonLdResponses::clientId)
                 .filter(id -> id != null)
                 .findFirst()
+                .map(id -> sandboxBaseUrl + id + "/")
+                .orElse(fallbackContextBase);
+    }
+
+    /**
+     * Provider-agnostic variant of {@link #contextBaseFor(DataCiteDoiData, String, String)},
+     * for providers with no DataCite-shaped namespace concept of their own (e.g. Crossref, which
+     * has no equivalent to {@code relationships.client.data.id} mapped yet - see {@code
+     * CrossrefProductsResource}/{@code CrossrefGrantsResource}, which always pass {@code
+     * Optional.empty()} here).
+     */
+    static String contextBaseFor(Optional<String> namespaceId, String sandboxBaseUrl, String fallbackContextBase) {
+        return namespaceId.filter(id -> !id.isBlank())
                 .map(id -> sandboxBaseUrl + id + "/")
                 .orElse(fallbackContextBase);
     }

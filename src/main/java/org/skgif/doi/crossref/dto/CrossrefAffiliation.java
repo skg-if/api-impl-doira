@@ -1,0 +1,18 @@
+package org.skgif.doi.crossref.dto;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.util.List;
+
+/**
+ * Always a plain object in Crossref (unlike DataCite, which can send either a bare string or
+ * an object for the same field - see {@code DataCiteAffiliationDeserializer} - so no custom
+ * deserializer is needed here). On product/author affiliations, {@code id} is normally absent
+ * (name-only); on grant investigator affiliations it's frequently present (usually a ROR).
+ */
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class CrossrefAffiliation {
+
+    public String name;
+    public String country;
+    public List<CrossrefIdEntry> id;
+}
