@@ -281,6 +281,20 @@ class CrossrefToSkgIfMapperTest {
         assertTrue(grant.getFundingAgency().getLocalIdentifier().startsWith("otf___"));
     }
 
+    @Test
+    void mapsDeclaredAffiliationsWithNameOnlyOtfFallbackWhenNoRor() throws IOException {
+        Product product = mapFixture("crossref-journal-article-with-funder.json");
+
+        var affiliations = product.getContributions().get(0).getDeclaredAffiliations();
+        assertEquals(1, affiliations.size());
+        // Unlike crossref-journal-article-with-ror-affiliation.json, this affiliation carries no
+        // ROR at all - only a bare name - so it must fall back to an otf id instead.
+        assertEquals("Carinthian Tech Research AG, Europastrasse 12, 9524 Villach, Austria",
+                affiliations.get(0).getName());
+        assertTrue(affiliations.get(0).getIdentifiers().isEmpty());
+        assertTrue(affiliations.get(0).getLocalIdentifier().startsWith("otf___"));
+    }
+
     // crossref-grant.json: a real Crossref grant record (type: "grant") - a Wellcome Trust
     // award, with explicit funder/amount/duration fields Crossref gives directly (unlike
     // DataCite Awards, which need the ROR-bearing-creator heuristic).

@@ -9,12 +9,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.ws.rs.NotFoundException;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -24,17 +22,13 @@ import org.skgif.doi.datacite.DataCiteClient;
 import org.skgif.doi.datacite.dto.DataCiteDoiListResponse;
 import org.skgif.doi.datacite.dto.DataCiteDoiResponse;
 
+/**
+ * Golden JSON-LD output regression tests live in {@link GrantsGoldenTest}.
+ */
 @QuarkusTest
 class GrantsResourceTest {
 
     private static final String BASE = "/skg-if/api";
-
-    /**
-     * Regenerate the golden JSON-LD files in src/test/resources/expected/ instead of asserting
-     * against them - see {@code ProductsResourceTest}'s equivalent flag for the full rationale:
-     * {@code mvn test -Dtest=GrantsResourceTest -Dgolden.regenerate=true}
-     */
-    private static final boolean REGENERATE_GOLDEN = Boolean.getBoolean("golden.regenerate");
 
     @InjectMock
     @RestClient
@@ -66,45 +60,6 @@ class GrantsResourceTest {
                 // overriding this with its @JsonTypeName ("GrantContribution_by") instead - see
                 // SkgIfObjectMapperCustomizer's javadoc.
                 .body("'@graph'[0].contributions[1].by.entity_type", equalTo("organisation"));
-    }
-
-    /**
-     * Full JSON-LD output regression test, mirroring {@code ProductsResourceTest}'s: the actual
-     * response body must exactly match (structurally) the checked-in document under
-     * {@code expected/datacite-grant-award-r3sy-7371.json} - a real Award DOI from The Navigation
-     * Fund, chosen because it exercises both contribution shapes in one real-world record: a
-     * ROR-bearing organisational contributor (Code for Science & Society, also a beneficiary) and
-     * an ORCID-bearing personal contributor (the project leader).
-     */
-    @Test
-    void getGrantById_matchesExpectedJsonLd_r3sy7371() throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        when(dataCiteClient.getDoi(eq("10.71707/r3sy-7371")))
-                .thenReturn(loadFixture("datacite-award-r3sy-7371.json"));
-
-        String actualBody = given()
-                .when().get(BASE + "/datacite/grants/10.71707/r3sy-7371")
-                .then()
-                .statusCode(200)
-                .extract().asString();
-
-        compareOrWriteGolden(objectMapper.readTree(actualBody), "expected/datacite-grant-award-r3sy-7371.json");
-    }
-
-    private void compareOrWriteGolden(JsonNode actual, String expectedResource) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        if (REGENERATE_GOLDEN) {
-            objectMapper.writerWithDefaultPrettyPrinter()
-                    .writeValue(new File("src/test/resources/" + expectedResource), actual);
-            return;
-        }
-
-        var expected = objectMapper.readTree(getClass().getClassLoader().getResourceAsStream(expectedResource));
-
-        org.junit.jupiter.api.Assertions.assertEquals(expected, actual,
-                "Actual JSON-LD output no longer matches " + expectedResource
-                        + ". If this change is intentional: mvn test -Dtest=GrantsResourceTest"
-                        + " -Dgolden.regenerate=true, then review the diff before committing.");
     }
 
     @Test

@@ -1,0 +1,151 @@
+{
+  "@context" : [ "https://w3id.org/skg-if/context/1.1.0/skg-if.json", "https://w3id.org/skg-if/context/1.0.0/skg-if-api.json", {
+    "@base" : "https://w3id.org/skg-if/sandbox/cern.zenodo/"
+  } ],
+  "meta" : {
+    "local_identifier" : "http://localhost:8081/skg-if/api/datacite/products/10.5281/zenodo.21826016",
+    "entity_type" : "single_entity"
+  },
+  "@graph" : [ {
+    "local_identifier" : "https://doi.org/10.5281/zenodo.21826016",
+    "identifiers" : [ {
+      "scheme" : "doi",
+      "value" : "10.5281/zenodo.21826016"
+    } ],
+    "entity_type" : "product",
+    "product_type" : "research software",
+    "titles" : {
+      "en" : [ "VLM chart-judgment audit: code and experimental artifacts" ]
+    },
+    "abstracts" : {
+      "en" : [ "Code, execution instructions, retained vision-language-model outputs, controlled test cases, and derived results for the study A behavioral sensitivity audit of vision-language judgments for visible query-chart consistency. The deposit contains no manuscript or submission correspondence." ]
+    },
+    "topics" : [ {
+      "term" : {
+        "local_identifier" : "otf___10-5281-zenodo-21826016___vision-language-models",
+        "identifiers" : [ ],
+        "entity_type" : "topic",
+        "labels" : {
+          "none" : "vision-language models"
+        }
+      }
+    }, {
+      "term" : {
+        "local_identifier" : "otf___10-5281-zenodo-21826016___natural-language-to-visualization",
+        "identifiers" : [ ],
+        "entity_type" : "topic",
+        "labels" : {
+          "none" : "natural language to visualization"
+        }
+      }
+    }, {
+      "term" : {
+        "local_identifier" : "otf___10-5281-zenodo-21826016___chart-evaluation",
+        "identifiers" : [ ],
+        "entity_type" : "topic",
+        "labels" : {
+          "none" : "chart evaluation"
+        }
+      }
+    }, {
+      "term" : {
+        "local_identifier" : "otf___10-5281-zenodo-21826016___model-judge",
+        "identifiers" : [ ],
+        "entity_type" : "topic",
+        "labels" : {
+          "none" : "model judge"
+        }
+      }
+    }, {
+      "term" : {
+        "local_identifier" : "otf___10-5281-zenodo-21826016___nl2vis",
+        "identifiers" : [ ],
+        "entity_type" : "topic",
+        "labels" : {
+          "none" : "NL2Vis"
+        }
+      }
+    }, {
+      "term" : {
+        "local_identifier" : "otf___10-5281-zenodo-21826016___reproducibility",
+        "identifiers" : [ ],
+        "entity_type" : "topic",
+        "labels" : {
+          "none" : "reproducibility"
+        }
+      }
+    } ],
+    "contributions" : [ {
+      "by" : {
+        "local_identifier" : "otf___10-5281-zenodo-21826016___luong-thi-minh-hue",
+        "identifiers" : [ ],
+        "family_name" : "Luong Thi Minh-Hue",
+        "name" : "Luong Thi Minh-Hue",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "declared_affiliations" : [ {
+        "local_identifier" : "otf___10-5281-zenodo-21826016___thai-nguyen-university-of-information-an",
+        "identifiers" : [ ],
+        "entity_type" : "organisation",
+        "name" : "Thai Nguyen University of Information and Communication Technology",
+        "other_names" : [ ],
+        "types" : [ ]
+      } ],
+      "rank" : 1,
+      "role" : "author"
+    }, {
+      "by" : {
+        "local_identifier" : "otf___10-5281-zenodo-21826016___nguyen-the-vinh",
+        "identifiers" : [ ],
+        "family_name" : "Nguyen The-Vinh",
+        "name" : "Nguyen The-Vinh",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "declared_affiliations" : [ {
+        "local_identifier" : "otf___10-5281-zenodo-21826016___thai-nguyen-university-of-information-an",
+        "identifiers" : [ ],
+        "entity_type" : "organisation",
+        "name" : "Thai Nguyen University of Information and Communication Technology",
+        "other_names" : [ ],
+        "types" : [ ]
+      } ],
+      "rank" : 2,
+      "role" : "author"
+    }, {
+      "by" : {
+        "local_identifier" : "otf___10-5281-zenodo-21826016___zenodo",
+        "identifiers" : [ ],
+        "name" : "Zenodo",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "rank" : 3,
+      "role" : "publisher"
+    } ],
+    "manifestations" : [ {
+      "type" : {
+        "labels" : {
+          "en" : "Software"
+        }
+      },
+      "dates" : {
+        "publication" : [ "2026-08-12" ]
+      },
+      "access_rights" : {
+        "status" : "open"
+      },
+      "licence" : "https://creativecommons.org/licenses/by/4.0/legalcode",
+      "version" : "1.0.11",
+      "biblio" : {
+        "hosting_data_source" : {
+          "local_identifier" : "otf___10-5281-zenodo-21826016___zenodo",
+          "identifiers" : [ ],
+          "entity_type" : "datasource",
+          "name" : "Zenodo"
+        }
+      }
+    } ]
+  } ]
+}

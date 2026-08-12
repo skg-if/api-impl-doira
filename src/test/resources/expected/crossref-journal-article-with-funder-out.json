@@ -1,0 +1,169 @@
+{
+  "@context" : [ "https://w3id.org/skg-if/context/1.1.0/skg-if.json", "https://w3id.org/skg-if/context/1.0.0/skg-if-api.json", {
+    "@base" : "https://w3id.org/skg-if/sandbox/esrf/"
+  } ],
+  "meta" : {
+    "local_identifier" : "http://localhost:8081/skg-if/api/crossref/products/10.1155/2016/1353212",
+    "entity_type" : "single_entity"
+  },
+  "@graph" : [ {
+    "local_identifier" : "https://doi.org/10.1155/2016/1353212",
+    "identifiers" : [ {
+      "scheme" : "doi",
+      "value" : "10.1155/2016/1353212"
+    } ],
+    "entity_type" : "product",
+    "product_type" : "literature",
+    "titles" : {
+      "en" : [ "Detailed Analysis of the Timing Measurements in Optical Position Sensing Devices Based on Laser Beam Deflection" ]
+    },
+    "abstracts" : {
+      "en" : [ "I present a detailed analysis of the timing signals observed, when measuring the oscillation of a Lissajous scanner by sending a reflected laser beam onto carefully placed trigger diodes. This technique was used in a device which we have developed recently for the measurement of resonant MEMS scanner mirrors. For 2D scanner mirrors, cross talk between the two axes is observed. This cross talk can be well understood theoretically. In this paper, a quantitative analytical description is presented, which is confirmed by experimental results." ]
+    },
+    "contributions" : [ {
+      "by" : {
+        "local_identifier" : "otf___10-1155-2016-1353212___andreas-tortschanoff",
+        "identifiers" : [ ],
+        "given_name" : "Andreas",
+        "family_name" : "Tortschanoff",
+        "name" : "Andreas Tortschanoff",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "declared_affiliations" : [ {
+        "local_identifier" : "otf___10-1155-2016-1353212___carinthian-tech-research-ag-europastrass",
+        "identifiers" : [ ],
+        "entity_type" : "organisation",
+        "name" : "Carinthian Tech Research AG, Europastrasse 12, 9524 Villach, Austria",
+        "other_names" : [ ],
+        "types" : [ ]
+      } ],
+      "rank" : 1,
+      "role" : "author"
+    }, {
+      "by" : {
+        "local_identifier" : "otf___10-1155-2016-1353212___hindawi-limited",
+        "identifiers" : [ ],
+        "name" : "Hindawi Limited",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "rank" : 2,
+      "role" : "publisher"
+    } ],
+    "manifestations" : [ {
+      "type" : {
+        "labels" : {
+          "en" : "journal-article"
+        }
+      },
+      "dates" : {
+        "creation" : [ "2015-12-22" ],
+        "deposit" : [ "2016-07-26" ],
+        "publication" : [ "2016", "2016" ]
+      },
+      "access_rights" : {
+        "status" : "open"
+      },
+      "licence" : "http://creativecommons.org/licenses/by/4.0/",
+      "biblio" : {
+        "pages" : {
+          "first" : "1",
+          "last" : "8"
+        },
+        "volume" : "2016",
+        "in" : {
+          "local_identifier" : "otf___10-1155-2016-1353212___journal-of-sensors",
+          "identifiers" : [ {
+            "scheme" : "issn",
+            "value" : "1687-725X"
+          }, {
+            "scheme" : "issn",
+            "value" : "1687-7268"
+          } ],
+          "entity_type" : "venue",
+          "name" : "Journal of Sensors"
+        },
+        "hosting_data_source" : {
+          "local_identifier" : "otf___10-1155-2016-1353212___hindawi-limited",
+          "identifiers" : [ ],
+          "entity_type" : "datasource",
+          "name" : "Hindawi Limited"
+        }
+      }
+    } ],
+    "funding" : [ {
+      "local_identifier" : "otf___10-1155-2016-1353212___federal-ministries-of-transport-innovati",
+      "identifiers" : [ ],
+      "entity_type" : "grant",
+      "funding_agency" : {
+        "local_identifier" : "otf___10-1155-2016-1353212___federal-ministries-of-transport-innovati",
+        "entity_type" : "organisation",
+        "name" : "Federal Ministries of Transport, Innovation and Technology"
+      }
+    } ],
+    "related_products" : {
+      "cites" : [ {
+        "local_identifier" : "otf___10-1155-2016-1353212___1",
+        "identifiers" : [ ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1109/jmems.2013.2295470",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1109/jmems.2013.2295470"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1016/j.proche.2009.07.327",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1016/j.proche.2009.07.327"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1109/jmems.2006.879380",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1109/jmems.2006.879380"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.3390/mi3020509",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.3390/mi3020509"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1088/0960-1317/15/10/018",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1088/0960-1317/15/10/018"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1016/j.sna.2010.01.011",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1016/j.sna.2010.01.011"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1117/1.3609230",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1117/1.3609230"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1109/2944.892609",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1109/2944.892609"
+        } ],
+        "entity_type" : "product"
+      } ]
+    }
+  } ]
+}

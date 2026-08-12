@@ -1,0 +1,106 @@
+{
+  "@context" : [ "https://w3id.org/skg-if/context/1.1.0/skg-if.json", "https://w3id.org/skg-if/context/1.0.0/skg-if-api.json", {
+    "@base" : "https://w3id.org/skg-if/sandbox/cern.zenodo/"
+  } ],
+  "meta" : {
+    "local_identifier" : "http://localhost:8081/skg-if/api/datacite/products/10.5281/zenodo.20750072",
+    "entity_type" : "single_entity"
+  },
+  "@graph" : [ {
+    "local_identifier" : "https://doi.org/10.5281/zenodo.20750072",
+    "identifiers" : [ {
+      "scheme" : "doi",
+      "value" : "10.5281/zenodo.20750072"
+    } ],
+    "entity_type" : "product",
+    "product_type" : "literature",
+    "titles" : {
+      "en" : [ "More Than Property: A Bio-Psycho-Social-Legal Framework for Welfare Assessment and Legal Interpretation in Companion Animal Disputes" ]
+    },
+    "abstracts" : {
+      "en" : [ "This white paper, titled 'More Than Property: A Bio-Psycho-Social-Legal Framework for Welfare Assessment and Legal Interpretation in Companion Animal Disputes,' provides a comprehensive policy framework for the Rosie's Law Initiative, focusing on the legal interpretation of companion animal custody." ]
+    },
+    "topics" : [ {
+      "term" : {
+        "local_identifier" : "otf___10-5281-zenodo-20750072___companion-animal-custody",
+        "identifiers" : [ ],
+        "entity_type" : "topic",
+        "labels" : {
+          "none" : "Companion Animal Custody"
+        }
+      }
+    }, {
+      "term" : {
+        "local_identifier" : "otf___10-5281-zenodo-20750072___policy-framework",
+        "identifiers" : [ ],
+        "entity_type" : "topic",
+        "labels" : {
+          "none" : "Policy Framework"
+        }
+      }
+    }, {
+      "term" : {
+        "local_identifier" : "otf___10-5281-zenodo-20750072___animal-law",
+        "identifiers" : [ ],
+        "entity_type" : "topic",
+        "labels" : {
+          "none" : "Animal Law"
+        }
+      }
+    } ],
+    "contributions" : [ {
+      "by" : {
+        "local_identifier" : "otf___10-5281-zenodo-20750072___siddiqui-dr-tameer",
+        "identifiers" : [ ],
+        "given_name" : "Dr. Tameer",
+        "family_name" : "Siddiqui",
+        "name" : "Siddiqui, Dr. Tameer",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "declared_affiliations" : [ {
+        "local_identifier" : "otf___10-5281-zenodo-20750072___rosie-s-law-initiative",
+        "identifiers" : [ ],
+        "entity_type" : "organisation",
+        "name" : "Rosie's Law Initiative",
+        "other_names" : [ ],
+        "types" : [ ]
+      } ],
+      "rank" : 1,
+      "role" : "author"
+    }, {
+      "by" : {
+        "local_identifier" : "otf___10-5281-zenodo-20750072___zenodo",
+        "identifiers" : [ ],
+        "name" : "Zenodo",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "rank" : 2,
+      "role" : "publisher"
+    } ],
+    "manifestations" : [ {
+      "type" : {
+        "labels" : {
+          "en" : "Text"
+        }
+      },
+      "dates" : {
+        "publication" : [ "2026-06-18", "2026-06-18" ]
+      },
+      "access_rights" : {
+        "status" : "open"
+      },
+      "licence" : "https://creativecommons.org/licenses/by/4.0/legalcode",
+      "version" : "1.0",
+      "biblio" : {
+        "hosting_data_source" : {
+          "local_identifier" : "otf___10-5281-zenodo-20750072___zenodo",
+          "identifiers" : [ ],
+          "entity_type" : "datasource",
+          "name" : "Zenodo"
+        }
+      }
+    } ]
+  } ]
+}

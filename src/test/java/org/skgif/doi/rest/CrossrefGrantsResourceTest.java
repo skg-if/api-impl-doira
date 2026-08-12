@@ -7,12 +7,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.ws.rs.NotFoundException;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -26,14 +24,13 @@ import org.skgif.doi.crossref.dto.CrossrefWorkResponse;
 
 /**
  * The Crossref-provider sibling of {@code GrantsResourceTest}, at the separate {@code
- * /crossref/grants} path.
+ * /crossref/grants} path. Golden JSON-LD output regression tests live in
+ * {@link GrantsGoldenTest}.
  */
 @QuarkusTest
 class CrossrefGrantsResourceTest {
 
     private static final String BASE = "/skg-if/api";
-
-    private static final boolean REGENERATE_GOLDEN = Boolean.getBoolean("golden.regenerate");
 
     @InjectMock
     @RestClient
@@ -133,35 +130,5 @@ class CrossrefGrantsResourceTest {
                 .body("meta.api_items[0].local_identifier", Matchers.equalTo("https://doi.org/10.35802/218300"))
                 .body("meta.api_items[0].urls[0].href",
                         Matchers.equalTo("http://localhost:8081/skg-if/api/crossref/grants/10.35802/218300"));
-    }
-
-    @Test
-    void getGrantById_matchesExpectedJsonLd_wellcomeGrant() throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        when(crossrefClient.getWork(eq("10.35802/218300"))).thenReturn(loadFixture("crossref-grant.json"));
-
-        String actualBody = given()
-                .when().get(BASE + "/crossref/grants/10.35802/218300")
-                .then()
-                .statusCode(200)
-                .extract().asString();
-
-        compareOrWriteGolden(objectMapper.readTree(actualBody), "expected/crossref-grant-218300.json");
-    }
-
-    private void compareOrWriteGolden(JsonNode actual, String expectedResource) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        if (REGENERATE_GOLDEN) {
-            objectMapper.writerWithDefaultPrettyPrinter()
-                    .writeValue(new File("src/test/resources/" + expectedResource), actual);
-            return;
-        }
-
-        var expected = objectMapper.readTree(getClass().getClassLoader().getResourceAsStream(expectedResource));
-
-        org.junit.jupiter.api.Assertions.assertEquals(expected, actual,
-                "Actual JSON-LD output no longer matches " + expectedResource
-                        + ". If this change is intentional: mvn test -Dtest=CrossrefGrantsResourceTest"
-                        + " -Dgolden.regenerate=true, then review the diff before committing.");
     }
 }

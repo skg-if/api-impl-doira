@@ -1,0 +1,78 @@
+{
+  "@context" : [ "https://w3id.org/skg-if/context/1.1.0/skg-if.json", "https://w3id.org/skg-if/context/1.0.0/skg-if-api.json", {
+    "@base" : "https://w3id.org/skg-if/sandbox/esrf/"
+  } ],
+  "meta" : {
+    "local_identifier" : "http://localhost:8081/skg-if/api/crossref/products/10.17989/encsr154xia",
+    "entity_type" : "single_entity"
+  },
+  "@graph" : [ {
+    "local_identifier" : "https://doi.org/10.17989/encsr154xia",
+    "identifiers" : [ {
+      "scheme" : "doi",
+      "value" : "10.17989/encsr154xia"
+    } ],
+    "entity_type" : "product",
+    "product_type" : "research data",
+    "titles" : {
+      "en" : [ "ENCSR154XIA" ]
+    },
+    "contributions" : [ {
+      "by" : {
+        "local_identifier" : "otf___10-17989-encsr154xia___m-beer",
+        "identifiers" : [ ],
+        "given_name" : "M",
+        "family_name" : "Beer",
+        "name" : "M Beer",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "declared_affiliations" : [ {
+        "local_identifier" : "otf___10-17989-encsr154xia___johns-hopkins-university",
+        "identifiers" : [ ],
+        "entity_type" : "organisation",
+        "name" : "Johns Hopkins University",
+        "other_names" : [ ],
+        "types" : [ ]
+      } ],
+      "rank" : 1,
+      "role" : "author"
+    }, {
+      "by" : {
+        "local_identifier" : "otf___10-17989-encsr154xia___encode-data-coordination-center",
+        "identifiers" : [ ],
+        "name" : "ENCODE Data Coordination Center",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "rank" : 2,
+      "role" : "publisher"
+    } ],
+    "manifestations" : [ {
+      "type" : {
+        "labels" : {
+          "en" : "dataset"
+        }
+      },
+      "dates" : {
+        "creation" : [ "2023-07-20" ],
+        "deposit" : [ "2023-07-20" ],
+        "publication" : [ "2022-04-22", "2022-04-22" ]
+      },
+      "biblio" : {
+        "in" : {
+          "local_identifier" : "otf___10-17989-encsr154xia___encode-datasets",
+          "identifiers" : [ ],
+          "entity_type" : "venue",
+          "name" : "ENCODE Datasets"
+        },
+        "hosting_data_source" : {
+          "local_identifier" : "otf___10-17989-encsr154xia___encode-data-coordination-center",
+          "identifiers" : [ ],
+          "entity_type" : "datasource",
+          "name" : "ENCODE Data Coordination Center"
+        }
+      }
+    } ]
+  } ]
+}

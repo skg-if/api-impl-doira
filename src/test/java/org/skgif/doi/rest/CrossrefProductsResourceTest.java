@@ -6,12 +6,10 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.ws.rs.NotFoundException;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -25,14 +23,13 @@ import org.skgif.doi.crossref.dto.CrossrefWorkResponse;
 /**
  * The Crossref-provider sibling of {@code ProductsResourceTest}, at the separate {@code
  * /crossref/products} path (see {@code CrossrefProductsResource}'s javadoc for why provider
- * selection is URL-driven rather than auto-detected).
+ * selection is URL-driven rather than auto-detected). Golden JSON-LD output regression tests
+ * live in {@link ProductsGoldenTest}.
  */
 @QuarkusTest
 class CrossrefProductsResourceTest {
 
     private static final String BASE = "/skg-if/api";
-
-    private static final boolean REGENERATE_GOLDEN = Boolean.getBoolean("golden.regenerate");
 
     @InjectMock
     @RestClient
@@ -199,103 +196,5 @@ class CrossrefProductsResourceTest {
                 .body("meta.api_items[0].local_identifier", Matchers.equalTo("https://doi.org/10.1038/nature12373"))
                 .body("meta.api_items[0].urls[0].href",
                         Matchers.equalTo("http://localhost:8081/skg-if/api/crossref/products/10.1038/nature12373"));
-    }
-
-    /**
-     * Full JSON-LD output regression test, mirroring {@code ProductsResourceTest}'s equivalent -
-     * regenerate via {@code mvn test -Dtest=CrossrefProductsResourceTest -Dgolden.regenerate=true}
-     * then review the diff before committing.
-     */
-    @Test
-    void getProductById_matchesExpectedJsonLd_natureArticle() throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        when(crossrefClient.getWork(eq("10.1038/nature12373")))
-                .thenReturn(loadFixture("crossref-journal-article.json"));
-
-        String actualBody = given()
-                .when().get(BASE + "/crossref/products/10.1038/nature12373")
-                .then()
-                .statusCode(200)
-                .extract().asString();
-
-        compareOrWriteGolden(objectMapper.readTree(actualBody), "expected/crossref-product-nature12373.json");
-    }
-
-    /**
-     * Same golden-regression pattern as above, for DOI 10.1038/s41467-022-33468-6 (ORCID-bearing
-     * authors, no "page" field) - regenerate via {@code mvn test -Dtest=CrossrefProductsResourceTest
-     * -Dgolden.regenerate=true} then review the diff before committing.
-     */
-    @Test
-    void getProductById_matchesExpectedJsonLd_orcidArticle() throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        when(crossrefClient.getWork(eq("10.1038/s41467-022-33468-6")))
-                .thenReturn(loadFixture("crossref-journal-article-with-orcid.json"));
-
-        String actualBody = given()
-                .when().get(BASE + "/crossref/products/10.1038/s41467-022-33468-6")
-                .then()
-                .statusCode(200)
-                .extract().asString();
-
-        compareOrWriteGolden(objectMapper.readTree(actualBody), "expected/crossref-product-s41467-022-33468-6.json");
-    }
-
-    /**
-     * Same golden-regression pattern as above, for DOI 10.17537/icmbb18.42 (a
-     * "proceedings-article" with no license/funder) - regenerate via {@code mvn test
-     * -Dtest=CrossrefProductsResourceTest -Dgolden.regenerate=true} then review the diff
-     * before committing.
-     */
-    @Test
-    void getProductById_matchesExpectedJsonLd_proceedingsArticle() throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        when(crossrefClient.getWork(eq("10.17537/icmbb18.42")))
-                .thenReturn(loadFixture("crossref-proceedings-article.json"));
-
-        String actualBody = given()
-                .when().get(BASE + "/crossref/products/10.17537/icmbb18.42")
-                .then()
-                .statusCode(200)
-                .extract().asString();
-
-        compareOrWriteGolden(objectMapper.readTree(actualBody), "expected/crossref-product-icmbb18-42.json");
-    }
-
-    /**
-     * Same golden-regression pattern as above, for DOI 10.1103/physrevb.110.174515 (ROR-tagged
-     * author affiliations, a funder with its own Funder Registry DOI) - regenerate via {@code
-     * mvn test -Dtest=CrossrefProductsResourceTest -Dgolden.regenerate=true} then review the
-     * diff before committing.
-     */
-    @Test
-    void getProductById_matchesExpectedJsonLd_rorAffiliationArticle() throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        when(crossrefClient.getWork(eq("10.1103/physrevb.110.174515")))
-                .thenReturn(loadFixture("crossref-journal-article-with-ror-affiliation.json"));
-
-        String actualBody = given()
-                .when().get(BASE + "/crossref/products/10.1103/physrevb.110.174515")
-                .then()
-                .statusCode(200)
-                .extract().asString();
-
-        compareOrWriteGolden(objectMapper.readTree(actualBody), "expected/crossref-product-physrevb-110-174515.json");
-    }
-
-    private void compareOrWriteGolden(JsonNode actual, String expectedResource) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        if (REGENERATE_GOLDEN) {
-            objectMapper.writerWithDefaultPrettyPrinter()
-                    .writeValue(new File("src/test/resources/" + expectedResource), actual);
-            return;
-        }
-
-        var expected = objectMapper.readTree(getClass().getClassLoader().getResourceAsStream(expectedResource));
-
-        org.junit.jupiter.api.Assertions.assertEquals(expected, actual,
-                "Actual JSON-LD output no longer matches " + expectedResource
-                        + ". If this change is intentional: mvn test -Dtest=CrossrefProductsResourceTest"
-                        + " -Dgolden.regenerate=true, then review the diff before committing.");
     }
 }

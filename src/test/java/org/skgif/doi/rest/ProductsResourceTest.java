@@ -9,7 +9,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mockito.ArgumentCaptor;
 import org.skgif.doi.datacite.DataCiteClient;
@@ -18,24 +17,18 @@ import org.skgif.doi.datacite.dto.DataCiteDoiResponse;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.ws.rs.NotFoundException;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Golden JSON-LD output regression tests live in {@link ProductsGoldenTest}.
+ */
 @QuarkusTest
 class ProductsResourceTest {
 
     private static final String BASE = "/skg-if/api";
-
-    /**
-     * Regenerate the golden JSON-LD files in src/test/resources/expected/ instead of asserting
-     * against them - e.g. after an intentional DataCiteToSkgIfMapper change:
-     * {@code mvn test -Dtest=ProductsResourceTest -Dgolden.regenerate=true}
-     * Then `git diff` the expected/ files to review exactly what changed before committing.
-     */
-    private static final boolean REGENERATE_GOLDEN = Boolean.getBoolean("golden.regenerate");
 
     @InjectMock
     @RestClient
@@ -143,83 +136,6 @@ class ProductsResourceTest {
                 .statusCode(422)
                 .body("status", equalTo("422"))
                 .body("title", equalTo("INVALID_FILTER"));
-    }
-
-    /**
-     * Full JSON-LD output regression tests: the actual response body must exactly match
-     * (structurally - key order doesn't matter) the corresponding checked-in document under
-     * {@code src/test/resources/expected/}. These committed documents double as a live,
-     * readable reference for what this API actually produces for a real ESRF dataset.
-     */
-    @Test
-    void getProductById_matchesExpectedJsonLd_esrfDc2493599001() throws IOException {
-        assertMatchesExpectedJsonLd("10.15151/esrf-dc-2493599001", "datacite-esrf-dc-2493599001.json",
-                "expected/datacite-product-esrf-dc-2493599001.json");
-    }
-
-    @Test
-    void getProductById_matchesExpectedJsonLd_esrfEs2210534378_withAffiliationsAndFunding() throws IOException {
-        assertMatchesExpectedJsonLd("10.15151/esrf-es-2210534378", "datacite-esrf-es-2210534378.json",
-                "expected/datacite-product-esrf-es-2210534378.json");
-    }
-
-    /**
-     * Full JSON-LD regression test for the search/list endpoint with multiple, heterogeneous
-     * @graph items and full pagination metadata (both prev_page and next_page present, unlike
-     * getProducts_returnsSearchEnvelope below which only covers a single-item, single-page
-     * response). Reuses the two DOI fixtures already exercised by the single-entity golden
-     * tests above, so the two mapped products are known-good and no new DataCite network
-     * capture is needed. Page 2 of 3 is the deliberate choice: it's the one scenario where both
-     * prev_page and next_page are emitted simultaneously.
-     */
-    @Test
-    void getProducts_matchesExpectedJsonLd_multipleItemsPage2Of3() throws IOException {
-        DataCiteDoiListResponse listResponse = new DataCiteDoiListResponse();
-        listResponse.data = java.util.List.of(
-                loadFixture("datacite-esrf-dc-2493599001.json").data,
-                loadFixture("datacite-esrf-es-2210534378.json").data);
-        DataCiteDoiListResponse.Meta meta = new DataCiteDoiListResponse.Meta();
-        meta.total = 5;
-        meta.totalPages = 3;
-        meta.page = 2;
-        listResponse.meta = meta;
-
-        when(dataCiteClient.listDois(any(), any(), anyInt(), anyInt())).thenReturn(listResponse);
-
-        String actualBody = given()
-                .when().get(BASE + "/datacite/products?page=2&page_size=2")
-                .then()
-                .statusCode(200)
-                .extract().asString();
-
-        compareOrWriteGolden(new ObjectMapper().readTree(actualBody), "expected/datacite-products-search-multiple.json");
-    }
-
-    private void assertMatchesExpectedJsonLd(String doi, String dataCiteFixture, String expectedJsonLdResource)
-            throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try (InputStream in = getClass().getClassLoader().getResourceAsStream(dataCiteFixture)) {
-            when(dataCiteClient.getDoi(eq(doi))).thenReturn(objectMapper.readValue(in, DataCiteDoiResponse.class));
-        }
-
-        String actualBody = given().when().get(BASE + "/datacite/products/" + doi).then().statusCode(200).extract().asString();
-        compareOrWriteGolden(objectMapper.readTree(actualBody), expectedJsonLdResource);
-    }
-
-    private void compareOrWriteGolden(JsonNode actual, String expectedResource) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        if (REGENERATE_GOLDEN) {
-            objectMapper.writerWithDefaultPrettyPrinter()
-                    .writeValue(new File("src/test/resources/" + expectedResource), actual);
-            return;
-        }
-
-        var expected = objectMapper.readTree(getClass().getClassLoader().getResourceAsStream(expectedResource));
-
-        org.junit.jupiter.api.Assertions.assertEquals(expected, actual,
-                "Actual JSON-LD output no longer matches " + expectedResource
-                        + ". If this change is intentional: mvn test -Dtest=ProductsResourceTest"
-                        + " -Dgolden.regenerate=true, then review the diff before committing.");
     }
 
     @Test
