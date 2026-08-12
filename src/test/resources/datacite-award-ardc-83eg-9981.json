@@ -1,0 +1,143 @@
+{
+  "data": {
+    "id": "10.3565/83eg-9981",
+    "type": "dois",
+    "attributes": {
+      "doi": "10.3565/83eg-9981",
+      "prefix": "10.3565",
+      "suffix": "83eg-9981",
+      "identifiers": [],
+      "alternateIdentifiers": [],
+      "creators": [
+        {
+          "name": "Australian Research Data Commons",
+          "nameType": "Organizational",
+          "givenName": null,
+          "familyName": null,
+          "affiliation": [],
+          "nameIdentifiers": [
+            {
+              "schemeUri": "https://ror.org",
+              "nameIdentifier": "https://ror.org/038sjwq14",
+              "nameIdentifierScheme": "ROR"
+            }
+          ]
+        }
+      ],
+      "titles": [
+        {
+          "lang": null,
+          "title": "Ecosystem Indicators Mobilising Enriched Datasets",
+          "titleType": null
+        }
+      ],
+      "publisher": "Australian Research Data Commons",
+      "container": {},
+      "publicationYear": 2026,
+      "subjects": [],
+      "contributors": [
+        {
+          "name": "Atlas of Living Australia",
+          "nameType": "Organizational",
+          "givenName": null,
+          "familyName": null,
+          "affiliation": [],
+          "contributorType": "Other",
+          "nameIdentifiers": [
+            {
+              "schemeUri": "https://ror.org",
+              "nameIdentifier": "https://ror.org/018n2ja79",
+              "nameIdentifierScheme": "ROR"
+            }
+          ]
+        }
+      ],
+      "dates": [],
+      "language": null,
+      "types": {
+        "ris": "GEN",
+        "bibtex": "misc",
+        "citeproc": "article",
+        "schemaOrg": "Grant",
+        "resourceTypeGeneral": "Award"
+      },
+      "relatedIdentifiers": [],
+      "relatedItems": [],
+      "sizes": [],
+      "formats": [],
+      "version": null,
+      "rightsList": [],
+      "descriptions": [
+        {
+          "lang": null,
+          "description": "Field-based floristic and faunal surveys provide vital information on species composition, vegetation structure, and ecosystem health. However, these rich datasets are frequently difficult to access, inconsistently formatted, or left unpublished.\nHistorically, biodiversity data pipelines have treated records as isolated species occurrences. This approach means that crucial environmental context, such as which species were observed together, the sampling effort, and the specific survey protocols used, is lost. Without this interconnected co-occurrence data, researchers and decision-makers are significantly limited in their ability to build robust ecosystem-level indicators and track environmental changes over time.\n\nThis project capitalises on recent technical advancements within the Atlas of Living Australia (ALA) to move beyond single species sightings and fully adopt an internationally recognised ‘event-core’ data type within the Darwin Core data standard.\nBy anchoring biodiversity data around a distinct sampling event (such as a structured monitoring survey) rather than an isolated species sighting, the project preserves the hierarchical relationships, sampling methods, and species co-occurrences of field data. Running in close alignment with the ARDC Ecosystem Indicator Workflows project, this initiative will operationalise a standardised pipeline to store, publish, and programmatically access high-value, systematic survey data.\n\nThis project will deliver:\nEnriched National Datasets: Ingestion and open-access publication of 6 to 8 new, high-priority floristic and faunal event-structured datasets within the ALA, focusing on critical areas such as rainforests, savannas, and peatlands.\nEnhanced Open-Source Tooling: Upgraded functionality, documentation, and user tutorials for the galah and galaxias R software packages to support the programmatic downloading, packaging, and uploading of complex event-core datasets.\nEcosystem Mapping Integration: Improved integration of ecosystem spatial classification layers  to enable users to search, filter, and summarise biological data by ecosystem type.\nA Case Study: A published, reproducible case study detailing a step-by-step programmatic workflow for using event-structured survey data in ecosystem indicator workflows.\nCapacity Building: Technical documentation alongside a dedicated training workshop to upskill environmental researchers, data managers, and government practitioners in leveraging event-based data workflows.\nEnriched Australian datasets will be accessible globally through automated harvesting by the Global Biodiversity Information Facility (GBIF) and Research Data Australia (RDA).",
+          "descriptionType": "Abstract"
+        }
+      ],
+      "geoLocations": [],
+      "fundingReferences": [],
+      "xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHJlc291cmNlIHhtbG5zOnhzaT0iaHR0cDovL3d3dy53My5vcmcvMjAwMS9YTUxTY2hlbWEtaW5zdGFuY2UiIHhtbG5zPSJodHRwOi8vZGF0YWNpdGUub3JnL3NjaGVtYS9rZXJuZWwtNCIgeHNpOnNjaGVtYUxvY2F0aW9uPSJodHRwOi8vZGF0YWNpdGUub3JnL3NjaGVtYS9rZXJuZWwtNCBodHRwOi8vc2NoZW1hLmRhdGFjaXRlLm9yZy9tZXRhL2tlcm5lbC00L21ldGFkYXRhLnhzZCI+CiAgPGlkZW50aWZpZXIgaWRlbnRpZmllclR5cGU9IkRPSSI+MTAuMzU2NS84M0VHLTk5ODE8L2lkZW50aWZpZXI+CiAgPGNyZWF0b3JzPgogICAgPGNyZWF0b3I+CiAgICAgIDxjcmVhdG9yTmFtZSBuYW1lVHlwZT0iT3JnYW5pemF0aW9uYWwiPkF1c3RyYWxpYW4gUmVzZWFyY2ggRGF0YSBDb21tb25zPC9jcmVhdG9yTmFtZT4KICAgICAgPG5hbWVJZGVudGlmaWVyIG5hbWVJZGVudGlmaWVyU2NoZW1lPSJST1IiIHNjaGVtZVVSST0iaHR0cHM6Ly9yb3Iub3JnIj5odHRwczovL3Jvci5vcmcvMDM4c2p3cTE0PC9uYW1lSWRlbnRpZmllcj4KICAgIDwvY3JlYXRvcj4KICA8L2NyZWF0b3JzPgogIDx0aXRsZXM+CiAgICA8dGl0bGU+RWNvc3lzdGVtIEluZGljYXRvcnMgTW9iaWxpc2luZyBFbnJpY2hlZCBEYXRhc2V0czwvdGl0bGU+CiAgPC90aXRsZXM+CiAgPHB1Ymxpc2hlciBwdWJsaXNoZXJJZGVudGlmaWVyPSJodHRwczovL3Jvci5vcmcvMDM4c2p3cTE0IiBwdWJsaXNoZXJJZGVudGlmaWVyU2NoZW1lPSJST1IiIHNjaGVtZVVSST0iaHR0cHM6Ly9yb3Iub3JnIj5BdXN0cmFsaWFuIFJlc2VhcmNoIERhdGEgQ29tbW9uczwvcHVibGlzaGVyPgogIDxwdWJsaWNhdGlvblllYXI+MjAyNjwvcHVibGljYXRpb25ZZWFyPgogIDxyZXNvdXJjZVR5cGUgcmVzb3VyY2VUeXBlR2VuZXJhbD0iQXdhcmQiLz4KICA8Y29udHJpYnV0b3JzPgogICAgPGNvbnRyaWJ1dG9yIGNvbnRyaWJ1dG9yVHlwZT0iT3RoZXIiPgogICAgICA8Y29udHJpYnV0b3JOYW1lIG5hbWVUeXBlPSJPcmdhbml6YXRpb25hbCI+QXRsYXMgb2YgTGl2aW5nIEF1c3RyYWxpYTwvY29udHJpYnV0b3JOYW1lPgogICAgICA8bmFtZUlkZW50aWZpZXIgbmFtZUlkZW50aWZpZXJTY2hlbWU9IlJPUiIgc2NoZW1lVVJJPSJodHRwczovL3Jvci5vcmciPmh0dHBzOi8vcm9yLm9yZy8wMThuMmphNzk8L25hbWVJZGVudGlmaWVyPgogICAgICA8YWZmaWxpYXRpb24vPgogICAgPC9jb250cmlidXRvcj4KICA8L2NvbnRyaWJ1dG9ycz4KICA8c2l6ZXMvPgogIDxmb3JtYXRzLz4KICA8dmVyc2lvbi8+CiAgPGRlc2NyaXB0aW9ucz4KICAgIDxkZXNjcmlwdGlvbiBkZXNjcmlwdGlvblR5cGU9IkFic3RyYWN0Ij5GaWVsZC1iYXNlZCBmbG9yaXN0aWMgYW5kIGZhdW5hbCBzdXJ2ZXlzIHByb3ZpZGUgdml0YWwgaW5mb3JtYXRpb24gb24gc3BlY2llcyBjb21wb3NpdGlvbiwgdmVnZXRhdGlvbiBzdHJ1Y3R1cmUsIGFuZCBlY29zeXN0ZW0gaGVhbHRoLiBIb3dldmVyLCB0aGVzZSByaWNoIGRhdGFzZXRzIGFyZSBmcmVxdWVudGx5IGRpZmZpY3VsdCB0byBhY2Nlc3MsIGluY29uc2lzdGVudGx5IGZvcm1hdHRlZCwgb3IgbGVmdCB1bnB1Ymxpc2hlZC4KSGlzdG9yaWNhbGx5LCBiaW9kaXZlcnNpdHkgZGF0YSBwaXBlbGluZXMgaGF2ZSB0cmVhdGVkIHJlY29yZHMgYXMgaXNvbGF0ZWQgc3BlY2llcyBvY2N1cnJlbmNlcy4gVGhpcyBhcHByb2FjaCBtZWFucyB0aGF0IGNydWNpYWwgZW52aXJvbm1lbnRhbCBjb250ZXh0LCBzdWNoIGFzIHdoaWNoIHNwZWNpZXMgd2VyZSBvYnNlcnZlZCB0b2dldGhlciwgdGhlIHNhbXBsaW5nIGVmZm9ydCwgYW5kIHRoZSBzcGVjaWZpYyBzdXJ2ZXkgcHJvdG9jb2xzIHVzZWQsIGlzIGxvc3QuIFdpdGhvdXQgdGhpcyBpbnRlcmNvbm5lY3RlZCBjby1vY2N1cnJlbmNlIGRhdGEsIHJlc2VhcmNoZXJzIGFuZCBkZWNpc2lvbi1tYWtlcnMgYXJlIHNpZ25pZmljYW50bHkgbGltaXRlZCBpbiB0aGVpciBhYmlsaXR5IHRvIGJ1aWxkIHJvYnVzdCBlY29zeXN0ZW0tbGV2ZWwgaW5kaWNhdG9ycyBhbmQgdHJhY2sgZW52aXJvbm1lbnRhbCBjaGFuZ2VzIG92ZXIgdGltZS4KClRoaXMgcHJvamVjdCBjYXBpdGFsaXNlcyBvbiByZWNlbnQgdGVjaG5pY2FsIGFkdmFuY2VtZW50cyB3aXRoaW4gdGhlIEF0bGFzIG9mIExpdmluZyBBdXN0cmFsaWEgKEFMQSkgdG8gbW92ZSBiZXlvbmQgc2luZ2xlIHNwZWNpZXMgc2lnaHRpbmdzIGFuZCBmdWxseSBhZG9wdCBhbiBpbnRlcm5hdGlvbmFsbHkgcmVjb2duaXNlZCDigJhldmVudC1jb3Jl4oCZIGRhdGEgdHlwZSB3aXRoaW4gdGhlIERhcndpbiBDb3JlIGRhdGEgc3RhbmRhcmQuCkJ5IGFuY2hvcmluZyBiaW9kaXZlcnNpdHkgZGF0YSBhcm91bmQgYSBkaXN0aW5jdCBzYW1wbGluZyBldmVudCAoc3VjaCBhcyBhIHN0cnVjdHVyZWQgbW9uaXRvcmluZyBzdXJ2ZXkpIHJhdGhlciB0aGFuIGFuIGlzb2xhdGVkIHNwZWNpZXMgc2lnaHRpbmcsIHRoZSBwcm9qZWN0IHByZXNlcnZlcyB0aGUgaGllcmFyY2hpY2FsIHJlbGF0aW9uc2hpcHMsIHNhbXBsaW5nIG1ldGhvZHMsIGFuZCBzcGVjaWVzIGNvLW9jY3VycmVuY2VzIG9mIGZpZWxkIGRhdGEuIFJ1bm5pbmcgaW4gY2xvc2UgYWxpZ25tZW50IHdpdGggdGhlIEFSREMgRWNvc3lzdGVtIEluZGljYXRvciBXb3JrZmxvd3MgcHJvamVjdCwgdGhpcyBpbml0aWF0aXZlIHdpbGwgb3BlcmF0aW9uYWxpc2UgYSBzdGFuZGFyZGlzZWQgcGlwZWxpbmUgdG8gc3RvcmUsIHB1Ymxpc2gsIGFuZCBwcm9ncmFtbWF0aWNhbGx5IGFjY2VzcyBoaWdoLXZhbHVlLCBzeXN0ZW1hdGljIHN1cnZleSBkYXRhLgoKVGhpcyBwcm9qZWN0IHdpbGwgZGVsaXZlcjoKRW5yaWNoZWQgTmF0aW9uYWwgRGF0YXNldHM6IEluZ2VzdGlvbiBhbmQgb3Blbi1hY2Nlc3MgcHVibGljYXRpb24gb2YgNiB0byA4IG5ldywgaGlnaC1wcmlvcml0eSBmbG9yaXN0aWMgYW5kIGZhdW5hbCBldmVudC1zdHJ1Y3R1cmVkIGRhdGFzZXRzIHdpdGhpbiB0aGUgQUxBLCBmb2N1c2luZyBvbiBjcml0aWNhbCBhcmVhcyBzdWNoIGFzIHJhaW5mb3Jlc3RzLCBzYXZhbm5hcywgYW5kIHBlYXRsYW5kcy4KRW5oYW5jZWQgT3Blbi1Tb3VyY2UgVG9vbGluZzogVXBncmFkZWQgZnVuY3Rpb25hbGl0eSwgZG9jdW1lbnRhdGlvbiwgYW5kIHVzZXIgdHV0b3JpYWxzIGZvciB0aGUgZ2FsYWggYW5kIGdhbGF4aWFzIFIgc29mdHdhcmUgcGFja2FnZXMgdG8gc3VwcG9ydCB0aGUgcHJvZ3JhbW1hdGljIGRvd25sb2FkaW5nLCBwYWNrYWdpbmcsIGFuZCB1cGxvYWRpbmcgb2YgY29tcGxleCBldmVudC1jb3JlIGRhdGFzZXRzLgpFY29zeXN0ZW0gTWFwcGluZyBJbnRlZ3JhdGlvbjogSW1wcm92ZWQgaW50ZWdyYXRpb24gb2YgZWNvc3lzdGVtIHNwYXRpYWwgY2xhc3NpZmljYXRpb24gbGF5ZXJzICB0byBlbmFibGUgdXNlcnMgdG8gc2VhcmNoLCBmaWx0ZXIsIGFuZCBzdW1tYXJpc2UgYmlvbG9naWNhbCBkYXRhIGJ5IGVjb3N5c3RlbSB0eXBlLgpBIENhc2UgU3R1ZHk6IEEgcHVibGlzaGVkLCByZXByb2R1Y2libGUgY2FzZSBzdHVkeSBkZXRhaWxpbmcgYSBzdGVwLWJ5LXN0ZXAgcHJvZ3JhbW1hdGljIHdvcmtmbG93IGZvciB1c2luZyBldmVudC1zdHJ1Y3R1cmVkIHN1cnZleSBkYXRhIGluIGVjb3N5c3RlbSBpbmRpY2F0b3Igd29ya2Zsb3dzLgpDYXBhY2l0eSBCdWlsZGluZzogVGVjaG5pY2FsIGRvY3VtZW50YXRpb24gYWxvbmdzaWRlIGEgZGVkaWNhdGVkIHRyYWluaW5nIHdvcmtzaG9wIHRvIHVwc2tpbGwgZW52aXJvbm1lbnRhbCByZXNlYXJjaGVycywgZGF0YSBtYW5hZ2VycywgYW5kIGdvdmVybm1lbnQgcHJhY3RpdGlvbmVycyBpbiBsZXZlcmFnaW5nIGV2ZW50LWJhc2VkIGRhdGEgd29ya2Zsb3dzLgpFbnJpY2hlZCBBdXN0cmFsaWFuIGRhdGFzZXRzIHdpbGwgYmUgYWNjZXNzaWJsZSBnbG9iYWxseSB0aHJvdWdoIGF1dG9tYXRlZCBoYXJ2ZXN0aW5nIGJ5IHRoZSBHbG9iYWwgQmlvZGl2ZXJzaXR5IEluZm9ybWF0aW9uIEZhY2lsaXR5IChHQklGKSBhbmQgUmVzZWFyY2ggRGF0YSBBdXN0cmFsaWEgKFJEQSkuPC9kZXNjcmlwdGlvbj4KICA8L2Rlc2NyaXB0aW9ucz4KPC9yZXNvdXJjZT4K",
+      "url": "https://ardc.edu.au/project/ecosystem-indicators-mobilising-enriched-datasets/",
+      "contentUrl": null,
+      "metadataVersion": 0,
+      "schemaVersion": "http://datacite.org/schema/kernel-4",
+      "source": "fabricaForm",
+      "isActive": true,
+      "state": "findable",
+      "reason": null,
+      "viewCount": 0,
+      "viewsOverTime": [],
+      "downloadCount": 0,
+      "downloadsOverTime": [],
+      "referenceCount": 0,
+      "citationCount": 0,
+      "citationsOverTime": [],
+      "partCount": 0,
+      "partOfCount": 0,
+      "versionCount": 0,
+      "versionOfCount": 0,
+      "created": "2026-08-09T23:55:37.000Z",
+      "registered": "2026-08-09T23:55:38.000Z",
+      "published": "2026",
+      "updated": "2026-08-09T23:55:38.000Z"
+    },
+    "relationships": {
+      "client": {
+        "data": {
+          "id": "ardcx.ardc4",
+          "type": "clients"
+        }
+      },
+      "provider": {
+        "data": {
+          "id": "ardcx",
+          "type": "providers"
+        }
+      },
+      "media": {
+        "data": {
+          "id": "10.3565/83eg-9981",
+          "type": "media"
+        }
+      },
+      "references": {
+        "data": []
+      },
+      "citations": {
+        "data": []
+      },
+      "parts": {
+        "data": []
+      },
+      "partOf": {
+        "data": []
+      },
+      "versions": {
+        "data": []
+      },
+      "versionOf": {
+        "data": []
+      }
+    }
+  }
+}

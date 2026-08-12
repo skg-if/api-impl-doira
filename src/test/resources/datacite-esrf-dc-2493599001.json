@@ -1,0 +1,276 @@
+{
+  "data": {
+    "id": "10.15151/esrf-dc-2493599001",
+    "type": "dois",
+    "attributes": {
+      "doi": "10.15151/esrf-dc-2493599001",
+      "prefix": "10.15151",
+      "suffix": "esrf-dc-2493599001",
+      "identifiers": [],
+      "alternateIdentifiers": [],
+      "creators": [
+        {
+          "name": "Choiniere,Jonah",
+          "nameType": "Personal",
+          "givenName": "Jonah",
+          "familyName": "Choiniere",
+          "nameIdentifiers": [
+            {
+              "schemeUri": "https://orcid.org",
+              "nameIdentifier": "https://orcid.org/0000-0002-1008-0687",
+              "nameIdentifierScheme": "ORCID"
+            }
+          ],
+          "affiliation": []
+        },
+        {
+          "name": "Botha,Jennifer",
+          "nameType": "Personal",
+          "givenName": "Jennifer",
+          "familyName": "Botha",
+          "nameIdentifiers": [
+            {
+              "schemeUri": "https://orcid.org",
+              "nameIdentifier": "https://orcid.org/0000-0001-8824-9334",
+              "nameIdentifierScheme": "ORCID"
+            }
+          ],
+          "affiliation": []
+        },
+        {
+          "name": "Benson,Roger",
+          "nameType": "Personal",
+          "givenName": "Roger",
+          "familyName": "Benson",
+          "nameIdentifiers": [
+            {
+              "schemeUri": "https://orcid.org",
+              "nameIdentifier": "https://orcid.org/0000-0001-8244-6177",
+              "nameIdentifierScheme": "ORCID"
+            }
+          ],
+          "affiliation": []
+        },
+        {
+          "name": "Harris,Wade",
+          "nameType": "Personal",
+          "givenName": "Wade",
+          "familyName": "Harris",
+          "nameIdentifiers": [
+            {
+              "schemeUri": "https://orcid.org",
+              "nameIdentifier": "https://orcid.org/0000-0002-6981-9546",
+              "nameIdentifierScheme": "ORCID"
+            }
+          ],
+          "affiliation": []
+        },
+        {
+          "name": "Kulik,Zoe",
+          "nameType": "Personal",
+          "givenName": "Zoe",
+          "familyName": "Kulik",
+          "affiliation": [],
+          "nameIdentifiers": []
+        },
+        {
+          "name": "Mukwevho,Lutendo",
+          "nameType": "Personal",
+          "givenName": "Lutendo",
+          "familyName": "Mukwevho",
+          "nameIdentifiers": [
+            {
+              "schemeUri": "https://orcid.org",
+              "nameIdentifier": "https://orcid.org/0000-0003-2927-7057",
+              "nameIdentifierScheme": "ORCID"
+            }
+          ],
+          "affiliation": []
+        },
+        {
+          "name": "Newham,Elis",
+          "nameType": "Personal",
+          "givenName": "Elis",
+          "familyName": "Newham",
+          "affiliation": [],
+          "nameIdentifiers": []
+        },
+        {
+          "name": "Twala,Enele",
+          "nameType": "Personal",
+          "givenName": "Enele",
+          "familyName": "Twala",
+          "affiliation": [],
+          "nameIdentifiers": []
+        },
+        {
+          "name": "Fernandez,Vincent",
+          "nameType": "Personal",
+          "givenName": "Vincent",
+          "familyName": "Fernandez",
+          "nameIdentifiers": [
+            {
+              "schemeUri": "https://orcid.org",
+              "nameIdentifier": "https://orcid.org/0000-0002-8315-1458",
+              "nameIdentifierScheme": "ORCID"
+            }
+          ],
+          "affiliation": []
+        },
+        {
+          "name": "Dollman,Kathleen",
+          "nameType": "Personal",
+          "givenName": "Kathleen",
+          "familyName": "Dollman",
+          "nameIdentifiers": [
+            {
+              "schemeUri": "https://orcid.org",
+              "nameIdentifier": "https://orcid.org/0000-0002-5468-4896",
+              "nameIdentifierScheme": "ORCID"
+            }
+          ],
+          "affiliation": []
+        }
+      ],
+      "titles": [
+        {
+          "title": "High-resolution raw tomographic dataset of Aleodon: Maxilla, dentary, femur, and humerus fossil specimens for paleohistological analysis"
+        }
+      ],
+      "publisher": "European Synchrotron Radiation Facility",
+      "container": {},
+      "publicationYear": 2026,
+      "subjects": [
+        {
+          "subject": "LS-3436,LS-3437",
+          "subjectScheme": "Proposal"
+        },
+        {
+          "subject": "BM05",
+          "subjectScheme": "Instrument"
+        },
+        {
+          "lang": "en",
+          "subject": "fossil"
+        },
+        {
+          "lang": "en",
+          "subject": "therapsid"
+        },
+        {
+          "lang": "en",
+          "subject": "cynodont"
+        },
+        {
+          "lang": "en",
+          "subject": "Triassic"
+        },
+        {
+          "lang": "en",
+          "subject": "paleohistology"
+        }
+      ],
+      "contributors": [],
+      "dates": [
+        {
+          "date": "2026",
+          "dateType": "Issued"
+        }
+      ],
+      "language": "en",
+      "types": {
+        "ris": "DATA",
+        "bibtex": "misc",
+        "citeproc": "dataset",
+        "schemaOrg": "Dataset",
+        "resourceType": "Datacollection",
+        "resourceTypeGeneral": "Dataset"
+      },
+      "relatedIdentifiers": [],
+      "relatedItems": [],
+      "sizes": [],
+      "formats": [],
+      "version": "1",
+      "rightsList": [
+        {
+          "lang": "en",
+          "rights": "Creative Commons Attribution 4.0 International",
+          "rightsUri": "https://creativecommons.org/licenses/by/4.0/legalcode",
+          "schemeUri": "https://spdx.org/licenses/",
+          "rightsIdentifier": "cc-by-4.0",
+          "rightsIdentifierScheme": "SPDX"
+        }
+      ],
+      "descriptions": [
+        {
+          "description": "The datasets represent various skeletal elements from two Aleodon specimens (NMT RB555 and NMT RB353), collected from the Lifua Member of the Manda Beds in Tanzania (Middle to Late Triassic). The specimens are repositoried at the Natural Museum of Tanzania (NMT), Dar es Salaam, Tanzania. The selected material consisted of the dentaries, right maxilla and maxillary toothrow, left femur, and humerus of the juvenile Aleodon brachyrhamphus (NMT RB555) and a larger femur representing an older Aleodon individual (NMT RB353). All specimens were imaged at the BM05 beamline of the European Synchrotron Radiation Facility (ESRF), Grenoble, France (proposals LS3436 and LS3437) using propagation phase contrast synchrotron X-ray computed tomography. For most element, a coarse resolution tomography was performed (ranging from 3.16 µm to 10 µm), allowing to locate particular regions of interest for higher resolution imaging at 0.856 µm voxel size. These datasets provided information for palaeohistological analysis. Due to diagenetic alteration, datasets from NMT RB353 do not yield usable virtual bone histology as too many bright inclusions of dense minerals obscured the underlying bone tissue.",
+          "descriptionType": "Abstract"
+        }
+      ],
+      "geoLocations": [],
+      "fundingReferences": [],
+      "xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHJlc291cmNlIHhtbG5zOnhzaT0iaHR0cDovL3d3dy53My5vcmcvMjAwMS9YTUxTY2hlbWEtaW5zdGFuY2UiIHhtbG5zPSJodHRwOi8vZGF0YWNpdGUub3JnL3NjaGVtYS9rZXJuZWwtNCIgeHNpOnNjaGVtYUxvY2F0aW9uPSJodHRwOi8vc2NoZW1hLmRhdGFjaXRlLm9yZy9tZXRhL2tlcm5lbC00L21ldGFkYXRhLnhzZCI+CiAgPGlkZW50aWZpZXIgaWRlbnRpZmllclR5cGU9IkRPSSI+MTAuMTUxNTEvRVNSRi1EQy0yNDkzNTk5MDAxPC9pZGVudGlmaWVyPgogIDxjcmVhdG9ycz4KICAgIDxjcmVhdG9yPgogICAgICA8Y3JlYXRvck5hbWUgbmFtZVR5cGU9IlBlcnNvbmFsIj5DaG9pbmllcmUsSm9uYWg8L2NyZWF0b3JOYW1lPgogICAgICA8Z2l2ZW5OYW1lPkpvbmFoPC9naXZlbk5hbWU+CiAgICAgIDxmYW1pbHlOYW1lPkNob2luaWVyZTwvZmFtaWx5TmFtZT4KICAgICAgPG5hbWVJZGVudGlmaWVyIHNjaGVtZVVSST0iaHR0cDovL29yY2lkLm9yZy8iIG5hbWVJZGVudGlmaWVyU2NoZW1lPSJPUkNJRCI+MDAwMC0wMDAyLTEwMDgtMDY4NzwvbmFtZUlkZW50aWZpZXI+CiAgICA8L2NyZWF0b3I+CiAgICA8Y3JlYXRvcj4KICAgICAgPGNyZWF0b3JOYW1lIG5hbWVUeXBlPSJQZXJzb25hbCI+Qm90aGEsSmVubmlmZXI8L2NyZWF0b3JOYW1lPgogICAgICA8Z2l2ZW5OYW1lPkplbm5pZmVyPC9naXZlbk5hbWU+CiAgICAgIDxmYW1pbHlOYW1lPkJvdGhhPC9mYW1pbHlOYW1lPgogICAgICA8bmFtZUlkZW50aWZpZXIgc2NoZW1lVVJJPSJodHRwOi8vb3JjaWQub3JnLyIgbmFtZUlkZW50aWZpZXJTY2hlbWU9Ik9SQ0lEIj4wMDAwLTAwMDEtODgyNC05MzM0PC9uYW1lSWRlbnRpZmllcj4KICAgIDwvY3JlYXRvcj4KICAgIDxjcmVhdG9yPgogICAgICA8Y3JlYXRvck5hbWUgbmFtZVR5cGU9IlBlcnNvbmFsIj5CZW5zb24sUm9nZXI8L2NyZWF0b3JOYW1lPgogICAgICA8Z2l2ZW5OYW1lPlJvZ2VyPC9naXZlbk5hbWU+CiAgICAgIDxmYW1pbHlOYW1lPkJlbnNvbjwvZmFtaWx5TmFtZT4KICAgICAgPG5hbWVJZGVudGlmaWVyIHNjaGVtZVVSST0iaHR0cDovL29yY2lkLm9yZy8iIG5hbWVJZGVudGlmaWVyU2NoZW1lPSJPUkNJRCI+MDAwMC0wMDAxLTgyNDQtNjE3NzwvbmFtZUlkZW50aWZpZXI+CiAgICA8L2NyZWF0b3I+CiAgICA8Y3JlYXRvcj4KICAgICAgPGNyZWF0b3JOYW1lIG5hbWVUeXBlPSJQZXJzb25hbCI+SGFycmlzLFdhZGU8L2NyZWF0b3JOYW1lPgogICAgICA8Z2l2ZW5OYW1lPldhZGU8L2dpdmVuTmFtZT4KICAgICAgPGZhbWlseU5hbWU+SGFycmlzPC9mYW1pbHlOYW1lPgogICAgICA8bmFtZUlkZW50aWZpZXIgc2NoZW1lVVJJPSJodHRwOi8vb3JjaWQub3JnLyIgbmFtZUlkZW50aWZpZXJTY2hlbWU9Ik9SQ0lEIj4wMDAwLTAwMDItNjk4MS05NTQ2PC9uYW1lSWRlbnRpZmllcj4KICAgIDwvY3JlYXRvcj4KICAgIDxjcmVhdG9yPgogICAgICA8Y3JlYXRvck5hbWUgbmFtZVR5cGU9IlBlcnNvbmFsIj5LdWxpayxab2U8L2NyZWF0b3JOYW1lPgogICAgICA8Z2l2ZW5OYW1lPlpvZTwvZ2l2ZW5OYW1lPgogICAgICA8ZmFtaWx5TmFtZT5LdWxpazwvZmFtaWx5TmFtZT4KICAgIDwvY3JlYXRvcj4KICAgIDxjcmVhdG9yPgogICAgICA8Y3JlYXRvck5hbWUgbmFtZVR5cGU9IlBlcnNvbmFsIj5NdWt3ZXZobyxMdXRlbmRvPC9jcmVhdG9yTmFtZT4KICAgICAgPGdpdmVuTmFtZT5MdXRlbmRvPC9naXZlbk5hbWU+CiAgICAgIDxmYW1pbHlOYW1lPk11a3dldmhvPC9mYW1pbHlOYW1lPgogICAgICA8bmFtZUlkZW50aWZpZXIgc2NoZW1lVVJJPSJodHRwOi8vb3JjaWQub3JnLyIgbmFtZUlkZW50aWZpZXJTY2hlbWU9Ik9SQ0lEIj4wMDAwLTAwMDMtMjkyNy03MDU3PC9uYW1lSWRlbnRpZmllcj4KICAgIDwvY3JlYXRvcj4KICAgIDxjcmVhdG9yPgogICAgICA8Y3JlYXRvck5hbWUgbmFtZVR5cGU9IlBlcnNvbmFsIj5OZXdoYW0sRWxpczwvY3JlYXRvck5hbWU+CiAgICAgIDxnaXZlbk5hbWU+RWxpczwvZ2l2ZW5OYW1lPgogICAgICA8ZmFtaWx5TmFtZT5OZXdoYW08L2ZhbWlseU5hbWU+CiAgICA8L2NyZWF0b3I+CiAgICA8Y3JlYXRvcj4KICAgICAgPGNyZWF0b3JOYW1lIG5hbWVUeXBlPSJQZXJzb25hbCI+VHdhbGEsRW5lbGU8L2NyZWF0b3JOYW1lPgogICAgICA8Z2l2ZW5OYW1lPkVuZWxlPC9naXZlbk5hbWU+CiAgICAgIDxmYW1pbHlOYW1lPlR3YWxhPC9mYW1pbHlOYW1lPgogICAgPC9jcmVhdG9yPgogICAgPGNyZWF0b3I+CiAgICAgIDxjcmVhdG9yTmFtZSBuYW1lVHlwZT0iUGVyc29uYWwiPkZlcm5hbmRleixWaW5jZW50PC9jcmVhdG9yTmFtZT4KICAgICAgPGdpdmVuTmFtZT5WaW5jZW50PC9naXZlbk5hbWU+CiAgICAgIDxmYW1pbHlOYW1lPkZlcm5hbmRlejwvZmFtaWx5TmFtZT4KICAgICAgPG5hbWVJZGVudGlmaWVyIHNjaGVtZVVSST0iaHR0cDovL29yY2lkLm9yZy8iIG5hbWVJZGVudGlmaWVyU2NoZW1lPSJPUkNJRCI+MDAwMC0wMDAyLTgzMTUtMTQ1ODwvbmFtZUlkZW50aWZpZXI+CiAgICA8L2NyZWF0b3I+CiAgICA8Y3JlYXRvcj4KICAgICAgPGNyZWF0b3JOYW1lIG5hbWVUeXBlPSJQZXJzb25hbCI+RG9sbG1hbixLYXRobGVlbjwvY3JlYXRvck5hbWU+CiAgICAgIDxnaXZlbk5hbWU+S2F0aGxlZW48L2dpdmVuTmFtZT4KICAgICAgPGZhbWlseU5hbWU+RG9sbG1hbjwvZmFtaWx5TmFtZT4KICAgICAgPG5hbWVJZGVudGlmaWVyIHNjaGVtZVVSST0iaHR0cDovL29yY2lkLm9yZy8iIG5hbWVJZGVudGlmaWVyU2NoZW1lPSJPUkNJRCI+MDAwMC0wMDAyLTU0NjgtNDg5NjwvbmFtZUlkZW50aWZpZXI+CiAgICA8L2NyZWF0b3I+CiAgPC9jcmVhdG9ycz4KICA8dGl0bGVzPgogICAgPHRpdGxlPkhpZ2gtcmVzb2x1dGlvbiByYXcgdG9tb2dyYXBoaWMgZGF0YXNldCBvZiBBbGVvZG9uOiBNYXhpbGxhLCBkZW50YXJ5LCBmZW11ciwgYW5kIGh1bWVydXMgZm9zc2lsIHNwZWNpbWVucyBmb3IgcGFsZW9oaXN0b2xvZ2ljYWwgYW5hbHlzaXM8L3RpdGxlPgogIDwvdGl0bGVzPgogIDxwdWJsaXNoZXI+RXVyb3BlYW4gU3luY2hyb3Ryb24gUmFkaWF0aW9uIEZhY2lsaXR5PC9wdWJsaXNoZXI+CiAgPHB1YmxpY2F0aW9uWWVhcj4yMDI2PC9wdWJsaWNhdGlvblllYXI+CiAgPHJlc291cmNlVHlwZSByZXNvdXJjZVR5cGVHZW5lcmFsPSJEYXRhc2V0Ij5EYXRhY29sbGVjdGlvbjwvcmVzb3VyY2VUeXBlPgogIDxzdWJqZWN0cz4KICAgIDxzdWJqZWN0IHN1YmplY3RTY2hlbWU9IlByb3Bvc2FsIj5MUy0zNDM2LExTLTM0Mzc8L3N1YmplY3Q+CiAgICA8c3ViamVjdCBzdWJqZWN0U2NoZW1lPSJJbnN0cnVtZW50Ij5CTTA1PC9zdWJqZWN0PgogICAgPHN1YmplY3QgeG1sOmxhbmc9ImVuIj5mb3NzaWw8L3N1YmplY3Q+CiAgICA8c3ViamVjdCB4bWw6bGFuZz0iZW4iPnRoZXJhcHNpZDwvc3ViamVjdD4KICAgIDxzdWJqZWN0IHhtbDpsYW5nPSJlbiI+Y3lub2RvbnQ8L3N1YmplY3Q+CiAgICA8c3ViamVjdCB4bWw6bGFuZz0iZW4iPlRyaWFzc2ljPC9zdWJqZWN0PgogICAgPHN1YmplY3QgeG1sOmxhbmc9ImVuIj5wYWxlb2hpc3RvbG9neTwvc3ViamVjdD4KICA8L3N1YmplY3RzPgogIDxkYXRlcz4KICAgIDxkYXRlIGRhdGVUeXBlPSJJc3N1ZWQiPjIwMjY8L2RhdGU+CiAgPC9kYXRlcz4KICA8bGFuZ3VhZ2U+ZW48L2xhbmd1YWdlPgogIDx2ZXJzaW9uPjE8L3ZlcnNpb24+CiAgPGRlc2NyaXB0aW9ucz4KICAgIDxkZXNjcmlwdGlvbiBkZXNjcmlwdGlvblR5cGU9IkFic3RyYWN0Ij5UaGUgZGF0YXNldHMgcmVwcmVzZW50IHZhcmlvdXMgc2tlbGV0YWwgZWxlbWVudHMgZnJvbSB0d28gQWxlb2RvbiBzcGVjaW1lbnMgKE5NVCBSQjU1NSBhbmQgTk1UIFJCMzUzKSwgY29sbGVjdGVkIGZyb20gdGhlIExpZnVhIE1lbWJlciBvZiB0aGUgTWFuZGEgQmVkcyBpbiBUYW56YW5pYSAoTWlkZGxlIHRvIExhdGUgVHJpYXNzaWMpLiBUaGUgc3BlY2ltZW5zIGFyZSByZXBvc2l0b3JpZWQgYXQgdGhlIE5hdHVyYWwgTXVzZXVtIG9mIFRhbnphbmlhIChOTVQpLCBEYXIgZXMgU2FsYWFtLCBUYW56YW5pYS4gVGhlIHNlbGVjdGVkIG1hdGVyaWFsIGNvbnNpc3RlZCBvZiB0aGUgZGVudGFyaWVzLCByaWdodCBtYXhpbGxhIGFuZCBtYXhpbGxhcnkgdG9vdGhyb3csIGxlZnQgZmVtdXIsIGFuZCBodW1lcnVzIG9mIHRoZSBqdXZlbmlsZSBBbGVvZG9uIGJyYWNoeXJoYW1waHVzIChOTVQgUkI1NTUpIGFuZCBhIGxhcmdlciBmZW11ciByZXByZXNlbnRpbmcgYW4gb2xkZXIgQWxlb2RvbiBpbmRpdmlkdWFsIChOTVQgUkIzNTMpLiBBbGwgc3BlY2ltZW5zIHdlcmUgaW1hZ2VkIGF0IHRoZSBCTTA1IGJlYW1saW5lIG9mIHRoZSBFdXJvcGVhbiBTeW5jaHJvdHJvbiBSYWRpYXRpb24gRmFjaWxpdHkgKEVTUkYpLCBHcmVub2JsZSwgRnJhbmNlIChwcm9wb3NhbHMgTFMzNDM2IGFuZCBMUzM0MzcpIHVzaW5nIHByb3BhZ2F0aW9uIHBoYXNlIGNvbnRyYXN0IHN5bmNocm90cm9uIFgtcmF5IGNvbXB1dGVkIHRvbW9ncmFwaHkuIEZvciBtb3N0IGVsZW1lbnQsIGEgY29hcnNlIHJlc29sdXRpb24gdG9tb2dyYXBoeSB3YXMgcGVyZm9ybWVkIChyYW5naW5nIGZyb20gMy4xNiDCtW0gdG8gMTAgwrVtKSwgYWxsb3dpbmcgdG8gbG9jYXRlIHBhcnRpY3VsYXIgcmVnaW9ucyBvZiBpbnRlcmVzdCBmb3IgaGlnaGVyIHJlc29sdXRpb24gaW1hZ2luZyBhdCAwLjg1NiDCtW0gdm94ZWwgc2l6ZS4gVGhlc2UgZGF0YXNldHMgcHJvdmlkZWQgaW5mb3JtYXRpb24gZm9yIHBhbGFlb2hpc3RvbG9naWNhbCBhbmFseXNpcy4gRHVlIHRvIGRpYWdlbmV0aWMgYWx0ZXJhdGlvbiwgZGF0YXNldHMgZnJvbSBOTVQgUkIzNTMgZG8gbm90IHlpZWxkIHVzYWJsZSB2aXJ0dWFsIGJvbmUgaGlzdG9sb2d5IGFzIHRvbyBtYW55IGJyaWdodCBpbmNsdXNpb25zIG9mIGRlbnNlIG1pbmVyYWxzIG9ic2N1cmVkIHRoZSB1bmRlcmx5aW5nIGJvbmUgdGlzc3VlLjwvZGVzY3JpcHRpb24+CiAgPC9kZXNjcmlwdGlvbnM+CiAgPHJpZ2h0c0xpc3Q+CiAgICA8cmlnaHRzIHhtbDpsYW5nPSJlbiIgc2NoZW1lVVJJPSJodHRwczovL3NwZHgub3JnL2xpY2Vuc2VzLyIgcmlnaHRzSWRlbnRpZmllclNjaGVtZT0iU1BEWCIgcmlnaHRzSWRlbnRpZmllcj0iQ0MtQlktNC4wIiByaWdodHNVUkk9Imh0dHBzOi8vY3JlYXRpdmVjb21tb25zLm9yZy9saWNlbnNlcy9ieS80LjAvIj5DcmVhdGl2ZSBDb21tb25zIEF0dHJpYnV0aW9uIDQuMCBJbnRlcm5hdGlvbmFsPC9yaWdodHM+CiAgPC9yaWdodHNMaXN0Pgo8L3Jlc291cmNlPg==",
+      "url": "https://doi.esrf.fr/10.15151/ESRF-DC-2493599001",
+      "contentUrl": null,
+      "metadataVersion": 0,
+      "schemaVersion": "http://datacite.org/schema/kernel-4",
+      "source": "mds",
+      "isActive": true,
+      "state": "findable",
+      "reason": null,
+      "viewCount": 0,
+      "viewsOverTime": [],
+      "downloadCount": 0,
+      "downloadsOverTime": [],
+      "referenceCount": 0,
+      "citationCount": 0,
+      "citationsOverTime": [],
+      "partCount": 0,
+      "partOfCount": 0,
+      "versionCount": 0,
+      "versionOfCount": 0,
+      "created": "2026-08-11T09:35:44.000Z",
+      "registered": "2026-08-11T09:35:45.000Z",
+      "published": "2026",
+      "updated": "2026-08-11T09:35:45.000Z"
+    },
+    "relationships": {
+      "client": {
+        "data": {
+          "id": "inist.esrf",
+          "type": "clients"
+        }
+      },
+      "provider": {
+        "data": {
+          "id": "ibaj",
+          "type": "providers"
+        }
+      },
+      "media": {
+        "data": {
+          "id": "10.15151/esrf-dc-2493599001",
+          "type": "media"
+        }
+      },
+      "references": {
+        "data": []
+      },
+      "citations": {
+        "data": []
+      },
+      "parts": {
+        "data": []
+      },
+      "partOf": {
+        "data": []
+      },
+      "versions": {
+        "data": []
+      },
+      "versionOf": {
+        "data": []
+      }
+    }
+  }
+}

@@ -1,0 +1,205 @@
+{
+  "data": {
+    "id": "10.15151/esrf-es-2210534378",
+    "type": "dois",
+    "attributes": {
+      "doi": "10.15151/esrf-es-2210534378",
+      "prefix": "10.15151",
+      "suffix": "esrf-es-2210534378",
+      "identifiers": [],
+      "alternateIdentifiers": [],
+      "creators": [
+        {
+          "name": "Pojer, Florence",
+          "nameType": "Personal",
+          "givenName": "Florence",
+          "familyName": "Pojer",
+          "affiliation": [
+            "EPFL - PTPSP, Protein Production and Structure Core Facilit, EPFL SV PTECH PTPSP, Station 19, Ch-1015 Lausanne, Switzerland"
+          ],
+          "nameIdentifiers": [
+            {
+              "schemeUri": "https://orcid.org",
+              "nameIdentifier": "https://orcid.org/0000-0002-9183-7206",
+              "nameIdentifierScheme": "ORCID"
+            }
+          ]
+        }
+      ],
+      "titles": [
+        {
+          "title": "Swiss consortium in macromolecular X-ray crystallography structure determination for academic researchers: EPFL, UNIL, UNIGE, Zurich and SLS"
+        }
+      ],
+      "publisher": "European Synchrotron Radiation Facility",
+      "container": {},
+      "publicationYear": 2028,
+      "subjects": [
+        {
+          "subject": "Macromolecular Crystallography",
+          "subjectScheme": "Proposal Type Description"
+        },
+        {
+          "subject": "MX-2738",
+          "subjectScheme": "Proposal"
+        },
+        {
+          "subject": "ID30A-3",
+          "subjectScheme": "Instrument"
+        }
+      ],
+      "contributors": [
+        {
+          "name": "De Sanctis, Daniele",
+          "nameType": "Personal",
+          "givenName": "Daniele",
+          "familyName": "De Sanctis",
+          "affiliation": [
+            "ESRF, 71 avenue des Martyrs, CS 40220, 38043 Grenoble Cedex 9, France"
+          ],
+          "contributorType": "DataCollector",
+          "nameIdentifiers": [
+            {
+              "schemeUri": "https://orcid.org",
+              "nameIdentifier": "https://orcid.org/0000-0003-0391-8290",
+              "nameIdentifierScheme": "ORCID"
+            }
+          ]
+        },
+        {
+          "name": "Pojer, Florence",
+          "nameType": "Personal",
+          "givenName": "Florence",
+          "familyName": "Pojer",
+          "affiliation": [
+            "EPFL - PTPSP, Protein Production and Structure Core Facilit, EPFL SV PTECH PTPSP, Station 19, Ch-1015 Lausanne, Switzerland"
+          ],
+          "contributorType": "ProjectManager",
+          "nameIdentifiers": [
+            {
+              "schemeUri": "https://orcid.org",
+              "nameIdentifier": "https://orcid.org/0000-0002-9183-7206",
+              "nameIdentifierScheme": "ORCID"
+            }
+          ]
+        }
+      ],
+      "dates": [
+        {
+          "date": "2025-09-05",
+          "dateType": "Collected"
+        },
+        {
+          "date": "2028-09-06",
+          "dateType": "Available"
+        },
+        {
+          "date": "2028",
+          "dateType": "Issued"
+        }
+      ],
+      "language": "en",
+      "types": {
+        "ris": "DATA",
+        "bibtex": "misc",
+        "citeproc": "dataset",
+        "schemaOrg": "Dataset",
+        "resourceType": "Experiment Session",
+        "resourceTypeGeneral": "Dataset"
+      },
+      "relatedIdentifiers": [],
+      "relatedItems": [],
+      "sizes": [],
+      "formats": [],
+      "version": null,
+      "rightsList": [
+        {
+          "rights": "Creative Commons Attribution 4.0 International",
+          "rightsUri": "https://creativecommons.org/licenses/by/4.0/legalcode",
+          "schemeUri": "https://spdx.org/licenses/",
+          "rightsIdentifier": "cc-by-4.0",
+          "rightsIdentifierScheme": "SPDX"
+        }
+      ],
+      "descriptions": [
+        {
+          "description": "This proposal builds upon the foundation established in BAG MX 2521 and MX 2644 and represents a collaborative effort among prominent Swiss academic institutions, including EPFL, UNIL, UNIGE, university of Zurich and SLS. Under the leadership of Dr. Florence Pojer, the head of the Protein Production and Structure core facility at EPFL, this initiative aims to streamline and enhance the process of determination of macromolecules structures by X-ray crystallography. Notably, the automated data collection established at ESRF has revolutionized our current pipeline, enabling the analysis of over 1000 crystals and the finalization at high-resolution of around 50 different structures in the past year alone. These achievements span diverse projects ranging from drug discovery to the design of novel protein folds.",
+          "descriptionType": "Abstract"
+        }
+      ],
+      "geoLocations": [],
+      "fundingReferences": [
+        {
+          "schemeUri": "https://ror.org",
+          "awardTitle": "Swiss consortium in macromolecular X-ray crystallography structure determination\nfor academic researchers: EPFL, UNIL, UNIGE, Zurich and SLS",
+          "funderName": "European Synchrotron Radiation Facility",
+          "awardNumber": "MX-2738",
+          "funderIdentifier": "https://ror.org/02550n020",
+          "funderIdentifierType": "ROR"
+        }
+      ],
+      "xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHJlc291cmNlIHhtbG5zPSJodHRwOi8vZGF0YWNpdGUub3JnL3NjaGVtYS9rZXJuZWwtNCIgeG1sbnM6eHNpPSJodHRwOi8vd3d3LnczLm9yZy8yMDAxL1hNTFNjaGVtYS1pbnN0YW5jZSIgeHNpOnNjaGVtYUxvY2F0aW9uPSJodHRwOi8vZGF0YWNpdGUub3JnL3NjaGVtYS9rZXJuZWwtNCBodHRwOi8vc2NoZW1hLmRhdGFjaXRlLm9yZy9tZXRhL2tlcm5lbC00L21ldGFkYXRhLnhzZCI+CiAgPGlkZW50aWZpZXIgaWRlbnRpZmllclR5cGU9IkRPSSI+MTAuMTUxNTEvRVNSRi1FUy0yMjEwNTM0Mzc4PC9pZGVudGlmaWVyPgogIDxjcmVhdG9ycz4KICAgIDxjcmVhdG9yPgogICAgICA8Y3JlYXRvck5hbWUgbmFtZVR5cGU9IlBlcnNvbmFsIj5Qb2plciwgRmxvcmVuY2U8L2NyZWF0b3JOYW1lPgogICAgICA8Z2l2ZW5OYW1lPkZsb3JlbmNlPC9naXZlbk5hbWU+CiAgICAgIDxmYW1pbHlOYW1lPlBvamVyPC9mYW1pbHlOYW1lPgogICAgICA8bmFtZUlkZW50aWZpZXIgbmFtZUlkZW50aWZpZXJTY2hlbWU9Ik9SQ0lEIiBzY2hlbWVVUkk9Imh0dHBzOi8vb3JjaWQub3JnLyI+MDAwMC0wMDAyLTkxODMtNzIwNjwvbmFtZUlkZW50aWZpZXI+CiAgICAgIDxhZmZpbGlhdGlvbj5FUEZMIC0gUFRQU1AsIFByb3RlaW4gUHJvZHVjdGlvbiBhbmQgU3RydWN0dXJlIENvcmUgRmFjaWxpdCwgRVBGTCBTViBQVEVDSCBQVFBTUCwgU3RhdGlvbiAxOSwgQ2gtMTAxNSBMYXVzYW5uZSwgU3dpdHplcmxhbmQ8L2FmZmlsaWF0aW9uPgogICAgPC9jcmVhdG9yPgogIDwvY3JlYXRvcnM+CiAgPGNvbnRyaWJ1dG9ycz4KICAgIDxjb250cmlidXRvciBjb250cmlidXRvclR5cGU9IkRhdGFDb2xsZWN0b3IiPgogICAgICA8Y29udHJpYnV0b3JOYW1lIG5hbWVUeXBlPSJQZXJzb25hbCI+RGUgU2FuY3RpcywgRGFuaWVsZTwvY29udHJpYnV0b3JOYW1lPgogICAgICA8Z2l2ZW5OYW1lPkRhbmllbGU8L2dpdmVuTmFtZT4KICAgICAgPGZhbWlseU5hbWU+RGUgU2FuY3RpczwvZmFtaWx5TmFtZT4KICAgICAgPG5hbWVJZGVudGlmaWVyIG5hbWVJZGVudGlmaWVyU2NoZW1lPSJPUkNJRCIgc2NoZW1lVVJJPSJodHRwczovL29yY2lkLm9yZy8iPjAwMDAtMDAwMy0wMzkxLTgyOTA8L25hbWVJZGVudGlmaWVyPgogICAgICA8YWZmaWxpYXRpb24+RVNSRiwgNzEgYXZlbnVlIGRlcyBNYXJ0eXJzLCBDUyA0MDIyMCwgMzgwNDMgR3Jlbm9ibGUgQ2VkZXggOSwgRnJhbmNlPC9hZmZpbGlhdGlvbj4KICAgIDwvY29udHJpYnV0b3I+CiAgICA8Y29udHJpYnV0b3IgY29udHJpYnV0b3JUeXBlPSJQcm9qZWN0TWFuYWdlciI+CiAgICAgIDxjb250cmlidXRvck5hbWUgbmFtZVR5cGU9IlBlcnNvbmFsIj5Qb2plciwgRmxvcmVuY2U8L2NvbnRyaWJ1dG9yTmFtZT4KICAgICAgPGdpdmVuTmFtZT5GbG9yZW5jZTwvZ2l2ZW5OYW1lPgogICAgICA8ZmFtaWx5TmFtZT5Qb2plcjwvZmFtaWx5TmFtZT4KICAgICAgPG5hbWVJZGVudGlmaWVyIG5hbWVJZGVudGlmaWVyU2NoZW1lPSJPUkNJRCIgc2NoZW1lVVJJPSJodHRwczovL29yY2lkLm9yZy8iPjAwMDAtMDAwMi05MTgzLTcyMDY8L25hbWVJZGVudGlmaWVyPgogICAgICA8YWZmaWxpYXRpb24+RVBGTCAtIFBUUFNQLCBQcm90ZWluIFByb2R1Y3Rpb24gYW5kIFN0cnVjdHVyZSBDb3JlIEZhY2lsaXQsIEVQRkwgU1YgUFRFQ0ggUFRQU1AsIFN0YXRpb24gMTksIENoLTEwMTUgTGF1c2FubmUsIFN3aXR6ZXJsYW5kPC9hZmZpbGlhdGlvbj4KICAgIDwvY29udHJpYnV0b3I+CiAgPC9jb250cmlidXRvcnM+CiAgPHRpdGxlcz4KICAgIDx0aXRsZT5Td2lzcyBjb25zb3J0aXVtIGluIG1hY3JvbW9sZWN1bGFyIFgtcmF5IGNyeXN0YWxsb2dyYXBoeSBzdHJ1Y3R1cmUgZGV0ZXJtaW5hdGlvbgpmb3IgYWNhZGVtaWMgcmVzZWFyY2hlcnM6IEVQRkwsIFVOSUwsIFVOSUdFLCBadXJpY2ggYW5kIFNMUzwvdGl0bGU+CiAgPC90aXRsZXM+CiAgPGRlc2NyaXB0aW9ucz4KICAgIDxkZXNjcmlwdGlvbiBkZXNjcmlwdGlvblR5cGU9IkFic3RyYWN0Ij5UaGlzIHByb3Bvc2FsIGJ1aWxkcyB1cG9uIHRoZSBmb3VuZGF0aW9uIGVzdGFibGlzaGVkIGluIEJBRyBNWCAyNTIxIGFuZCBNWCAyNjQ0IGFuZCByZXByZXNlbnRzIGEgY29sbGFib3JhdGl2ZSBlZmZvcnQgYW1vbmcgcHJvbWluZW50IFN3aXNzIGFjYWRlbWljIGluc3RpdHV0aW9ucywgaW5jbHVkaW5nIEVQRkwsIFVOSUwsIFVOSUdFLCB1bml2ZXJzaXR5IG9mIFp1cmljaCBhbmQgU0xTLiBVbmRlciB0aGUgbGVhZGVyc2hpcCBvZiBEci4gRmxvcmVuY2UgUG9qZXIsIHRoZSBoZWFkIG9mIHRoZSBQcm90ZWluIFByb2R1Y3Rpb24gYW5kIFN0cnVjdHVyZSBjb3JlIGZhY2lsaXR5IGF0IEVQRkwsIHRoaXMgaW5pdGlhdGl2ZSBhaW1zIHRvIHN0cmVhbWxpbmUgYW5kIGVuaGFuY2UgdGhlIHByb2Nlc3Mgb2YgZGV0ZXJtaW5hdGlvbiBvZiBtYWNyb21vbGVjdWxlcyBzdHJ1Y3R1cmVzIGJ5IFgtcmF5IGNyeXN0YWxsb2dyYXBoeS4gTm90YWJseSwgdGhlIGF1dG9tYXRlZCBkYXRhIGNvbGxlY3Rpb24gZXN0YWJsaXNoZWQgYXQgRVNSRiBoYXMgcmV2b2x1dGlvbml6ZWQgb3VyIGN1cnJlbnQgcGlwZWxpbmUsIGVuYWJsaW5nIHRoZSBhbmFseXNpcyBvZiBvdmVyIDEwMDAgY3J5c3RhbHMgYW5kIHRoZSBmaW5hbGl6YXRpb24gYXQgaGlnaC1yZXNvbHV0aW9uIG9mIGFyb3VuZCA1MCBkaWZmZXJlbnQgc3RydWN0dXJlcyBpbiB0aGUgcGFzdCB5ZWFyIGFsb25lLiBUaGVzZSBhY2hpZXZlbWVudHMgc3BhbiBkaXZlcnNlIHByb2plY3RzIHJhbmdpbmcgZnJvbSBkcnVnIGRpc2NvdmVyeSB0byB0aGUgZGVzaWduIG9mIG5vdmVsIHByb3RlaW4gZm9sZHMuIDwvZGVzY3JpcHRpb24+CiAgPC9kZXNjcmlwdGlvbnM+CiAgPHN1YmplY3RzPgogICAgPHN1YmplY3Qgc3ViamVjdFNjaGVtZT0iUHJvcG9zYWwgVHlwZSBEZXNjcmlwdGlvbiI+TWFjcm9tb2xlY3VsYXIgQ3J5c3RhbGxvZ3JhcGh5PC9zdWJqZWN0PgogICAgPHN1YmplY3Qgc3ViamVjdFNjaGVtZT0iUHJvcG9zYWwiPk1YLTI3Mzg8L3N1YmplY3Q+CiAgICA8c3ViamVjdCBzdWJqZWN0U2NoZW1lPSJJbnN0cnVtZW50Ij5JRDMwQS0zPC9zdWJqZWN0PgogIDwvc3ViamVjdHM+CiAgPHB1Ymxpc2hlcj5FdXJvcGVhbiBTeW5jaHJvdHJvbiBSYWRpYXRpb24gRmFjaWxpdHk8L3B1Ymxpc2hlcj4KICA8cmlnaHRzTGlzdD4KICAgIDxyaWdodHMgcmlnaHRzSWRlbnRpZmllcj0iQ0MtQlktNC4wIiByaWdodHNJZGVudGlmaWVyU2NoZW1lPSJTUERYIiByaWdodHNVUkk9Imh0dHBzOi8vY3JlYXRpdmVjb21tb25zLm9yZy9saWNlbnNlcy9ieS80LjAvIiBzY2hlbWVVUkk9Imh0dHBzOi8vc3BkeC5vcmcvbGljZW5zZXMvIj5DcmVhdGl2ZSBDb21tb25zIEF0dHJpYnV0aW9uIDQuMCBJbnRlcm5hdGlvbmFsPC9yaWdodHM+CiAgPC9yaWdodHNMaXN0PgogIDxkYXRlcz4KICAgIDxkYXRlIGRhdGVUeXBlPSJDb2xsZWN0ZWQiPjIwMjUtMDktMDU8L2RhdGU+CiAgICA8ZGF0ZSBkYXRlVHlwZT0iQXZhaWxhYmxlIj4yMDI4LTA5LTA2PC9kYXRlPgogIDwvZGF0ZXM+CiAgPHB1YmxpY2F0aW9uWWVhcj4yMDI4PC9wdWJsaWNhdGlvblllYXI+CiAgPGxhbmd1YWdlPmVuPC9sYW5ndWFnZT4KICA8cmVzb3VyY2VUeXBlIHJlc291cmNlVHlwZUdlbmVyYWw9IkRhdGFzZXQiPkV4cGVyaW1lbnQgU2Vzc2lvbjwvcmVzb3VyY2VUeXBlPgogIDxmdW5kaW5nUmVmZXJlbmNlcz4KICAgIDxmdW5kaW5nUmVmZXJlbmNlPgogICAgICA8ZnVuZGVyTmFtZT5FdXJvcGVhbiBTeW5jaHJvdHJvbiBSYWRpYXRpb24gRmFjaWxpdHk8L2Z1bmRlck5hbWU+CiAgICAgIDxmdW5kZXJJZGVudGlmaWVyIGZ1bmRlcklkZW50aWZpZXJUeXBlPSJST1IiPmh0dHBzOi8vcm9yLm9yZy8wMjU1MG4wMjA8L2Z1bmRlcklkZW50aWZpZXI+CiAgICAgIDxhd2FyZE51bWJlcj5NWC0yNzM4PC9hd2FyZE51bWJlcj4KICAgICAgPGF3YXJkVGl0bGU+U3dpc3MgY29uc29ydGl1bSBpbiBtYWNyb21vbGVjdWxhciBYLXJheSBjcnlzdGFsbG9ncmFwaHkgc3RydWN0dXJlIGRldGVybWluYXRpb24KZm9yIGFjYWRlbWljIHJlc2VhcmNoZXJzOiBFUEZMLCBVTklMLCBVTklHRSwgWnVyaWNoIGFuZCBTTFM8L2F3YXJkVGl0bGU+CiAgICA8L2Z1bmRpbmdSZWZlcmVuY2U+CiAgPC9mdW5kaW5nUmVmZXJlbmNlcz4KPC9yZXNvdXJjZT4=",
+      "url": "https://doi.esrf.fr/10.15151/ESRF-ES-2210534378",
+      "contentUrl": null,
+      "metadataVersion": 0,
+      "schemaVersion": "http://datacite.org/schema/kernel-4",
+      "source": "mds",
+      "isActive": true,
+      "state": "findable",
+      "reason": null,
+      "viewCount": 0,
+      "viewsOverTime": [],
+      "downloadCount": 0,
+      "downloadsOverTime": [],
+      "referenceCount": 0,
+      "citationCount": 0,
+      "citationsOverTime": [],
+      "partCount": 0,
+      "partOfCount": 0,
+      "versionCount": 0,
+      "versionOfCount": 0,
+      "created": "2025-09-06T06:00:10.000Z",
+      "registered": "2025-09-06T06:00:10.000Z",
+      "published": "2028",
+      "updated": "2025-09-06T06:00:10.000Z"
+    },
+    "relationships": {
+      "client": {
+        "data": {
+          "id": "inist.esrf",
+          "type": "clients"
+        }
+      },
+      "provider": {
+        "data": {
+          "id": "ibaj",
+          "type": "providers"
+        }
+      },
+      "media": {
+        "data": {
+          "id": "10.15151/esrf-es-2210534378",
+          "type": "media"
+        }
+      },
+      "references": {
+        "data": []
+      },
+      "citations": {
+        "data": []
+      },
+      "parts": {
+        "data": []
+      },
+      "partOf": {
+        "data": []
+      },
+      "versions": {
+        "data": []
+      },
+      "versionOf": {
+        "data": []
+      }
+    }
+  }
+}
