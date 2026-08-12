@@ -1,0 +1,247 @@
+{
+  "status": "ok",
+  "message-type": "work",
+  "message-version": "1.0.0",
+  "message": {
+    "indexed": {
+      "date-parts": [
+        [
+          2025,
+          12,
+          2
+        ]
+      ],
+      "date-time": "2025-12-02T12:31:36Z",
+      "timestamp": 1764678696417,
+      "version": "3.46.0"
+    },
+    "publisher-location": "Pushchino",
+    "reference-count": 5,
+    "publisher": "IMPB RAS - Branch of KIAM RAS",
+    "content-domain": {
+      "domain": [],
+      "crossmark-restriction": false
+    },
+    "short-container-title": [],
+    "DOI": "10.17537/icmbb18.42",
+    "type": "proceedings-article",
+    "created": {
+      "date-parts": [
+        [
+          2018,
+          11,
+          14
+        ]
+      ],
+      "date-time": "2018-11-14T09:59:58Z",
+      "timestamp": 1542189598000
+    },
+    "source": "Crossref",
+    "is-referenced-by-count": 0,
+    "title": [
+      "Reactive force-field molecular dynamic models of iron/oxide/carbon nanocomposites designed for magnetic hyperthermia"
+    ],
+    "prefix": "10.17537",
+    "volume": "7",
+    "author": [
+      {
+        "given": "L.A.",
+        "family": "Avakyan",
+        "sequence": "first",
+        "affiliation": [],
+        "role": [
+          {
+            "role": "author",
+            "vocabulary": "crossref"
+          }
+        ]
+      },
+      {
+        "given": "A.S.",
+        "family": "Manukyan",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "role": "author",
+            "vocabulary": "crossref"
+          }
+        ]
+      },
+      {
+        "given": "E.V.",
+        "family": "Paramonova",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "role": "author",
+            "vocabulary": "crossref"
+          }
+        ]
+      },
+      {
+        "given": "A.S.",
+        "family": "Bogdan",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "role": "author",
+            "vocabulary": "crossref"
+          }
+        ]
+      },
+      {
+        "given": "G.S.",
+        "family": "Sukharina",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "role": "author",
+            "vocabulary": "crossref"
+          }
+        ]
+      },
+      {
+        "given": "E.G.",
+        "family": "Sharoyan",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "role": "author",
+            "vocabulary": "crossref"
+          }
+        ]
+      },
+      {
+        "given": "L.A.",
+        "family": "Bugaev",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "role": "author",
+            "vocabulary": "crossref"
+          }
+        ]
+      }
+    ],
+    "member": "6975",
+    "published-online": {
+      "date-parts": [
+        [
+          2018,
+          11,
+          7
+        ]
+      ]
+    },
+    "reference": [
+      {
+        "key": "ref1",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1016/j.jconrel.2011.06.001"
+      },
+      {
+        "key": "ref2",
+        "doi-asserted-by": "crossref",
+        "unstructured": "Roos W.P., Thomas A.D., Kaina B. Nat. Rev. Cancer. 2015;16:20.",
+        "DOI": "10.1038/nrc.2015.2"
+      },
+      {
+        "key": "ref3"
+      },
+      {
+        "key": "ref16",
+        "unstructured": "Larsen A.H., Mortensen J.J., Blomqvist J., Castelli I.E., Christensen R., Dułak M., Friis J., Groves M.N., Hammer B., Hargus C., Hermes E.D., Jennings P.C., Jensen P.B., Kermode J., Kitchin J.R., Kolsbjerg E.L., Kubal J., Kaasbjerg K., Lysgaard S., Maronsson J.B., Maxson T., Olsen T., Pastewka L., Peterson A., Rostgaard C., Schiøtz J., Schütt O., Strange M., Thygesen K.S., Vegge T., Vilhelmsen L., Walter M., Zeng Z., Jacobsen K.W. J. Phys.: Condens. Matter. 2017;29:273002."
+      },
+      {
+        "key": "ref22",
+        "doi-asserted-by": "publisher",
+        "DOI": "10.1007/s11051-012-0982-6"
+      }
+    ],
+    "event": {
+      "name": "Mathematical Biology and Bioinformatics",
+      "start": {
+        "date-parts": [
+          [
+            2018,
+            10,
+            14
+          ]
+        ]
+      },
+      "number": "24",
+      "location": "Pushchino, Moscow Region, Russia",
+      "end": {
+        "date-parts": [
+          [
+            2018,
+            10,
+            19
+          ]
+        ]
+      },
+      "acronym": "ICMBB18"
+    },
+    "container-title": [
+      "Proceedings of the International Conference \"Mathematical Biology and Bioinformatics\""
+    ],
+    "original-title": [],
+    "deposited": {
+      "date-parts": [
+        [
+          2019,
+          11,
+          2
+        ]
+      ],
+      "date-time": "2019-11-02T02:45:25Z",
+      "timestamp": 1572662725000
+    },
+    "score": 1,
+    "resource": {
+      "primary": {
+        "URL": "http://www.impb.ru/icmbb/docs/2018/42.pdf"
+      }
+    },
+    "subtitle": [],
+    "short-title": [],
+    "issued": {
+      "date-parts": [
+        [
+          2018,
+          11,
+          7
+        ]
+      ]
+    },
+    "references-count": 5,
+    "URL": "https://doi.org/10.17537/icmbb18.42",
+    "relation": {},
+    "ISSN": [
+      "2618-9305"
+    ],
+    "issn-type": [
+      {
+        "type": "print",
+        "value": "2618-9305"
+      }
+    ],
+    "subject": [],
+    "published": {
+      "date-parts": [
+        [
+          2018,
+          11,
+          7
+        ]
+      ]
+    },
+    "article-number": "e49"
+  }
+}

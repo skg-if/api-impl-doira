@@ -236,8 +236,9 @@ public class CrossrefToSkgIfMapper {
     }
 
     /**
-     * Crossref author/editor affiliations are name-only (no ROR) - always an otf id, unlike
-     * DataCite where a ROR is occasionally present on creator affiliations.
+     * Crossref author/editor affiliations are usually name-only, but some publishers (e.g. APS)
+     * do assert a ROR on them directly - same occasional-ROR situation as DataCite creator
+     * affiliations, so this checks for one before falling back to an otf id.
      */
     private List<ProductAllOfRelevantOrganisations> affiliations(String doi, List<CrossrefAffiliation> affiliations) {
         if (affiliations == null || affiliations.isEmpty()) {

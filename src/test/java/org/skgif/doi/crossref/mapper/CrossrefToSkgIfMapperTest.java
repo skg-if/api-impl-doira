@@ -126,6 +126,130 @@ class CrossrefToSkgIfMapperTest {
         assertNull(product.getManifestations().get(0).getVersion());
     }
 
+    // crossref-journal-article-with-orcid.json: a real Nature Communications article (DOI
+    // 10.1038/s41467-022-33468-6) - unlike crossref-journal-article.json, its authors carry
+    // ORCIDs and it has no "page" field (only "article-number"), so it exercises paths the
+    // other journal-article fixtures don't.
+
+    @Test
+    void mapsCoreFieldsFromRealArticleWithOrcidAuthors() throws IOException {
+        Product product = mapFixture("crossref-journal-article-with-orcid.json");
+
+        assertEquals("https://doi.org/10.1038/s41467-022-33468-6", product.getLocalIdentifier());
+        assertEquals(Product.ProductTypeEnum.LITERATURE, product.getProductType());
+        assertEquals("10.1038/s41467-022-33468-6", product.getIdentifiers().get(0).getValue());
+    }
+
+    @Test
+    void mapsAuthorsAsAuthorContributionsWithOrcidWhenPresent() throws IOException {
+        Product product = mapFixture("crossref-journal-article-with-orcid.json");
+
+        ProductContribution first = product.getContributions().get(0);
+        assertEquals("M. C.", first.getBy().getGivenName());
+        assertEquals("Rahn", first.getBy().getFamilyName());
+        assertEquals("https://orcid.org/0000-0001-7403-8288", first.getBy().getLocalIdentifier());
+        assertEquals("orcid", first.getBy().getIdentifiers().get(0).getScheme());
+        assertEquals("0000-0001-7403-8288", first.getBy().getIdentifiers().get(0).getValue());
+
+        // This fixture also has authors without an ORCID (e.g. "A. Hariki") interspersed among
+        // the ORCID-bearing ones - those must still fall back to an otf id, not be skipped.
+        boolean hasOtfAuthor = product.getContributions().stream()
+                .anyMatch(c -> c.getBy().getLocalIdentifier().startsWith("otf___"));
+        assertTrue(hasOtfAuthor);
+    }
+
+    @Test
+    void doesNotFabricatePagesWhenOnlyArticleNumberIsPresent() throws IOException {
+        // This fixture has no "page" field (Nature Communications uses "article-number"
+        // instead, which the mapper has no SKG-IF field to carry) - pages must stay unset
+        // rather than being guessed at, even though issue/volume/venue are all present.
+        Product product = mapFixture("crossref-journal-article-with-orcid.json");
+
+        ProductManifestation manifestation = product.getManifestations().get(0);
+        assertNull(manifestation.getBiblio().getPages());
+        assertEquals("13", manifestation.getBiblio().getVolume());
+        assertEquals("1", manifestation.getBiblio().getIssue());
+        assertEquals("Nature Communications", manifestation.getBiblio().getIn().getName());
+    }
+
+    // crossref-proceedings-article.json: a real conference-proceedings record (DOI
+    // 10.17537/icmbb18.42, type: "proceedings-article") - no license, no funder, and one
+    // reference (key "ref3") with neither a DOI nor unstructured text, exercising the
+    // otf-id-from-key fallback that the other journal-article fixtures never hit.
+
+    @Test
+    void mapsCoreFieldsFromRealProceedingsArticle() throws IOException {
+        Product product = mapFixture("crossref-proceedings-article.json");
+
+        assertEquals("https://doi.org/10.17537/icmbb18.42", product.getLocalIdentifier());
+        assertEquals(Product.ProductTypeEnum.LITERATURE, product.getProductType());
+        assertEquals("10.17537/icmbb18.42", product.getIdentifiers().get(0).getValue());
+    }
+
+    @Test
+    void mapsReferenceWithNeitherDoiNorUnstructuredToOtfIdFromKey() throws IOException {
+        Product product = mapFixture("crossref-proceedings-article.json");
+
+        // reference key "ref3" carries no DOI and no unstructured text - the otf id must
+        // fall back to the reference key itself rather than being dropped.
+        assertEquals(5, product.getRelatedProducts().getCites().size());
+        assertTrue(product.getRelatedProducts().getCites().stream()
+                .anyMatch(c -> c.getLocalIdentifier().equals("otf___10-17537-icmbb18-42___ref3")));
+    }
+
+    @Test
+    void doesNotFabricateAccessRightsWhenNoLicensePresent() throws IOException {
+        Product product = mapFixture("crossref-proceedings-article.json");
+
+        assertNull(product.getManifestations().get(0).getAccessRights());
+        assertNull(product.getManifestations().get(0).getLicence());
+    }
+
+    // crossref-journal-article-with-ror-affiliation.json: a real Physical Review B article
+    // (DOI 10.1103/physrevb.110.174515) whose author affiliations carry a ROR directly - unlike
+    // every other journal-article fixture (name-only affiliations, or none at all). It also has
+    // a funder with its own Funder Registry DOI and the same funder repeated with two different
+    // award numbers, neither of which the other fixtures exercise.
+
+    @Test
+    void mapsDeclaredAffiliationsWithRorWhenPresent() throws IOException {
+        Product product = mapFixture("crossref-journal-article-with-ror-affiliation.json");
+
+        ProductContribution first = product.getContributions().get(0);
+        assertEquals("di Mauro", first.getBy().getFamilyName());
+        // This fixture's authors carry no ORCID at all - only their affiliations carry a ROR -
+        // so the person's own local_identifier still falls back to an otf id.
+        assertTrue(first.getBy().getLocalIdentifier().startsWith("otf___"));
+
+        var affiliations = first.getDeclaredAffiliations();
+        assertEquals(2, affiliations.size());
+        assertEquals("https://ror.org/00tmb7y09", affiliations.get(0).getLocalIdentifier());
+        assertEquals("ror", affiliations.get(0).getIdentifiers().get(0).getScheme());
+        assertEquals("00tmb7y09", affiliations.get(0).getIdentifiers().get(0).getValue());
+        assertEquals("Laboratoire de Chimie Théorique", affiliations.get(0).getName());
+    }
+
+    @Test
+    void mapsFundingWithFunderDoiAndMultipleAwardsForSameFunder() throws IOException {
+        Product product = mapFixture("crossref-journal-article-with-ror-affiliation.json");
+
+        // 4 funder entries in the fixture, two of which are the same "Horizon 2020" funder with
+        // two different award numbers - each award must surface as its own funding entry.
+        assertEquals(4, product.getFunding().size());
+        var horizon2020Entries = product.getFunding().stream()
+                .filter(f -> "Horizon 2020".equals(f.getFundingAgency().getName()))
+                .toList();
+        assertEquals(2, horizon2020Entries.size());
+        assertTrue(horizon2020Entries.stream().anyMatch(f -> "810367".equals(f.getGrantNumber())));
+        assertTrue(horizon2020Entries.stream().anyMatch(f -> "802533".equals(f.getGrantNumber())));
+
+        // Unlike crossref-journal-article-with-funder.json's funder (no Funder Registry DOI at
+        // all), this fixture's funders carry one directly on the top-level funder[] entry.
+        var fundingAgency = horizon2020Entries.get(0).getFundingAgency();
+        assertEquals("doi", fundingAgency.getIdentifiers().get(0).getScheme());
+        assertEquals("10.13039/501100007601", fundingAgency.getIdentifiers().get(0).getValue());
+    }
+
     @Test
     void mapsAbstractStrippingJatsXmlTags() throws IOException {
         Product product = mapFixture("crossref-journal-article-with-funder.json");

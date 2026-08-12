@@ -1,0 +1,323 @@
+{
+  "@context" : [ "https://w3id.org/skg-if/context/1.1.0/skg-if.json", "https://w3id.org/skg-if/context/1.0.0/skg-if-api.json", {
+    "@base" : "https://w3id.org/skg-if/sandbox/esrf/"
+  } ],
+  "meta" : {
+    "local_identifier" : "http://localhost:8081/skg-if/api/crossref/products/10.1103/physrevb.110.174515",
+    "entity_type" : "single_entity"
+  },
+  "@graph" : [ {
+    "local_identifier" : "https://doi.org/10.1103/physrevb.110.174515",
+    "identifiers" : [ {
+      "scheme" : "doi",
+      "value" : "10.1103/physrevb.110.174515"
+    } ],
+    "entity_type" : "product",
+    "product_type" : "literature",
+    "titles" : {
+      "en" : [ "Molecularity: A fast and efficient criterion for probing superconductivity" ]
+    },
+    "contributions" : [ {
+      "by" : {
+        "local_identifier" : "otf___10-1103-physrevb-110-174515___mat-as-e-di-mauro",
+        "identifiers" : [ ],
+        "given_name" : "Matías E.",
+        "family_name" : "di Mauro",
+        "name" : "Matías E. di Mauro",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "declared_affiliations" : [ {
+        "local_identifier" : "https://ror.org/00tmb7y09",
+        "identifiers" : [ {
+          "scheme" : "ror",
+          "value" : "00tmb7y09"
+        } ],
+        "entity_type" : "organisation",
+        "name" : "Laboratoire de Chimie Théorique",
+        "other_names" : [ ],
+        "types" : [ ]
+      }, {
+        "local_identifier" : "https://ror.org/02en5vm52",
+        "identifiers" : [ {
+          "scheme" : "ror",
+          "value" : "02en5vm52"
+        } ],
+        "entity_type" : "organisation",
+        "name" : "Sorbonne Université",
+        "other_names" : [ ],
+        "types" : [ ]
+      } ],
+      "rank" : 1,
+      "role" : "author"
+    }, {
+      "by" : {
+        "local_identifier" : "https://orcid.org/0000-0003-3725-3215",
+        "identifiers" : [ {
+          "scheme" : "orcid",
+          "value" : "0000-0003-3725-3215"
+        } ],
+        "given_name" : "Benoît",
+        "family_name" : "Braïda",
+        "name" : "Benoît Braïda",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "declared_affiliations" : [ {
+        "local_identifier" : "https://ror.org/00tmb7y09",
+        "identifiers" : [ {
+          "scheme" : "ror",
+          "value" : "00tmb7y09"
+        } ],
+        "entity_type" : "organisation",
+        "name" : "Laboratoire de Chimie Théorique",
+        "other_names" : [ ],
+        "types" : [ ]
+      }, {
+        "local_identifier" : "https://ror.org/02en5vm52",
+        "identifiers" : [ {
+          "scheme" : "ror",
+          "value" : "02en5vm52"
+        } ],
+        "entity_type" : "organisation",
+        "name" : "Sorbonne Université",
+        "other_names" : [ ],
+        "types" : [ ]
+      } ],
+      "rank" : 2,
+      "role" : "author"
+    }, {
+      "by" : {
+        "local_identifier" : "https://orcid.org/0000-0002-5719-6580",
+        "identifiers" : [ {
+          "scheme" : "orcid",
+          "value" : "0000-0002-5719-6580"
+        } ],
+        "given_name" : "Ion",
+        "family_name" : "Errea",
+        "name" : "Ion Errea",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "declared_affiliations" : [ {
+        "local_identifier" : "https://ror.org/000xsnr85",
+        "identifiers" : [ {
+          "scheme" : "ror",
+          "value" : "000xsnr85"
+        } ],
+        "entity_type" : "organisation",
+        "name" : "University of the Basque Country",
+        "other_names" : [ ],
+        "types" : [ ]
+      }, {
+        "local_identifier" : "https://ror.org/02hpa6m94",
+        "identifiers" : [ {
+          "scheme" : "ror",
+          "value" : "02hpa6m94"
+        } ],
+        "entity_type" : "organisation",
+        "name" : "Centro de Física de Materiales",
+        "other_names" : [ ],
+        "types" : [ ]
+      }, {
+        "local_identifier" : "https://ror.org/02e24yw40",
+        "identifiers" : [ {
+          "scheme" : "ror",
+          "value" : "02e24yw40"
+        } ],
+        "entity_type" : "organisation",
+        "name" : "Donostia International Physics Center",
+        "other_names" : [ ],
+        "types" : [ ]
+      } ],
+      "rank" : 3,
+      "role" : "author"
+    }, {
+      "by" : {
+        "local_identifier" : "https://orcid.org/0009-0003-9838-3125",
+        "identifiers" : [ {
+          "scheme" : "orcid",
+          "value" : "0009-0003-9838-3125"
+        } ],
+        "given_name" : "Trinidad",
+        "family_name" : "Novoa",
+        "name" : "Trinidad Novoa",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "declared_affiliations" : [ {
+        "local_identifier" : "https://ror.org/00tmb7y09",
+        "identifiers" : [ {
+          "scheme" : "ror",
+          "value" : "00tmb7y09"
+        } ],
+        "entity_type" : "organisation",
+        "name" : "Laboratoire de Chimie Théorique",
+        "other_names" : [ ],
+        "types" : [ ]
+      }, {
+        "local_identifier" : "https://ror.org/02en5vm52",
+        "identifiers" : [ {
+          "scheme" : "ror",
+          "value" : "02en5vm52"
+        } ],
+        "entity_type" : "organisation",
+        "name" : "Sorbonne Université",
+        "other_names" : [ ],
+        "types" : [ ]
+      } ],
+      "rank" : 4,
+      "role" : "author"
+    }, {
+      "by" : {
+        "local_identifier" : "https://orcid.org/0000-0002-8947-9526",
+        "identifiers" : [ {
+          "scheme" : "orcid",
+          "value" : "0000-0002-8947-9526"
+        } ],
+        "given_name" : "Julia",
+        "family_name" : "Contreras-García",
+        "name" : "Julia Contreras-García",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "declared_affiliations" : [ {
+        "local_identifier" : "https://ror.org/00tmb7y09",
+        "identifiers" : [ {
+          "scheme" : "ror",
+          "value" : "00tmb7y09"
+        } ],
+        "entity_type" : "organisation",
+        "name" : "Laboratoire de Chimie Théorique",
+        "other_names" : [ ],
+        "types" : [ ]
+      }, {
+        "local_identifier" : "https://ror.org/02en5vm52",
+        "identifiers" : [ {
+          "scheme" : "ror",
+          "value" : "02en5vm52"
+        } ],
+        "entity_type" : "organisation",
+        "name" : "Sorbonne Université",
+        "other_names" : [ ],
+        "types" : [ ]
+      } ],
+      "rank" : 5,
+      "role" : "author"
+    } ],
+    "manifestations" : [ {
+      "type" : {
+        "labels" : {
+          "en" : "journal-article"
+        }
+      },
+      "dates" : {
+        "acceptance" : [ "2024-10-30" ],
+        "creation" : [ "2024-11-19" ],
+        "deposit" : [ "2024-11-19" ],
+        "publication" : [ "2024-11-19", "2024-11-19" ]
+      },
+      "access_rights" : { },
+      "licence" : "https://link.aps.org/licenses/aps-default-license",
+      "biblio" : {
+        "issue" : "17",
+        "volume" : "110",
+        "in" : {
+          "local_identifier" : "otf___10-1103-physrevb-110-174515___physical-review-b",
+          "identifiers" : [ {
+            "scheme" : "issn",
+            "value" : "2469-9950"
+          }, {
+            "scheme" : "issn",
+            "value" : "2469-9969"
+          } ],
+          "entity_type" : "venue",
+          "name" : "Physical Review B"
+        },
+        "hosting_data_source" : {
+          "local_identifier" : "otf___10-1103-physrevb-110-174515___american-physical-society-aps",
+          "identifiers" : [ ],
+          "entity_type" : "datasource",
+          "name" : "American Physical Society (APS)"
+        }
+      }
+    } ],
+    "funding" : [ {
+      "local_identifier" : "otf___10-1103-physrevb-110-174515___anr-22-ce50-0014",
+      "identifiers" : [ ],
+      "entity_type" : "grant",
+      "grant_number" : "ANR-22-CE50-0014",
+      "funding_agency" : {
+        "local_identifier" : "https://doi.org/10.13039/501100003032",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.13039/501100003032"
+        } ],
+        "entity_type" : "organisation",
+        "name" : "Association Nationale de la Recherche et de la Technologie"
+      }
+    }, {
+      "local_identifier" : "otf___10-1103-physrevb-110-174515___european-research-council",
+      "identifiers" : [ ],
+      "entity_type" : "grant",
+      "funding_agency" : {
+        "local_identifier" : "https://doi.org/10.13039/501100000781",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.13039/501100000781"
+        } ],
+        "entity_type" : "organisation",
+        "name" : "European Research Council"
+      }
+    }, {
+      "local_identifier" : "otf___10-1103-physrevb-110-174515___810367",
+      "identifiers" : [ ],
+      "entity_type" : "grant",
+      "grant_number" : "810367",
+      "funding_agency" : {
+        "local_identifier" : "https://doi.org/10.13039/501100007601",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.13039/501100007601"
+        } ],
+        "entity_type" : "organisation",
+        "name" : "Horizon 2020"
+      }
+    }, {
+      "local_identifier" : "otf___10-1103-physrevb-110-174515___802533",
+      "identifiers" : [ ],
+      "entity_type" : "grant",
+      "grant_number" : "802533",
+      "funding_agency" : {
+        "local_identifier" : "https://doi.org/10.13039/501100007601",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.13039/501100007601"
+        } ],
+        "entity_type" : "organisation",
+        "name" : "Horizon 2020"
+      }
+    } ],
+    "related_products" : {
+      "cites" : [ {
+        "local_identifier" : "https://doi.org/10.1038/nature14964",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1038/nature14964"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "otf___10-1103-physrevb-110-174515___physrevb-110-174515cc18r1",
+        "identifiers" : [ ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1017/CBO9780511810763",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1017/CBO9780511810763"
+        } ],
+        "entity_type" : "product"
+      } ]
+    }
+  } ]
+}

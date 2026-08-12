@@ -60,6 +60,65 @@ class CrossrefProductsResourceTest {
                 .body("'@graph'[0].identifiers[0].scheme", Matchers.equalTo("doi"));
     }
 
+    /**
+     * DOI 10.1038/s41467-022-33468-6 - a real Nature Communications article whose authors carry
+     * ORCIDs and which has no "page" field, unlike the {@code nature12373} fixture above.
+     */
+    @Test
+    void getProductById_returnsSkgIfEnvelope_orcidArticle() throws IOException {
+        when(crossrefClient.getWork(eq("10.1038/s41467-022-33468-6")))
+                .thenReturn(loadFixture("crossref-journal-article-with-orcid.json"));
+
+        given()
+                .when().get(BASE + "/crossref/products/10.1038/s41467-022-33468-6")
+                .then()
+                .statusCode(200)
+                .body("'@graph'[0].local_identifier", Matchers.equalTo("https://doi.org/10.1038/s41467-022-33468-6"))
+                .body("'@graph'[0].product_type", Matchers.equalTo("literature"))
+                .body("'@graph'[0].identifiers[0].scheme", Matchers.equalTo("doi"))
+                .body("'@graph'[0].contributions[0].by.identifiers[0].scheme", Matchers.equalTo("orcid"))
+                .body("'@graph'[0].manifestations[0].access_rights.status", Matchers.equalTo("open"));
+    }
+
+    /**
+     * DOI 10.17537/icmbb18.42 - a real conference-proceedings record (type:
+     * "proceedings-article"), unlike the journal-article fixtures above.
+     */
+    @Test
+    void getProductById_returnsSkgIfEnvelope_proceedingsArticle() throws IOException {
+        when(crossrefClient.getWork(eq("10.17537/icmbb18.42")))
+                .thenReturn(loadFixture("crossref-proceedings-article.json"));
+
+        given()
+                .when().get(BASE + "/crossref/products/10.17537/icmbb18.42")
+                .then()
+                .statusCode(200)
+                .body("'@graph'[0].local_identifier", Matchers.equalTo("https://doi.org/10.17537/icmbb18.42"))
+                .body("'@graph'[0].product_type", Matchers.equalTo("literature"))
+                .body("'@graph'[0].identifiers[0].scheme", Matchers.equalTo("doi"));
+    }
+
+    /**
+     * DOI 10.1103/physrevb.110.174515 - a real Physical Review B article whose author
+     * affiliations carry a ROR directly, unlike the other journal-article fixtures above.
+     */
+    @Test
+    void getProductById_returnsSkgIfEnvelope_rorAffiliationArticle() throws IOException {
+        when(crossrefClient.getWork(eq("10.1103/physrevb.110.174515")))
+                .thenReturn(loadFixture("crossref-journal-article-with-ror-affiliation.json"));
+
+        given()
+                .when().get(BASE + "/crossref/products/10.1103/physrevb.110.174515")
+                .then()
+                .statusCode(200)
+                .body("'@graph'[0].local_identifier", Matchers.equalTo("https://doi.org/10.1103/physrevb.110.174515"))
+                .body("'@graph'[0].product_type", Matchers.equalTo("literature"))
+                .body("'@graph'[0].contributions[0].declared_affiliations[0].identifiers[0].scheme",
+                        Matchers.equalTo("ror"))
+                .body("'@graph'[0].contributions[0].declared_affiliations[0].identifiers[0].value",
+                        Matchers.equalTo("00tmb7y09"));
+    }
+
     @Test
     void getProductById_notFound_returns404WithRfc7807Error() {
         when(crossrefClient.getWork(any())).thenThrow(new NotFoundException());
@@ -160,6 +219,68 @@ class CrossrefProductsResourceTest {
                 .extract().asString();
 
         compareOrWriteGolden(objectMapper.readTree(actualBody), "expected/crossref-product-nature12373.json");
+    }
+
+    /**
+     * Same golden-regression pattern as above, for DOI 10.1038/s41467-022-33468-6 (ORCID-bearing
+     * authors, no "page" field) - regenerate via {@code mvn test -Dtest=CrossrefProductsResourceTest
+     * -Dgolden.regenerate=true} then review the diff before committing.
+     */
+    @Test
+    void getProductById_matchesExpectedJsonLd_orcidArticle() throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        when(crossrefClient.getWork(eq("10.1038/s41467-022-33468-6")))
+                .thenReturn(loadFixture("crossref-journal-article-with-orcid.json"));
+
+        String actualBody = given()
+                .when().get(BASE + "/crossref/products/10.1038/s41467-022-33468-6")
+                .then()
+                .statusCode(200)
+                .extract().asString();
+
+        compareOrWriteGolden(objectMapper.readTree(actualBody), "expected/crossref-product-s41467-022-33468-6.json");
+    }
+
+    /**
+     * Same golden-regression pattern as above, for DOI 10.17537/icmbb18.42 (a
+     * "proceedings-article" with no license/funder) - regenerate via {@code mvn test
+     * -Dtest=CrossrefProductsResourceTest -Dgolden.regenerate=true} then review the diff
+     * before committing.
+     */
+    @Test
+    void getProductById_matchesExpectedJsonLd_proceedingsArticle() throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        when(crossrefClient.getWork(eq("10.17537/icmbb18.42")))
+                .thenReturn(loadFixture("crossref-proceedings-article.json"));
+
+        String actualBody = given()
+                .when().get(BASE + "/crossref/products/10.17537/icmbb18.42")
+                .then()
+                .statusCode(200)
+                .extract().asString();
+
+        compareOrWriteGolden(objectMapper.readTree(actualBody), "expected/crossref-product-icmbb18-42.json");
+    }
+
+    /**
+     * Same golden-regression pattern as above, for DOI 10.1103/physrevb.110.174515 (ROR-tagged
+     * author affiliations, a funder with its own Funder Registry DOI) - regenerate via {@code
+     * mvn test -Dtest=CrossrefProductsResourceTest -Dgolden.regenerate=true} then review the
+     * diff before committing.
+     */
+    @Test
+    void getProductById_matchesExpectedJsonLd_rorAffiliationArticle() throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        when(crossrefClient.getWork(eq("10.1103/physrevb.110.174515")))
+                .thenReturn(loadFixture("crossref-journal-article-with-ror-affiliation.json"));
+
+        String actualBody = given()
+                .when().get(BASE + "/crossref/products/10.1103/physrevb.110.174515")
+                .then()
+                .statusCode(200)
+                .extract().asString();
+
+        compareOrWriteGolden(objectMapper.readTree(actualBody), "expected/crossref-product-physrevb-110-174515.json");
     }
 
     private void compareOrWriteGolden(JsonNode actual, String expectedResource) throws IOException {
