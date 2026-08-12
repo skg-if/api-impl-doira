@@ -1,0 +1,43 @@
+stages:
+  - build
+  #- image
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+
+build:
+  stage: build
+  tags:
+    - linux
+  image: maven:3.9-eclipse-temurin-21
+  script:
+    - mvn -B package
+  cache:
+    key: "$CI_COMMIT_REF_SLUG-m2"
+    paths:
+      - .m2/repository
+  artifacts:
+    paths:
+      - target/quarkus-app/
+    expire_in: 1 hour
+
+#docker-build-push:
+#  stage: image
+# tags:
+#  - linux
+#  image:
+#    name: gcr.io/kaniko-project/executor:debug
+#    entrypoint: [""]
+#  script:
+#    - mkdir -p /kaniko/.docker
+#    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(printf '%s:%s' "$CI_REGISTRY_USER" "$CI_REGISTRY_PASSWORD" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
+#    - >-
+#      /kaniko/executor
+#      --context "$CI_PROJECT_DIR"
+#      --dockerfile "$CI_PROJECT_DIR/src/main/docker/Dockerfile.jvm"
+#      --destination "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+#      --destination "$CI_REGISTRY_IMAGE:latest"
+#  rules:
+#    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+#  needs:
+#    - build
