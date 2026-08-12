@@ -8,4 +8,5 @@ public class DataCiteDoiData {
     public String id;
     public String type;
     public DataCiteAttributes attributes;
+    public DataCiteRelationships relationships;
 }

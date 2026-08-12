@@ -59,8 +59,11 @@ public class GrantsResource {
     @Inject
     ObjectMapper objectMapper;
 
+    @ConfigProperty(name = "skgif.sandbox.base-url")
+    String sandboxBaseUrl;
+
     @ConfigProperty(name = "skgif.context.base")
-    String contextBase;
+    String fallbackContextBase;
 
     // Optional<String>, not String: SmallRye Config treats a blank configured value as "no
     // value" for a plain String property, which throws at startup unless it's Optional (or
@@ -103,6 +106,7 @@ public class GrantsResource {
                 .localIdentifier(selfHref)
                 .entityType(MetaSingleEntity.EntityTypeEnum.SINGLE_ENTITY);
 
+        String contextBase = JsonLdResponses.contextBaseFor(data, sandboxBaseUrl, fallbackContextBase);
         ObjectNode root = JsonLdResponses.envelope(objectMapper, contextBase);
         root.set("meta", objectMapper.valueToTree(meta));
         ArrayNode graph = objectMapper.createArrayNode();
@@ -171,6 +175,7 @@ public class GrantsResource {
                 .entityType(MetaSearchPartOf.EntityTypeEnum.SEARCH_RESULT)
                 .totalItems((int) total));
 
+        String contextBase = JsonLdResponses.contextBaseFor(response.data, sandboxBaseUrl, fallbackContextBase);
         ObjectNode root = JsonLdResponses.envelope(objectMapper, contextBase);
         root.set("meta", objectMapper.valueToTree(meta));
         ArrayNode graph = objectMapper.createArrayNode();

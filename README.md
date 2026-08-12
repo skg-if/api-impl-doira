@@ -87,7 +87,8 @@ Key properties (`src/main/resources/application.properties`):
 | `datacite.api.base-url` | DataCite REST API base URL |
 | `datacite.prefix` | Optional - scopes `/products` and `/grants` results to one DataCite DOI prefix (e.g. your own organisation's). Blank (default) means no restriction. |
 | `skgif.local-identifier.base-url` | `https://doi.org/` - prefixed onto every entity's DOI to form its SKG-IF `local_identifier` |
-| `skgif.context.base` | Declared JSON-LD `@context` `@base` (a fallback, never actually resolved against - see `LocalIdentifiers` javadoc) |
+| `skgif.sandbox.base-url` | JSON-LD `@context` `@base` root - namespaced per-response to the DataCite client that registered the served DOI(s) (`relationships.client.data.id`, e.g. `inist.esrf`) |
+| `skgif.context.base` | Fallback `@base`, used only when a DOI's DataCite data carries no client relationship |
 | `skgif.default-page-size` | Default `/products` and `/grants` page size |
 
 ## Project layout

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import java.util.List;
+import org.skgif.doi.datacite.dto.DataCiteDoiData;
 import org.skgif.doi.generated.model.ApiItem;
 import org.skgif.doi.generated.model.Error;
 import org.skgif.doi.generated.model.Link;
@@ -35,6 +36,47 @@ final class JsonLdResponses {
         context.add(base);
         root.set("@context", context);
         return root;
+    }
+
+    /**
+     * Namespaces the JSON-LD {@code @base} to the DataCite client that registered the DOI (e.g.
+     * {@code relationships.client.data.id == "inist.esrf"} becomes {@code
+     * <sandboxBaseUrl>inist.esrf/}), so on-the-fly identifiers minted for entities without a
+     * stable id of their own (see {@code DataCiteToSkgIfMapper#otf}) resolve into that client's
+     * own namespace rather than always the deployment's default. Falls back to {@code
+     * fallbackContextBase} when the DOI carries no client relationship (e.g. malformed/partial
+     * DataCite data).
+     */
+    static String contextBaseFor(DataCiteDoiData data, String sandboxBaseUrl, String fallbackContextBase) {
+        String clientId = clientId(data);
+        return clientId != null ? sandboxBaseUrl + clientId + "/" : fallbackContextBase;
+    }
+
+    /**
+     * List-endpoint variant of {@link #contextBaseFor(DataCiteDoiData, String, String)}: a
+     * single JSON-LD document can only declare one {@code @base}, so this namespaces to the
+     * first result's DataCite client - in practice every result on a page shares the same
+     * client, since {@code datacite.prefix} scopes a deployment to one organisation.
+     */
+    static String contextBaseFor(List<DataCiteDoiData> items, String sandboxBaseUrl, String fallbackContextBase) {
+        if (items == null) {
+            return fallbackContextBase;
+        }
+        return items.stream()
+                .map(JsonLdResponses::clientId)
+                .filter(id -> id != null)
+                .findFirst()
+                .map(id -> sandboxBaseUrl + id + "/")
+                .orElse(fallbackContextBase);
+    }
+
+    private static String clientId(DataCiteDoiData data) {
+        if (data == null || data.relationships == null || data.relationships.client == null
+                || data.relationships.client.data == null) {
+            return null;
+        }
+        String id = data.relationships.client.data.id;
+        return id != null && !id.isBlank() ? id : null;
     }
 
     static String selfLink(UriInfo uriInfo, String resourcePath, String doi) {
