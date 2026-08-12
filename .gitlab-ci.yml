@@ -7,6 +7,8 @@ variables:
 
 build:
   stage: build
+  tags:
+    - linux
   image: maven:3.9-eclipse-temurin-21
   script:
     - mvn -B package
@@ -21,6 +23,8 @@ build:
 
 #docker-build-push:
 #  stage: image
+# tags:
+#  - linux
 #  image:
 #    name: gcr.io/kaniko-project/executor:debug
 #    entrypoint: [""]
