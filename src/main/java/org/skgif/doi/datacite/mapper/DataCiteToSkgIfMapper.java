@@ -208,6 +208,12 @@ public class DataCiteToSkgIfMapper {
                         .role(contributorRole(contributor.contributorType)));
             }
         }
+        if (attributes.publisher != null) {
+            contributions.add(new ProductContribution()
+                    .by(organisationRef(attributes.doi, attributes.publisher))
+                    .rank(rank++)
+                    .role(ProductContribution.RoleEnum.PUBLISHER));
+        }
         return contributions.isEmpty() ? null : contributions;
     }
 
@@ -234,6 +240,17 @@ public class DataCiteToSkgIfMapper {
             by.identifiers(identifiers);
         }
         return by;
+    }
+
+    /**
+     * DataCite's top-level {@code publisher} is a bare string with no external identifier
+     * system behind it, so - like the {@code hosting_data_source} use of the same field - this
+     * always gets an otf id.
+     */
+    private ProductContributionBy organisationRef(String doi, String name) {
+        return new ProductContributionBy()
+                .localIdentifier(otf(doi, name))
+                .name(name);
     }
 
     private String firstOrcid(List<DataCiteNameIdentifier> nameIdentifiers) {

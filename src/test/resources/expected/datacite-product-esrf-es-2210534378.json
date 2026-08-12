@@ -117,6 +117,16 @@
       } ],
       "rank" : 3,
       "role" : "author"
+    }, {
+      "by" : {
+        "local_identifier" : "otf___10-15151-esrf-es-2210534378___european-synchrotron-radiation-facility",
+        "identifiers" : [ ],
+        "name" : "European Synchrotron Radiation Facility",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "rank" : 4,
+      "role" : "publisher"
     } ],
     "manifestations" : [ {
       "type" : {

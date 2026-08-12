@@ -194,6 +194,12 @@ public class CrossrefToSkgIfMapper {
                         .role(ProductContribution.RoleEnum.EDITOR));
             }
         }
+        if (work.publisher != null) {
+            contributions.add(new ProductContribution()
+                    .by(organisationRef(work.doi, work.publisher))
+                    .rank(rank++)
+                    .role(ProductContribution.RoleEnum.PUBLISHER));
+        }
         return contributions.isEmpty() ? null : contributions;
     }
 
@@ -209,6 +215,17 @@ public class CrossrefToSkgIfMapper {
             by.identifiers(List.of(new AgentAllOfIdentifiers().scheme("orcid").value(bareOrcid)));
         }
         return by;
+    }
+
+    /**
+     * Crossref's top-level {@code publisher} is a bare string with no external identifier
+     * system behind it, so - like the {@code hosting_data_source} use of the same field - this
+     * always gets an otf id.
+     */
+    private ProductContributionBy organisationRef(String doi, String name) {
+        return new ProductContributionBy()
+                .localIdentifier(otf(doi, name))
+                .name(name);
     }
 
     /** Crossref's ORCID field is already a full URL (http or https) - normalize both to bare. */

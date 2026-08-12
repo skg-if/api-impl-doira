@@ -113,6 +113,16 @@
       },
       "rank" : 8,
       "role" : "author"
+    }, {
+      "by" : {
+        "local_identifier" : "otf___10-1038-nature12373___springer-science-and-business-media-llc",
+        "identifiers" : [ ],
+        "name" : "Springer Science and Business Media LLC",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "rank" : 9,
+      "role" : "publisher"
     } ],
     "manifestations" : [ {
       "type" : {

@@ -143,8 +143,8 @@ class DataCiteToSkgIfMapperTest {
     void mapsContributorsWithRolesAndAffiliations() throws IOException {
         Product product = mapFixture("datacite-esrf-es-2210534378.json");
 
-        // 1 creator + 2 contributors (DataCollector, ProjectManager)
-        assertEquals(3, product.getContributions().size());
+        // 1 creator + 2 contributors (DataCollector, ProjectManager) + 1 publisher
+        assertEquals(4, product.getContributions().size());
 
         ProductContribution dataCollector = product.getContributions().stream()
                 .filter(c -> "De Sanctis".equals(c.getBy().getFamilyName()))

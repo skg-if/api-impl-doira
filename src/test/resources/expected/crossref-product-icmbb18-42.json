@@ -101,6 +101,16 @@
       },
       "rank" : 7,
       "role" : "author"
+    }, {
+      "by" : {
+        "local_identifier" : "otf___10-17537-icmbb18-42___impb-ras-branch-of-kiam-ras",
+        "identifiers" : [ ],
+        "name" : "IMPB RAS - Branch of KIAM RAS",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "rank" : 8,
+      "role" : "publisher"
     } ],
     "manifestations" : [ {
       "type" : {

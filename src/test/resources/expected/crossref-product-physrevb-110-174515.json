@@ -204,6 +204,16 @@
       } ],
       "rank" : 5,
       "role" : "author"
+    }, {
+      "by" : {
+        "local_identifier" : "otf___10-1103-physrevb-110-174515___american-physical-society-aps",
+        "identifiers" : [ ],
+        "name" : "American Physical Society (APS)",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "rank" : 6,
+      "role" : "publisher"
     } ],
     "manifestations" : [ {
       "type" : {
