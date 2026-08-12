@@ -3,6 +3,7 @@ package org.skgif.doi.crossref;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.skgif.doi.crossref.dto.CrossrefWork;
 import org.skgif.doi.generated.model.Product;
 
@@ -21,6 +22,19 @@ import org.skgif.doi.generated.model.Product;
 public final class CrossrefTypeMapping {
 
     public static final String GRANT = "grant";
+
+    /**
+     * Crossref types whose XML representation nests the actual record inside a container element
+     * - a chapter-like {@code content_item} inside a {@code <book>} (with its own {@code
+     * book_series_metadata}/{@code book_metadata} sibling), or a {@code conference_paper} inside
+     * a {@code <conference>} (with its own {@code proceedings_series_metadata}/{@code
+     * proceedings_metadata} sibling) - carrying the container's title/DOI/ISBN far less
+     * ambiguously than the REST JSON's {@code container-title[]} array does. See {@code
+     * CrossrefVenueMetadataXmlParser}. {@code book}/{@code proceedings}/{@code proceedings-series}
+     * are deliberately excluded: their own venue is themselves, not a container they sit inside.
+     */
+    private static final Set<String> XML_VENUE_ENRICHABLE_TYPES =
+            Set.of("book-chapter", "book-section", "book-part", "reference-entry", "proceedings-article");
 
     private static final Map<String, Product.ProductTypeEnum> TO_PRODUCT_TYPE = buildMap();
 
@@ -53,6 +67,16 @@ public final class CrossrefTypeMapping {
 
     public static boolean isGrant(CrossrefWork work) {
         return work != null && GRANT.equalsIgnoreCase(work.type);
+    }
+
+    /**
+     * Whether this record is a chapter-in-a-book or paper-in-proceedings item, for which an
+     * accurate Venue requires fetching Crossref's XML transform (see {@code
+     * CrossrefXmlTransformClient}) rather than relying on the ambiguous {@code container-title[]}
+     * REST JSON array alone.
+     */
+    public static boolean isXmlVenueEnrichable(CrossrefWork work) {
+        return work != null && XML_VENUE_ENRICHABLE_TYPES.contains(work.type);
     }
 
     /**

@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossref_result xmlns="http://www.crossref.org/qrschema/3.0" version="3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.crossref.org/qrschema/3.0 http://www.crossref.org/schemas/crossref_query_output3.0.xsd">
+  <query_result>
+    <head>
+      <doi_batch_id>none</doi_batch_id>
+    </head>
+    <body>
+      <query status="resolved">
+        <doi type="book_content">10.1007/978-3-319-66787-4_9</doi>
+        <crm-item name="publisher-name" type="string">Springer Science and Business Media LLC</crm-item>
+        <crm-item name="prefix-name" type="string">Springer-Verlag</crm-item>
+        <crm-item name="member-id" type="number">297</crm-item>
+        <crm-item name="citation-id" type="number">92538544</crm-item>
+        <crm-item name="book-id" type="number">2488383</crm-item>
+        <crm-item name="series-id" type="number">267818</crm-item>
+        <crm-item name="deposit-timestamp" type="number">20200918020224076</crm-item>
+        <crm-item name="owner-prefix" type="string">10.1007</crm-item>
+        <crm-item name="last-update" type="date">2025-06-24T21:34:34Z</crm-item>
+        <crm-item name="created" type="date">2017-08-24T09:06:02Z</crm-item>
+        <crm-item name="citedby-count" type="number">44</crm-item>
+        <doi_record>
+          <crossref xmlns="http://www.crossref.org/xschema/1.1" xsi:schemaLocation="http://www.crossref.org/xschema/1.1 http://doi.crossref.org/schemas/unixref1.1.xsd">
+            <book book_type="other">
+              <book_series_metadata language="en">
+                <series_metadata>
+                  <titles>
+                    <title>Lecture Notes in Computer Science</title>
+                  </titles>
+                  <issn media_type="print">0302-9743</issn>
+                  <issn media_type="electronic">1611-3349</issn>
+                </series_metadata>
+                <contributors>
+                  <person_name contributor_role="editor" sequence="first">
+                    <given_name>Wieland</given_name>
+                    <surname>Fischer</surname>
+                  </person_name>
+                  <person_name contributor_role="editor" sequence="additional">
+                    <given_name>Naofumi</given_name>
+                    <surname>Homma</surname>
+                  </person_name>
+                </contributors>
+                <titles>
+                  <title>Cryptographic Hardware and Embedded Systems – CHES 2017</title>
+                  <subtitle>19th International Conference, Taipei, Taiwan, September 25-28, 2017, Proceedings</subtitle>
+                </titles>
+                <volume>10529</volume>
+                <publication_date media_type="print">
+                  <year>2017</year>
+                </publication_date>
+                <isbn media_type="print">978-3-319-66786-7</isbn>
+                <isbn media_type="electronic">978-3-319-66787-4</isbn>
+                <publisher>
+                  <publisher_name>Springer International Publishing</publisher_name>
+                  <publisher_place>Cham</publisher_place>
+                </publisher>
+                <ai:program xmlns:ai="http://www.crossref.org/AccessIndicators.xsd" name="AccessIndicators">
+                  <ai:license_ref applies_to="tdm">http://www.springer.com/tdm</ai:license_ref>
+                  <ai:license_ref applies_to="vor">http://www.springer.com/tdm</ai:license_ref>
+                </ai:program>
+                <doi_data>
+                  <doi>10.1007/978-3-319-66787-4</doi>
+                  <resource>http://link.springer.com/10.1007/978-3-319-66787-4</resource>
+                  <collection property="crawler-based">
+                    <item crawler="iParadigms">
+                      <resource>http://link.springer.com/content/pdf/10.1007/978-3-319-66787-4</resource>
+                    </item>
+                  </collection>
+                  <collection property="text-mining">
+                    <item>
+                      <resource mime_type="application/pdf">http://link.springer.com/content/pdf/10.1007/978-3-319-66787-4.pdf</resource>
+                    </item>
+                  </collection>
+                </doi_data>
+              </book_series_metadata>
+              <content_item component_type="chapter" level_sequence_number="1" publication_type="full_text">
+                <contributors>
+                  <person_name contributor_role="author" sequence="first">
+                    <given_name>Stéphanie</given_name>
+                    <surname>Anceau</surname>
+                  </person_name>
+                  <person_name contributor_role="author" sequence="additional">
+                    <given_name>Pierre</given_name>
+                    <surname>Bleuet</surname>
+                  </person_name>
+                  <person_name contributor_role="author" sequence="additional">
+                    <given_name>Jessy</given_name>
+                    <surname>Clédière</surname>
+                  </person_name>
+                  <person_name contributor_role="author" sequence="additional">
+                    <given_name>Laurent</given_name>
+                    <surname>Maingault</surname>
+                  </person_name>
+                  <person_name contributor_role="author" sequence="additional">
+                    <given_name>Jean-luc</given_name>
+                    <surname>Rainard</surname>
+                  </person_name>
+                  <person_name contributor_role="author" sequence="additional">
+                    <given_name>Rémi</given_name>
+                    <surname>Tucoulou</surname>
+                  </person_name>
+                </contributors>
+                <titles>
+                  <title>Nanofocused X-Ray Beam to Reprogram Secure Circuits</title>
+                </titles>
+                <component_number>Chapter 9</component_number>
+                <publication_date media_type="print">
+                  <year>2017</year>
+                </publication_date>
+                <publication_date media_type="online">
+                  <month>08</month>
+                  <day>25</day>
+                  <year>2017</year>
+                </publication_date>
+                <pages>
+                  <first_page>175</first_page>
+                  <last_page>188</last_page>
+                </pages>
+                <crossmark>
+                  <crossmark_version>1</crossmark_version>
+                  <crossmark_policy>10.1007/springer_crossmark_policy</crossmark_policy>
+                  <crossmark_domains>
+                    <crossmark_domain>
+                      <domain>link.springer.com</domain>
+                    </crossmark_domain>
+                  </crossmark_domains>
+                  <crossmark_domain_exclusive>false</crossmark_domain_exclusive>
+                  <custom_metadata>
+                    <assertion group_label="Chapter History" group_name="ChapterHistory" label="First Online" name="first_online" order="1">25 August 2017</assertion>
+                    <assertion group_label="Conference Information" group_name="ConferenceInfo" label="Conference Acronym" name="conference_acronym" order="1">CHES</assertion>
+                    <assertion group_label="Conference Information" group_name="ConferenceInfo" label="Conference Name" name="conference_name" order="2">International Conference on Cryptographic Hardware and Embedded Systems</assertion>
+                    <assertion group_label="Conference Information" group_name="ConferenceInfo" label="Conference City" name="conference_city" order="3">Taipei</assertion>
+                    <assertion group_label="Conference Information" group_name="ConferenceInfo" label="Conference Country" name="conference_country" order="4">Taiwan</assertion>
+                    <assertion group_label="Conference Information" group_name="ConferenceInfo" label="Conference Year" name="conference_year" order="5">2017</assertion>
+                    <assertion group_label="Conference Information" group_name="ConferenceInfo" label="Conference Start Date" name="conference_start_date" order="7">25 September 2017</assertion>
+                    <assertion group_label="Conference Information" group_name="ConferenceInfo" label="Conference End Date" name="conference_end_date" order="8">28 September 2017</assertion>
+                    <assertion group_label="Conference Information" group_name="ConferenceInfo" label="Conference ID" name="conference_id" order="10">ches2017</assertion>
+                    <assertion group_label="Conference Information" group_name="ConferenceInfo" label="Conference URL" name="conference_url" order="11">https://ches.iacr.org/2017/</assertion>
+                    <assertion label="Free to read" name="free">This content has been made available to all.</assertion>
+                    <ai:program xmlns:ai="http://www.crossref.org/AccessIndicators.xsd" name="AccessIndicators">
+                      <ai:free_to_read start_date="2020-09-18" />
+                    </ai:program>
+                  </custom_metadata>
+                </crossmark>
+                <doi_data>
+                  <doi>10.1007/978-3-319-66787-4_9</doi>
+                  <resource>http://link.springer.com/10.1007/978-3-319-66787-4_9</resource>
+                  <collection property="crawler-based">
+                    <item crawler="iParadigms">
+                      <resource>http://link.springer.com/content/pdf/10.1007/978-3-319-66787-4_9</resource>
+                    </item>
+                  </collection>
+                </doi_data>
+                <citation_list>
+                  <citation key="9_CR1">
+                    <author>SP Skorobogatov</author>
+                    <first_page>2</first_page>
+                    <cYear>2003</cYear>
+                    <series_title>Lecture Notes in Computer Science</series_title>
+                    <volume_title>Cryptographic Hardware and Embedded Systems - CHES 2002</volume_title>
+                    <doi>10.1007/3-540-36400-5_2</doi>
+                    <unstructured_citation>Skorobogatov, S.P., Anderson, R.J.: Optical fault induction attacks. In: Kaliski, B.S., Koç, K., Paar, C. (eds.) CHES 2002. LNCS, vol. 2523, pp. 2–12. Springer, Heidelberg (2003). doi: 10.1007/3-540-36400-5_2</unstructured_citation>
+                  </citation>
+                  <citation key="9_CR2">
+                    <journal_title>IEEE Trans. Nucl. Sci.</journal_title>
+                    <author>DH Habing</author>
+                    <volume>12</volume>
+                    <first_page>91</first_page>
+                    <cYear>1965</cYear>
+                    <doi>10.1109/TNS.1965.4323904</doi>
+                    <unstructured_citation>Habing, D.H.: The use of lasers to simulate radiation-induced transients in semiconductor devices and circuits. IEEE Trans. Nucl. Sci. 12, 91–100 (1965)</unstructured_citation>
+                  </citation>
+                  <citation key="9_CR3">
+                    <doi provider="crossref">10.1109/IRPS.1984.362022</doi>
+                    <unstructured_citation>Henley, F.J.: Logic failure analysis of CMOS VLSI using a laser probe. In: 22nd Annual Reliability Physics Symposium, pp. 69–75 (1984)</unstructured_citation>
+                  </citation>
+                  <citation key="9_CR4">
+                    <doi provider="crossref">10.1109/IRPS.1984.362023</doi>
+                    <unstructured_citation>Burns, D., Pronobis, M., Eldering, C., Hillman, R.: Reliability/design assessment by internal-node timing-margin analysis using laser photocurrent injection. In: 22nd Annual Proceedings on Reliability Physics 1984, pp. 76–82. IEEE (1984)</unstructured_citation>
+                  </citation>
+                  <citation key="9_CR5">
+                    <doi provider="crossref">10.31399/asm.cp.istfa2013p0361</doi>
+                    <unstructured_citation>Hériveaux, L., Clédière, J., Anceau, S.: Electrical modeling of the effect of photoelectric laser fault injection on bulk CMOS design. In: 39th International Symposium for Testing and Failure Analysis ISTFA (2013)</unstructured_citation>
+                  </citation>
+                  <citation key="9_CR6">
+                    <unstructured_citation>Quisquatter, J.-J., Samyde, D.: Eddy current for magnetic analysis with active sensor. In: Proceedings of Esmart (2002)</unstructured_citation>
+                  </citation>
+                  <citation key="9_CR7">
+                    <unstructured_citation>Schmidt, J.-M., Hutter, M.: Optical and EM fault-attacks on CRT-based RSA: concrete results. In: 15th Austrian Workshop on Microelectronics, Austrochip (2007)</unstructured_citation>
+                  </citation>
+                  <citation key="9_CR8">
+                    <doi provider="crossref">10.1109/FDTC.2011.18</doi>
+                    <unstructured_citation>Poucheret, F., Tobich, K., Lisart, M., Chusseau, L., Robisson, B., Maurine, P.: Local and direct EM injection of power into CMOS integrated circuits. In: Fault Diagnosis and Tolerance in Cryptography, FDTC (2011)</unstructured_citation>
+                  </citation>
+                  <citation key="9_CR9">
+                    <author>R Micheloni</author>
+                    <first_page>537</first_page>
+                    <cYear>2010</cYear>
+                    <volume_title>Inside NAND Flash Memories</volume_title>
+                    <doi>10.1007/978-90-481-9431-5</doi>
+                    <unstructured_citation>Micheloni, R., Crippa, L., Marelli, A.: Inside NAND Flash Memories, pp. 537–571. Springer, Heidelberg (2010)</unstructured_citation>
+                  </citation>
+                  <citation key="9_CR10">
+                    <journal_title>IEEE Trans. Nucl. Sci.</journal_title>
+                    <author>TR Oldham</author>
+                    <volume>50</volume>
+                    <first_page>483</first_page>
+                    <cYear>2003</cYear>
+                    <doi>10.1109/TNS.2003.812927</doi>
+                    <unstructured_citation>Oldham, T.R., McLean, F.B.: Total ionizing dose effects in MOS oxides and devices. IEEE Trans. Nucl. Sci. 50, 483–499 (2003)</unstructured_citation>
+                  </citation>
+                  <citation key="9_CR11">
+                    <author>TR Oldham</author>
+                    <cYear>1999</cYear>
+                    <series_title>Advances in Solid State Electronics and Technology (ASSET) Series</series_title>
+                    <volume_title>Ionizing Radiation Effect in MOS Oxides</volume_title>
+                    <unstructured_citation>Oldham, T.R.: Ionizing Radiation Effect in MOS Oxides. Advances in Solid State Electronics and Technology (ASSET) Series. World Scientific, Singapore (1999)</unstructured_citation>
+                  </citation>
+                  <citation key="9_CR12">
+                    <journal_title>IEEE Trans. Nucl. Sci.</journal_title>
+                    <author>S Gerardin</author>
+                    <volume>60</volume>
+                    <issue>3</issue>
+                    <first_page>1953</first_page>
+                    <cYear>2013</cYear>
+                    <doi>10.1109/TNS.2013.2254497</doi>
+                    <unstructured_citation>Gerardin, S., Bagatin, M., Paccagnella, A., Grürmann, K., Gliem, F., Oldham, T.R., Irom, F., Nguyen, D.N.: Radiation effects in flash memories. IEEE Trans. Nucl. Sci. 60(3), 1953–1969 (2013)</unstructured_citation>
+                  </citation>
+                  <citation key="9_CR13">
+                    <unstructured_citation>Bar-El, H., Choukri, H., Naccache, D., Tunstall, M., Whelan, C.: The Sorcerer’s Apprentice Guide to Fault Attacks. IACR Cryptology ePrint Archive (2004)</unstructured_citation>
+                  </citation>
+                  <citation key="9_CR14">
+                    <journal_title>J. Electron. Test.</journal_title>
+                    <author>M Soucarros</author>
+                    <volume>29</volume>
+                    <issue>3</issue>
+                    <first_page>367</first_page>
+                    <cYear>2013</cYear>
+                    <doi>10.1007/s10836-013-5356-1</doi>
+                    <unstructured_citation>Soucarros, M., Clédière, J., Dumas, C., Elbaz-Vincent, P.: Fault analysis and evaluation of a true random number generator embedded in a processor. J. Electron. Test. 29(3), 367–381 (2013)</unstructured_citation>
+                  </citation>
+                  <citation key="9_CR15">
+                    <journal_title>J. Synchrotron Radiat.</journal_title>
+                    <author>G Martinez-Criado</author>
+                    <volume>23</volume>
+                    <issue>1</issue>
+                    <first_page>344</first_page>
+                    <cYear>2016</cYear>
+                    <doi>10.1107/S1600577515019839</doi>
+                    <unstructured_citation>Martinez-Criado, G., Villanova, J., Tucoulou, R., Salomon, D., Suuronen, J.-P., Labouré, S., Guilloud, C., Valls, V., Barrett, R., Gagliardini, E., Dabin, Y., Baker, R., Bohic, S., Cohen, C., Morse, J.: ID16B: a hard X-ray nanoprobe beamline at the ESRF for nano-analysis. J. Synchrotron Radiat. 23(1), 344–352 (2016)</unstructured_citation>
+                  </citation>
+                  <citation key="9_CR16">
+                    <unstructured_citation>ESRF. http://www.atmel.com/webdoc/avrassembler/</unstructured_citation>
+                  </citation>
+                  <citation key="9_CR17">
+                    <author>TP Ma</author>
+                    <cYear>1989</cYear>
+                    <volume_title>Ionizing Radiation Effects in MOS Devices and Circuits</volume_title>
+                    <unstructured_citation>Ma, T.P., Dressendorfer, P.V.: Ionizing Radiation Effects in MOS Devices and Circuits. Wiley, New York (1989)</unstructured_citation>
+                  </citation>
+                  <citation key="9_CR18">
+                    <journal_title>IEEE Trans. Nucl. Sci.</journal_title>
+                    <author>MR Shaneyfelt</author>
+                    <volume>37</volume>
+                    <issue>6</issue>
+                    <first_page>16</first_page>
+                    <cYear>1990</cYear>
+                    <doi>10.1109/23.101171</doi>
+                    <unstructured_citation>Shaneyfelt, M.R., Schwank, J.R., Fleetwood, D.M., Winokur, P.S., Hughes, K.L., Sexton, F.W.: Field dependence of interface trap buildup in polysilicon and metal gate MOS devices. IEEE Trans. Nucl. Sci. 37(6), 16–32 (1990)</unstructured_citation>
+                  </citation>
+                  <citation key="9_CR19">
+                    <doi provider="crossref">10.1109/IRPS.1983.361979</doi>
+                    <unstructured_citation>Caywood, J., Prickett, B.: Radiation-induced soft errors and floating gate memories. In: Proceedings of 21st Annual Reliability Physics Symposium, pp. 167–172 (1983)</unstructured_citation>
+                  </citation>
+                  <citation key="9_CR20">
+                    <journal_title>IEEE Trans. Nucl. Sci.</journal_title>
+                    <author>E Snyder</author>
+                    <volume>36</volume>
+                    <first_page>2131</first_page>
+                    <cYear>1989</cYear>
+                    <doi>10.1109/23.45415</doi>
+                    <unstructured_citation>Snyder, E., McWhorter, P., Dellin, T., Sweetman, J.: Radiation response of floating gate EEPROM memory cells. IEEE Trans. Nucl. Sci. 36, 2131–2139 (1989)</unstructured_citation>
+                  </citation>
+                  <citation key="9_CR21">
+                    <journal_title>IEEE Trans. Nucl. Sci.</journal_title>
+                    <author>P McNulty</author>
+                    <volume>49</volume>
+                    <first_page>3016</first_page>
+                    <cYear>2002</cYear>
+                    <doi>10.1109/TNS.2002.805975</doi>
+                    <unstructured_citation>McNulty, P., Yow, S., Scheick, L., Abdel-Kader, W.: Charge removal from FGMOS floating gates. IEEE Trans. Nucl. Sci. 49, 3016–3021 (2002)</unstructured_citation>
+                  </citation>
+                  <citation key="9_CR22">
+                    <journal_title>Appl. Phys. Lett.</journal_title>
+                    <author>G Cellere</author>
+                    <volume>85</volume>
+                    <first_page>485</first_page>
+                    <cYear>2004</cYear>
+                    <doi>10.1063/1.1773932</doi>
+                    <unstructured_citation>Cellere, G., Paccagnella, A., Visconti, A., Bonanomi, M.: Ionizing radiation effects on floating gates. Appl. Phys. Lett. 85, 485–487 (2004)</unstructured_citation>
+                  </citation>
+                  <citation key="9_CR23">
+                    <journal_title>IEEE Trans. Nucl. Sci.</journal_title>
+                    <author>G Cellere</author>
+                    <volume>51</volume>
+                    <first_page>3753</first_page>
+                    <cYear>2004</cYear>
+                    <doi>10.1109/TNS.2004.839243</doi>
+                    <unstructured_citation>Cellere, G., Paccagnella, A., Visconti, A., Bonanomi, M., Caprara, P., Lora, S.: A model for TID effects on floating gate memory cells. IEEE Trans. Nucl. Sci. 51, 3753–3758 (2004)</unstructured_citation>
+                  </citation>
+                  <citation key="9_CR24">
+                    <journal_title>IEEE Trans. Nucl. Sci.</journal_title>
+                    <author>G Cellere</author>
+                    <volume>51</volume>
+                    <first_page>2912</first_page>
+                    <cYear>2004</cYear>
+                    <doi>10.1109/TNS.2004.835056</doi>
+                    <unstructured_citation>Cellere, G., Paccagnella, A., Lora, S., Pozza, A., Tao, G., Scarpa, A.: Charge loss after 60 Co irradiation of flash arrays. IEEE Trans. Nucl. Sci. 51, 2912–2916 (2004)</unstructured_citation>
+                  </citation>
+                  <citation key="9_CR25">
+                    <journal_title>IEEE Trans. Nucl. Sci.</journal_title>
+                    <author>J Wang</author>
+                    <volume>51</volume>
+                    <first_page>3759</first_page>
+                    <cYear>2004</cYear>
+                    <doi>10.1109/TNS.2004.839255</doi>
+                    <unstructured_citation>Wang, J., Samiee, S., Chen, H.-S., Huang, C.-K., Cheung, M., Borillo, J., Sun, S.-N., Cronquist, B., McCollum, J.: Total ionizing dose effects on flash-based field programmable gate array. IEEE Trans. Nucl. Sci. 51, 3759–3766 (2004)</unstructured_citation>
+                  </citation>
+                  <citation key="9_CR26">
+                    <doi provider="crossref">10.1109/REDW.2006.295475</doi>
+                    <unstructured_citation>Wang, J., Kuganesan, G., Charest, N., Cronquist, B.: Biased-irradiation characteristics of the floating gate switch in FPGA. In: Proceedings of IEEE Radiation Effects Data Workshop, pp. 101–104, July 2006</unstructured_citation>
+                  </citation>
+                  <citation key="9_CR27">
+                    <journal_title>IEEE Trans. Nucl. Sci.</journal_title>
+                    <author>G Cellere</author>
+                    <volume>54</volume>
+                    <first_page>1066</first_page>
+                    <cYear>2007</cYear>
+                    <doi>10.1109/TNS.2007.901199</doi>
+                    <unstructured_citation>Cellere, G., Paccagnella, A., Visconti, A., Bonanomi, M., Beltrami, S., Schwank, J., Shaneyfelt, M., Paillet, P.: Total ionizing dose effects in NOR and NAND flash memories. IEEE Trans. Nucl. Sci. 54, 1066–1070 (2007)</unstructured_citation>
+                  </citation>
+                  <citation key="9_CR28">
+                    <doi provider="crossref">10.1109/REDW.1998.731486</doi>
+                    <unstructured_citation>Nguyen, D.N., Lee, C.I., Johnston, A.H.: Total ionizing dose effects on flash memories. In: IEEE Radiation Effect Data Workshop, p. 100 (1998)</unstructured_citation>
+                  </citation>
+                  <citation key="9_CR29">
+                    <unstructured_citation>Sharma, A.K.: Semiconductor memory radiation effects. In: Semiconductor Memories, Technology, Testing and Reliability, Chap. 7, p. 328. IEEE (1997)</unstructured_citation>
+                  </citation>
+                  <citation key="9_CR30">
+                    <unstructured_citation>ATMEL AVR Assembler. http://pymca.sourceforge.net/</unstructured_citation>
+                  </citation>
+                </citation_list>
+              </content_item>
+            </book>
+          </crossref>
+        </doi_record>
+      </query>
+    </body>
+  </query_result>
+</crossref_result>

@@ -1,0 +1,97 @@
+{
+  "@context" : [ "https://w3id.org/skg-if/context/1.1.0/skg-if.json", "https://w3id.org/skg-if/context/1.0.0/skg-if-api.json", {
+    "@base" : "https://w3id.org/skg-if/sandbox/esrf/"
+  } ],
+  "meta" : {
+    "local_identifier" : "http://localhost:8081/skg-if/api/crossref/products/10.1007/978-1-4842-7310-4_15",
+    "entity_type" : "single_entity"
+  },
+  "@graph" : [ {
+    "local_identifier" : "https://doi.org/10.1007/978-1-4842-7310-4_15",
+    "identifiers" : [ {
+      "scheme" : "doi",
+      "value" : "10.1007/978-1-4842-7310-4_15"
+    } ],
+    "entity_type" : "product",
+    "product_type" : "literature",
+    "titles" : {
+      "en" : [ "Extensions" ]
+    },
+    "contributions" : [ {
+      "by" : {
+        "local_identifier" : "otf___10-1007-978-1-4842-7310-4-15___bauke-scholtz",
+        "identifiers" : [ ],
+        "given_name" : "Bauke",
+        "family_name" : "Scholtz",
+        "name" : "Bauke Scholtz",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "rank" : 1,
+      "role" : "author"
+    }, {
+      "by" : {
+        "local_identifier" : "otf___10-1007-978-1-4842-7310-4-15___arjan-tijms",
+        "identifiers" : [ ],
+        "given_name" : "Arjan",
+        "family_name" : "Tijms",
+        "name" : "Arjan Tijms",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "rank" : 2,
+      "role" : "author"
+    }, {
+      "by" : {
+        "local_identifier" : "otf___10-1007-978-1-4842-7310-4-15___apress",
+        "identifiers" : [ ],
+        "name" : "Apress",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "rank" : 3,
+      "role" : "publisher"
+    } ],
+    "manifestations" : [ {
+      "type" : {
+        "labels" : {
+          "en" : "book-chapter"
+        }
+      },
+      "dates" : {
+        "creation" : [ "2022-03-15" ],
+        "deposit" : [ "2022-03-15" ],
+        "publication" : [ "2022", "2022-03-16", "2022" ]
+      },
+      "access_rights" : { },
+      "licence" : "https://www.springer.com/tdm",
+      "biblio" : {
+        "pages" : {
+          "first" : "499",
+          "last" : "518"
+        },
+        "in" : {
+          "local_identifier" : "https://doi.org/10.1007/978-1-4842-7310-4",
+          "identifiers" : [ {
+            "scheme" : "doi",
+            "value" : "10.1007/978-1-4842-7310-4"
+          }, {
+            "scheme" : "isbn",
+            "value" : "978-1-4842-7309-8"
+          }, {
+            "scheme" : "isbn",
+            "value" : "978-1-4842-7310-4"
+          } ],
+          "entity_type" : "venue",
+          "name" : "The Definitive Guide to Jakarta Faces in Jakarta EE 10"
+        },
+        "hosting_data_source" : {
+          "local_identifier" : "otf___10-1007-978-1-4842-7310-4-15___apress",
+          "identifiers" : [ ],
+          "entity_type" : "datasource",
+          "name" : "Apress"
+        }
+      }
+    } ]
+  } ]
+}

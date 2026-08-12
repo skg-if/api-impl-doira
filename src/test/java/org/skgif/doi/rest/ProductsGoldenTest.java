@@ -4,18 +4,22 @@ import static io.restassured.RestAssured.given;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.ws.rs.core.Response;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.Test;
 import org.skgif.doi.crossref.CrossrefClient;
+import org.skgif.doi.crossref.CrossrefXmlTransformClient;
 import org.skgif.doi.crossref.dto.CrossrefWorkResponse;
 import org.skgif.doi.datacite.DataCiteClient;
 import org.skgif.doi.datacite.dto.DataCiteDoiListResponse;
@@ -48,6 +52,10 @@ class ProductsGoldenTest {
     @RestClient
     CrossrefClient crossrefClient;
 
+    @InjectMock
+    @RestClient
+    CrossrefXmlTransformClient crossrefXmlTransformClient;
+
     private DataCiteDoiResponse loadDataCiteFixture(String resourceName) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
@@ -60,6 +68,25 @@ class ProductsGoldenTest {
         try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
             return objectMapper.readValue(in, CrossrefWorkResponse.class);
         }
+    }
+
+    private String loadRawResource(String resourceName) throws IOException {
+        try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
+            return new String(in.readAllBytes(), StandardCharsets.UTF_8);
+        }
+    }
+
+    /**
+     * A 200 {@link Response} mock wrapping the given XML fixture's raw content. Must be built as
+     * its own statement, assigned to a local variable, before being passed to {@code
+     * when(...).thenReturn(...)} elsewhere - see {@code CrossrefProductsResourceTest}'s copy of
+     * this helper for why inlining it corrupts Mockito's stubbing state.
+     */
+    private Response okXmlResponse(String xmlResourceName) throws IOException {
+        Response response = mock(Response.class);
+        when(response.getStatus()).thenReturn(200);
+        when(response.readEntity(String.class)).thenReturn(loadRawResource(xmlResourceName));
+        return response;
     }
 
     @Test
@@ -186,14 +213,56 @@ class ProductsGoldenTest {
     }
 
     /**
-     * DOI 10.1007/978-3-319-66787-4_9 - a real book chapter ({@code type: "book-chapter"})
-     * whose {@code container-title[]} has two entries (LNCS series, then the actual proceedings
-     * title) - proves the mapper takes index 0 (the series) at the golden-output level.
+     * DOI 10.1007/978-3-319-66787-4_9 - a real book chapter ({@code type: "book-chapter"}) whose
+     * book is part of a series (LNCS). Crossref's XML transform is fetched for this type (see
+     * {@code CrossrefTypeMapping#isXmlVenueEnrichable}) and takes precedence over the ambiguous
+     * {@code container-title[]} array - proves the corrected book-title venue, the book's own
+     * DOI as a real {@code local_identifier}, combined doi/issn/isbn identifiers, and the series
+     * volume number at the golden-output level.
      */
     @Test
     void getProductById_matchesExpectedJsonLd_bookChapter() throws IOException {
         assertMatchesExpectedCrossrefJsonLd("10.1007/978-3-319-66787-4_9", "crossref-book-chapter.json",
-                "expected/crossref-book-chapter-out.json");
+                "crossref-book-chapter.xml", "expected/crossref-book-chapter-out.json");
+    }
+
+    /**
+     * DOI 10.1007/978-1-4842-7310-4_15 - a real book chapter whose book is standalone, not part
+     * of any series (Crossref's XML uses {@code book_metadata} rather than {@code
+     * book_series_metadata} here) - proves the no-series path at the golden-output level: book
+     * title/DOI/ISBN still enrich the venue, but there's no series ISSN and no volume number.
+     */
+    @Test
+    void getProductById_matchesExpectedJsonLd_bookChapterStandalone() throws IOException {
+        assertMatchesExpectedCrossrefJsonLd("10.1007/978-1-4842-7310-4_15", "crossref-book-chapter-standalone.json",
+                "crossref-book-chapter-standalone.xml", "expected/crossref-book-chapter-standalone-out.json");
+    }
+
+    /**
+     * DOI 10.2991/assehr.k.211222.032 - a real proceedings-article (ICIRAD 2021, Atlantis Press)
+     * whose {@code container-title[]} has the exact same series-vs-actual-title ambiguity as the
+     * book-chapter case above, and whose {@code proceedings_series_metadata} has no
+     * {@code doi_data} - proves the corrected proceedings-title venue, the otf-id
+     * {@code local_identifier} fallback (no container DOI recorded here), combined issn/isbn
+     * identifiers, and the series volume number at the golden-output level.
+     */
+    @Test
+    void getProductById_matchesExpectedJsonLd_proceedingsArticleWithSeries() throws IOException {
+        assertMatchesExpectedCrossrefJsonLd("10.2991/assehr.k.211222.032", "crossref-proceedings-article-with-series.json",
+                "crossref-proceedings-article-with-series.xml", "expected/crossref-proceedings-article-with-series-out.json");
+    }
+
+    /**
+     * DOI 10.1109/freq.1998.717994 (the user's own example) - a real IEEE proceedings-article
+     * whose proceedings isn't part of any series ({@code proceedings_metadata}, no {@code
+     * proceedings_series_metadata}). Its REST JSON {@code container-title[0]} already happens to
+     * match the XML's {@code proceedings_title}, but its ISBN is entirely absent from the REST
+     * JSON - proves the XML-only ISBN enrichment path for proceedings at the golden-output level.
+     */
+    @Test
+    void getProductById_matchesExpectedJsonLd_proceedingsArticleStandalone() throws IOException {
+        assertMatchesExpectedCrossrefJsonLd("10.1109/freq.1998.717994", "crossref-proceedings-article-standalone.json",
+                "crossref-proceedings-article-standalone.xml", "expected/crossref-proceedings-article-standalone-out.json");
     }
 
     private void assertMatchesExpectedDataCiteJsonLd(String doi, String dataCiteFixture, String expectedJsonLdResource)
@@ -207,6 +276,25 @@ class ProductsGoldenTest {
     private void assertMatchesExpectedCrossrefJsonLd(String doi, String crossrefFixture, String expectedJsonLdResource)
             throws IOException {
         when(crossrefClient.getWork(eq(doi))).thenReturn(loadCrossrefFixture(crossrefFixture));
+
+        String actualBody = given().when().get(BASE + "/crossref/products/" + doi).then().statusCode(200).extract().asString();
+        compareOrWriteGolden(new ObjectMapper().readTree(actualBody), expectedJsonLdResource);
+    }
+
+    /**
+     * Overload for chapter-in-a-book or paper-in-proceedings DOIs, additionally mocking the XML
+     * transform fetch (see {@code CrossrefTypeMapping#isXmlVenueEnrichable}) that the plain
+     * overload above never triggers.
+     */
+    private void assertMatchesExpectedCrossrefJsonLd(String doi, String crossrefFixture, String venueXmlFixture,
+            String expectedJsonLdResource) throws IOException {
+        when(crossrefClient.getWork(eq(doi))).thenReturn(loadCrossrefFixture(crossrefFixture));
+        // Built as a separate statement, not inline as thenReturn(...)'s argument - okXmlResponse
+        // itself opens Mockito when(...)/thenReturn(...) stubs, and evaluating it inside another
+        // still-open when(...).thenReturn(...) call corrupts Mockito's single ongoing-stubbing
+        // state (UnfinishedStubbingException).
+        Response xmlResponse = okXmlResponse(venueXmlFixture);
+        when(crossrefXmlTransformClient.getXmlTransform(eq(doi))).thenReturn(xmlResponse);
 
         String actualBody = given().when().get(BASE + "/crossref/products/" + doi).then().statusCode(200).extract().asString();
         compareOrWriteGolden(new ObjectMapper().readTree(actualBody), expectedJsonLdResource);

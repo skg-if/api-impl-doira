@@ -118,17 +118,27 @@
           "first" : "175",
           "last" : "188"
         },
+        "volume" : "10529",
         "in" : {
-          "local_identifier" : "otf___10-1007-978-3-319-66787-4-9___lecture-notes-in-computer-science",
+          "local_identifier" : "https://doi.org/10.1007/978-3-319-66787-4",
           "identifiers" : [ {
+            "scheme" : "doi",
+            "value" : "10.1007/978-3-319-66787-4"
+          }, {
             "scheme" : "issn",
             "value" : "0302-9743"
           }, {
             "scheme" : "issn",
             "value" : "1611-3349"
+          }, {
+            "scheme" : "isbn",
+            "value" : "978-3-319-66786-7"
+          }, {
+            "scheme" : "isbn",
+            "value" : "978-3-319-66787-4"
           } ],
           "entity_type" : "venue",
-          "name" : "Lecture Notes in Computer Science"
+          "name" : "Cryptographic Hardware and Embedded Systems – CHES 2017"
         },
         "hosting_data_source" : {
           "local_identifier" : "otf___10-1007-978-3-319-66787-4-9___springer-international-publishing",

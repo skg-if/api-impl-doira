@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossref_result xmlns="http://www.crossref.org/qrschema/3.0" version="3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.crossref.org/qrschema/3.0 http://www.crossref.org/schemas/crossref_query_output3.0.xsd">
+  <query_result>
+    <head>
+      <doi_batch_id>none</doi_batch_id>
+    </head>
+    <body>
+      <query status="resolved">
+        <doi type="conference_paper">10.2991/assehr.k.211222.032</doi>
+        <crm-item name="publisher-name" type="string">Atlantis Press SARL</crm-item>
+        <crm-item name="prefix-name" type="string">Atlantis Press SARL</crm-item>
+        <crm-item name="member-id" type="number">1574</crm-item>
+        <crm-item name="citation-id" type="number">133493551</crm-item>
+        <crm-item name="book-id" type="number">3957768</crm-item>
+        <crm-item name="series-id" type="number">3743727</crm-item>
+        <crm-item name="deposit-timestamp" type="number">2023021406234500422</crm-item>
+        <crm-item name="owner-prefix" type="string">10.2991</crm-item>
+        <crm-item name="last-update" type="date">2023-02-14T01:24:08Z</crm-item>
+        <crm-item name="created" type="date">2022-01-03T08:04:38Z</crm-item>
+        <crm-item name="citedby-count" type="number">0</crm-item>
+        <doi_record>
+          <crossref xmlns="http://www.crossref.org/xschema/1.1" xsi:schemaLocation="http://www.crossref.org/xschema/1.1 http://doi.crossref.org/schemas/unixref1.1.xsd">
+            <conference>
+              <event_metadata>
+                <conference_name>4th International Conference on Innovative Research Across Disciplines (ICIRAD 2021)</conference_name>
+                <conference_acronym>icirad-21</conference_acronym>
+                <conference_location>Singaraja, Indonesia</conference_location>
+                <conference_date start_month="11" start_year="2021" start_day="2" end_month="11" end_year="2021" end_day="3" />
+              </event_metadata>
+              <proceedings_series_metadata>
+                <series_metadata>
+                  <titles>
+                    <title>Advances in Social Science, Education and Humanities Research</title>
+                  </titles>
+                  <issn media_type="electronic">2352-5398</issn>
+                </series_metadata>
+                <proceedings_title>Proceedings of the 4th International Conference on Innovative Research Across Disciplines (ICIRAD 2021)</proceedings_title>
+                <volume>613</volume>
+                <publisher>
+                  <publisher_name>Atlantis Press</publisher_name>
+                  <publisher_place>Paris, France</publisher_place>
+                </publisher>
+                <publication_date>
+                  <year>2021</year>
+                </publication_date>
+                <isbn>978-94-6239-490-2</isbn>
+              </proceedings_series_metadata>
+              <conference_paper publication_type="full_text">
+                <contributors>
+                  <person_name sequence="first" contributor_role="author">
+                    <given_name>Putu Kerti</given_name>
+                    <surname>Nitiasih</surname>
+                  </person_name>
+                  <person_name sequence="first" contributor_role="author">
+                    <given_name>Luh Gd Rahayu</given_name>
+                    <surname>Budiarta</surname>
+                  </person_name>
+                  <person_name sequence="first" contributor_role="author">
+                    <given_name>Ni Luh Putu Era</given_name>
+                    <surname>Adnyayanti</surname>
+                  </person_name>
+                </contributors>
+                <titles>
+                  <title>HOTS-Based English Learning Worksheet for Elementary School Students</title>
+                  <subtitle />
+                </titles>
+                <publication_date media_type="online">
+                  <year>2021</year>
+                </publication_date>
+                <publisher_item>
+                  <identifier id_type="other">125966772</identifier>
+                </publisher_item>
+                <doi_data>
+                  <doi>10.2991/assehr.k.211222.032</doi>
+                  <resource>https://www.atlantis-press.com/article/125966772</resource>
+                </doi_data>
+              </conference_paper>
+            </conference>
+          </crossref>
+        </doi_record>
+      </query>
+    </body>
+  </query_result>
+</crossref_result>

@@ -13,6 +13,7 @@ import org.skgif.doi.crossref.dto.CrossrefLicense;
 import org.skgif.doi.crossref.dto.CrossrefProject;
 import org.skgif.doi.crossref.dto.CrossrefReference;
 import org.skgif.doi.crossref.dto.CrossrefWork;
+import org.skgif.doi.crossref.xml.CrossrefVenueMetadata;
 import org.skgif.doi.generated.model.AgentAllOfIdentifiers;
 import org.skgif.doi.generated.model.EntityIdentifiersInner;
 import org.skgif.doi.generated.model.Grant;
@@ -80,6 +81,19 @@ public class CrossrefToSkgIfMapper {
     }
 
     public Product toProduct(CrossrefWork work) {
+        return toProduct(work, null);
+    }
+
+    /**
+     * Overload accepting venue metadata parsed from Crossref's XML transform endpoint ({@code
+     * application/vnd.crossref.unixsd+xml} - see {@code CrossrefVenueMetadataXmlParser}), fetched
+     * only for chapter-in-a-book or paper-in-proceedings records ({@link
+     * CrossrefTypeMapping#isXmlVenueEnrichable}). Lets {@link #venue} build an accurate Venue -
+     * real container title/DOI/ISBN instead of the ambiguous {@code container-title[0]} - when
+     * available; behaves exactly like the single-arg overload when {@code venueMetadata} is
+     * {@code null} (e.g. the XML fetch failed, or this isn't an enrichable record).
+     */
+    public Product toProduct(CrossrefWork work, CrossrefVenueMetadata venueMetadata) {
         Objects.requireNonNull(work.doi, "Crossref record has no DOI");
 
         return new Product()
@@ -90,7 +104,7 @@ public class CrossrefToSkgIfMapper {
                 .abstracts(abstracts(work))
                 .topics(topics(work))
                 .contributions(contributions(work))
-                .manifestations(List.of(manifestation(work)))
+                .manifestations(List.of(manifestation(work, venueMetadata)))
                 .funding(funding(work))
                 .relatedProducts(relatedProducts(work));
     }
@@ -294,13 +308,13 @@ public class CrossrefToSkgIfMapper {
         return ror.startsWith(ROR_BASE_URL) ? ror.substring(ROR_BASE_URL.length()) : ror;
     }
 
-    private ProductManifestation manifestation(CrossrefWork work) {
+    private ProductManifestation manifestation(CrossrefWork work, CrossrefVenueMetadata venueMetadata) {
         return new ProductManifestation()
                 .type(manifestationType(work))
                 .dates(dates(work))
                 .accessRights(accessRights(work))
                 .licence(licence(work))
-                .biblio(biblio(work));
+                .biblio(biblio(work, venueMetadata));
     }
 
     private ProductManifestationType manifestationType(CrossrefWork work) {
@@ -361,16 +375,22 @@ public class CrossrefToSkgIfMapper {
         return work.license.get(0).url;
     }
 
-    private ProductManifestationBiblio biblio(CrossrefWork work) {
+    private ProductManifestationBiblio biblio(CrossrefWork work, CrossrefVenueMetadata venueMetadata) {
         if (work.publisher == null && work.containerTitle == null && work.issue == null
-                && work.volume == null && work.page == null) {
+                && work.volume == null && work.page == null && venueMetadata == null) {
             return null;
         }
+        // The REST JSON's `volume` is the product's own volume/issue number (e.g. a journal
+        // volume); a book chapter's or proceedings paper's REST JSON commonly has neither that
+        // nor a series volume, but the XML transform's `.../volume` (e.g. an LNCS series volume
+        // number, or a recurring proceedings series volume) fills that gap when present.
+        String volume = work.volume != null ? work.volume
+                : venueMetadata != null ? venueMetadata.volume() : null;
         ProductManifestationBiblio biblio = new ProductManifestationBiblio()
                 .issue(work.issue)
-                .volume(work.volume)
+                .volume(volume)
                 .pages(pages(work.page))
-                .in(venue(work));
+                .in(venue(work, venueMetadata));
         if (work.publisher != null) {
             biblio.hostingDataSource(hostingDataSource(work));
         }
@@ -392,8 +412,23 @@ public class CrossrefToSkgIfMapper {
     /**
      * A new capability vs. the DataCite mapper, which never populates {@code biblio.in} at all -
      * Crossref's {@code container-title}/{@code ISSN} give a clean SKG-IF Venue.
+     *
+     * <p>For chapter-in-a-book or paper-in-proceedings records, {@code container-title[]} can
+     * hold more than one entry (e.g. a book or proceedings that's part of a series: {@code
+     * ["<series name>", "<actual title>"]}) with no way to tell them apart from the REST JSON
+     * alone - see {@code mapsVenueFromFirstContainerTitleEntryWhenNoBookMetadataAvailable}'s
+     * golden-tested fallback below. When {@code venueMetadata} (parsed from Crossref's XML
+     * transform endpoint - see {@code CrossrefVenueMetadataXmlParser}) is present, it takes
+     * precedence: the container's own DOI becomes a real {@code local_identifier} (rather than an
+     * otf id, when Crossref recorded one) and {@code identifiers[]} gains {@code doi} and {@code
+     * isbn} entries alongside any series {@code issn}. Falls back entirely to the {@code
+     * container-title[0]}+ISSN-only heuristic when {@code venueMetadata} is {@code null} or has
+     * no title (XML fetch failed, or this isn't an XML-enrichable record).
      */
-    private ProductManifestationBiblioIn venue(CrossrefWork work) {
+    private ProductManifestationBiblioIn venue(CrossrefWork work, CrossrefVenueMetadata venueMetadata) {
+        if (venueMetadata != null && venueMetadata.containerTitle() != null) {
+            return venueFromXmlMetadata(work.doi, venueMetadata);
+        }
         if (work.containerTitle == null || work.containerTitle.isEmpty() || work.containerTitle.get(0) == null) {
             return null;
         }
@@ -407,6 +442,35 @@ public class CrossrefToSkgIfMapper {
                     .filter(Objects::nonNull)
                     .map(issn -> new VenueLiteAllOfIdentifiers().scheme("issn").value(issn))
                     .toList());
+        }
+        return venue;
+    }
+
+    private ProductManifestationBiblioIn venueFromXmlMetadata(String doi, CrossrefVenueMetadata venueMetadata) {
+        String name = venueMetadata.containerTitle();
+        String containerDoi = venueMetadata.containerDoi();
+        ProductManifestationBiblioIn venue = new ProductManifestationBiblioIn()
+                .localIdentifier(containerDoi != null ? localIdentifiers.toFullLocalIdentifier(containerDoi)
+                        : otf(doi, name))
+                .entityType("venue")
+                .name(name);
+
+        List<VenueLiteAllOfIdentifiers> identifiers = new ArrayList<>();
+        if (containerDoi != null) {
+            identifiers.add(new VenueLiteAllOfIdentifiers().scheme("doi").value(containerDoi));
+        }
+        if (venueMetadata.seriesIssns() != null) {
+            venueMetadata.seriesIssns().stream()
+                    .filter(Objects::nonNull)
+                    .forEach(issn -> identifiers.add(new VenueLiteAllOfIdentifiers().scheme("issn").value(issn)));
+        }
+        if (venueMetadata.isbns() != null) {
+            venueMetadata.isbns().stream()
+                    .filter(Objects::nonNull)
+                    .forEach(isbn -> identifiers.add(new VenueLiteAllOfIdentifiers().scheme("isbn").value(isbn)));
+        }
+        if (!identifiers.isEmpty()) {
+            venue.identifiers(identifiers);
         }
         return venue;
     }

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossref_result xmlns="http://www.crossref.org/qrschema/3.0" version="3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.crossref.org/qrschema/3.0 http://www.crossref.org/schemas/crossref_query_output3.0.xsd">
+  <query_result>
+    <head>
+      <doi_batch_id>none</doi_batch_id>
+    </head>
+    <body>
+      <query status="resolved">
+        <doi type="conference_paper">10.1109/FREQ.1998.717994</doi>
+        <crm-item name="publisher-name" type="string">Institute of Electrical and Electronics Engineers (IEEE)</crm-item>
+        <crm-item name="prefix-name" type="string">Institute of Electrical and Electronics Engineers</crm-item>
+        <crm-item name="member-id" type="number">263</crm-item>
+        <crm-item name="citation-id" type="number">5993866</crm-item>
+        <crm-item name="book-id" type="number">250198</crm-item>
+        <crm-item name="deposit-timestamp" type="number">20021126</crm-item>
+        <crm-item name="owner-prefix" type="string">10.1109</crm-item>
+        <crm-item name="last-update" type="date">2017-06-15T11:21:38Z</crm-item>
+        <crm-item name="created" type="date">2002-11-27T15:42:54Z</crm-item>
+        <crm-item name="citedby-count" type="number">0</crm-item>
+        <doi_record>
+          <crossref xmlns="http://www.crossref.org/xschema/1.0" xsi:schemaLocation="http://www.crossref.org/xschema/1.0 http://doi.crossref.org/schemas/unixref1.0.xsd">
+            <conference>
+              <event_metadata>
+                <conference_name>1998 IEEE International Frequency Control Symposium (Cat. No.98CH36165)</conference_name>
+                <conference_acronym>FREQ-98</conference_acronym>
+                <conference_location>Pasadena, CA, USA</conference_location>
+                <conference_date>27-29 May 1998</conference_date>
+              </event_metadata>
+              <proceedings_metadata>
+                <proceedings_title>Proceedings of the 1998 IEEE International Frequency Control Symposium (Cat. No.98CH36165)</proceedings_title>
+                <publisher>
+                  <publisher_name>IEEE</publisher_name>
+                </publisher>
+                <publication_date>
+                  <year>1998</year>
+                </publication_date>
+                <isbn>0-7803-4373-5</isbn>
+              </proceedings_metadata>
+              <conference_paper publication_type="full_text">
+                <contributors>
+                  <person_name sequence="first" contributor_role="author">
+                    <given_name>B.</given_name>
+                    <surname>Capelle</surname>
+                  </person_name>
+                  <person_name sequence="additional" contributor_role="author">
+                    <given_name>J.</given_name>
+                    <surname>Detaint</surname>
+                  </person_name>
+                  <person_name sequence="additional" contributor_role="author">
+                    <given_name>A.</given_name>
+                    <surname>Zarka</surname>
+                  </person_name>
+                  <person_name sequence="additional" contributor_role="author">
+                    <given_name>Y.</given_name>
+                    <surname>Epelboin</surname>
+                  </person_name>
+                </contributors>
+                <titles>
+                  <title>New contrasts in the topographs of quartz obtained with the third generation synchrotron</title>
+                </titles>
+                <pages>
+                  <first_page>816</first_page>
+                  <last_page>822</last_page>
+                </pages>
+                <doi_data>
+                  <doi>10.1109/FREQ.1998.717994</doi>
+                  <resource>http://ieeexplore.ieee.org/document/717994/</resource>
+                  <collection property="crawler-based">
+                    <item crawler="iParadigms">
+                      <resource>http://xplorestaging.ieee.org/ielx4/5822/15518/00717994.pdf?arnumber=717994</resource>
+                    </item>
+                  </collection>
+                </doi_data>
+                <citation_list>
+                  <citation key="ref4">
+                    <journal_title>Acta Cryst</journal_title>
+                    <author>zheng</author>
+                    <cYear>1989</cYear>
+                    <doi provider="crossref">10.1107/S0108767388012309</doi>
+                    <volume>a45</volume>
+                    <first_page>275</first_page>
+                  </citation>
+                  <citation key="ref3">
+                    <doi>10.1109/FREQ.1992.269969</doi>
+                  </citation>
+                  <citation key="ref2">
+                    <doi>10.1109/FREQ.1989.68905</doi>
+                  </citation>
+                  <citation key="ref1">
+                    <journal_title>Croissance crois�e</journal_title>
+                    <cYear>0</cYear>
+                  </citation>
+                </citation_list>
+              </conference_paper>
+            </conference>
+          </crossref>
+        </doi_record>
+      </query>
+    </body>
+  </query_result>
+</crossref_result>

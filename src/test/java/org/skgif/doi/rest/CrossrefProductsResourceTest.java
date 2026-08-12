@@ -4,19 +4,23 @@ import static io.restassured.RestAssured.given;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.skgif.doi.crossref.CrossrefClient;
+import org.skgif.doi.crossref.CrossrefXmlTransformClient;
 import org.skgif.doi.crossref.dto.CrossrefWorkListResponse;
 import org.skgif.doi.crossref.dto.CrossrefWorkResponse;
 
@@ -35,11 +39,36 @@ class CrossrefProductsResourceTest {
     @RestClient
     CrossrefClient crossrefClient;
 
+    @InjectMock
+    @RestClient
+    CrossrefXmlTransformClient crossrefXmlTransformClient;
+
     private CrossrefWorkResponse loadFixture(String resourceName) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
             return objectMapper.readValue(in, CrossrefWorkResponse.class);
         }
+    }
+
+    private String loadRawResource(String resourceName) throws IOException {
+        try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
+            return new String(in.readAllBytes(), StandardCharsets.UTF_8);
+        }
+    }
+
+    /**
+     * A 200 {@link Response} mock wrapping the given XML fixture's raw content. Must be built as
+     * its own statement, assigned to a local variable, before being passed to {@code
+     * when(...).thenReturn(...)} elsewhere - it opens its own when()/thenReturn() stubs
+     * internally, and evaluating it inline as another still-open when(...).thenReturn(...)'s
+     * argument corrupts Mockito's single ongoing-stubbing state
+     * ({@code UnfinishedStubbingException}).
+     */
+    private Response okXmlResponse(String xmlResourceName) throws IOException {
+        Response response = mock(Response.class);
+        when(response.getStatus()).thenReturn(200);
+        when(response.readEntity(String.class)).thenReturn(loadRawResource(xmlResourceName));
+        return response;
     }
 
     @Test
@@ -119,12 +148,19 @@ class CrossrefProductsResourceTest {
     /**
      * DOI 10.1007/978-3-319-66787-4_9 - a real book chapter ({@code type: "book-chapter"})
      * whose {@code container-title[]} has two entries (series, then book title), unlike the
-     * single-entry journal-article fixtures above.
+     * single-entry journal-article fixtures above. Crossref's XML transform endpoint is fetched
+     * for this type (see {@code CrossrefTypeMapping#isXmlVenueEnrichable}) and takes precedence:
+     * the venue is named after the actual book, not the series, with a real DOI-based
+     * local_identifier and doi/issn/isbn identifiers together.
      */
     @Test
     void getProductById_returnsSkgIfEnvelope_bookChapter() throws IOException {
         when(crossrefClient.getWork(eq("10.1007/978-3-319-66787-4_9")))
                 .thenReturn(loadFixture("crossref-book-chapter.json"));
+        // Built as a separate statement - see okXmlResponse's javadoc for why this can't be
+        // inlined as another when(...).thenReturn(...)'s argument.
+        Response xmlResponse = okXmlResponse("crossref-book-chapter.xml");
+        when(crossrefXmlTransformClient.getXmlTransform(eq("10.1007/978-3-319-66787-4_9"))).thenReturn(xmlResponse);
 
         given()
                 .when().get(BASE + "/crossref/products/10.1007/978-3-319-66787-4_9")
@@ -133,7 +169,62 @@ class CrossrefProductsResourceTest {
                 .body("'@graph'[0].local_identifier", Matchers.equalTo("https://doi.org/10.1007/978-3-319-66787-4_9"))
                 .body("'@graph'[0].product_type", Matchers.equalTo("literature"))
                 .body("'@graph'[0].manifestations[0].biblio.in.name",
+                        Matchers.equalTo("Cryptographic Hardware and Embedded Systems – CHES 2017"))
+                .body("'@graph'[0].manifestations[0].biblio.in.local_identifier",
+                        Matchers.equalTo("https://doi.org/10.1007/978-3-319-66787-4"))
+                .body("'@graph'[0].manifestations[0].biblio.in.identifiers.scheme",
+                        Matchers.hasItems("doi", "issn", "isbn"))
+                .body("'@graph'[0].manifestations[0].biblio.volume", Matchers.equalTo("10529"));
+    }
+
+    /**
+     * When the XML transform fetch fails (any non-200 response, timeout, or thrown exception),
+     * the product response must still succeed, falling back to the existing
+     * {@code container-title[0]} venue rather than the XML-enriched one - see
+     * {@code CrossrefProductsResource#fetchVenueMetadata}.
+     */
+    @Test
+    void getProductById_bookChapter_fallsBackToContainerTitleWhenXmlFetchFails() throws IOException {
+        when(crossrefClient.getWork(eq("10.1007/978-3-319-66787-4_9")))
+                .thenReturn(loadFixture("crossref-book-chapter.json"));
+        when(crossrefXmlTransformClient.getXmlTransform(eq("10.1007/978-3-319-66787-4_9")))
+                .thenThrow(new NotFoundException());
+
+        given()
+                .when().get(BASE + "/crossref/products/10.1007/978-3-319-66787-4_9")
+                .then()
+                .statusCode(200)
+                .body("'@graph'[0].manifestations[0].biblio.in.name",
                         Matchers.equalTo("Lecture Notes in Computer Science"));
+    }
+
+    /**
+     * DOI 10.2991/assehr.k.211222.032 - a real proceedings-article whose {@code container-title[]}
+     * has the same series-vs-actual-title ambiguity as the book chapter case above. Crossref's
+     * XML transform is fetched for this type too (see {@code
+     * CrossrefTypeMapping#isXmlVenueEnrichable}) and corrects the venue name; this record's
+     * {@code proceedings_series_metadata} has no {@code doi_data}, so the venue's
+     * local_identifier falls back to an otf id rather than a real DOI URL.
+     */
+    @Test
+    void getProductById_returnsSkgIfEnvelope_proceedingsArticleWithSeries() throws IOException {
+        when(crossrefClient.getWork(eq("10.2991/assehr.k.211222.032")))
+                .thenReturn(loadFixture("crossref-proceedings-article-with-series.json"));
+        Response xmlResponse = okXmlResponse("crossref-proceedings-article-with-series.xml");
+        when(crossrefXmlTransformClient.getXmlTransform(eq("10.2991/assehr.k.211222.032"))).thenReturn(xmlResponse);
+
+        given()
+                .when().get(BASE + "/crossref/products/10.2991/assehr.k.211222.032")
+                .then()
+                .statusCode(200)
+                .body("'@graph'[0].local_identifier", Matchers.equalTo("https://doi.org/10.2991/assehr.k.211222.032"))
+                .body("'@graph'[0].product_type", Matchers.equalTo("literature"))
+                .body("'@graph'[0].manifestations[0].biblio.in.name", Matchers.equalTo(
+                        "Proceedings of the 4th International Conference on Innovative Research Across Disciplines (ICIRAD 2021)"))
+                .body("'@graph'[0].manifestations[0].biblio.in.local_identifier", Matchers.startsWith("otf___"))
+                .body("'@graph'[0].manifestations[0].biblio.in.identifiers.scheme",
+                        Matchers.hasItems("issn", "isbn"))
+                .body("'@graph'[0].manifestations[0].biblio.volume", Matchers.equalTo("613"));
     }
 
     @Test

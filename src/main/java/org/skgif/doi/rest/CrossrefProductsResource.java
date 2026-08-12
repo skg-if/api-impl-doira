@@ -5,10 +5,13 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.skgif.doi.crossref.CrossrefClient;
 import org.skgif.doi.crossref.CrossrefTypeMapping;
+import org.skgif.doi.crossref.CrossrefXmlTransformClient;
 import org.skgif.doi.crossref.dto.CrossrefWork;
 import org.skgif.doi.crossref.dto.CrossrefWorkListResponse;
 import org.skgif.doi.crossref.dto.CrossrefWorkResponse;
 import org.skgif.doi.crossref.mapper.CrossrefToSkgIfMapper;
+import org.skgif.doi.crossref.xml.CrossrefVenueMetadata;
+import org.skgif.doi.crossref.xml.CrossrefVenueMetadataXmlParser;
 import org.skgif.doi.generated.model.ApiItem;
 import org.skgif.doi.generated.model.MetaSearch;
 import org.skgif.doi.generated.model.MetaSearchPartOf;
@@ -49,6 +52,10 @@ public class CrossrefProductsResource {
     @Inject
     @RestClient
     CrossrefClient crossrefClient;
+
+    @Inject
+    @RestClient
+    CrossrefXmlTransformClient crossrefXmlTransformClient;
 
     @Inject
     CrossrefToSkgIfMapper mapper;
@@ -99,7 +106,11 @@ public class CrossrefProductsResource {
                     + "' - this DOI is a grant, see /crossref/grants/" + localIdentifierParam);
         }
 
-        Product product = mapper.toProduct(work);
+        CrossrefVenueMetadata venueMetadata = null;
+        if (CrossrefTypeMapping.isXmlVenueEnrichable(work)) {
+            venueMetadata = fetchVenueMetadata(doi);
+        }
+        Product product = mapper.toProduct(work, venueMetadata);
         String selfHref = JsonLdResponses.selfLink(uriInfo, RESOURCE_PATH, doi);
 
         MetaSingleEntity meta = new MetaSingleEntity()
@@ -213,5 +224,26 @@ public class CrossrefProductsResource {
 
     private Response notFound(String requestedId) {
         return JsonLdResponses.notFound("No product found for local_identifier '" + requestedId + "'");
+    }
+
+    /**
+     * Fetches and parses Crossref's XML transform for a chapter-in-a-book or paper-in-proceedings
+     * record (see {@code CrossrefTypeMapping#isXmlVenueEnrichable}), used to build an accurate
+     * Venue - see {@code CrossrefToSkgIfMapper#venue}. Only called from the single-item {@code
+     * getProductById} endpoint, not the list endpoint below (which would otherwise mean N extra
+     * Crossref HTTP calls per page). Any failure - non-200 response, network/timeout error, or a
+     * shape the parser doesn't recognize - degrades to {@code null}, so the caller falls back to
+     * the existing {@code container-title[0]} venue rather than failing the whole product
+     * response over an enrichment call.
+     */
+    private CrossrefVenueMetadata fetchVenueMetadata(String doi) {
+        try (Response response = crossrefXmlTransformClient.getXmlTransform(doi)) {
+            if (response.getStatus() != Response.Status.OK.getStatusCode()) {
+                return null;
+            }
+            return CrossrefVenueMetadataXmlParser.parse(response.readEntity(String.class)).orElse(null);
+        } catch (RuntimeException e) {
+            return null;
+        }
     }
 }

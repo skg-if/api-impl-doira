@@ -1,0 +1,140 @@
+{
+  "@context" : [ "https://w3id.org/skg-if/context/1.1.0/skg-if.json", "https://w3id.org/skg-if/context/1.0.0/skg-if-api.json", {
+    "@base" : "https://w3id.org/skg-if/sandbox/esrf/"
+  } ],
+  "meta" : {
+    "local_identifier" : "http://localhost:8081/skg-if/api/crossref/products/10.1109/freq.1998.717994",
+    "entity_type" : "single_entity"
+  },
+  "@graph" : [ {
+    "local_identifier" : "https://doi.org/10.1109/freq.1998.717994",
+    "identifiers" : [ {
+      "scheme" : "doi",
+      "value" : "10.1109/freq.1998.717994"
+    } ],
+    "entity_type" : "product",
+    "product_type" : "literature",
+    "titles" : {
+      "en" : [ "New contrasts in the topographs of quartz obtained with the third generation synchrotron" ]
+    },
+    "contributions" : [ {
+      "by" : {
+        "local_identifier" : "otf___10-1109-freq-1998-717994___b-capelle",
+        "identifiers" : [ ],
+        "given_name" : "B.",
+        "family_name" : "Capelle",
+        "name" : "B. Capelle",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "rank" : 1,
+      "role" : "author"
+    }, {
+      "by" : {
+        "local_identifier" : "otf___10-1109-freq-1998-717994___j-detaint",
+        "identifiers" : [ ],
+        "given_name" : "J.",
+        "family_name" : "Detaint",
+        "name" : "J. Detaint",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "rank" : 2,
+      "role" : "author"
+    }, {
+      "by" : {
+        "local_identifier" : "otf___10-1109-freq-1998-717994___a-zarka",
+        "identifiers" : [ ],
+        "given_name" : "A.",
+        "family_name" : "Zarka",
+        "name" : "A. Zarka",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "rank" : 3,
+      "role" : "author"
+    }, {
+      "by" : {
+        "local_identifier" : "otf___10-1109-freq-1998-717994___y-epelboin",
+        "identifiers" : [ ],
+        "given_name" : "Y.",
+        "family_name" : "Epelboin",
+        "name" : "Y. Epelboin",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "rank" : 4,
+      "role" : "author"
+    }, {
+      "by" : {
+        "local_identifier" : "otf___10-1109-freq-1998-717994___ieee",
+        "identifiers" : [ ],
+        "name" : "IEEE",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "rank" : 5,
+      "role" : "publisher"
+    } ],
+    "manifestations" : [ {
+      "type" : {
+        "labels" : {
+          "en" : "proceedings-article"
+        }
+      },
+      "dates" : {
+        "creation" : [ "2002-11-27" ],
+        "deposit" : [ "2017-06-15" ]
+      },
+      "biblio" : {
+        "pages" : {
+          "first" : "816",
+          "last" : "822"
+        },
+        "in" : {
+          "local_identifier" : "otf___10-1109-freq-1998-717994___proceedings-of-the-1998-ieee-internation",
+          "identifiers" : [ {
+            "scheme" : "isbn",
+            "value" : "0-7803-4373-5"
+          } ],
+          "entity_type" : "venue",
+          "name" : "Proceedings of the 1998 IEEE International Frequency Control Symposium (Cat. No.98CH36165)"
+        },
+        "hosting_data_source" : {
+          "local_identifier" : "otf___10-1109-freq-1998-717994___ieee",
+          "identifiers" : [ ],
+          "entity_type" : "datasource",
+          "name" : "IEEE"
+        }
+      }
+    } ],
+    "related_products" : {
+      "cites" : [ {
+        "local_identifier" : "https://doi.org/10.1107/S0108767388012309",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1107/S0108767388012309"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1109/FREQ.1992.269969",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1109/FREQ.1992.269969"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1109/FREQ.1989.68905",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1109/FREQ.1989.68905"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "otf___10-1109-freq-1998-717994___ref1",
+        "identifiers" : [ ],
+        "entity_type" : "product"
+      } ]
+    }
+  } ]
+}

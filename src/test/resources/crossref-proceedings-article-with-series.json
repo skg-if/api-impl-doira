@@ -1,0 +1,170 @@
+{
+  "status": "ok",
+  "message-type": "work",
+  "message-version": "1.0.0",
+  "message": {
+    "indexed": {
+      "date-parts": [
+        [
+          2023,
+          2,
+          15
+        ]
+      ],
+      "date-time": "2023-02-15T05:59:02Z",
+      "timestamp": 1676440742757
+    },
+    "publisher-location": "Paris, France",
+    "reference-count": 0,
+    "publisher": "Atlantis Press",
+    "content-domain": {
+      "domain": [],
+      "crossmark-restriction": false
+    },
+    "short-container-title": [],
+    "DOI": "10.2991/assehr.k.211222.032",
+    "type": "proceedings-article",
+    "created": {
+      "date-parts": [
+        [
+          2022,
+          1,
+          3
+        ]
+      ],
+      "date-time": "2022-01-03T13:04:38Z",
+      "timestamp": 1641215078000
+    },
+    "source": "Crossref",
+    "is-referenced-by-count": 0,
+    "title": [
+      "HOTS-Based English Learning Worksheet for Elementary School Students"
+    ],
+    "prefix": "10.2991",
+    "author": [
+      {
+        "given": "Putu Kerti",
+        "family": "Nitiasih",
+        "sequence": "first",
+        "affiliation": [],
+        "role": [
+          {
+            "role": "author",
+            "vocabulary": "crossref"
+          }
+        ]
+      },
+      {
+        "given": "Luh Gd Rahayu",
+        "family": "Budiarta",
+        "sequence": "first",
+        "affiliation": [],
+        "role": [
+          {
+            "role": "author",
+            "vocabulary": "crossref"
+          }
+        ]
+      },
+      {
+        "given": "Ni Luh Putu Era",
+        "family": "Adnyayanti",
+        "sequence": "first",
+        "affiliation": [],
+        "role": [
+          {
+            "role": "author",
+            "vocabulary": "crossref"
+          }
+        ]
+      }
+    ],
+    "member": "1574",
+    "published-online": {
+      "date-parts": [
+        [
+          2021
+        ]
+      ]
+    },
+    "event": {
+      "name": "4th International Conference on Innovative Research Across Disciplines (ICIRAD 2021)",
+      "location": "Singaraja, Indonesia",
+      "acronym": "icirad-21",
+      "start": {
+        "date-parts": [
+          [
+            2021,
+            11,
+            2
+          ]
+        ]
+      },
+      "end": {
+        "date-parts": [
+          [
+            2021,
+            11,
+            3
+          ]
+        ]
+      }
+    },
+    "container-title": [
+      "Advances in Social Science, Education and Humanities Research",
+      "Proceedings of the 4th International Conference on Innovative Research Across Disciplines (ICIRAD 2021)"
+    ],
+    "original-title": [],
+    "deposited": {
+      "date-parts": [
+        [
+          2023,
+          2,
+          14
+        ]
+      ],
+      "date-time": "2023-02-14T06:24:08Z",
+      "timestamp": 1676355848000
+    },
+    "score": 1,
+    "resource": {
+      "primary": {
+        "URL": "https://www.atlantis-press.com/article/125966772"
+      }
+    },
+    "subtitle": [
+      ""
+    ],
+    "short-title": [],
+    "issued": {
+      "date-parts": [
+        [
+          2021
+        ]
+      ]
+    },
+    "references-count": 0,
+    "alternative-id": [
+      "125966772"
+    ],
+    "URL": "https://doi.org/10.2991/assehr.k.211222.032",
+    "relation": {},
+    "ISSN": [
+      "2352-5398"
+    ],
+    "issn-type": [
+      {
+        "value": "2352-5398",
+        "type": "electronic"
+      }
+    ],
+    "subject": [],
+    "published": {
+      "date-parts": [
+        [
+          2021
+        ]
+      ]
+    }
+  }
+}
