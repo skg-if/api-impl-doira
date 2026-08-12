@@ -107,6 +107,18 @@ class CrossrefToSkgIfMapperTest {
     }
 
     @Test
+    void mapsReferenceWithoutDoiToOtfIdInsteadOfExcludingIt() throws IOException {
+        Product product = mapFixture("crossref-journal-article.json");
+
+        // This fixture's reference[] has 30 entries, one of which (key BFnature12373_CR17)
+        // carries no DOI - it must still surface as a cites entry, via an otf id, not be dropped.
+        assertEquals(30, product.getRelatedProducts().getCites().size());
+        boolean hasOtfReference = product.getRelatedProducts().getCites().stream()
+                .anyMatch(c -> c.getLocalIdentifier().startsWith("otf___"));
+        assertTrue(hasOtfReference);
+    }
+
+    @Test
     void doesNotFabricateManifestationVersion() throws IOException {
         // Crossref has no software-versioning concept - left unset rather than guessed at.
         Product product = mapFixture("crossref-journal-article.json");

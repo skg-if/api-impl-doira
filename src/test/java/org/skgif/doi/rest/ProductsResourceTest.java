@@ -105,15 +105,15 @@ class ProductsResourceTest {
      */
     @Test
     void getProductById_awardDoi_returns404PointingToGrants() throws IOException {
-        when(dataCiteClient.getDoi(eq("10.3565/83eg-9981")))
-                .thenReturn(loadFixture("datacite-award-ardc-83eg-9981.json"));
+        when(dataCiteClient.getDoi(eq("10.71707/r3sy-7371")))
+                .thenReturn(loadFixture("datacite-award-r3sy-7371.json"));
 
         given()
-                .when().get(BASE + "/datacite/products/10.3565/83eg-9981")
+                .when().get(BASE + "/datacite/products/10.71707/r3sy-7371")
                 .then()
                 .statusCode(404)
                 .body("status", equalTo("404"))
-                .body("detail", containsString("/datacite/grants/10.3565/83eg-9981"));
+                .body("detail", containsString("/datacite/grants/10.71707/r3sy-7371"));
     }
 
     @Test

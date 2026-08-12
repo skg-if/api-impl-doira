@@ -49,46 +49,46 @@ class GrantsResourceTest {
 
     @Test
     void getGrantById_returnsSkgIfEnvelope() throws IOException {
-        when(dataCiteClient.getDoi(eq("10.3565/83eg-9981")))
-                .thenReturn(loadFixture("datacite-award-ardc-83eg-9981.json"));
+        when(dataCiteClient.getDoi(eq("10.71707/r3sy-7371")))
+                .thenReturn(loadFixture("datacite-award-r3sy-7371.json"));
 
         given()
-                .when().get(BASE + "/datacite/grants/10.3565/83eg-9981")
+                .when().get(BASE + "/datacite/grants/10.71707/r3sy-7371")
                 .then()
                 .statusCode(200)
                 .body("@context", org.hamcrest.Matchers.hasSize(3))
-                .body("'@graph'[0].local_identifier", equalTo("https://doi.org/10.3565/83eg-9981"))
+                .body("'@graph'[0].local_identifier", equalTo("https://doi.org/10.71707/r3sy-7371"))
                 .body("'@graph'[0].entity_type", equalTo("grant"))
                 .body("'@graph'[0].identifiers[0].scheme", equalTo("doi"))
-                .body("'@graph'[0].funding_agency.name", equalTo("Australian Research Data Commons"))
-                .body("'@graph'[0].beneficiaries[0].name", equalTo("Atlas of Living Australia"))
+                .body("'@graph'[0].funding_agency.name", equalTo("The Navigation Fund"))
+                .body("'@graph'[0].beneficiaries[0].name", equalTo("Code for Science & Society"))
                 // Guards against the generator's polymorphic @JsonTypeInfo on GrantContributionBy
                 // overriding this with its @JsonTypeName ("GrantContribution_by") instead - see
                 // SkgIfObjectMapperCustomizer's javadoc.
-                .body("'@graph'[0].contributions[0].by.entity_type", equalTo("organisation"));
+                .body("'@graph'[0].contributions[1].by.entity_type", equalTo("organisation"));
     }
 
     /**
      * Full JSON-LD output regression test, mirroring {@code ProductsResourceTest}'s: the actual
      * response body must exactly match (structurally) the checked-in document under
-     * {@code expected/datacite-grant-award-ardc-83eg-9981.json} - a real Award DOI from the Australian
-     * Research Data Commons, chosen as a clean, minimal real-world example (single ROR-bearing
-     * creator as funding_agency, single ROR-bearing organisational contributor as both a
-     * contribution and a beneficiary, no funding_references/dates/rights_list noise).
+     * {@code expected/datacite-grant-award-r3sy-7371.json} - a real Award DOI from The Navigation
+     * Fund, chosen because it exercises both contribution shapes in one real-world record: a
+     * ROR-bearing organisational contributor (Code for Science & Society, also a beneficiary) and
+     * an ORCID-bearing personal contributor (the project leader).
      */
     @Test
-    void getGrantById_matchesExpectedJsonLd_ardc83eg9981() throws IOException {
+    void getGrantById_matchesExpectedJsonLd_r3sy7371() throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
-        when(dataCiteClient.getDoi(eq("10.3565/83eg-9981")))
-                .thenReturn(loadFixture("datacite-award-ardc-83eg-9981.json"));
+        when(dataCiteClient.getDoi(eq("10.71707/r3sy-7371")))
+                .thenReturn(loadFixture("datacite-award-r3sy-7371.json"));
 
         String actualBody = given()
-                .when().get(BASE + "/datacite/grants/10.3565/83eg-9981")
+                .when().get(BASE + "/datacite/grants/10.71707/r3sy-7371")
                 .then()
                 .statusCode(200)
                 .extract().asString();
 
-        compareOrWriteGolden(objectMapper.readTree(actualBody), "expected/datacite-grant-award-ardc-83eg-9981.json");
+        compareOrWriteGolden(objectMapper.readTree(actualBody), "expected/datacite-grant-award-r3sy-7371.json");
     }
 
     private void compareOrWriteGolden(JsonNode actual, String expectedResource) throws IOException {
@@ -169,7 +169,7 @@ class GrantsResourceTest {
     @Test
     void getGrants_returnsSearchEnvelope() throws IOException {
         DataCiteDoiListResponse listResponse = new DataCiteDoiListResponse();
-        listResponse.data = java.util.List.of(loadFixture("datacite-award-ardc-83eg-9981.json").data);
+        listResponse.data = java.util.List.of(loadFixture("datacite-award-r3sy-7371.json").data);
         DataCiteDoiListResponse.Meta meta = new DataCiteDoiListResponse.Meta();
         meta.total = 1;
         meta.totalPages = 1;
@@ -184,9 +184,9 @@ class GrantsResourceTest {
                 .statusCode(200)
                 .body("meta.entity_type", equalTo("search_result_page"))
                 .body("meta.part_of.total_items", equalTo(1))
-                .body("'@graph'[0].local_identifier", equalTo("https://doi.org/10.3565/83eg-9981"))
-                .body("meta.api_items[0].local_identifier", equalTo("https://doi.org/10.3565/83eg-9981"))
+                .body("'@graph'[0].local_identifier", equalTo("https://doi.org/10.71707/r3sy-7371"))
+                .body("meta.api_items[0].local_identifier", equalTo("https://doi.org/10.71707/r3sy-7371"))
                 .body("meta.api_items[0].urls[0].href",
-                        equalTo("http://localhost:8081/skg-if/api/datacite/grants/10.3565/83eg-9981"));
+                        equalTo("http://localhost:8081/skg-if/api/datacite/grants/10.71707/r3sy-7371"));
     }
 }

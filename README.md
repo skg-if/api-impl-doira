@@ -47,7 +47,7 @@ curl http://localhost:8080/skg-if/api/datacite/products/10.15151/esrf-dc-2493599
 curl http://localhost:8080/skg-if/api/datacite/products/10.5281/zenodo.21826016
 
 # an Award DOI - served under /datacite/grants, not /datacite/products
-curl http://localhost:8080/skg-if/api/datacite/grants/10.3565/83eg-9981
+curl http://localhost:8080/skg-if/api/datacite/grants/10.71707/yj21-5d60
 
 # a page of products (spans every DataCite prefix unless datacite.prefix is configured)
 curl "http://localhost:8080/skg-if/api/datacite/products?page_size=5"

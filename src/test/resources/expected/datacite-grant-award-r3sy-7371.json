@@ -1,0 +1,79 @@
+{
+  "@context" : [ "https://w3id.org/skg-if/context/1.1.0/skg-if.json", "https://w3id.org/skg-if/context/1.0.0/skg-if-api.json", {
+    "@base" : "https://w3id.org/skg-if/sandbox/clfn.hlwbql/"
+  } ],
+  "meta" : {
+    "local_identifier" : "http://localhost:8081/skg-if/api/datacite/grants/10.71707/r3sy-7371",
+    "entity_type" : "single_entity"
+  },
+  "@graph" : [ {
+    "local_identifier" : "https://doi.org/10.71707/r3sy-7371",
+    "identifiers" : [ {
+      "scheme" : "doi",
+      "value" : "10.71707/r3sy-7371"
+    } ],
+    "entity_type" : "grant",
+    "titles" : {
+      "en" : [ "Scalable product and sustainability for 2i2c's network of interactive computing hubs" ]
+    },
+    "abstracts" : {
+      "en" : [ "2i2c (2i2c.org) provides an open cloud service that gives domain communities a home to co-create knowledge with the open source ecosystem. We design community hubs for data-driven discovery, help communities use these hubs to maximize impact, and facilitate the spread of ideas between communities in our network. We aim to build a sustainable and scalable service that empowers community leaders to enable workflows for their community's needs, and to boost the ecosystem of open source tools that underlie this infrastructure.\n\nOver the past three years, 2i2c has built a valuable service for our communities, and our goal is now to refine our model to be financially and operationally scalable and sustainable. This proposal outlines strategic roles necessary to increase our impact and make our service more accessible and reliable, focusing on three key needs/areas to refine and scale our model: delivery, product, and business. Together, these roles will define a holistic strategy towards sustaining and scaling 2i2c's service, and build the systems needed to execute that strategy over the next two years.\n\nAt the end of this project, we will deliver a tiered business and product model that is rooted in community feedback and positions 2i2c to scale our impact. We'll have a financial model that predicts the growth and resources needed in order to achieve financial stability, and a plan for getting there. This will make our service more efficient at responding to community needs, more effective at helping them achieve impact, and more reliable as a service provider for core open science workflows across research and education." ]
+    },
+    "funding_agency" : {
+      "local_identifier" : "https://ror.org/00mgfk810",
+      "identifiers" : [ {
+        "scheme" : "ror",
+        "value" : "00mgfk810"
+      } ],
+      "entity_type" : "organisation",
+      "name" : "The Navigation Fund"
+    },
+    "beneficiaries" : [ {
+      "local_identifier" : "https://ror.org/01dmavx46",
+      "identifiers" : [ {
+        "scheme" : "ror",
+        "value" : "01dmavx46"
+      } ],
+      "entity_type" : "organisation",
+      "name" : "Code for Science & Society",
+      "other_names" : [ ],
+      "types" : [ ]
+    } ],
+    "contributions" : [ {
+      "by" : {
+        "local_identifier" : "https://orcid.org/0000-0002-9420-9301",
+        "identifiers" : [ {
+          "scheme" : "orcid",
+          "value" : "0000-0002-9420-9301"
+        } ],
+        "given_name" : "Chris",
+        "family_name" : "Holdgraf",
+        "name" : "Holdgraf, Chris",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "declared_affiliations" : [ {
+        "local_identifier" : "otf___10-71707-r3sy-7371___2i2c",
+        "identifiers" : [ ],
+        "entity_type" : "organisation",
+        "name" : "2i2c",
+        "other_names" : [ ],
+        "types" : [ ]
+      } ],
+      "roles" : [ ]
+    }, {
+      "by" : {
+        "local_identifier" : "https://ror.org/01dmavx46",
+        "identifiers" : [ {
+          "scheme" : "ror",
+          "value" : "01dmavx46"
+        } ],
+        "entity_type" : "organisation",
+        "name" : "Code for Science & Society",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "roles" : [ ]
+    } ]
+  } ]
+}

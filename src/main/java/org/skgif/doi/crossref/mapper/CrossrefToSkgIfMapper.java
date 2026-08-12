@@ -496,8 +496,9 @@ public class CrossrefToSkgIfMapper {
      * carry an empty {@code relation} map even with a populated {@code reference[]}, so that
      * hashmap (documented for other relation types like is-preprint-of/is-supplement-to) is not
      * a reliable source of "this work cites DOI X" and isn't used here. Only entries the
-     * depositing publisher asserted a DOI for are usable - free-text-only references have
-     * nothing to build a related-product identifier from.
+     * depositing publisher asserted a DOI for get a real identifier; free-text-only references
+     * still get an entry with an otf id (same fallback DataCite's {@code relatedByType} uses for
+     * non-DOI related identifiers) rather than being dropped.
      */
     private ProductsRelated relatedProducts(CrossrefWork work) {
         if (work.reference == null || work.reference.isEmpty()) {
@@ -505,15 +506,19 @@ public class CrossrefToSkgIfMapper {
         }
         List<ProductsRelatedCitesInner> cites = new ArrayList<>();
         for (CrossrefReference reference : work.reference) {
-            if (reference.doi == null) {
+            if (reference.doi != null) {
+                // Full https://doi.org/... URL, consistent with how this API identifies its own
+                // products and every other DOI-identified entity.
+                cites.add(new ProductsRelatedCitesInner()
+                        .localIdentifier(localIdentifiers.toFullLocalIdentifier(reference.doi))
+                        .entityType("product")
+                        .identifiers(List.of(new EntityIdentifiersInner().scheme("doi").value(reference.doi))));
                 continue;
             }
-            // Full https://doi.org/... URL, consistent with how this API identifies its own
-            // products and every other DOI-identified entity.
+            String label = reference.unstructured != null ? reference.unstructured : reference.key;
             cites.add(new ProductsRelatedCitesInner()
-                    .localIdentifier(localIdentifiers.toFullLocalIdentifier(reference.doi))
-                    .entityType("product")
-                    .identifiers(List.of(new EntityIdentifiersInner().scheme("doi").value(reference.doi))));
+                    .localIdentifier(otf(work.doi, label))
+                    .entityType("product"));
         }
         return cites.isEmpty() ? null : new ProductsRelated().cites(cites);
     }

@@ -1,0 +1,169 @@
+{
+  "data": {
+    "id": "10.71707/r3sy-7371",
+    "type": "dois",
+    "attributes": {
+      "doi": "10.71707/r3sy-7371",
+      "prefix": "10.71707",
+      "suffix": "r3sy-7371",
+      "identifiers": [],
+      "alternateIdentifiers": [],
+      "creators": [
+        {
+          "name": "The Navigation Fund",
+          "nameType": "Organizational",
+          "givenName": null,
+          "familyName": null,
+          "affiliation": [],
+          "nameIdentifiers": [
+            {
+              "schemeUri": "https://ror.org",
+              "nameIdentifier": "https://ror.org/00mgfk810",
+              "nameIdentifierScheme": "ROR"
+            }
+          ]
+        }
+      ],
+      "titles": [
+        {
+          "lang": "en",
+          "title": "Scalable product and sustainability for 2i2c's network of interactive computing hubs",
+          "titleType": null
+        }
+      ],
+      "publisher": "The Navigation Fund",
+      "container": {},
+      "publicationYear": 2024,
+      "subjects": [],
+      "contributors": [
+        {
+          "name": "Holdgraf, Chris",
+          "nameType": "Personal",
+          "givenName": "Chris",
+          "familyName": "Holdgraf",
+          "affiliation": [
+            "2i2c"
+          ],
+          "contributorType": "ProjectLeader",
+          "nameIdentifiers": [
+            {
+              "schemeUri": "https://orcid.org",
+              "nameIdentifier": "https://orcid.org/0000-0002-9420-9301",
+              "nameIdentifierScheme": "ORCID"
+            }
+          ]
+        },
+        {
+          "name": "Code for Science & Society",
+          "nameType": "Organizational",
+          "givenName": null,
+          "familyName": null,
+          "affiliation": [],
+          "contributorType": "Other",
+          "nameIdentifiers": [
+            {
+              "schemeUri": "https://ror.org",
+              "nameIdentifier": "https://ror.org/01dmavx46",
+              "nameIdentifierScheme": "ROR"
+            }
+          ]
+        }
+      ],
+      "dates": [
+        {
+          "date": "2025-01-01/2027-01-01",
+          "dateType": "Valid",
+          "dateInformation": null
+        }
+      ],
+      "language": null,
+      "types": {
+        "ris": "GEN",
+        "bibtex": "misc",
+        "citeproc": "article",
+        "schemaOrg": "Grant",
+        "resourceType": "Growth Fund",
+        "resourceTypeGeneral": "Award"
+      },
+      "relatedIdentifiers": [],
+      "relatedItems": [],
+      "sizes": [
+        "1,499,623 USD"
+      ],
+      "formats": [],
+      "version": null,
+      "rightsList": [],
+      "descriptions": [
+        {
+          "lang": "en",
+          "description": "2i2c (2i2c.org) provides an open cloud service that gives domain communities a home to co-create knowledge with the open source ecosystem. We design community hubs for data-driven discovery, help communities use these hubs to maximize impact, and facilitate the spread of ideas between communities in our network. We aim to build a sustainable and scalable service that empowers community leaders to enable workflows for their community's needs, and to boost the ecosystem of open source tools that underlie this infrastructure.\n\nOver the past three years, 2i2c has built a valuable service for our communities, and our goal is now to refine our model to be financially and operationally scalable and sustainable. This proposal outlines strategic roles necessary to increase our impact and make our service more accessible and reliable, focusing on three key needs/areas to refine and scale our model: delivery, product, and business. Together, these roles will define a holistic strategy towards sustaining and scaling 2i2c's service, and build the systems needed to execute that strategy over the next two years.\n\nAt the end of this project, we will deliver a tiered business and product model that is rooted in community feedback and positions 2i2c to scale our impact. We'll have a financial model that predicts the growth and resources needed in order to achieve financial stability, and a plan for getting there. This will make our service more efficient at responding to community needs, more effective at helping them achieve impact, and more reliable as a service provider for core open science workflows across research and education.",
+          "descriptionType": "Abstract"
+        }
+      ],
+      "geoLocations": [],
+      "fundingReferences": [],
+      "xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHJlc291cmNlIHhtbG5zOnhzaT0iaHR0cDovL3d3dy53My5vcmcvMjAwMS9YTUxTY2hlbWEtaW5zdGFuY2UiIHhtbG5zPSJodHRwOi8vZGF0YWNpdGUub3JnL3NjaGVtYS9rZXJuZWwtNCIgeHNpOnNjaGVtYUxvY2F0aW9uPSJodHRwOi8vZGF0YWNpdGUub3JnL3NjaGVtYS9rZXJuZWwtNCBodHRwOi8vc2NoZW1hLmRhdGFjaXRlLm9yZy9tZXRhL2tlcm5lbC00L21ldGFkYXRhLnhzZCI+CiAgPGlkZW50aWZpZXIgaWRlbnRpZmllclR5cGU9IkRPSSI+MTAuNzE3MDcvUjNTWS03MzcxPC9pZGVudGlmaWVyPgogIDxjcmVhdG9ycz4KICAgIDxjcmVhdG9yPgogICAgICA8Y3JlYXRvck5hbWUgbmFtZVR5cGU9Ik9yZ2FuaXphdGlvbmFsIj5UaGUgTmF2aWdhdGlvbiBGdW5kPC9jcmVhdG9yTmFtZT4KICAgICAgPG5hbWVJZGVudGlmaWVyIG5hbWVJZGVudGlmaWVyU2NoZW1lPSJST1IiIHNjaGVtZVVSST0iaHR0cHM6Ly9yb3Iub3JnIj5odHRwczovL3Jvci5vcmcvMDBtZ2ZrODEwPC9uYW1lSWRlbnRpZmllcj4KICAgIDwvY3JlYXRvcj4KICA8L2NyZWF0b3JzPgogIDx0aXRsZXM+CiAgICA8dGl0bGUgeG1sOmxhbmc9ImVuIj5TY2FsYWJsZSBwcm9kdWN0IGFuZCBzdXN0YWluYWJpbGl0eSBmb3IgMmkyYydzIG5ldHdvcmsgb2YgaW50ZXJhY3RpdmUgY29tcHV0aW5nIGh1YnM8L3RpdGxlPgogIDwvdGl0bGVzPgogIDxwdWJsaXNoZXIgcHVibGlzaGVySWRlbnRpZmllcj0iaHR0cHM6Ly9yb3Iub3JnLzAwbWdmazgxMCIgcHVibGlzaGVySWRlbnRpZmllclNjaGVtZT0iUk9SIiBzY2hlbWVVUkk9Imh0dHBzOi8vcm9yLm9yZyI+VGhlIE5hdmlnYXRpb24gRnVuZDwvcHVibGlzaGVyPgogIDxwdWJsaWNhdGlvblllYXI+MjAyNDwvcHVibGljYXRpb25ZZWFyPgogIDxyZXNvdXJjZVR5cGUgcmVzb3VyY2VUeXBlR2VuZXJhbD0iQXdhcmQiPkdyb3d0aCBGdW5kPC9yZXNvdXJjZVR5cGU+CiAgPGNvbnRyaWJ1dG9ycz4KICAgIDxjb250cmlidXRvciBjb250cmlidXRvclR5cGU9IlByb2plY3RMZWFkZXIiPgogICAgICA8Y29udHJpYnV0b3JOYW1lIG5hbWVUeXBlPSJQZXJzb25hbCI+SG9sZGdyYWYsIENocmlzPC9jb250cmlidXRvck5hbWU+CiAgICAgIDxnaXZlbk5hbWU+Q2hyaXM8L2dpdmVuTmFtZT4KICAgICAgPGZhbWlseU5hbWU+SG9sZGdyYWY8L2ZhbWlseU5hbWU+CiAgICAgIDxuYW1lSWRlbnRpZmllciBuYW1lSWRlbnRpZmllclNjaGVtZT0iT1JDSUQiIHNjaGVtZVVSST0iaHR0cHM6Ly9vcmNpZC5vcmciPmh0dHBzOi8vb3JjaWQub3JnLzAwMDAtMDAwMi05NDIwLTkzMDE8L25hbWVJZGVudGlmaWVyPgogICAgICA8YWZmaWxpYXRpb24gYWZmaWxpYXRpb25JZGVudGlmaWVyPSJodHRwczovL3Jvci5vcmcvMDUwZ3Y0Yzc4IiBhZmZpbGlhdGlvbklkZW50aWZpZXJTY2hlbWU9IlJPUiIgc2NoZW1lVVJJPSJodHRwczovL3Jvci5vcmciPjJpMmM8L2FmZmlsaWF0aW9uPgogICAgPC9jb250cmlidXRvcj4KICAgIDxjb250cmlidXRvciBjb250cmlidXRvclR5cGU9Ik90aGVyIj4KICAgICAgPGNvbnRyaWJ1dG9yTmFtZSBuYW1lVHlwZT0iT3JnYW5pemF0aW9uYWwiPkNvZGUgZm9yIFNjaWVuY2UgJmFtcDsgU29jaWV0eTwvY29udHJpYnV0b3JOYW1lPgogICAgICA8bmFtZUlkZW50aWZpZXIgbmFtZUlkZW50aWZpZXJTY2hlbWU9IlJPUiIgc2NoZW1lVVJJPSJodHRwczovL3Jvci5vcmciPmh0dHBzOi8vcm9yLm9yZy8wMWRtYXZ4NDY8L25hbWVJZGVudGlmaWVyPgogICAgICA8YWZmaWxpYXRpb24gYWZmaWxpYXRpb25JZGVudGlmaWVyU2NoZW1lPSJST1IiIHNjaGVtZVVSST0iaHR0cHM6Ly9yb3Iub3JnIi8+CiAgICA8L2NvbnRyaWJ1dG9yPgogIDwvY29udHJpYnV0b3JzPgogIDxkYXRlcz4KICAgIDxkYXRlIGRhdGVUeXBlPSJWYWxpZCI+MjAyNS0wMS0wMS8yMDI3LTAxLTAxPC9kYXRlPgogIDwvZGF0ZXM+CiAgPHNpemVzPgogICAgPHNpemU+MSw0OTksNjIzIFVTRDwvc2l6ZT4KICA8L3NpemVzPgogIDxmb3JtYXRzLz4KICA8dmVyc2lvbi8+CiAgPGRlc2NyaXB0aW9ucz4KICAgIDxkZXNjcmlwdGlvbiB4bWw6bGFuZz0iZW4iIGRlc2NyaXB0aW9uVHlwZT0iQWJzdHJhY3QiPjJpMmMgKDJpMmMub3JnKSBwcm92aWRlcyBhbiBvcGVuIGNsb3VkIHNlcnZpY2UgdGhhdCBnaXZlcyBkb21haW4gY29tbXVuaXRpZXMgYSBob21lIHRvIGNvLWNyZWF0ZSBrbm93bGVkZ2Ugd2l0aCB0aGUgb3BlbiBzb3VyY2UgZWNvc3lzdGVtLiBXZSBkZXNpZ24gY29tbXVuaXR5IGh1YnMgZm9yIGRhdGEtZHJpdmVuIGRpc2NvdmVyeSwgaGVscCBjb21tdW5pdGllcyB1c2UgdGhlc2UgaHVicyB0byBtYXhpbWl6ZSBpbXBhY3QsIGFuZCBmYWNpbGl0YXRlIHRoZSBzcHJlYWQgb2YgaWRlYXMgYmV0d2VlbiBjb21tdW5pdGllcyBpbiBvdXIgbmV0d29yay4gV2UgYWltIHRvIGJ1aWxkIGEgc3VzdGFpbmFibGUgYW5kIHNjYWxhYmxlIHNlcnZpY2UgdGhhdCBlbXBvd2VycyBjb21tdW5pdHkgbGVhZGVycyB0byBlbmFibGUgd29ya2Zsb3dzIGZvciB0aGVpciBjb21tdW5pdHkncyBuZWVkcywgYW5kIHRvIGJvb3N0IHRoZSBlY29zeXN0ZW0gb2Ygb3BlbiBzb3VyY2UgdG9vbHMgdGhhdCB1bmRlcmxpZSB0aGlzIGluZnJhc3RydWN0dXJlLgoKT3ZlciB0aGUgcGFzdCB0aHJlZSB5ZWFycywgMmkyYyBoYXMgYnVpbHQgYSB2YWx1YWJsZSBzZXJ2aWNlIGZvciBvdXIgY29tbXVuaXRpZXMsIGFuZCBvdXIgZ29hbCBpcyBub3cgdG8gcmVmaW5lIG91ciBtb2RlbCB0byBiZSBmaW5hbmNpYWxseSBhbmQgb3BlcmF0aW9uYWxseSBzY2FsYWJsZSBhbmQgc3VzdGFpbmFibGUuIFRoaXMgcHJvcG9zYWwgb3V0bGluZXMgc3RyYXRlZ2ljIHJvbGVzIG5lY2Vzc2FyeSB0byBpbmNyZWFzZSBvdXIgaW1wYWN0IGFuZCBtYWtlIG91ciBzZXJ2aWNlIG1vcmUgYWNjZXNzaWJsZSBhbmQgcmVsaWFibGUsIGZvY3VzaW5nIG9uIHRocmVlIGtleSBuZWVkcy9hcmVhcyB0byByZWZpbmUgYW5kIHNjYWxlIG91ciBtb2RlbDogZGVsaXZlcnksIHByb2R1Y3QsIGFuZCBidXNpbmVzcy4gVG9nZXRoZXIsIHRoZXNlIHJvbGVzIHdpbGwgZGVmaW5lIGEgaG9saXN0aWMgc3RyYXRlZ3kgdG93YXJkcyBzdXN0YWluaW5nIGFuZCBzY2FsaW5nIDJpMmMncyBzZXJ2aWNlLCBhbmQgYnVpbGQgdGhlIHN5c3RlbXMgbmVlZGVkIHRvIGV4ZWN1dGUgdGhhdCBzdHJhdGVneSBvdmVyIHRoZSBuZXh0IHR3byB5ZWFycy4KCkF0IHRoZSBlbmQgb2YgdGhpcyBwcm9qZWN0LCB3ZSB3aWxsIGRlbGl2ZXIgYSB0aWVyZWQgYnVzaW5lc3MgYW5kIHByb2R1Y3QgbW9kZWwgdGhhdCBpcyByb290ZWQgaW4gY29tbXVuaXR5IGZlZWRiYWNrIGFuZCBwb3NpdGlvbnMgMmkyYyB0byBzY2FsZSBvdXIgaW1wYWN0LiBXZSdsbCBoYXZlIGEgZmluYW5jaWFsIG1vZGVsIHRoYXQgcHJlZGljdHMgdGhlIGdyb3d0aCBhbmQgcmVzb3VyY2VzIG5lZWRlZCBpbiBvcmRlciB0byBhY2hpZXZlIGZpbmFuY2lhbCBzdGFiaWxpdHksIGFuZCBhIHBsYW4gZm9yIGdldHRpbmcgdGhlcmUuIFRoaXMgd2lsbCBtYWtlIG91ciBzZXJ2aWNlIG1vcmUgZWZmaWNpZW50IGF0IHJlc3BvbmRpbmcgdG8gY29tbXVuaXR5IG5lZWRzLCBtb3JlIGVmZmVjdGl2ZSBhdCBoZWxwaW5nIHRoZW0gYWNoaWV2ZSBpbXBhY3QsIGFuZCBtb3JlIHJlbGlhYmxlIGFzIGEgc2VydmljZSBwcm92aWRlciBmb3IgY29yZSBvcGVuIHNjaWVuY2Ugd29ya2Zsb3dzIGFjcm9zcyByZXNlYXJjaCBhbmQgZWR1Y2F0aW9uLjwvZGVzY3JpcHRpb24+CiAgPC9kZXNjcmlwdGlvbnM+CjwvcmVzb3VyY2U+Cg==",
+      "url": "https://commons.datacite.org/doi.org/10.71707/r3sy-7371",
+      "contentUrl": null,
+      "metadataVersion": 0,
+      "schemaVersion": "http://datacite.org/schema/kernel-4",
+      "source": "fabricaForm",
+      "isActive": true,
+      "state": "findable",
+      "reason": null,
+      "viewCount": 0,
+      "viewsOverTime": [],
+      "downloadCount": 0,
+      "downloadsOverTime": [],
+      "referenceCount": 0,
+      "citationCount": 0,
+      "citationsOverTime": [],
+      "partCount": 0,
+      "partOfCount": 0,
+      "versionCount": 0,
+      "versionOfCount": 0,
+      "created": "2024-12-16T18:26:53.000Z",
+      "registered": "2024-12-16T18:27:20.000Z",
+      "published": "2024",
+      "updated": "2024-12-16T18:27:20.000Z"
+    },
+    "relationships": {
+      "client": {
+        "data": {
+          "id": "clfn.hlwbql",
+          "type": "clients"
+        }
+      },
+      "provider": {
+        "data": {
+          "id": "clfn",
+          "type": "providers"
+        }
+      },
+      "media": {
+        "data": {
+          "id": "10.71707/r3sy-7371",
+          "type": "media"
+        }
+      },
+      "references": {
+        "data": []
+      },
+      "citations": {
+        "data": []
+      },
+      "parts": {
+        "data": []
+      },
+      "partOf": {
+        "data": []
+      },
+      "versions": {
+        "data": []
+      },
+      "versionOf": {
+        "data": []
+      }
+    }
+  }
+}

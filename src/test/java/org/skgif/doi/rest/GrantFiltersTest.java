@@ -16,7 +16,7 @@ class GrantFiltersTest {
 
     @Test
     void toDataCiteQuery_identifiersValue_mapsToDoiClause() {
-        assertEquals("doi:\"10.3565/83eg-9981\"", GrantFilters.toDataCiteQuery("identifiers.value:10.3565/83eg-9981"));
+        assertEquals("doi:\"10.71707/r3sy-7371\"", GrantFilters.toDataCiteQuery("identifiers.value:10.71707/r3sy-7371"));
     }
 
     @Test
