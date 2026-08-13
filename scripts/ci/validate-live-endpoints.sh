@@ -140,7 +140,14 @@ for PROVIDER in $PROVIDERS; do
         if [ "$LIST_RESULT" = "pass" ]; then
             ID=$(jq -r '."@graph"[0].local_identifier // empty' resp.json 2>/dev/null)
             if [ -n "$ID" ]; then
-                BYID_STATUS=$(curl -s -o resp_byid.json -w '%{http_code}' "${PRISM_BASE}/${RESOURCE}/${ID}")
+                # local_identifier is a full https://doi.org/... URL (see LocalIdentifiers.java),
+                # so it always contains slashes - Prism's OpenAPI path matching treats
+                # {local_identifier} as a single path segment (standard OpenAPI semantics, unlike
+                # the app's own JAX-RS ".+" regex path), so an un-encoded slash-bearing id 404s at
+                # Prism itself with NO_PATH_MATCHED_ERROR before ever reaching the app. Percent-
+                # encoding it into one segment lets Prism route it; the app decodes it back fine.
+                ENCODED_ID=$(jq -rn --arg v "$ID" '$v|@uri')
+                BYID_STATUS=$(curl -s -o resp_byid.json -w '%{http_code}' "${PRISM_BASE}/${RESOURCE}/${ENCODED_ID}")
                 BYID_RESULT=$(classify_status "$BYID_STATUS")
                 if [ "$BYID_RESULT" = "fail" ]; then
                     echo "FAIL: GET ${RESOURCE}/${ID} -> HTTP ${BYID_STATUS}" >&2
