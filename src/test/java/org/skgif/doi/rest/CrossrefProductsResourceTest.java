@@ -50,6 +50,13 @@ class CrossrefProductsResourceTest {
         }
     }
 
+    private CrossrefWorkListResponse loadWorkListFixture(String resourceName) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
+            return objectMapper.readValue(in, CrossrefWorkListResponse.class);
+        }
+    }
+
     private String loadRawResource(String resourceName) throws IOException {
         try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
             return new String(in.readAllBytes(), StandardCharsets.UTF_8);
@@ -84,6 +91,49 @@ class CrossrefProductsResourceTest {
                 .body("'@graph'[0].local_identifier", Matchers.equalTo("https://doi.org/10.1038/nature12373"))
                 .body("'@graph'[0].product_type", Matchers.equalTo("literature"))
                 .body("'@graph'[0].identifiers[0].scheme", Matchers.equalTo("doi"));
+    }
+
+    /**
+     * Nature's ISSN (0028-0836) resolves live to a real Crossref {@code type: "journal"} DOI
+     * ({@code 10.1038/41586.1476-4687} - see {@code crossref-journal-doi-lookup-nature.json},
+     * captured from the real API) - see {@code CrossrefJournalDoiResolver}. Once found, the
+     * venue's {@code local_identifier} becomes that real DOI URL instead of an otf id, with a
+     * {@code doi} identifier alongside the existing {@code issn} ones.
+     */
+    @Test
+    void getProductById_returnsSkgIfEnvelope_venueUsesRealJournalDoiWhenResolved() throws IOException {
+        when(crossrefClient.getWork(eq("10.1038/nature12373")))
+                .thenReturn(loadFixture("crossref-journal-article.json"));
+        when(crossrefClient.listWorks(eq("type:journal,issn:0028-0836"), any(), any(), eq(1), any(), any()))
+                .thenReturn(loadWorkListFixture("crossref-journal-doi-lookup-nature.json"));
+
+        given()
+                .when().get(BASE + "/crossref/products/10.1038/nature12373")
+                .then()
+                .statusCode(200)
+                .body("'@graph'[0].manifestations[0].biblio.in.local_identifier",
+                        Matchers.equalTo("https://doi.org/10.1038/41586.1476-4687"))
+                .body("'@graph'[0].manifestations[0].biblio.in.identifiers.scheme",
+                        Matchers.hasItems("doi", "issn"));
+    }
+
+    /**
+     * When the journal-DOI lookup itself fails (network error, timeout, etc.), the product
+     * response must still succeed, falling back to the existing otf-id venue rather than the
+     * whole request failing - same degrade-gracefully contract as the XML transform fetch below.
+     */
+    @Test
+    void getProductById_venueFallsBackToOtfIdWhenJournalDoiLookupFails() throws IOException {
+        when(crossrefClient.getWork(eq("10.1038/nature12373")))
+                .thenReturn(loadFixture("crossref-journal-article.json"));
+        when(crossrefClient.listWorks(eq("type:journal,issn:0028-0836"), any(), any(), eq(1), any(), any()))
+                .thenThrow(new RuntimeException("boom"));
+
+        given()
+                .when().get(BASE + "/crossref/products/10.1038/nature12373")
+                .then()
+                .statusCode(200)
+                .body("'@graph'[0].manifestations[0].biblio.in.local_identifier", Matchers.startsWith("otf___"));
     }
 
     /**

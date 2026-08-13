@@ -1,5 +1,6 @@
 package org.skgif.doi.crossref.mapper;
 
+import org.skgif.doi.crossref.CrossrefJournalDoiResolver;
 import org.skgif.doi.crossref.CrossrefTypeMapping;
 import org.skgif.doi.crossref.dto.CrossrefAffiliation;
 import org.skgif.doi.crossref.dto.CrossrefAmount;
@@ -75,9 +76,11 @@ public class CrossrefToSkgIfMapper {
     private static final String ROR_BASE_URL = "https://ror.org/";
 
     private final LocalIdentifiers localIdentifiers;
+    private final CrossrefJournalDoiResolver journalDoiResolver;
 
-    public CrossrefToSkgIfMapper(LocalIdentifiers localIdentifiers) {
+    public CrossrefToSkgIfMapper(LocalIdentifiers localIdentifiers, CrossrefJournalDoiResolver journalDoiResolver) {
         this.localIdentifiers = localIdentifiers;
+        this.journalDoiResolver = journalDoiResolver;
     }
 
     public Product toProduct(CrossrefWork work) {
@@ -421,9 +424,14 @@ public class CrossrefToSkgIfMapper {
      * transform endpoint - see {@code CrossrefVenueMetadataXmlParser}) is present, it takes
      * precedence: the container's own DOI becomes a real {@code local_identifier} (rather than an
      * otf id, when Crossref recorded one) and {@code identifiers[]} gains {@code doi} and {@code
-     * isbn} entries alongside any series {@code issn}. Falls back entirely to the {@code
-     * container-title[0]}+ISSN-only heuristic when {@code venueMetadata} is {@code null} or has
-     * no title (XML fetch failed, or this isn't an XML-enrichable record).
+     * isbn} entries alongside any series {@code issn}.
+     *
+     * <p>Otherwise (the plain journal-article case, or any other non-XML-enrichable type), {@link
+     * CrossrefJournalDoiResolver} is tried: many journals themselves have a real Crossref {@code
+     * type: "journal"} DOI, resolved live via their ISSN. When found, it's used the same way as
+     * the XML-enriched container DOI above (real {@code local_identifier}, {@code doi} entry
+     * alongside {@code issn}); when not (no journal-level DOI registered, or the lookup fails),
+     * falls back to the {@code container-title[0]}+otf-id+ISSN-only heuristic.
      */
     private ProductManifestationBiblioIn venue(CrossrefWork work, CrossrefVenueMetadata venueMetadata) {
         if (venueMetadata != null && venueMetadata.containerTitle() != null) {
@@ -433,15 +441,24 @@ public class CrossrefToSkgIfMapper {
             return null;
         }
         String name = work.containerTitle.get(0);
+        List<String> issns = work.issn != null
+                ? work.issn.stream().filter(Objects::nonNull).toList()
+                : List.of();
+        String journalDoi = issns.isEmpty() ? null : journalDoiResolver.resolveJournalDoi(issns).orElse(null);
+
         ProductManifestationBiblioIn venue = new ProductManifestationBiblioIn()
-                .localIdentifier(otf(work.doi, name))
+                .localIdentifier(journalDoi != null ? localIdentifiers.toFullLocalIdentifier(journalDoi)
+                        : otf(work.doi, name))
                 .entityType("venue")
                 .name(name);
-        if (work.issn != null && !work.issn.isEmpty()) {
-            venue.identifiers(work.issn.stream()
-                    .filter(Objects::nonNull)
-                    .map(issn -> new VenueLiteAllOfIdentifiers().scheme("issn").value(issn))
-                    .toList());
+
+        List<VenueLiteAllOfIdentifiers> identifiers = new ArrayList<>();
+        if (journalDoi != null) {
+            identifiers.add(new VenueLiteAllOfIdentifiers().scheme("doi").value(journalDoi));
+        }
+        issns.forEach(issn -> identifiers.add(new VenueLiteAllOfIdentifiers().scheme("issn").value(issn)));
+        if (!identifiers.isEmpty()) {
+            venue.identifiers(identifiers);
         }
         return venue;
     }

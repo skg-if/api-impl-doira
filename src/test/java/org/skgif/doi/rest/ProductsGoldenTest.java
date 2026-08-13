@@ -20,6 +20,7 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.Test;
 import org.skgif.doi.crossref.CrossrefClient;
 import org.skgif.doi.crossref.CrossrefXmlTransformClient;
+import org.skgif.doi.crossref.dto.CrossrefWorkListResponse;
 import org.skgif.doi.crossref.dto.CrossrefWorkResponse;
 import org.skgif.doi.datacite.DataCiteClient;
 import org.skgif.doi.datacite.dto.DataCiteDoiListResponse;
@@ -67,6 +68,13 @@ class ProductsGoldenTest {
         ObjectMapper objectMapper = new ObjectMapper();
         try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
             return objectMapper.readValue(in, CrossrefWorkResponse.class);
+        }
+    }
+
+    private CrossrefWorkListResponse loadCrossrefWorkListFixture(String resourceName) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
+            return objectMapper.readValue(in, CrossrefWorkListResponse.class);
         }
     }
 
@@ -159,6 +167,29 @@ class ProductsGoldenTest {
     void getProductById_matchesExpectedJsonLd_natureArticle() throws IOException {
         assertMatchesExpectedCrossrefJsonLd("10.1038/nature12373", "crossref-journal-article.json",
                 "expected/crossref-journal-article-out.json");
+    }
+
+    /**
+     * Same DOI as above, but with Nature's ISSN (0028-0836) resolving live to a real Crossref
+     * {@code type: "journal"} DOI ({@code 10.1038/41586.1476-4687} - see {@code
+     * crossref-journal-doi-lookup-nature.json}, captured from the real API) via {@code
+     * CrossrefJournalDoiResolver} - proves the venue's real-DOI {@code local_identifier} (instead
+     * of an otf id) and combined doi/issn identifiers at the golden-output level.
+     */
+    @Test
+    void getProductById_matchesExpectedJsonLd_natureArticleWithJournalDoi() throws IOException {
+        when(crossrefClient.getWork(eq("10.1038/nature12373")))
+                .thenReturn(loadCrossrefFixture("crossref-journal-article.json"));
+        when(crossrefClient.listWorks(eq("type:journal,issn:0028-0836"), any(), any(), eq(1), any(), any()))
+                .thenReturn(loadCrossrefWorkListFixture("crossref-journal-doi-lookup-nature.json"));
+
+        String actualBody = given()
+                .when().get(BASE + "/crossref/products/10.1038/nature12373")
+                .then()
+                .statusCode(200)
+                .extract().asString();
+
+        compareOrWriteGolden(new ObjectMapper().readTree(actualBody), "expected/crossref-journal-article-with-journal-doi-out.json");
     }
 
     /**

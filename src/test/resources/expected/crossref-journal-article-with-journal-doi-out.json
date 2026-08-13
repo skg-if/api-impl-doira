@@ -1,0 +1,381 @@
+{
+  "@context" : [ "https://w3id.org/skg-if/context/1.1.0/skg-if.json", "https://w3id.org/skg-if/context/1.0.0/skg-if-api.json", {
+    "@base" : "https://w3id.org/skg-if/sandbox/esrf/"
+  } ],
+  "meta" : {
+    "local_identifier" : "http://localhost:8081/skg-if/api/crossref/products/10.1038/nature12373",
+    "entity_type" : "single_entity"
+  },
+  "@graph" : [ {
+    "local_identifier" : "https://doi.org/10.1038/nature12373",
+    "identifiers" : [ {
+      "scheme" : "doi",
+      "value" : "10.1038/nature12373"
+    } ],
+    "entity_type" : "product",
+    "product_type" : "literature",
+    "titles" : {
+      "en" : [ "Nanometre-scale thermometry in a living cell" ]
+    },
+    "contributions" : [ {
+      "by" : {
+        "local_identifier" : "otf___10-1038-nature12373___g-kucsko",
+        "identifiers" : [ ],
+        "given_name" : "G.",
+        "family_name" : "Kucsko",
+        "name" : "G. Kucsko",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "rank" : 1,
+      "role" : "author"
+    }, {
+      "by" : {
+        "local_identifier" : "otf___10-1038-nature12373___p-c-maurer",
+        "identifiers" : [ ],
+        "given_name" : "P. C.",
+        "family_name" : "Maurer",
+        "name" : "P. C. Maurer",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "rank" : 2,
+      "role" : "author"
+    }, {
+      "by" : {
+        "local_identifier" : "otf___10-1038-nature12373___n-y-yao",
+        "identifiers" : [ ],
+        "given_name" : "N. Y.",
+        "family_name" : "Yao",
+        "name" : "N. Y. Yao",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "rank" : 3,
+      "role" : "author"
+    }, {
+      "by" : {
+        "local_identifier" : "otf___10-1038-nature12373___m-kubo",
+        "identifiers" : [ ],
+        "given_name" : "M.",
+        "family_name" : "Kubo",
+        "name" : "M. Kubo",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "rank" : 4,
+      "role" : "author"
+    }, {
+      "by" : {
+        "local_identifier" : "otf___10-1038-nature12373___h-j-noh",
+        "identifiers" : [ ],
+        "given_name" : "H. J.",
+        "family_name" : "Noh",
+        "name" : "H. J. Noh",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "rank" : 5,
+      "role" : "author"
+    }, {
+      "by" : {
+        "local_identifier" : "otf___10-1038-nature12373___p-k-lo",
+        "identifiers" : [ ],
+        "given_name" : "P. K.",
+        "family_name" : "Lo",
+        "name" : "P. K. Lo",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "rank" : 6,
+      "role" : "author"
+    }, {
+      "by" : {
+        "local_identifier" : "otf___10-1038-nature12373___h-park",
+        "identifiers" : [ ],
+        "given_name" : "H.",
+        "family_name" : "Park",
+        "name" : "H. Park",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "rank" : 7,
+      "role" : "author"
+    }, {
+      "by" : {
+        "local_identifier" : "otf___10-1038-nature12373___m-d-lukin",
+        "identifiers" : [ ],
+        "given_name" : "M. D.",
+        "family_name" : "Lukin",
+        "name" : "M. D. Lukin",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "rank" : 8,
+      "role" : "author"
+    }, {
+      "by" : {
+        "local_identifier" : "otf___10-1038-nature12373___springer-science-and-business-media-llc",
+        "identifiers" : [ ],
+        "name" : "Springer Science and Business Media LLC",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "rank" : 9,
+      "role" : "publisher"
+    } ],
+    "manifestations" : [ {
+      "type" : {
+        "labels" : {
+          "en" : "journal-article"
+        }
+      },
+      "dates" : {
+        "creation" : [ "2013-07-30" ],
+        "deposit" : [ "2023-05-18" ],
+        "publication" : [ "2013-08", "2013-07-31", "2013-07-31" ]
+      },
+      "access_rights" : { },
+      "licence" : "http://www.springer.com/tdm",
+      "biblio" : {
+        "issue" : "7460",
+        "pages" : {
+          "first" : "54",
+          "last" : "58"
+        },
+        "volume" : "500",
+        "in" : {
+          "local_identifier" : "https://doi.org/10.1038/41586.1476-4687",
+          "identifiers" : [ {
+            "scheme" : "doi",
+            "value" : "10.1038/41586.1476-4687"
+          }, {
+            "scheme" : "issn",
+            "value" : "0028-0836"
+          }, {
+            "scheme" : "issn",
+            "value" : "1476-4687"
+          } ],
+          "entity_type" : "venue",
+          "name" : "Nature"
+        },
+        "hosting_data_source" : {
+          "local_identifier" : "otf___10-1038-nature12373___springer-science-and-business-media-llc",
+          "identifiers" : [ ],
+          "entity_type" : "datasource",
+          "name" : "Springer Science and Business Media LLC"
+        }
+      }
+    } ],
+    "related_products" : {
+      "cites" : [ {
+        "local_identifier" : "https://doi.org/10.3402/nano.v3i0.11586",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.3402/nano.v3i0.11586"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1038/nature03509",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1038/nature03509"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1016/j.cell.2009.11.006",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1016/j.cell.2009.11.006"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1038/nature11804",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1038/nature11804"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1038/nmeth.1278",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1038/nmeth.1278"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1007/s10549-012-2393-x",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1007/s10549-012-2393-x"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1038/nrc3180",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1038/nrc3180"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1016/j.canlet.2004.02.004",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1016/j.canlet.2004.02.004"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1146/annurev.matsci.29.1.505",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1146/annurev.matsci.29.1.505"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1088/0960-1317/16/3/007",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1088/0960-1317/16/3/007"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1021/nn201142f",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1021/nn201142f"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1021/nn100244a",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1021/nn100244a"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1038/ncomms1714",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1038/ncomms1714"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1021/nl300389y",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1021/nl300389y"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1073/pnas.0909350107",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1073/pnas.0909350107"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1103/PhysRevLett.104.070801",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1103/PhysRevLett.104.070801"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "otf___10-1038-nature12373___toyli-d-et-al-measurement-and-control-of",
+        "identifiers" : [ ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1063/1.3652910",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1063/1.3652910"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1038/nphys1075",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1038/nphys1075"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1021/nl2026585",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1021/nl2026585"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1038/nature07279",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1038/nature07279"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1038/nature07278",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1038/nature07278"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1103/PhysRevA.87.032118",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1103/PhysRevA.87.032118"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1038/nmat2420",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1038/nmat2420"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1038/nphys1969",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1038/nphys1969"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1038/nphys1774",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1038/nphys1774"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1371/journal.pone.0049021",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1371/journal.pone.0049021"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1038/nmeth818",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1038/nmeth818"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1021/jp073938o",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1021/jp073938o"
+        } ],
+        "entity_type" : "product"
+      }, {
+        "local_identifier" : "https://doi.org/10.1158/0008-5472.CAN-11-3536",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1158/0008-5472.CAN-11-3536"
+        } ],
+        "entity_type" : "product"
+      } ]
+    }
+  } ]
+}

@@ -4,9 +4,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.skgif.doi.crossref.CrossrefClient;
+import org.skgif.doi.crossref.CrossrefJournalDoiResolver;
 import org.skgif.doi.crossref.dto.CrossrefWork;
+import org.skgif.doi.crossref.dto.CrossrefWorkListResponse;
 import org.skgif.doi.crossref.dto.CrossrefWorkResponse;
 import org.skgif.doi.crossref.xml.CrossrefVenueMetadata;
 import org.skgif.doi.crossref.xml.CrossrefVenueMetadataXmlParser;
@@ -23,12 +30,20 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 class CrossrefToSkgIfMapperTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final CrossrefToSkgIfMapper mapper = new CrossrefToSkgIfMapper(new LocalIdentifiers("https://doi.org/"));
+
+    // Left entirely unstubbed by default: listWorks(...) returns null, so the resolver degrades
+    // to Optional.empty() for every ISSN - every existing venue assertion below keeps exercising
+    // today's container-title[0]+otf-id+ISSN-only fallback. See mapsVenueUsesRealJournalDoiWhen*
+    // below for the resolver-hit path.
+    private final CrossrefClient crossrefClient = mock(CrossrefClient.class);
+    private final CrossrefToSkgIfMapper mapper = new CrossrefToSkgIfMapper(new LocalIdentifiers("https://doi.org/"),
+            new CrossrefJournalDoiResolver(crossrefClient, Optional.empty()));
 
     private Product mapFixture(String resourceName) throws IOException {
         return mapper.toProduct(readFixture(resourceName));
@@ -111,6 +126,50 @@ class CrossrefToSkgIfMapperTest {
         assertEquals("54", manifestation.getBiblio().getPages().getFirst());
         assertEquals("58", manifestation.getBiblio().getPages().getLast());
         assertEquals("Springer Science and Business Media LLC", manifestation.getBiblio().getHostingDataSource().getName());
+    }
+
+    @Test
+    void mapsVenueUsesRealJournalDoiWhenCrossrefResolverFindsOne() throws IOException {
+        // ISSN 0028-0836 (this fixture's print ISSN) resolves live to Nature's own real Crossref
+        // journal-type DOI - verified against https://api.crossref.org/works?filter=type:journal
+        // ,issn:0028-0836 - see crossref-journal-doi-lookup-nature.json for the raw response.
+        when(crossrefClient.listWorks(eq("type:journal,issn:0028-0836"), any(), any(), eq(1), any(), any()))
+                .thenReturn(journalDoiLookupResponse("crossref-journal-doi-lookup-nature.json"));
+
+        Product product = mapFixture("crossref-journal-article.json");
+
+        ProductManifestationBiblioIn venue = product.getManifestations().get(0).getBiblio().getIn();
+        assertEquals("Nature", venue.getName());
+        assertEquals("https://doi.org/10.1038/41586.1476-4687", venue.getLocalIdentifier());
+
+        List<VenueLiteAllOfIdentifiers> identifiers = venue.getIdentifiers();
+        assertEquals(3, identifiers.size());
+        assertEquals("doi", identifiers.get(0).getScheme());
+        assertEquals("10.1038/41586.1476-4687", identifiers.get(0).getValue());
+        assertTrue(identifiers.stream().anyMatch(i -> "issn".equals(i.getScheme()) && "0028-0836".equals(i.getValue())));
+        assertTrue(identifiers.stream().anyMatch(i -> "issn".equals(i.getScheme()) && "1476-4687".equals(i.getValue())));
+    }
+
+    @Test
+    void mapsVenueFallsBackToOtfIdWhenJournalDoiLookupFails() throws IOException {
+        // Same ISSN as above, but this time the Crossref lookup itself blows up (network error,
+        // timeout, etc.) - the venue must still come out exactly as today's container-title[0]
+        // +otf-id+ISSN-only heuristic, not fail the whole product mapping.
+        when(crossrefClient.listWorks(eq("type:journal,issn:0028-0836"), any(), any(), eq(1), any(), any()))
+                .thenThrow(new RuntimeException("boom"));
+
+        Product product = mapFixture("crossref-journal-article.json");
+
+        ProductManifestationBiblioIn venue = product.getManifestations().get(0).getBiblio().getIn();
+        assertTrue(venue.getLocalIdentifier().startsWith("otf___"));
+        assertEquals("issn", venue.getIdentifiers().get(0).getScheme());
+        assertEquals("0028-0836", venue.getIdentifiers().get(0).getValue());
+    }
+
+    private CrossrefWorkListResponse journalDoiLookupResponse(String resourceName) throws IOException {
+        try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
+            return objectMapper.readValue(in, CrossrefWorkListResponse.class);
+        }
     }
 
     @Test
