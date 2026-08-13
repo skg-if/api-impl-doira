@@ -7,47 +7,41 @@
     "entity_type" : "single_entity"
   },
   "@graph" : [ {
+    "entity_type" : "product",
+    "product_type" : "literature",
     "local_identifier" : "https://doi.org/10.1007/978-1-4842-7310-4_15",
     "identifiers" : [ {
       "scheme" : "doi",
       "value" : "10.1007/978-1-4842-7310-4_15"
     } ],
-    "entity_type" : "product",
-    "product_type" : "literature",
     "titles" : {
       "en" : [ "Extensions" ]
     },
     "contributions" : [ {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-1007-978-1-4842-7310-4-15___bauke-scholtz",
-        "identifiers" : [ ],
         "given_name" : "Bauke",
         "family_name" : "Scholtz",
-        "name" : "Bauke Scholtz",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Bauke Scholtz"
       },
       "rank" : 1,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-1007-978-1-4842-7310-4-15___arjan-tijms",
-        "identifiers" : [ ],
         "given_name" : "Arjan",
         "family_name" : "Tijms",
-        "name" : "Arjan Tijms",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Arjan Tijms"
       },
       "rank" : 2,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "organisation",
         "local_identifier" : "otf___10-1007-978-1-4842-7310-4-15___apress",
-        "identifiers" : [ ],
-        "name" : "Apress",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Apress"
       },
       "rank" : 3,
       "role" : "publisher"
@@ -74,6 +68,7 @@
           "last" : "518"
         },
         "in" : {
+          "entity_type" : "venue",
           "local_identifier" : "https://doi.org/10.1007/978-1-4842-7310-4",
           "identifiers" : [ {
             "scheme" : "doi",
@@ -85,13 +80,11 @@
             "scheme" : "isbn",
             "value" : "978-1-4842-7310-4"
           } ],
-          "entity_type" : "venue",
           "name" : "The Definitive Guide to Jakarta Faces in Jakarta EE 10"
         },
         "hosting_data_source" : {
-          "local_identifier" : "otf___10-1007-978-1-4842-7310-4-15___apress",
-          "identifiers" : [ ],
           "entity_type" : "datasource",
+          "local_identifier" : "otf___10-1007-978-1-4842-7310-4-15___apress",
           "name" : "Apress"
         }
       }

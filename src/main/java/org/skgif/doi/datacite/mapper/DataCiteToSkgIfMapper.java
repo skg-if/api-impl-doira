@@ -13,13 +13,18 @@ import org.skgif.doi.datacite.dto.DataCiteRelatedIdentifier;
 import org.skgif.doi.datacite.dto.DataCiteRights;
 import org.skgif.doi.datacite.dto.DataCiteSubject;
 import org.skgif.doi.generated.model.AgentAllOfIdentifiers;
+import org.skgif.doi.generated.model.DataSourceLite;
 import org.skgif.doi.generated.model.EntityIdentifiersInner;
 import org.skgif.doi.generated.model.Grant;
 import org.skgif.doi.generated.model.GrantAllOfBeneficiaries;
 import org.skgif.doi.generated.model.GrantAllOfContributions;
+import org.skgif.doi.generated.model.GrantContribution;
 import org.skgif.doi.generated.model.GrantContributionBy;
+import org.skgif.doi.generated.model.GrantLite;
 import org.skgif.doi.generated.model.GrantLiteAllOfIdentifiers;
 import org.skgif.doi.generated.model.Organisation;
+import org.skgif.doi.generated.model.PersonLite;
+import org.skgif.doi.generated.model.PersonLiteAllOfIdentifiers;
 import org.skgif.doi.generated.model.Product;
 import org.skgif.doi.generated.model.ProductAllOfFunding;
 import org.skgif.doi.generated.model.ProductAllOfIdentifiers;
@@ -36,6 +41,8 @@ import org.skgif.doi.generated.model.ProductManifestationDates;
 import org.skgif.doi.generated.model.ProductManifestationType;
 import org.skgif.doi.generated.model.ProductsRelated;
 import org.skgif.doi.generated.model.ProductsRelatedCitesInner;
+import org.skgif.doi.generated.model.ProductsRelatedItem;
+import org.skgif.doi.generated.model.Topic;
 import org.skgif.doi.util.LocalIdentifiers;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.ArrayList;
@@ -60,16 +67,6 @@ import java.util.regex.Pattern;
  * an "on-the-fly" ({@code otf___<doi>___<slug>}) identifier is generated per the spec's own
  * convention for entities lacking a stable identifier - deterministic per product rather than
  * random, so repeated calls for the same DOI produce byte-identical output.
- *
- * <p>Known limitation: {@code contributions[].by.entity_type} is intentionally left unset for
- * persons (both {@code Product.contributions} and {@code Grant.contributions}). The SKG-IF
- * OpenAPI spec's {@code by} property is a oneOf of PersonLite|Organisation|Agent|
- * LocalIdentifierRef; openapi-generator 7.10.0 merges these into one Java class but only
- * keeps the "organisation"/"agent" literal for entity_type, so there is no generated way to
- * correctly emit "person" here. Omitting it (rather than emitting a wrong value) is the honest
- * choice; every other entity_type in this output (organisation, grant, datasource, topic,
- * product) is unaffected and set correctly. {@code local_identifier} on {@code by} is set
- * regardless (ORCID/ROR URL, or an otf fallback) since that gap doesn't affect it.
  *
  * <p>Known limitation on {@link #toGrant}: DataCite's Award schema has no generic source for
  * {@code grant_number}, {@code currency}, {@code funded_amount}, {@code duration}, {@code
@@ -182,9 +179,9 @@ public class DataCiteToSkgIfMapper {
             String lang = subject.lang != null ? subject.lang : "none";
             // DataCite subjects have no external identifier system behind them, so this is
             // always an otf id - there's nothing more stable to hang it off.
-            ProductAllOfTerm term = new ProductAllOfTerm()
+            ProductAllOfTerm term = new Topic()
                     .localIdentifier(otf(attributes.doi, subject.subject))
-                    .entityType(ProductAllOfTerm.EntityTypeEnum.TOPIC)
+                    .entityType(Topic.EntityTypeEnum.TOPIC)
                     .labels(Map.of(lang, subject.subject));
             topics.add(new ProductAllOfTopics().term(term));
         }
@@ -233,12 +230,13 @@ public class DataCiteToSkgIfMapper {
     private ProductContributionBy personRef(String doi, String name, String givenName, String familyName,
             List<DataCiteNameIdentifier> nameIdentifiers) {
         String orcid = firstOrcid(nameIdentifiers);
-        ProductContributionBy by = new ProductContributionBy()
+        PersonLite by = new PersonLite()
                 .localIdentifier(orcid != null ? ORCID_BASE_URL + orcid : otf(doi, name))
                 .name(name)
                 .givenName(givenName)
-                .familyName(familyName);
-        List<AgentAllOfIdentifiers> identifiers = orcidIdentifiers(nameIdentifiers);
+                .familyName(familyName)
+                .entityType("person");
+        List<PersonLiteAllOfIdentifiers> identifiers = orcidIdentifiers(nameIdentifiers);
         if (identifiers != null) {
             by.identifiers(identifiers);
         }
@@ -251,9 +249,10 @@ public class DataCiteToSkgIfMapper {
      * always gets an otf id.
      */
     private ProductContributionBy organisationRef(String doi, String name) {
-        return new ProductContributionBy()
+        return new Organisation()
                 .localIdentifier(otf(doi, name))
-                .name(name);
+                .name(name)
+                .entityType("organisation");
     }
 
     private String firstOrcid(List<DataCiteNameIdentifier> nameIdentifiers) {
@@ -269,12 +268,12 @@ public class DataCiteToSkgIfMapper {
                 .orElse(null);
     }
 
-    private List<AgentAllOfIdentifiers> orcidIdentifiers(
+    private List<PersonLiteAllOfIdentifiers> orcidIdentifiers(
             List<DataCiteNameIdentifier> nameIdentifiers) {
         if (nameIdentifiers == null || nameIdentifiers.isEmpty()) {
             return null;
         }
-        List<AgentAllOfIdentifiers> identifiers = new ArrayList<>();
+        List<PersonLiteAllOfIdentifiers> identifiers = new ArrayList<>();
         for (DataCiteNameIdentifier ni : nameIdentifiers) {
             if (!"ORCID".equalsIgnoreCase(ni.nameIdentifierScheme)) {
                 continue;
@@ -283,7 +282,7 @@ public class DataCiteToSkgIfMapper {
             if (orcid != null && orcid.startsWith(ORCID_BASE_URL)) {
                 orcid = orcid.substring(ORCID_BASE_URL.length());
             }
-            identifiers.add(new AgentAllOfIdentifiers()
+            identifiers.add(new PersonLiteAllOfIdentifiers()
                     .scheme("orcid")
                     .value(orcid));
         }
@@ -301,12 +300,12 @@ public class DataCiteToSkgIfMapper {
             }
             boolean hasRor = affiliation.affiliationIdentifier != null
                     && "ROR".equalsIgnoreCase(affiliation.affiliationIdentifierScheme);
-            ProductAllOfRelevantOrganisations org = new ProductAllOfRelevantOrganisations()
+            Organisation org = new Organisation()
                     .localIdentifier(hasRor
                             ? ROR_BASE_URL + stripRorUrl(affiliation.affiliationIdentifier)
                             : otf(doi, affiliation.name))
                     .name(affiliation.name)
-                    .entityType(ProductAllOfRelevantOrganisations.EntityTypeEnum.ORGANISATION);
+                    .entityType("organisation");
             if (hasRor) {
                 org.identifiers(List.of(new AgentAllOfIdentifiers()
                         .scheme("ror")
@@ -470,9 +469,9 @@ public class DataCiteToSkgIfMapper {
      * for an arbitrary publisher string, so this always gets an otf id.
      */
     private ProductManifestationBiblioHostingDataSource hostingDataSource(DataCiteAttributes attributes) {
-        return new ProductManifestationBiblioHostingDataSource()
+        return new DataSourceLite()
                 .localIdentifier(otf(attributes.doi, attributes.publisher))
-                .entityType(ProductManifestationBiblioHostingDataSource.EntityTypeEnum.DATASOURCE)
+                .entityType(DataSourceLite.EntityTypeEnum.DATASOURCE)
                 .name(attributes.publisher);
     }
 
@@ -488,9 +487,9 @@ public class DataCiteToSkgIfMapper {
             String label = fundingReference.awardNumber != null
                     ? fundingReference.awardNumber
                     : fundingReference.awardTitle;
-            ProductAllOfFunding grant = new ProductAllOfFunding()
+            GrantLite grant = new GrantLite()
                     .localIdentifier(otf(attributes.doi, label))
-                    .entityType(ProductAllOfFunding.EntityTypeEnum.GRANT)
+                    .entityType(GrantLite.EntityTypeEnum.GRANT)
                     .grantNumber(fundingReference.awardNumber)
                     .titles(fundingReference.awardTitle != null ? Map.of("en", List.of(fundingReference.awardTitle)) : null)
                     .fundingAgency(fundingAgency(attributes.doi, fundingReference));
@@ -525,7 +524,7 @@ public class DataCiteToSkgIfMapper {
                                 ? localIdentifiers.toFullLocalIdentifier(funderDoi)
                                 : otf(doi, fundingReference.funderName))
                 .name(fundingReference.funderName)
-                .entityType(Organisation.EntityTypeEnum.ORGANISATION);
+                .entityType("organisation");
         if (hasRor) {
             agency.identifiers(List.of(new AgentAllOfIdentifiers()
                     .scheme("ror")
@@ -578,7 +577,7 @@ public class DataCiteToSkgIfMapper {
             return new Organisation()
                     .localIdentifier(ROR_BASE_URL + ror)
                     .name(creator.name)
-                    .entityType(Organisation.EntityTypeEnum.ORGANISATION)
+                    .entityType("organisation")
                     .identifiers(List.of(new AgentAllOfIdentifiers().scheme("ror").value(ror)));
         }
         // No ROR-bearing creator to identify the funder - fall back to the record's own
@@ -589,7 +588,7 @@ public class DataCiteToSkgIfMapper {
         return new Organisation()
                 .localIdentifier(otf(doi, publisher))
                 .name(publisher)
-                .entityType(Organisation.EntityTypeEnum.ORGANISATION);
+                .entityType("organisation");
     }
 
     private List<GrantAllOfContributions> grantContributions(String doi, List<DataCiteCreator> creators,
@@ -600,14 +599,14 @@ public class DataCiteToSkgIfMapper {
                 continue;
             }
             boolean organizational = "Organizational".equals(creator.nameType);
-            result.add(new GrantAllOfContributions()
+            result.add(new GrantContribution()
                     .by(grantContributionBy(doi, creator.name, creator.givenName, creator.familyName,
                             creator.nameIdentifiers, organizational))
                     .declaredAffiliations(grantAffiliations(doi, creator.affiliation)));
         }
         for (DataCiteContributor contributor : contributors) {
             boolean organizational = "Organizational".equals(contributor.nameType);
-            result.add(new GrantAllOfContributions()
+            result.add(new GrantContribution()
                     .by(grantContributionBy(doi, contributor.name, contributor.givenName, contributor.familyName,
                             contributor.nameIdentifiers, organizational))
                     .declaredAffiliations(grantAffiliations(doi, contributor.affiliation)));
@@ -619,24 +618,23 @@ public class DataCiteToSkgIfMapper {
             List<DataCiteNameIdentifier> nameIdentifiers, boolean organizational) {
         if (organizational) {
             String ror = firstRor(nameIdentifiers);
-            GrantContributionBy by = new GrantContributionBy()
+            Organisation by = new Organisation()
                     .localIdentifier(ror != null ? ROR_BASE_URL + ror : otf(doi, name))
                     .name(name)
-                    .entityType(GrantContributionBy.EntityTypeEnum.ORGANISATION);
+                    .entityType("organisation");
             if (ror != null) {
                 by.identifiers(List.of(new AgentAllOfIdentifiers().scheme("ror").value(ror)));
             }
             return by;
         }
-        // Person - entity_type intentionally left unset, see class javadoc: the generated
-        // EntityTypeEnum here only has an ORGANISATION literal, no PERSON one.
         String orcid = firstOrcid(nameIdentifiers);
-        GrantContributionBy by = new GrantContributionBy()
+        PersonLite by = new PersonLite()
                 .localIdentifier(orcid != null ? ORCID_BASE_URL + orcid : otf(doi, name))
                 .name(name)
                 .givenName(givenName)
-                .familyName(familyName);
-        List<AgentAllOfIdentifiers> identifiers = orcidIdentifiers(nameIdentifiers);
+                .familyName(familyName)
+                .entityType("person");
+        List<PersonLiteAllOfIdentifiers> identifiers = orcidIdentifiers(nameIdentifiers);
         if (identifiers != null) {
             by.identifiers(identifiers);
         }
@@ -654,12 +652,12 @@ public class DataCiteToSkgIfMapper {
             }
             boolean hasRor = affiliation.affiliationIdentifier != null
                     && "ROR".equalsIgnoreCase(affiliation.affiliationIdentifierScheme);
-            GrantAllOfBeneficiaries org = new GrantAllOfBeneficiaries()
+            Organisation org = new Organisation()
                     .localIdentifier(hasRor
                             ? ROR_BASE_URL + stripRorUrl(affiliation.affiliationIdentifier)
                             : otf(doi, affiliation.name))
                     .name(affiliation.name)
-                    .entityType(GrantAllOfBeneficiaries.EntityTypeEnum.ORGANISATION);
+                    .entityType("organisation");
             if (hasRor) {
                 org.identifiers(List.of(new AgentAllOfIdentifiers()
                         .scheme("ror")
@@ -773,7 +771,7 @@ public class DataCiteToSkgIfMapper {
             String localIdentifier = "doi".equals(scheme)
                     ? localIdentifiers.toFullLocalIdentifier(related.relatedIdentifier)
                     : otf(attributes.doi, related.relatedIdentifier);
-            result.add(new ProductsRelatedCitesInner()
+            result.add(new ProductsRelatedItem()
                     .localIdentifier(localIdentifier)
                     .entityType("product")
                     .identifiers(List.of(new EntityIdentifiersInner().scheme(scheme).value(related.relatedIdentifier))));

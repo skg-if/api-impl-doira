@@ -7,78 +7,64 @@
     "entity_type" : "single_entity"
   },
   "@graph" : [ {
+    "entity_type" : "product",
+    "product_type" : "research data",
     "local_identifier" : "https://doi.org/10.17630/e449e75a-1ee9-4490-909c-e3913052cce1",
     "identifiers" : [ {
       "scheme" : "doi",
       "value" : "10.17630/e449e75a-1ee9-4490-909c-e3913052cce1"
     } ],
-    "entity_type" : "product",
-    "product_type" : "research data",
     "titles" : {
       "en" : [ "Highly efficient organic light-emitting diodes and light-1 emitting electrochemical cells employing multi-resonant thermally activated delayed fluorescent emitters with bulky donor or acceptor peripheral groups (dataset)" ]
     },
     "contributions" : [ {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-17630-e449e75a-1ee9-4490-909c-e391305___wang-jingxiang",
-        "identifiers" : [ ],
         "given_name" : "Jingxiang",
         "family_name" : "Wang",
-        "name" : "Wang, Jingxiang",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Wang, Jingxiang"
       },
       "declared_affiliations" : [ {
-        "local_identifier" : "otf___10-17630-e449e75a-1ee9-4490-909c-e391305___university-of-st-andrews",
-        "identifiers" : [ ],
         "entity_type" : "organisation",
-        "name" : "University of St Andrews",
-        "other_names" : [ ],
-        "types" : [ ]
+        "local_identifier" : "otf___10-17630-e449e75a-1ee9-4490-909c-e391305___university-of-st-andrews",
+        "name" : "University of St Andrews"
       } ],
       "rank" : 1,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-17630-e449e75a-1ee9-4490-909c-e391305___hafeez-hassan",
-        "identifiers" : [ ],
         "given_name" : "Hassan",
         "family_name" : "Hafeez",
-        "name" : "Hafeez, Hassan",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Hafeez, Hassan"
       },
       "declared_affiliations" : [ {
-        "local_identifier" : "otf___10-17630-e449e75a-1ee9-4490-909c-e391305___university-of-st-andrews",
-        "identifiers" : [ ],
         "entity_type" : "organisation",
-        "name" : "University of St Andrews",
-        "other_names" : [ ],
-        "types" : [ ]
+        "local_identifier" : "otf___10-17630-e449e75a-1ee9-4490-909c-e391305___university-of-st-andrews",
+        "name" : "University of St Andrews"
       } ],
       "rank" : 2,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-17630-e449e75a-1ee9-4490-909c-e391305___tang-shi",
-        "identifiers" : [ ],
         "given_name" : "Shi ",
         "family_name" : "Tang",
-        "name" : "Tang, Shi",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Tang, Shi"
       },
       "declared_affiliations" : [ {
-        "local_identifier" : "otf___10-17630-e449e75a-1ee9-4490-909c-e391305___ume-university",
-        "identifiers" : [ ],
         "entity_type" : "organisation",
-        "name" : "Umeå University",
-        "other_names" : [ ],
-        "types" : [ ]
+        "local_identifier" : "otf___10-17630-e449e75a-1ee9-4490-909c-e391305___ume-university",
+        "name" : "Umeå University"
       } ],
       "rank" : 3,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "https://orcid.org/0000-0003-0470-7356",
         "identifiers" : [ {
           "scheme" : "orcid",
@@ -86,42 +72,33 @@
         } ],
         "given_name" : "Tomas",
         "family_name" : "Matulaitis",
-        "name" : "Matulaitis, Tomas",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Matulaitis, Tomas"
       },
       "declared_affiliations" : [ {
-        "local_identifier" : "otf___10-17630-e449e75a-1ee9-4490-909c-e391305___university-of-st-andrews",
-        "identifiers" : [ ],
         "entity_type" : "organisation",
-        "name" : "University of St Andrews",
-        "other_names" : [ ],
-        "types" : [ ]
+        "local_identifier" : "otf___10-17630-e449e75a-1ee9-4490-909c-e391305___university-of-st-andrews",
+        "name" : "University of St Andrews"
       } ],
       "rank" : 4,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-17630-e449e75a-1ee9-4490-909c-e391305___edman-ludvig",
-        "identifiers" : [ ],
         "given_name" : "Ludvig",
         "family_name" : "Edman",
-        "name" : "Edman, Ludvig",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Edman, Ludvig"
       },
       "declared_affiliations" : [ {
-        "local_identifier" : "otf___10-17630-e449e75a-1ee9-4490-909c-e391305___ume-university",
-        "identifiers" : [ ],
         "entity_type" : "organisation",
-        "name" : "Umeå University",
-        "other_names" : [ ],
-        "types" : [ ]
+        "local_identifier" : "otf___10-17630-e449e75a-1ee9-4490-909c-e391305___ume-university",
+        "name" : "Umeå University"
       } ],
       "rank" : 5,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "https://orcid.org/0000-0001-7821-7208",
         "identifiers" : [ {
           "scheme" : "orcid",
@@ -129,22 +106,18 @@
         } ],
         "given_name" : "Ifor David William",
         "family_name" : "Samuel",
-        "name" : "Samuel, Ifor David William",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Samuel, Ifor David William"
       },
       "declared_affiliations" : [ {
-        "local_identifier" : "otf___10-17630-e449e75a-1ee9-4490-909c-e391305___university-of-st-andrews",
-        "identifiers" : [ ],
         "entity_type" : "organisation",
-        "name" : "University of St Andrews",
-        "other_names" : [ ],
-        "types" : [ ]
+        "local_identifier" : "otf___10-17630-e449e75a-1ee9-4490-909c-e391305___university-of-st-andrews",
+        "name" : "University of St Andrews"
       } ],
       "rank" : 6,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "https://orcid.org/0000-0001-7183-6022",
         "identifiers" : [ {
           "scheme" : "orcid",
@@ -152,27 +125,20 @@
         } ],
         "given_name" : "Eli",
         "family_name" : "Zysman-Colman",
-        "name" : "Zysman-Colman, Eli",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Zysman-Colman, Eli"
       },
       "declared_affiliations" : [ {
-        "local_identifier" : "otf___10-17630-e449e75a-1ee9-4490-909c-e391305___university-of-st-andrews",
-        "identifiers" : [ ],
         "entity_type" : "organisation",
-        "name" : "University of St Andrews",
-        "other_names" : [ ],
-        "types" : [ ]
+        "local_identifier" : "otf___10-17630-e449e75a-1ee9-4490-909c-e391305___university-of-st-andrews",
+        "name" : "University of St Andrews"
       } ],
       "rank" : 7,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "organisation",
         "local_identifier" : "otf___10-17630-e449e75a-1ee9-4490-909c-e391305___university-of-st-andrews",
-        "identifiers" : [ ],
-        "name" : "University of St Andrews",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "University of St Andrews"
       },
       "rank" : 8,
       "role" : "publisher"
@@ -196,50 +162,46 @@
       "licence" : "https://creativecommons.org/licenses/by/4.0/legalcode",
       "biblio" : {
         "hosting_data_source" : {
-          "local_identifier" : "otf___10-17630-e449e75a-1ee9-4490-909c-e391305___university-of-st-andrews",
-          "identifiers" : [ ],
           "entity_type" : "datasource",
+          "local_identifier" : "otf___10-17630-e449e75a-1ee9-4490-909c-e391305___university-of-st-andrews",
           "name" : "University of St Andrews"
         }
       }
     } ],
     "funding" : [ {
-      "local_identifier" : "otf___10-17630-e449e75a-1ee9-4490-909c-e391305___ep-w015137-1",
-      "identifiers" : [ ],
       "entity_type" : "grant",
+      "local_identifier" : "otf___10-17630-e449e75a-1ee9-4490-909c-e391305___ep-w015137-1",
       "grant_number" : "EP/W015137/1",
       "titles" : {
         "en" : [ "Multi-resonance TADF materials for highly efficient and stable OLEDs" ]
       },
       "funding_agency" : {
-        "local_identifier" : "otf___10-17630-e449e75a-1ee9-4490-909c-e391305___epsrc",
         "entity_type" : "organisation",
+        "local_identifier" : "otf___10-17630-e449e75a-1ee9-4490-909c-e391305___epsrc",
         "name" : "EPSRC"
       }
     }, {
-      "local_identifier" : "otf___10-17630-e449e75a-1ee9-4490-909c-e391305___ep-r035164-1",
-      "identifiers" : [ ],
       "entity_type" : "grant",
+      "local_identifier" : "otf___10-17630-e449e75a-1ee9-4490-909c-e391305___ep-r035164-1",
       "grant_number" : "EP/R035164/1",
       "titles" : {
         "en" : [ "EPSRC-JSPS Core-to-Core Grant Application" ]
       },
       "funding_agency" : {
-        "local_identifier" : "otf___10-17630-e449e75a-1ee9-4490-909c-e391305___epsrc",
         "entity_type" : "organisation",
+        "local_identifier" : "otf___10-17630-e449e75a-1ee9-4490-909c-e391305___epsrc",
         "name" : "EPSRC"
       }
     }, {
-      "local_identifier" : "otf___10-17630-e449e75a-1ee9-4490-909c-e391305___ep-w007517-1",
-      "identifiers" : [ ],
       "entity_type" : "grant",
+      "local_identifier" : "otf___10-17630-e449e75a-1ee9-4490-909c-e391305___ep-w007517-1",
       "grant_number" : "EP/W007517/1",
       "titles" : {
         "en" : [ "Boron: Beyond the Reagent" ]
       },
       "funding_agency" : {
-        "local_identifier" : "otf___10-17630-e449e75a-1ee9-4490-909c-e391305___uk-research-and-innovation",
         "entity_type" : "organisation",
+        "local_identifier" : "otf___10-17630-e449e75a-1ee9-4490-909c-e391305___uk-research-and-innovation",
         "name" : "UK Research and Innovation"
       }
     } ]

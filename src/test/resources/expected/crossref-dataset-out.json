@@ -7,43 +7,36 @@
     "entity_type" : "single_entity"
   },
   "@graph" : [ {
+    "entity_type" : "product",
+    "product_type" : "research data",
     "local_identifier" : "https://doi.org/10.17989/encsr154xia",
     "identifiers" : [ {
       "scheme" : "doi",
       "value" : "10.17989/encsr154xia"
     } ],
-    "entity_type" : "product",
-    "product_type" : "research data",
     "titles" : {
       "en" : [ "ENCSR154XIA" ]
     },
     "contributions" : [ {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-17989-encsr154xia___m-beer",
-        "identifiers" : [ ],
         "given_name" : "M",
         "family_name" : "Beer",
-        "name" : "M Beer",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "M Beer"
       },
       "declared_affiliations" : [ {
-        "local_identifier" : "otf___10-17989-encsr154xia___johns-hopkins-university",
-        "identifiers" : [ ],
         "entity_type" : "organisation",
-        "name" : "Johns Hopkins University",
-        "other_names" : [ ],
-        "types" : [ ]
+        "local_identifier" : "otf___10-17989-encsr154xia___johns-hopkins-university",
+        "name" : "Johns Hopkins University"
       } ],
       "rank" : 1,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "organisation",
         "local_identifier" : "otf___10-17989-encsr154xia___encode-data-coordination-center",
-        "identifiers" : [ ],
-        "name" : "ENCODE Data Coordination Center",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "ENCODE Data Coordination Center"
       },
       "rank" : 2,
       "role" : "publisher"
@@ -64,15 +57,13 @@
       },
       "biblio" : {
         "in" : {
-          "local_identifier" : "otf___10-17989-encsr154xia___encode-datasets",
-          "identifiers" : [ ],
           "entity_type" : "venue",
+          "local_identifier" : "otf___10-17989-encsr154xia___encode-datasets",
           "name" : "ENCODE Datasets"
         },
         "hosting_data_source" : {
-          "local_identifier" : "otf___10-17989-encsr154xia___encode-data-coordination-center",
-          "identifiers" : [ ],
           "entity_type" : "datasource",
+          "local_identifier" : "otf___10-17989-encsr154xia___encode-data-coordination-center",
           "name" : "ENCODE Data Coordination Center"
         }
       }

@@ -7,13 +7,13 @@
     "entity_type" : "single_entity"
   },
   "@graph" : [ {
+    "entity_type" : "product",
+    "product_type" : "literature",
     "local_identifier" : "https://doi.org/10.5281/zenodo.20750072",
     "identifiers" : [ {
       "scheme" : "doi",
       "value" : "10.5281/zenodo.20750072"
     } ],
-    "entity_type" : "product",
-    "product_type" : "literature",
     "titles" : {
       "en" : [ "More Than Property: A Bio-Psycho-Social-Legal Framework for Welfare Assessment and Legal Interpretation in Companion Animal Disputes" ]
     },
@@ -22,27 +22,24 @@
     },
     "topics" : [ {
       "term" : {
-        "local_identifier" : "otf___10-5281-zenodo-20750072___companion-animal-custody",
-        "identifiers" : [ ],
         "entity_type" : "topic",
+        "local_identifier" : "otf___10-5281-zenodo-20750072___companion-animal-custody",
         "labels" : {
           "none" : "Companion Animal Custody"
         }
       }
     }, {
       "term" : {
-        "local_identifier" : "otf___10-5281-zenodo-20750072___policy-framework",
-        "identifiers" : [ ],
         "entity_type" : "topic",
+        "local_identifier" : "otf___10-5281-zenodo-20750072___policy-framework",
         "labels" : {
           "none" : "Policy Framework"
         }
       }
     }, {
       "term" : {
-        "local_identifier" : "otf___10-5281-zenodo-20750072___animal-law",
-        "identifiers" : [ ],
         "entity_type" : "topic",
+        "local_identifier" : "otf___10-5281-zenodo-20750072___animal-law",
         "labels" : {
           "none" : "Animal Law"
         }
@@ -50,31 +47,24 @@
     } ],
     "contributions" : [ {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-5281-zenodo-20750072___siddiqui-dr-tameer",
-        "identifiers" : [ ],
         "given_name" : "Dr. Tameer",
         "family_name" : "Siddiqui",
-        "name" : "Siddiqui, Dr. Tameer",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Siddiqui, Dr. Tameer"
       },
       "declared_affiliations" : [ {
-        "local_identifier" : "otf___10-5281-zenodo-20750072___rosie-s-law-initiative",
-        "identifiers" : [ ],
         "entity_type" : "organisation",
-        "name" : "Rosie's Law Initiative",
-        "other_names" : [ ],
-        "types" : [ ]
+        "local_identifier" : "otf___10-5281-zenodo-20750072___rosie-s-law-initiative",
+        "name" : "Rosie's Law Initiative"
       } ],
       "rank" : 1,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "organisation",
         "local_identifier" : "otf___10-5281-zenodo-20750072___zenodo",
-        "identifiers" : [ ],
-        "name" : "Zenodo",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Zenodo"
       },
       "rank" : 2,
       "role" : "publisher"
@@ -99,9 +89,8 @@
       "version" : "1.0",
       "biblio" : {
         "hosting_data_source" : {
-          "local_identifier" : "otf___10-5281-zenodo-20750072___zenodo",
-          "identifiers" : [ ],
           "entity_type" : "datasource",
+          "local_identifier" : "otf___10-5281-zenodo-20750072___zenodo",
           "name" : "Zenodo"
         }
       }

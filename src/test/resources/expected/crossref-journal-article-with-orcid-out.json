@@ -7,13 +7,13 @@
     "entity_type" : "single_entity"
   },
   "@graph" : [ {
+    "entity_type" : "product",
+    "product_type" : "literature",
     "local_identifier" : "https://doi.org/10.1038/s41467-022-33468-6",
     "identifiers" : [ {
       "scheme" : "doi",
       "value" : "10.1038/s41467-022-33468-6"
     } ],
-    "entity_type" : "product",
-    "product_type" : "literature",
     "titles" : {
       "en" : [ "Kondo quasiparticle dynamics observed by resonant inelastic x-ray scattering" ]
     },
@@ -22,6 +22,7 @@
     },
     "contributions" : [ {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "https://orcid.org/0000-0001-7403-8288",
         "identifiers" : [ {
           "scheme" : "orcid",
@@ -29,14 +30,13 @@
         } ],
         "given_name" : "M. C.",
         "family_name" : "Rahn",
-        "name" : "M. C. Rahn",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "M. C. Rahn"
       },
       "rank" : 1,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "https://orcid.org/0000-0003-3044-7957",
         "identifiers" : [ {
           "scheme" : "orcid",
@@ -44,26 +44,23 @@
         } ],
         "given_name" : "K.",
         "family_name" : "Kummer",
-        "name" : "K. Kummer",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "K. Kummer"
       },
       "rank" : 2,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-1038-s41467-022-33468-6___a-hariki",
-        "identifiers" : [ ],
         "given_name" : "A.",
         "family_name" : "Hariki",
-        "name" : "A. Hariki",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "A. Hariki"
       },
       "rank" : 3,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "https://orcid.org/0000-0001-8188-8926",
         "identifiers" : [ {
           "scheme" : "orcid",
@@ -71,14 +68,13 @@
         } ],
         "given_name" : "K.-H.",
         "family_name" : "Ahn",
-        "name" : "K.-H. Ahn",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "K.-H. Ahn"
       },
       "rank" : 4,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "https://orcid.org/0000-0001-9682-7640",
         "identifiers" : [ {
           "scheme" : "orcid",
@@ -86,26 +82,23 @@
         } ],
         "given_name" : "J.",
         "family_name" : "Kuneš",
-        "name" : "J. Kuneš",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "J. Kuneš"
       },
       "rank" : 5,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-1038-s41467-022-33468-6___a-amorese",
-        "identifiers" : [ ],
         "given_name" : "A.",
         "family_name" : "Amorese",
-        "name" : "A. Amorese",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "A. Amorese"
       },
       "rank" : 6,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "https://orcid.org/0000-0001-7645-1631",
         "identifiers" : [ {
           "scheme" : "orcid",
@@ -113,14 +106,13 @@
         } ],
         "given_name" : "J. D.",
         "family_name" : "Denlinger",
-        "name" : "J. D. Denlinger",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "J. D. Denlinger"
       },
       "rank" : 7,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "https://orcid.org/0000-0002-9708-0443",
         "identifiers" : [ {
           "scheme" : "orcid",
@@ -128,14 +120,13 @@
         } ],
         "given_name" : "D.-H.",
         "family_name" : "Lu",
-        "name" : "D.-H. Lu",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "D.-H. Lu"
       },
       "rank" : 8,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "https://orcid.org/0000-0003-1689-8997",
         "identifiers" : [ {
           "scheme" : "orcid",
@@ -143,14 +134,13 @@
         } ],
         "given_name" : "M.",
         "family_name" : "Hashimoto",
-        "name" : "M. Hashimoto",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "M. Hashimoto"
       },
       "rank" : 9,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "https://orcid.org/0000-0002-9192-0552",
         "identifiers" : [ {
           "scheme" : "orcid",
@@ -158,14 +148,13 @@
         } ],
         "given_name" : "E.",
         "family_name" : "Rienks",
-        "name" : "E. Rienks",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "E. Rienks"
       },
       "rank" : 10,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "https://orcid.org/0000-0003-4895-8114",
         "identifiers" : [ {
           "scheme" : "orcid",
@@ -173,50 +162,43 @@
         } ],
         "given_name" : "M.",
         "family_name" : "Valvidares",
-        "name" : "M. Valvidares",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "M. Valvidares"
       },
       "rank" : 11,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-1038-s41467-022-33468-6___f-haslbeck",
-        "identifiers" : [ ],
         "given_name" : "F.",
         "family_name" : "Haslbeck",
-        "name" : "F. Haslbeck",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "F. Haslbeck"
       },
       "rank" : 12,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-1038-s41467-022-33468-6___d-d-byler",
-        "identifiers" : [ ],
         "given_name" : "D. D.",
         "family_name" : "Byler",
-        "name" : "D. D. Byler",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "D. D. Byler"
       },
       "rank" : 13,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-1038-s41467-022-33468-6___k-j-mcclellan",
-        "identifiers" : [ ],
         "given_name" : "K. J.",
         "family_name" : "McClellan",
-        "name" : "K. J. McClellan",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "K. J. McClellan"
       },
       "rank" : 14,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "https://orcid.org/0000-0003-0017-1937",
         "identifiers" : [ {
           "scheme" : "orcid",
@@ -224,14 +206,13 @@
         } ],
         "given_name" : "E. D.",
         "family_name" : "Bauer",
-        "name" : "E. D. Bauer",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "E. D. Bauer"
       },
       "rank" : 15,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "https://orcid.org/0000-0001-7991-3918",
         "identifiers" : [ {
           "scheme" : "orcid",
@@ -239,14 +220,13 @@
         } ],
         "given_name" : "J. X.",
         "family_name" : "Zhu",
-        "name" : "J. X. Zhu",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "J. X. Zhu"
       },
       "rank" : 16,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "https://orcid.org/0000-0001-6827-0080",
         "identifiers" : [ {
           "scheme" : "orcid",
@@ -254,14 +234,13 @@
         } ],
         "given_name" : "C. H.",
         "family_name" : "Booth",
-        "name" : "C. H. Booth",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "C. H. Booth"
       },
       "rank" : 17,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "https://orcid.org/0000-0003-3369-5884",
         "identifiers" : [ {
           "scheme" : "orcid",
@@ -269,38 +248,33 @@
         } ],
         "given_name" : "A. D.",
         "family_name" : "Christianson",
-        "name" : "A. D. Christianson",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "A. D. Christianson"
       },
       "rank" : 18,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-1038-s41467-022-33468-6___j-m-lawrence",
-        "identifiers" : [ ],
         "given_name" : "J. M.",
         "family_name" : "Lawrence",
-        "name" : "J. M. Lawrence",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "J. M. Lawrence"
       },
       "rank" : 19,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-1038-s41467-022-33468-6___f-ronning",
-        "identifiers" : [ ],
         "given_name" : "F.",
         "family_name" : "Ronning",
-        "name" : "F. Ronning",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "F. Ronning"
       },
       "rank" : 20,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "https://orcid.org/0000-0002-2943-0173",
         "identifiers" : [ {
           "scheme" : "orcid",
@@ -308,19 +282,15 @@
         } ],
         "given_name" : "M.",
         "family_name" : "Janoschek",
-        "name" : "M. Janoschek",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "M. Janoschek"
       },
       "rank" : 21,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "organisation",
         "local_identifier" : "otf___10-1038-s41467-022-33468-6___springer-science-and-business-media-llc",
-        "identifiers" : [ ],
-        "name" : "Springer Science and Business Media LLC",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Springer Science and Business Media LLC"
       },
       "rank" : 22,
       "role" : "publisher"
@@ -347,48 +317,47 @@
         "issue" : "1",
         "volume" : "13",
         "in" : {
+          "entity_type" : "venue",
           "local_identifier" : "otf___10-1038-s41467-022-33468-6___nature-communications",
           "identifiers" : [ {
             "scheme" : "issn",
             "value" : "2041-1723"
           } ],
-          "entity_type" : "venue",
           "name" : "Nature Communications"
         },
         "hosting_data_source" : {
-          "local_identifier" : "otf___10-1038-s41467-022-33468-6___springer-science-and-business-media-llc",
-          "identifiers" : [ ],
           "entity_type" : "datasource",
+          "local_identifier" : "otf___10-1038-s41467-022-33468-6___springer-science-and-business-media-llc",
           "name" : "Springer Science and Business Media LLC"
         }
       }
     } ],
     "related_products" : {
       "cites" : [ {
+        "entity_type" : "product",
         "local_identifier" : "https://doi.org/10.1038/s42254-020-00262-6",
         "identifiers" : [ {
           "scheme" : "doi",
           "value" : "10.1038/s42254-020-00262-6"
-        } ],
-        "entity_type" : "product"
+        } ]
       }, {
+        "entity_type" : "product",
         "local_identifier" : "https://doi.org/10.1142/S0217984908016042",
         "identifiers" : [ {
           "scheme" : "doi",
           "value" : "10.1142/S0217984908016042"
-        } ],
-        "entity_type" : "product"
+        } ]
       }, {
+        "entity_type" : "product",
         "local_identifier" : "https://doi.org/10.1016/j.nima.2018.07.001",
         "identifiers" : [ {
           "scheme" : "doi",
           "value" : "10.1016/j.nima.2018.07.001"
-        } ],
-        "entity_type" : "product"
+        } ]
       }, {
+        "entity_type" : "product",
         "local_identifier" : "otf___10-1038-s41467-022-33468-6___blaha-p-et-al-an-augmented-plane-wave-lo",
-        "identifiers" : [ ],
-        "entity_type" : "product"
+        "identifiers" : [ ]
       } ]
     }
   } ]

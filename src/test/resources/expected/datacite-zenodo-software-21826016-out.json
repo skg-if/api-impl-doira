@@ -7,13 +7,13 @@
     "entity_type" : "single_entity"
   },
   "@graph" : [ {
+    "entity_type" : "product",
+    "product_type" : "research software",
     "local_identifier" : "https://doi.org/10.5281/zenodo.21826016",
     "identifiers" : [ {
       "scheme" : "doi",
       "value" : "10.5281/zenodo.21826016"
     } ],
-    "entity_type" : "product",
-    "product_type" : "research software",
     "titles" : {
       "en" : [ "VLM chart-judgment audit: code and experimental artifacts" ]
     },
@@ -22,54 +22,48 @@
     },
     "topics" : [ {
       "term" : {
-        "local_identifier" : "otf___10-5281-zenodo-21826016___vision-language-models",
-        "identifiers" : [ ],
         "entity_type" : "topic",
+        "local_identifier" : "otf___10-5281-zenodo-21826016___vision-language-models",
         "labels" : {
           "none" : "vision-language models"
         }
       }
     }, {
       "term" : {
-        "local_identifier" : "otf___10-5281-zenodo-21826016___natural-language-to-visualization",
-        "identifiers" : [ ],
         "entity_type" : "topic",
+        "local_identifier" : "otf___10-5281-zenodo-21826016___natural-language-to-visualization",
         "labels" : {
           "none" : "natural language to visualization"
         }
       }
     }, {
       "term" : {
-        "local_identifier" : "otf___10-5281-zenodo-21826016___chart-evaluation",
-        "identifiers" : [ ],
         "entity_type" : "topic",
+        "local_identifier" : "otf___10-5281-zenodo-21826016___chart-evaluation",
         "labels" : {
           "none" : "chart evaluation"
         }
       }
     }, {
       "term" : {
-        "local_identifier" : "otf___10-5281-zenodo-21826016___model-judge",
-        "identifiers" : [ ],
         "entity_type" : "topic",
+        "local_identifier" : "otf___10-5281-zenodo-21826016___model-judge",
         "labels" : {
           "none" : "model judge"
         }
       }
     }, {
       "term" : {
-        "local_identifier" : "otf___10-5281-zenodo-21826016___nl2vis",
-        "identifiers" : [ ],
         "entity_type" : "topic",
+        "local_identifier" : "otf___10-5281-zenodo-21826016___nl2vis",
         "labels" : {
           "none" : "NL2Vis"
         }
       }
     }, {
       "term" : {
-        "local_identifier" : "otf___10-5281-zenodo-21826016___reproducibility",
-        "identifiers" : [ ],
         "entity_type" : "topic",
+        "local_identifier" : "otf___10-5281-zenodo-21826016___reproducibility",
         "labels" : {
           "none" : "reproducibility"
         }
@@ -77,49 +71,37 @@
     } ],
     "contributions" : [ {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-5281-zenodo-21826016___luong-thi-minh-hue",
-        "identifiers" : [ ],
         "family_name" : "Luong Thi Minh-Hue",
-        "name" : "Luong Thi Minh-Hue",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Luong Thi Minh-Hue"
       },
       "declared_affiliations" : [ {
-        "local_identifier" : "otf___10-5281-zenodo-21826016___thai-nguyen-university-of-information-an",
-        "identifiers" : [ ],
         "entity_type" : "organisation",
-        "name" : "Thai Nguyen University of Information and Communication Technology",
-        "other_names" : [ ],
-        "types" : [ ]
+        "local_identifier" : "otf___10-5281-zenodo-21826016___thai-nguyen-university-of-information-an",
+        "name" : "Thai Nguyen University of Information and Communication Technology"
       } ],
       "rank" : 1,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-5281-zenodo-21826016___nguyen-the-vinh",
-        "identifiers" : [ ],
         "family_name" : "Nguyen The-Vinh",
-        "name" : "Nguyen The-Vinh",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Nguyen The-Vinh"
       },
       "declared_affiliations" : [ {
-        "local_identifier" : "otf___10-5281-zenodo-21826016___thai-nguyen-university-of-information-an",
-        "identifiers" : [ ],
         "entity_type" : "organisation",
-        "name" : "Thai Nguyen University of Information and Communication Technology",
-        "other_names" : [ ],
-        "types" : [ ]
+        "local_identifier" : "otf___10-5281-zenodo-21826016___thai-nguyen-university-of-information-an",
+        "name" : "Thai Nguyen University of Information and Communication Technology"
       } ],
       "rank" : 2,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "organisation",
         "local_identifier" : "otf___10-5281-zenodo-21826016___zenodo",
-        "identifiers" : [ ],
-        "name" : "Zenodo",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Zenodo"
       },
       "rank" : 3,
       "role" : "publisher"
@@ -144,9 +126,8 @@
       "version" : "1.0.11",
       "biblio" : {
         "hosting_data_source" : {
-          "local_identifier" : "otf___10-5281-zenodo-21826016___zenodo",
-          "identifiers" : [ ],
           "entity_type" : "datasource",
+          "local_identifier" : "otf___10-5281-zenodo-21826016___zenodo",
           "name" : "Zenodo"
         }
       }

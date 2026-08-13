@@ -7,13 +7,13 @@
     "entity_type" : "single_entity"
   },
   "@graph" : [ {
+    "entity_type" : "product",
+    "product_type" : "literature",
     "local_identifier" : "https://doi.org/10.5281/zenodo.21914195",
     "identifiers" : [ {
       "scheme" : "doi",
       "value" : "10.5281/zenodo.21914195"
     } ],
-    "entity_type" : "product",
-    "product_type" : "literature",
     "titles" : {
       "en" : [ "The Luminous Library: A Reading System for Books That Compute" ]
     },
@@ -22,27 +22,24 @@
     },
     "topics" : [ {
       "term" : {
-        "local_identifier" : "otf___10-5281-zenodo-21914195___luminous-library",
-        "identifiers" : [ ],
         "entity_type" : "topic",
+        "local_identifier" : "otf___10-5281-zenodo-21914195___luminous-library",
         "labels" : {
           "none" : "luminous library"
         }
       }
     }, {
       "term" : {
-        "local_identifier" : "otf___10-5281-zenodo-21914195___books-that-compute",
-        "identifiers" : [ ],
         "entity_type" : "topic",
+        "local_identifier" : "otf___10-5281-zenodo-21914195___books-that-compute",
         "labels" : {
           "none" : "books that compute"
         }
       }
     }, {
       "term" : {
-        "local_identifier" : "otf___10-5281-zenodo-21914195___reading-system",
-        "identifiers" : [ ],
         "entity_type" : "topic",
+        "local_identifier" : "otf___10-5281-zenodo-21914195___reading-system",
         "labels" : {
           "none" : "reading system"
         }
@@ -50,6 +47,7 @@
     } ],
     "contributions" : [ {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "https://orcid.org/0009-0008-3244-0306",
         "identifiers" : [ {
           "scheme" : "orcid",
@@ -57,47 +55,35 @@
         } ],
         "given_name" : "Ammanuel",
         "family_name" : "Santa Anna",
-        "name" : "Santa Anna, Ammanuel",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Santa Anna, Ammanuel"
       },
       "declared_affiliations" : [ {
-        "local_identifier" : "otf___10-5281-zenodo-21914195___luminous-prosperity",
-        "identifiers" : [ ],
         "entity_type" : "organisation",
-        "name" : "Luminous Prosperity",
-        "other_names" : [ ],
-        "types" : [ ]
+        "local_identifier" : "otf___10-5281-zenodo-21914195___luminous-prosperity",
+        "name" : "Luminous Prosperity"
       } ],
       "rank" : 1,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-5281-zenodo-21914195___santa-anna-ammanuel",
-        "identifiers" : [ ],
         "given_name" : "Ammanuel",
         "family_name" : "Santa Anna",
-        "name" : "Santa Anna, Ammanuel",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Santa Anna, Ammanuel"
       },
       "declared_affiliations" : [ {
-        "local_identifier" : "otf___10-5281-zenodo-21914195___luminous-prosperity",
-        "identifiers" : [ ],
         "entity_type" : "organisation",
-        "name" : "Luminous Prosperity",
-        "other_names" : [ ],
-        "types" : [ ]
+        "local_identifier" : "otf___10-5281-zenodo-21914195___luminous-prosperity",
+        "name" : "Luminous Prosperity"
       } ],
       "rank" : 2,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "organisation",
         "local_identifier" : "otf___10-5281-zenodo-21914195___luminous-prosperity-inc",
-        "identifiers" : [ ],
-        "name" : "Luminous Prosperity Inc.",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Luminous Prosperity Inc."
       },
       "rank" : 3,
       "role" : "publisher"
@@ -122,51 +108,50 @@
       "version" : "1.0.0",
       "biblio" : {
         "hosting_data_source" : {
-          "local_identifier" : "otf___10-5281-zenodo-21914195___luminous-prosperity-inc",
-          "identifiers" : [ ],
           "entity_type" : "datasource",
+          "local_identifier" : "otf___10-5281-zenodo-21914195___luminous-prosperity-inc",
           "name" : "Luminous Prosperity Inc."
         }
       }
     } ],
     "related_products" : {
       "cites" : [ {
+        "entity_type" : "product",
         "local_identifier" : "https://doi.org/10.7208/chicago/9780226401232.001.0001",
         "identifiers" : [ {
           "scheme" : "doi",
           "value" : "10.7208/chicago/9780226401232.001.0001"
-        } ],
-        "entity_type" : "product"
+        } ]
       }, {
+        "entity_type" : "product",
         "local_identifier" : "otf___10-5281-zenodo-21914195___978-963-281-509-1",
         "identifiers" : [ {
           "scheme" : "isbn",
           "value" : "978-963-281-509-1"
-        } ],
-        "entity_type" : "product"
+        } ]
       }, {
+        "entity_type" : "product",
         "local_identifier" : "https://doi.org/10.5281/zenodo.21913675",
         "identifiers" : [ {
           "scheme" : "doi",
           "value" : "10.5281/zenodo.21913675"
-        } ],
-        "entity_type" : "product"
+        } ]
       } ],
       "is_documented_by" : [ {
+        "entity_type" : "product",
         "local_identifier" : "https://doi.org/10.5281/zenodo.21914930",
         "identifiers" : [ {
           "scheme" : "doi",
           "value" : "10.5281/zenodo.21914930"
-        } ],
-        "entity_type" : "product"
+        } ]
       } ],
       "is_part_of" : [ {
+        "entity_type" : "product",
         "local_identifier" : "https://doi.org/10.5281/zenodo.21844677",
         "identifiers" : [ {
           "scheme" : "doi",
           "value" : "10.5281/zenodo.21844677"
-        } ],
-        "entity_type" : "product"
+        } ]
       } ]
     }
   } ]
