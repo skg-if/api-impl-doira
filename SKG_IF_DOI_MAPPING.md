@@ -133,7 +133,7 @@ not just the ones with a real source in either provider.
 | <details><summary>`request`\*</summary><em>The date on which an agent is requested to do something, for example a reviewer is requested to write a review of a paper submitted to a journal for publication, or an author is requested to supply a revised version of the paper in response to the reviews received.</em></details> | *(not available)* | *(not available)* | – not available | – not available |
 | <details><summary>`retraction`</summary><em>The date on which something, for example a claim or a journal article, is retracted.</em></details> | <details><summary>`Withdrawn` [ℹ️](https://datacite-metadata-schema.readthedocs.io/en/4.7/appendices/appendix-1/dateType/#withdrawn)</summary><em>The date the resource is removed.</em></details> | <details><summary>`update-to[].updated` [ℹ️](https://data.crossref.org/reports/help/schema_doc/5.5.0/schema_5_5_0.html#update) where `type == "retraction"`</summary><em>Date on which the update was published.</em></details> | ❌ not in any fixture | ✅ (same golden pair as `correction` above) |
 | <details><summary>`validity`</summary><em>Date of validity of a resource.</em></details> | <details><summary>`Valid` [ℹ️](https://datacite-metadata-schema.readthedocs.io/en/4.7/appendices/appendix-1/dateType/#valid)</summary><em>The date or date range during which the dataset or resource is accurate.</em></details> | *(not available)* | ❌ not in any fixture | – not available |
-| *(no SKG-IF equivalent)* | <details><summary>`Other` [ℹ️](https://datacite-metadata-schema.readthedocs.io/en/4.7/appendices/appendix-1/dateType/#other)</summary><em>Other date that does not fit into an existing category.</em></details>, <details><summary>`Coverage` [ℹ️](https://datacite-metadata-schema.readthedocs.io/en/4.7/appendices/appendix-1/dateType/#coverage)</summary><em>The date or date range that the resource content applies to, describes, or covers.</em></details> | <details><summary>`indexed` [ℹ️](https://github.com/CrossRef/rest-api-doc/blob/master/api_format.md#work)</summary><em>Date on which the work metadata was most recently indexed. Re-indexing does not imply a metadata change.</em></details>, <details><summary>generic `published` [ℹ️](https://github.com/CrossRef/rest-api-doc/blob/master/api_format.md#work)</summary><em>Duplicates `issued` in every fixture observed - Crossref computes it as the earliest of `published-print`/`published-online`, same as `issued`.</em></details> | ❌ not in any fixture | ❌ not in any fixture |
+| *(no SKG-IF equivalent)* | <details><summary>`Other` [ℹ️](https://datacite-metadata-schema.readthedocs.io/en/4.7/appendices/appendix-1/dateType/#other)</summary><em>Other date that does not fit into an existing category.</em></details>, <details><summary>`Coverage` [ℹ️](https://datacite-metadata-schema.readthedocs.io/en/4.7/appendices/appendix-1/dateType/#coverage)</summary><em>The date or date range that the resource content applies to, describes, or covers.</em></details> | <details><summary>`indexed` [ℹ️](https://github.com/CrossRef/rest-api-doc/blob/master/api_format.md#work)</summary><em>Date on which the work metadata was most recently indexed. Re-indexing does not imply a metadata change.</em></details>, <details><summary>generic `published` [ℹ️](https://github.com/CrossRef/rest-api-doc/blob/master/api_format.md#work)</summary><em>Duplicates `issued` in every fixture observed - Crossref computes it as the earliest of `published-print`/`published-online`, same as `issued`.</em></details>, <details><summary>`posted` [ℹ️](https://github.com/CrossRef/rest-api-doc/blob/master/api_format.md#work) [ℹ️](https://data.crossref.org/reports/help/schema_doc/5.5.0/schema_5_5_0.html#posted_date)</summary><em>Date on which posted content was made available online.</em></details> | ❌ not in any fixture | ❌ not in any fixture |
 
 \* Unlike every other date type in this table, SKG-IF models `request` as a single string, not an
 array of dates.
@@ -220,6 +220,13 @@ A DOI record is routed to the **Grants** endpoint instead of **Products** when:
   unimplemented gap rather than a documentation oversight. DataCite's side of `embargo` (via
   `Available`, with the same-day dedup rule described in the date-type table above) is handled -
   this limitation is Crossref-only.
+- **Crossref's `posted` field** [ℹ️](https://github.com/CrossRef/rest-api-doc/blob/master/api_format.md#work) [ℹ️](https://data.crossref.org/reports/help/schema_doc/5.5.0/schema_5_5_0.html#posted_date)
+  ("date on which posted content was made available online") is not deserialized by `CrossrefWork` and never
+  reaches the mapper. Unlike the generic `published` field (which duplicates `issued` and is
+  deliberately left unread - see below), `posted` is the only publication-style date `posted-content`
+  works (preprints) reliably carry, since those rarely have a `published-print`/`published-online`
+  date - so this is a real, unimplemented gap for that type rather than a deliberate redundancy
+  skip.
 - **Crossref's `update-to[].type`** [ℹ️](https://data.crossref.org/reports/help/schema_doc/5.5.0/schema_5_5_0.html#update) is an
   exhaustive, 12-value enum (`addendum`, `clarification`, `correction`, `corrigendum`, `erratum`,
   `expression_of_concern`, `new_edition`, `new_version`, `partial_retraction`, `removal`,
@@ -241,7 +248,7 @@ A DOI record is routed to the **Grants** endpoint instead of **Products** when:
   it would add no new information over the existing `issued`/`published-print`/`published-online`
   sources for `publication`, so it's deliberately left unread.
 - **The ℹ️ links on `created`/`deposited`/`indexed`/`issued`/`published-print`/`published-online`/
-  generic `published`** in the date-type table above point at
+  generic `published`/`posted`** in the date-type table above point at
   [`CrossRef/rest-api-doc`](https://github.com/CrossRef/rest-api-doc)'s `api_format.md`, which
   Crossref's own README marks **deprecated** in favour of `https://api.crossref.org/` - but the
   current Swagger UI ([`api.crossref.org/swagger-ui`](https://api.crossref.org/swagger-ui/index.html))
@@ -250,11 +257,13 @@ A DOI record is routed to the **Grants** endpoint instead of **Products** when:
   actually defined. `accepted` and `update-to[]` instead link to the still-current
   [schema documentation](https://data.crossref.org/reports/help/schema_doc/5.5.0/index.html) for
   Crossref's deposit/submission XSD, which does define them (as `acceptance_date` and the `update`
-  element respectively) and isn't affected by this deprecation. `published-print`
-  and `published-online` carry a second ℹ️ pointing at that same current schema doc's
+  element respectively) and isn't affected by this deprecation. `published-print` and
+  `published-online` carry a second ℹ️ pointing at that same current schema doc's
   `publication_date` element - the submission-side source for both (distinguished there by a
   `media_type` attribute) - alongside their deprecated-doc link, since the REST API's split into
-  two separately-named fields has no single matching schema element of its own.
+  two separately-named fields has no single matching schema element of its own. `posted` likewise
+  carries a second ℹ️ alongside its deprecated-doc link, pointing at that schema doc's own
+  dedicated `posted_date` element.
 - **Crossref** has no software-versioning field, no organisation-level `relevantOrganisations`
   outside per-contributor affiliations, and no `acronym` field for grants.
 - **Crossref grant records** with multiple `project[]` entries (e.g. joint awards) contribute
