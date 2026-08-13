@@ -116,6 +116,8 @@ if ! wait_for_port "$APP_PORT" 60; then
 fi
 echo "App is up (pid ${APP_PID})."
 
+echo "Validating the live implementation against the SKG-IF OpenAPI spec (${SPEC_PATH}) via a Stoplight Prism proxy..."
+
 for PROVIDER in $PROVIDERS; do
     for RESOURCE in $RESOURCES; do
         echo "=== ${PROVIDER} ${RESOURCE} ==="
