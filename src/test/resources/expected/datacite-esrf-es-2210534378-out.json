@@ -7,13 +7,13 @@
     "entity_type" : "single_entity"
   },
   "@graph" : [ {
+    "entity_type" : "product",
+    "product_type" : "research data",
     "local_identifier" : "https://doi.org/10.15151/esrf-es-2210534378",
     "identifiers" : [ {
       "scheme" : "doi",
       "value" : "10.15151/esrf-es-2210534378"
     } ],
-    "entity_type" : "product",
-    "product_type" : "research data",
     "titles" : {
       "en" : [ "Swiss consortium in macromolecular X-ray crystallography structure determination for academic researchers: EPFL, UNIL, UNIGE, Zurich and SLS" ]
     },
@@ -22,27 +22,24 @@
     },
     "topics" : [ {
       "term" : {
-        "local_identifier" : "otf___10-15151-esrf-es-2210534378___macromolecular-crystallography",
-        "identifiers" : [ ],
         "entity_type" : "topic",
+        "local_identifier" : "otf___10-15151-esrf-es-2210534378___macromolecular-crystallography",
         "labels" : {
           "none" : "Macromolecular Crystallography"
         }
       }
     }, {
       "term" : {
-        "local_identifier" : "otf___10-15151-esrf-es-2210534378___mx-2738",
-        "identifiers" : [ ],
         "entity_type" : "topic",
+        "local_identifier" : "otf___10-15151-esrf-es-2210534378___mx-2738",
         "labels" : {
           "none" : "MX-2738"
         }
       }
     }, {
       "term" : {
-        "local_identifier" : "otf___10-15151-esrf-es-2210534378___id30a-3",
-        "identifiers" : [ ],
         "entity_type" : "topic",
+        "local_identifier" : "otf___10-15151-esrf-es-2210534378___id30a-3",
         "labels" : {
           "none" : "ID30A-3"
         }
@@ -50,6 +47,7 @@
     } ],
     "contributions" : [ {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "https://orcid.org/0000-0002-9183-7206",
         "identifiers" : [ {
           "scheme" : "orcid",
@@ -57,22 +55,18 @@
         } ],
         "given_name" : "Florence",
         "family_name" : "Pojer",
-        "name" : "Pojer, Florence",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Pojer, Florence"
       },
       "declared_affiliations" : [ {
-        "local_identifier" : "otf___10-15151-esrf-es-2210534378___epfl-ptpsp-protein-production-and-struct",
-        "identifiers" : [ ],
         "entity_type" : "organisation",
-        "name" : "EPFL - PTPSP, Protein Production and Structure Core Facilit, EPFL SV PTECH PTPSP, Station 19, Ch-1015 Lausanne, Switzerland",
-        "other_names" : [ ],
-        "types" : [ ]
+        "local_identifier" : "otf___10-15151-esrf-es-2210534378___epfl-ptpsp-protein-production-and-struct",
+        "name" : "EPFL - PTPSP, Protein Production and Structure Core Facilit, EPFL SV PTECH PTPSP, Station 19, Ch-1015 Lausanne, Switzerland"
       } ],
       "rank" : 1,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "https://orcid.org/0000-0003-0391-8290",
         "identifiers" : [ {
           "scheme" : "orcid",
@@ -80,22 +74,18 @@
         } ],
         "given_name" : "Daniele",
         "family_name" : "De Sanctis",
-        "name" : "De Sanctis, Daniele",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "De Sanctis, Daniele"
       },
       "declared_affiliations" : [ {
-        "local_identifier" : "otf___10-15151-esrf-es-2210534378___esrf-71-avenue-des-martyrs-cs-40220-3804",
-        "identifiers" : [ ],
         "entity_type" : "organisation",
-        "name" : "ESRF, 71 avenue des Martyrs, CS 40220, 38043 Grenoble Cedex 9, France",
-        "other_names" : [ ],
-        "types" : [ ]
+        "local_identifier" : "otf___10-15151-esrf-es-2210534378___esrf-71-avenue-des-martyrs-cs-40220-3804",
+        "name" : "ESRF, 71 avenue des Martyrs, CS 40220, 38043 Grenoble Cedex 9, France"
       } ],
       "rank" : 2,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "https://orcid.org/0000-0002-9183-7206",
         "identifiers" : [ {
           "scheme" : "orcid",
@@ -103,27 +93,20 @@
         } ],
         "given_name" : "Florence",
         "family_name" : "Pojer",
-        "name" : "Pojer, Florence",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Pojer, Florence"
       },
       "declared_affiliations" : [ {
-        "local_identifier" : "otf___10-15151-esrf-es-2210534378___epfl-ptpsp-protein-production-and-struct",
-        "identifiers" : [ ],
         "entity_type" : "organisation",
-        "name" : "EPFL - PTPSP, Protein Production and Structure Core Facilit, EPFL SV PTECH PTPSP, Station 19, Ch-1015 Lausanne, Switzerland",
-        "other_names" : [ ],
-        "types" : [ ]
+        "local_identifier" : "otf___10-15151-esrf-es-2210534378___epfl-ptpsp-protein-production-and-struct",
+        "name" : "EPFL - PTPSP, Protein Production and Structure Core Facilit, EPFL SV PTECH PTPSP, Station 19, Ch-1015 Lausanne, Switzerland"
       } ],
       "rank" : 3,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "organisation",
         "local_identifier" : "otf___10-15151-esrf-es-2210534378___european-synchrotron-radiation-facility",
-        "identifiers" : [ ],
-        "name" : "European Synchrotron Radiation Facility",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "European Synchrotron Radiation Facility"
       },
       "rank" : 4,
       "role" : "publisher"
@@ -149,28 +132,26 @@
       "licence" : "https://creativecommons.org/licenses/by/4.0/legalcode",
       "biblio" : {
         "hosting_data_source" : {
-          "local_identifier" : "otf___10-15151-esrf-es-2210534378___european-synchrotron-radiation-facility",
-          "identifiers" : [ ],
           "entity_type" : "datasource",
+          "local_identifier" : "otf___10-15151-esrf-es-2210534378___european-synchrotron-radiation-facility",
           "name" : "European Synchrotron Radiation Facility"
         }
       }
     } ],
     "funding" : [ {
-      "local_identifier" : "otf___10-15151-esrf-es-2210534378___mx-2738",
-      "identifiers" : [ ],
       "entity_type" : "grant",
+      "local_identifier" : "otf___10-15151-esrf-es-2210534378___mx-2738",
       "grant_number" : "MX-2738",
       "titles" : {
         "en" : [ "Swiss consortium in macromolecular X-ray crystallography structure determination\nfor academic researchers: EPFL, UNIL, UNIGE, Zurich and SLS" ]
       },
       "funding_agency" : {
+        "entity_type" : "organisation",
         "local_identifier" : "https://ror.org/02550n020",
         "identifiers" : [ {
           "scheme" : "ror",
           "value" : "02550n020"
         } ],
-        "entity_type" : "organisation",
         "name" : "European Synchrotron Radiation Facility"
       }
     } ]

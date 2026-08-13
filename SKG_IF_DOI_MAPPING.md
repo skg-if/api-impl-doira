@@ -22,9 +22,9 @@ Both mappers follow the same conventions:
 - When no stable identifier exists (free-text subjects, publishers, unidentified affiliations),
   an **"on-the-fly" (otf) identifier** is generated: `otf___<slug(doi)>___<slug(label)>`,
   deterministic per source DOI so repeated calls produce identical output.
-- `contributions[].by.entity_type` is left unset for **persons** in both mappers - a generator
-  limitation (see mapper javadoc), not a data gap. Organisations, grants, datasources, topics,
-  and products all get `entity_type` set correctly.
+- `contributions[].by.entity_type` is set correctly for every branch (persons, organisations,
+  agents), same as every other entity in this output (organisations, grants, datasources, topics,
+  products).
 
 This document is split by entity/topic to keep each file a manageable read on its own:
 

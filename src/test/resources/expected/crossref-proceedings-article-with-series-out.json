@@ -7,59 +7,51 @@
     "entity_type" : "single_entity"
   },
   "@graph" : [ {
+    "entity_type" : "product",
+    "product_type" : "literature",
     "local_identifier" : "https://doi.org/10.2991/assehr.k.211222.032",
     "identifiers" : [ {
       "scheme" : "doi",
       "value" : "10.2991/assehr.k.211222.032"
     } ],
-    "entity_type" : "product",
-    "product_type" : "literature",
     "titles" : {
       "en" : [ "HOTS-Based English Learning Worksheet for Elementary School Students" ]
     },
     "contributions" : [ {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-2991-assehr-k-211222-032___putu-kerti-nitiasih",
-        "identifiers" : [ ],
         "given_name" : "Putu Kerti",
         "family_name" : "Nitiasih",
-        "name" : "Putu Kerti Nitiasih",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Putu Kerti Nitiasih"
       },
       "rank" : 1,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-2991-assehr-k-211222-032___luh-gd-rahayu-budiarta",
-        "identifiers" : [ ],
         "given_name" : "Luh Gd Rahayu",
         "family_name" : "Budiarta",
-        "name" : "Luh Gd Rahayu Budiarta",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Luh Gd Rahayu Budiarta"
       },
       "rank" : 2,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-2991-assehr-k-211222-032___ni-luh-putu-era-adnyayanti",
-        "identifiers" : [ ],
         "given_name" : "Ni Luh Putu Era",
         "family_name" : "Adnyayanti",
-        "name" : "Ni Luh Putu Era Adnyayanti",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Ni Luh Putu Era Adnyayanti"
       },
       "rank" : 3,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "organisation",
         "local_identifier" : "otf___10-2991-assehr-k-211222-032___atlantis-press",
-        "identifiers" : [ ],
-        "name" : "Atlantis Press",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Atlantis Press"
       },
       "rank" : 4,
       "role" : "publisher"
@@ -81,6 +73,7 @@
       "biblio" : {
         "volume" : "613",
         "in" : {
+          "entity_type" : "venue",
           "local_identifier" : "otf___10-2991-assehr-k-211222-032___proceedings-of-the-4th-international-con",
           "identifiers" : [ {
             "scheme" : "issn",
@@ -89,13 +82,11 @@
             "scheme" : "isbn",
             "value" : "978-94-6239-490-2"
           } ],
-          "entity_type" : "venue",
           "name" : "Proceedings of the 4th International Conference on Innovative Research Across Disciplines (ICIRAD 2021)"
         },
         "hosting_data_source" : {
-          "local_identifier" : "otf___10-2991-assehr-k-211222-032___atlantis-press",
-          "identifiers" : [ ],
           "entity_type" : "datasource",
+          "local_identifier" : "otf___10-2991-assehr-k-211222-032___atlantis-press",
           "name" : "Atlantis Press"
         }
       }

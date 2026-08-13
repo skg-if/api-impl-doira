@@ -7,95 +7,81 @@
     "entity_type" : "single_entity"
   },
   "@graph" : [ {
+    "entity_type" : "product",
+    "product_type" : "literature",
     "local_identifier" : "https://doi.org/10.1007/978-3-319-66787-4_9",
     "identifiers" : [ {
       "scheme" : "doi",
       "value" : "10.1007/978-3-319-66787-4_9"
     } ],
-    "entity_type" : "product",
-    "product_type" : "literature",
     "titles" : {
       "en" : [ "Nanofocused X-Ray Beam to Reprogram Secure Circuits" ]
     },
     "contributions" : [ {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-1007-978-3-319-66787-4-9___st-phanie-anceau",
-        "identifiers" : [ ],
         "given_name" : "Stéphanie",
         "family_name" : "Anceau",
-        "name" : "Stéphanie Anceau",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Stéphanie Anceau"
       },
       "rank" : 1,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-1007-978-3-319-66787-4-9___pierre-bleuet",
-        "identifiers" : [ ],
         "given_name" : "Pierre",
         "family_name" : "Bleuet",
-        "name" : "Pierre Bleuet",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Pierre Bleuet"
       },
       "rank" : 2,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-1007-978-3-319-66787-4-9___jessy-cl-di-re",
-        "identifiers" : [ ],
         "given_name" : "Jessy",
         "family_name" : "Clédière",
-        "name" : "Jessy Clédière",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Jessy Clédière"
       },
       "rank" : 3,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-1007-978-3-319-66787-4-9___laurent-maingault",
-        "identifiers" : [ ],
         "given_name" : "Laurent",
         "family_name" : "Maingault",
-        "name" : "Laurent Maingault",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Laurent Maingault"
       },
       "rank" : 4,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-1007-978-3-319-66787-4-9___jean-luc-rainard",
-        "identifiers" : [ ],
         "given_name" : "Jean-luc",
         "family_name" : "Rainard",
-        "name" : "Jean-luc Rainard",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Jean-luc Rainard"
       },
       "rank" : 5,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-1007-978-3-319-66787-4-9___r-mi-tucoulou",
-        "identifiers" : [ ],
         "given_name" : "Rémi",
         "family_name" : "Tucoulou",
-        "name" : "Rémi Tucoulou",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Rémi Tucoulou"
       },
       "rank" : 6,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "organisation",
         "local_identifier" : "otf___10-1007-978-3-319-66787-4-9___springer-international-publishing",
-        "identifiers" : [ ],
-        "name" : "Springer International Publishing",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Springer International Publishing"
       },
       "rank" : 7,
       "role" : "publisher"
@@ -123,6 +109,7 @@
         },
         "volume" : "10529",
         "in" : {
+          "entity_type" : "venue",
           "local_identifier" : "https://doi.org/10.1007/978-3-319-66787-4",
           "identifiers" : [ {
             "scheme" : "doi",
@@ -140,36 +127,34 @@
             "scheme" : "isbn",
             "value" : "978-3-319-66787-4"
           } ],
-          "entity_type" : "venue",
           "name" : "Cryptographic Hardware and Embedded Systems – CHES 2017"
         },
         "hosting_data_source" : {
-          "local_identifier" : "otf___10-1007-978-3-319-66787-4-9___springer-international-publishing",
-          "identifiers" : [ ],
           "entity_type" : "datasource",
+          "local_identifier" : "otf___10-1007-978-3-319-66787-4-9___springer-international-publishing",
           "name" : "Springer International Publishing"
         }
       }
     } ],
     "related_products" : {
       "cites" : [ {
+        "entity_type" : "product",
         "local_identifier" : "https://doi.org/10.1007/3-540-36400-5_2",
         "identifiers" : [ {
           "scheme" : "doi",
           "value" : "10.1007/3-540-36400-5_2"
-        } ],
-        "entity_type" : "product"
+        } ]
       }, {
+        "entity_type" : "product",
         "local_identifier" : "https://doi.org/10.1109/IRPS.1984.362022",
         "identifiers" : [ {
           "scheme" : "doi",
           "value" : "10.1109/IRPS.1984.362022"
-        } ],
-        "entity_type" : "product"
+        } ]
       }, {
+        "entity_type" : "product",
         "local_identifier" : "otf___10-1007-978-3-319-66787-4-9___bar-el-h-choukri-h-naccache-d-tunstall-m",
-        "identifiers" : [ ],
-        "entity_type" : "product"
+        "identifiers" : [ ]
       } ]
     }
   } ]

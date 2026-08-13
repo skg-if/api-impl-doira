@@ -125,8 +125,3 @@
   requests; a miss (no journal-level DOI registered, or a non-2xx response/network error) is
   never cached at all, so it's retried on the very next call rather than a transient failure
   being indistinguishable from "this journal has no DOI".
-
-## Other
-
-- **Person `entity_type`** is never emitted on `contributions[].by` (both providers) - an
-  openapi-generator limitation on the `by` oneOf, not a data availability gap.

@@ -2131,9 +2131,8 @@ components:
           ]
           properties :
             entity_type:
-              enum:
-                - "agent"
               type: string
+              default: "agent"
               x-faker:
                 fake: ["agent"]
             identifiers:
@@ -2173,9 +2172,8 @@ components:
           ]
           properties :
             entity_type:
-              enum:
-                - "organisation"
               type: string
+              default: "organisation"
               x-faker:
                 fake: ["organisation"]
             identifiers:
@@ -2350,8 +2348,7 @@ components:
           properties :
             entity_type:
               type: string
-              enum:
-                - "person"
+              default: "person"
               x-faker:
                 fake: ["person"]
             identifiers:

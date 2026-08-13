@@ -14,7 +14,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
     <quarkus.platform.version>3.38.1</quarkus.platform.version>
-    <openapi-generator.version>7.10.0</openapi-generator.version>
+    <openapi-generator.version>7.24.0</openapi-generator.version>
     <jackson-databind-nullable.version>0.2.6</jackson-databind-nullable.version>
     <surefire-plugin.version>3.5.2</surefire-plugin.version>
   </properties>
@@ -124,6 +124,7 @@
                 <interfaceOnly>true</interfaceOnly>
                 <useTags>true</useTags>
                 <useJakartaEe>true</useJakartaEe>
+                <useOneOfInterfaces>true</useOneOfInterfaces>
               </configOptions>
             </configuration>
           </execution>

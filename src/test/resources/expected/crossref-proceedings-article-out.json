@@ -7,107 +7,91 @@
     "entity_type" : "single_entity"
   },
   "@graph" : [ {
+    "entity_type" : "product",
+    "product_type" : "literature",
     "local_identifier" : "https://doi.org/10.17537/icmbb18.42",
     "identifiers" : [ {
       "scheme" : "doi",
       "value" : "10.17537/icmbb18.42"
     } ],
-    "entity_type" : "product",
-    "product_type" : "literature",
     "titles" : {
       "en" : [ "Reactive force-field molecular dynamic models of iron/oxide/carbon nanocomposites designed for magnetic hyperthermia" ]
     },
     "contributions" : [ {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-17537-icmbb18-42___l-a-avakyan",
-        "identifiers" : [ ],
         "given_name" : "L.A.",
         "family_name" : "Avakyan",
-        "name" : "L.A. Avakyan",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "L.A. Avakyan"
       },
       "rank" : 1,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-17537-icmbb18-42___a-s-manukyan",
-        "identifiers" : [ ],
         "given_name" : "A.S.",
         "family_name" : "Manukyan",
-        "name" : "A.S. Manukyan",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "A.S. Manukyan"
       },
       "rank" : 2,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-17537-icmbb18-42___e-v-paramonova",
-        "identifiers" : [ ],
         "given_name" : "E.V.",
         "family_name" : "Paramonova",
-        "name" : "E.V. Paramonova",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "E.V. Paramonova"
       },
       "rank" : 3,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-17537-icmbb18-42___a-s-bogdan",
-        "identifiers" : [ ],
         "given_name" : "A.S.",
         "family_name" : "Bogdan",
-        "name" : "A.S. Bogdan",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "A.S. Bogdan"
       },
       "rank" : 4,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-17537-icmbb18-42___g-s-sukharina",
-        "identifiers" : [ ],
         "given_name" : "G.S.",
         "family_name" : "Sukharina",
-        "name" : "G.S. Sukharina",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "G.S. Sukharina"
       },
       "rank" : 5,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-17537-icmbb18-42___e-g-sharoyan",
-        "identifiers" : [ ],
         "given_name" : "E.G.",
         "family_name" : "Sharoyan",
-        "name" : "E.G. Sharoyan",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "E.G. Sharoyan"
       },
       "rank" : 6,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-17537-icmbb18-42___l-a-bugaev",
-        "identifiers" : [ ],
         "given_name" : "L.A.",
         "family_name" : "Bugaev",
-        "name" : "L.A. Bugaev",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "L.A. Bugaev"
       },
       "rank" : 7,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "organisation",
         "local_identifier" : "otf___10-17537-icmbb18-42___impb-ras-branch-of-kiam-ras",
-        "identifiers" : [ ],
-        "name" : "IMPB RAS - Branch of KIAM RAS",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "IMPB RAS - Branch of KIAM RAS"
       },
       "rank" : 8,
       "role" : "publisher"
@@ -129,52 +113,51 @@
       "biblio" : {
         "volume" : "7",
         "in" : {
+          "entity_type" : "venue",
           "local_identifier" : "otf___10-17537-icmbb18-42___proceedings-of-the-international-confere",
           "identifiers" : [ {
             "scheme" : "issn",
             "value" : "2618-9305"
           } ],
-          "entity_type" : "venue",
           "name" : "Proceedings of the International Conference \"Mathematical Biology and Bioinformatics\""
         },
         "hosting_data_source" : {
-          "local_identifier" : "otf___10-17537-icmbb18-42___impb-ras-branch-of-kiam-ras",
-          "identifiers" : [ ],
           "entity_type" : "datasource",
+          "local_identifier" : "otf___10-17537-icmbb18-42___impb-ras-branch-of-kiam-ras",
           "name" : "IMPB RAS - Branch of KIAM RAS"
         }
       }
     } ],
     "related_products" : {
       "cites" : [ {
+        "entity_type" : "product",
         "local_identifier" : "https://doi.org/10.1016/j.jconrel.2011.06.001",
         "identifiers" : [ {
           "scheme" : "doi",
           "value" : "10.1016/j.jconrel.2011.06.001"
-        } ],
-        "entity_type" : "product"
+        } ]
       }, {
+        "entity_type" : "product",
         "local_identifier" : "https://doi.org/10.1038/nrc.2015.2",
         "identifiers" : [ {
           "scheme" : "doi",
           "value" : "10.1038/nrc.2015.2"
-        } ],
-        "entity_type" : "product"
+        } ]
       }, {
+        "entity_type" : "product",
         "local_identifier" : "otf___10-17537-icmbb18-42___ref3",
-        "identifiers" : [ ],
-        "entity_type" : "product"
+        "identifiers" : [ ]
       }, {
+        "entity_type" : "product",
         "local_identifier" : "otf___10-17537-icmbb18-42___larsen-a-h-mortensen-j-j-blomqvist-j-cas",
-        "identifiers" : [ ],
-        "entity_type" : "product"
+        "identifiers" : [ ]
       }, {
+        "entity_type" : "product",
         "local_identifier" : "https://doi.org/10.1007/s11051-012-0982-6",
         "identifiers" : [ {
           "scheme" : "doi",
           "value" : "10.1007/s11051-012-0982-6"
-        } ],
-        "entity_type" : "product"
+        } ]
       } ]
     }
   } ]

@@ -1,5 +1,6 @@
 package org.skgif.doi.jackson;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.skgif.doi.generated.model.GrantContributionBy;
@@ -14,17 +15,32 @@ import jakarta.inject.Singleton;
  * {@code discriminator}, which is why only these two (not e.g. {@code
  * ProductAllOfRelevantOrganisations}/{@code GrantAllOfBeneficiaries}, whose {@code oneOf} has no
  * discriminator) get a generated Jackson {@code @JsonTypeInfo(property = "entity_type")}
- * polymorphic discriminator. Serializing a plain instance of either (its own runtime class
- * matches none of the registered subtypes) makes Jackson fall back to writing the class's
- * {@code @JsonTypeName} (e.g. "ProductContribution_by") into entity_type - not a real value we
- * ever want to emit. This mixin disables that polymorphic handling on both so entity_type
- * serializes as the plain bean property instead (unset for persons - see
- * {@code DataCiteToSkgIfMapper}'s javadoc - and correctly "organisation" for organisations).
+ * polymorphic discriminator, now on the interface itself (since {@code useOneOfInterfaces}).
+ *
+ * <p>Two problems, both worked around here:
+ *
+ * <p>1) Serializing a value through one of these interfaces uses Jackson's own polymorphic type
+ * resolution, which - for any runtime type not perfectly matching the {@code @JsonSubTypes}
+ * mapping - falls back to writing the class's {@code @JsonTypeName} (e.g. "ProductContribution_by")
+ * into {@code entity_type} instead of a real value. Forcing {@code Id.NONE} disables that,
+ * falling back to plain bean-property serialization of {@code entityType} instead - i.e. exactly
+ * whatever the mapper explicitly set.
+ *
+ * <p>2) The interfaces are ALSO annotated {@code @JsonIgnoreProperties(value = "entity_type",
+ * allowSetters = true)}, generated on the assumption that Jackson's polymorphic handling (problem
+ * 1) is what's responsible for writing {@code entity_type}. Because {@code PersonLite}/{@code
+ * Organisation}/{@code Agent} implement these interfaces, Jackson inherits that ignore rule for
+ * {@code entity_type} on those classes GLOBALLY - not just when serialized through {@code by}, but
+ * everywhere else they appear as a plain property (funding_agency, beneficiaries,
+ * declared_affiliations, relevant_organisations) - silently dropping {@code entity_type} there
+ * too. Re-declaring {@code @JsonIgnoreProperties({})} (empty) on the same mixin cancels that
+ * inherited rule, restoring normal serialization of the mapper-set value everywhere.
  */
 @Singleton
 public class SkgIfObjectMapperCustomizer implements ObjectMapperCustomizer {
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NONE)
+    @JsonIgnoreProperties({})
     private interface NoPolymorphicTypeInfo {
     }
 

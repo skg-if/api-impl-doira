@@ -17,14 +17,19 @@ import org.skgif.doi.crossref.dto.CrossrefUpdateTo;
 import org.skgif.doi.crossref.dto.CrossrefWork;
 import org.skgif.doi.crossref.xml.CrossrefVenueMetadata;
 import org.skgif.doi.generated.model.AgentAllOfIdentifiers;
+import org.skgif.doi.generated.model.DataSourceLite;
 import org.skgif.doi.generated.model.EntityIdentifiersInner;
 import org.skgif.doi.generated.model.Grant;
 import org.skgif.doi.generated.model.GrantAllOfBeneficiaries;
 import org.skgif.doi.generated.model.GrantAllOfContributions;
 import org.skgif.doi.generated.model.GrantAllOfDuration;
+import org.skgif.doi.generated.model.GrantContribution;
 import org.skgif.doi.generated.model.GrantContributionBy;
+import org.skgif.doi.generated.model.GrantLite;
 import org.skgif.doi.generated.model.GrantLiteAllOfIdentifiers;
 import org.skgif.doi.generated.model.Organisation;
+import org.skgif.doi.generated.model.PersonLite;
+import org.skgif.doi.generated.model.PersonLiteAllOfIdentifiers;
 import org.skgif.doi.generated.model.Product;
 import org.skgif.doi.generated.model.ProductAllOfFunding;
 import org.skgif.doi.generated.model.ProductAllOfIdentifiers;
@@ -43,6 +48,9 @@ import org.skgif.doi.generated.model.ProductManifestationDates;
 import org.skgif.doi.generated.model.ProductManifestationType;
 import org.skgif.doi.generated.model.ProductsRelated;
 import org.skgif.doi.generated.model.ProductsRelatedCitesInner;
+import org.skgif.doi.generated.model.ProductsRelatedItem;
+import org.skgif.doi.generated.model.Topic;
+import org.skgif.doi.generated.model.VenueLite;
 import org.skgif.doi.generated.model.VenueLiteAllOfIdentifiers;
 import org.skgif.doi.util.LocalIdentifiers;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -63,10 +71,7 @@ import java.util.Objects;
  * {@code Product.manifestations[].version} (Crossref doesn't register software-versioning
  * information), {@code Product.relevantOrganisations} (no organisation-level field outside
  * per-contributor affiliations, same gap DataCite has), {@code Grant.acronym} (no equivalent
- * field found in Crossref's grant schema). Unlike DataCite, {@code
- * contributions[].by.entityType} for persons has the same generator-driven gap (see {@code
- * DataCiteToSkgIfMapper}'s javadoc) but investigator-affiliation organisations and grant
- * beneficiaries do get {@code entityType: "organisation"} set correctly.
+ * field found in Crossref's grant schema).
  */
 @ApplicationScoped
 public class CrossrefToSkgIfMapper {
@@ -183,9 +188,9 @@ public class CrossrefToSkgIfMapper {
             }
             // Crossref subjects (Sci-Val controlled vocabulary) have no external identifier
             // system behind them, so this is always an otf id - same as DataCite subjects.
-            ProductAllOfTerm term = new ProductAllOfTerm()
+            ProductAllOfTerm term = new Topic()
                     .localIdentifier(otf(work.doi, subject))
-                    .entityType(ProductAllOfTerm.EntityTypeEnum.TOPIC)
+                    .entityType(Topic.EntityTypeEnum.TOPIC)
                     .labels(Map.of("en", subject));
             topics.add(new ProductAllOfTopics().term(term));
         }
@@ -225,13 +230,14 @@ public class CrossrefToSkgIfMapper {
     private ProductContributionBy personRef(String doi, String given, String family, String rawOrcid) {
         String bareOrcid = bareOrcid(rawOrcid);
         String name = displayName(given, family);
-        ProductContributionBy by = new ProductContributionBy()
+        PersonLite by = new PersonLite()
                 .localIdentifier(bareOrcid != null ? ORCID_BASE_URL + bareOrcid : otf(doi, name))
                 .name(name)
                 .givenName(given)
-                .familyName(family);
+                .familyName(family)
+                .entityType("person");
         if (bareOrcid != null) {
-            by.identifiers(List.of(new AgentAllOfIdentifiers().scheme("orcid").value(bareOrcid)));
+            by.identifiers(List.of(new PersonLiteAllOfIdentifiers().scheme("orcid").value(bareOrcid)));
         }
         return by;
     }
@@ -242,9 +248,10 @@ public class CrossrefToSkgIfMapper {
      * always gets an otf id.
      */
     private ProductContributionBy organisationRef(String doi, String name) {
-        return new ProductContributionBy()
+        return new Organisation()
                 .localIdentifier(otf(doi, name))
-                .name(name);
+                .name(name)
+                .entityType("organisation");
     }
 
     /** Crossref's ORCID field is already a full URL (http or https) - normalize both to bare. */
@@ -286,10 +293,10 @@ public class CrossrefToSkgIfMapper {
                 continue;
             }
             String ror = firstRor(affiliation.id);
-            ProductAllOfRelevantOrganisations org = new ProductAllOfRelevantOrganisations()
+            Organisation org = new Organisation()
                     .localIdentifier(ror != null ? ROR_BASE_URL + ror : otf(doi, affiliation.name))
                     .name(affiliation.name)
-                    .entityType(ProductAllOfRelevantOrganisations.EntityTypeEnum.ORGANISATION);
+                    .entityType("organisation");
             if (ror != null) {
                 org.identifiers(List.of(new AgentAllOfIdentifiers().scheme("ror").value(ror)));
             }
@@ -469,7 +476,7 @@ public class CrossrefToSkgIfMapper {
                 : List.of();
         String journalDoi = issns.isEmpty() ? null : journalDoiResolver.resolveJournalDoi(issns).orElse(null);
 
-        ProductManifestationBiblioIn venue = new ProductManifestationBiblioIn()
+        VenueLite venue = new VenueLite()
                 .localIdentifier(journalDoi != null ? localIdentifiers.toFullLocalIdentifier(journalDoi)
                         : otf(work.doi, name))
                 .entityType("venue")
@@ -489,7 +496,7 @@ public class CrossrefToSkgIfMapper {
     private ProductManifestationBiblioIn venueFromXmlMetadata(String doi, CrossrefVenueMetadata venueMetadata) {
         String name = venueMetadata.containerTitle();
         String containerDoi = venueMetadata.containerDoi();
-        ProductManifestationBiblioIn venue = new ProductManifestationBiblioIn()
+        VenueLite venue = new VenueLite()
                 .localIdentifier(containerDoi != null ? localIdentifiers.toFullLocalIdentifier(containerDoi)
                         : otf(doi, name))
                 .entityType("venue")
@@ -520,9 +527,9 @@ public class CrossrefToSkgIfMapper {
      * record is hosted" - same otf-id convention as DataCite's hostingDataSource.
      */
     private ProductManifestationBiblioHostingDataSource hostingDataSource(CrossrefWork work) {
-        return new ProductManifestationBiblioHostingDataSource()
+        return new DataSourceLite()
                 .localIdentifier(otf(work.doi, work.publisher))
-                .entityType(ProductManifestationBiblioHostingDataSource.EntityTypeEnum.DATASOURCE)
+                .entityType(DataSourceLite.EntityTypeEnum.DATASOURCE)
                 .name(work.publisher);
     }
 
@@ -549,9 +556,9 @@ public class CrossrefToSkgIfMapper {
 
     private ProductAllOfFunding fundingEntry(String doi, CrossrefFunder funder, String awardNumber) {
         String label = awardNumber != null ? awardNumber : funder.name;
-        return new ProductAllOfFunding()
+        return new GrantLite()
                 .localIdentifier(otf(doi, label))
-                .entityType(ProductAllOfFunding.EntityTypeEnum.GRANT)
+                .entityType(GrantLite.EntityTypeEnum.GRANT)
                 .grantNumber(awardNumber)
                 .fundingAgency(fundingAgencyOrg(doi, funder));
     }
@@ -566,7 +573,7 @@ public class CrossrefToSkgIfMapper {
         Organisation agency = new Organisation()
                 .localIdentifier(funderDoi != null ? localIdentifiers.toFullLocalIdentifier(funderDoi) : otf(doi, funder.name))
                 .name(funder.name)
-                .entityType(Organisation.EntityTypeEnum.ORGANISATION);
+                .entityType("organisation");
         if (funderDoi != null) {
             agency.identifiers(List.of(new AgentAllOfIdentifiers().scheme("doi").value(funderDoi)));
         }
@@ -631,14 +638,14 @@ public class CrossrefToSkgIfMapper {
             if (reference.doi != null) {
                 // Full https://doi.org/... URL, consistent with how this API identifies its own
                 // products and every other DOI-identified entity.
-                cites.add(new ProductsRelatedCitesInner()
+                cites.add(new ProductsRelatedItem()
                         .localIdentifier(localIdentifiers.toFullLocalIdentifier(reference.doi))
                         .entityType("product")
                         .identifiers(List.of(new EntityIdentifiersInner().scheme("doi").value(reference.doi))));
                 continue;
             }
             String label = reference.unstructured != null ? reference.unstructured : reference.key;
-            cites.add(new ProductsRelatedCitesInner()
+            cites.add(new ProductsRelatedItem()
                     .localIdentifier(otf(work.doi, label))
                     .entityType("product"));
         }
@@ -711,12 +718,12 @@ public class CrossrefToSkgIfMapper {
         for (CrossrefProject project : projects) {
             if (project.leadInvestigator != null) {
                 for (CrossrefInvestigator investigator : project.leadInvestigator) {
-                    result.add(investigatorContribution(doi, investigator, GrantAllOfContributions.RolesEnum.LEAD_APPLICANT));
+                    result.add(investigatorContribution(doi, investigator, GrantContribution.RolesEnum.LEAD_APPLICANT));
                 }
             }
             if (project.investigator != null) {
                 for (CrossrefInvestigator investigator : project.investigator) {
-                    result.add(investigatorContribution(doi, investigator, GrantAllOfContributions.RolesEnum.CO_APPLICANT));
+                    result.add(investigatorContribution(doi, investigator, GrantContribution.RolesEnum.CO_APPLICANT));
                 }
             }
         }
@@ -724,18 +731,19 @@ public class CrossrefToSkgIfMapper {
     }
 
     private GrantAllOfContributions investigatorContribution(String doi, CrossrefInvestigator investigator,
-            GrantAllOfContributions.RolesEnum role) {
+            GrantContribution.RolesEnum role) {
         String bareOrcid = bareOrcid(investigator.orcid);
         String name = displayName(investigator.given, investigator.family);
-        GrantContributionBy by = new GrantContributionBy()
+        PersonLite by = new PersonLite()
                 .localIdentifier(bareOrcid != null ? ORCID_BASE_URL + bareOrcid : otf(doi, name))
                 .name(name)
                 .givenName(investigator.given)
-                .familyName(investigator.family);
+                .familyName(investigator.family)
+                .entityType("person");
         if (bareOrcid != null) {
-            by.identifiers(List.of(new AgentAllOfIdentifiers().scheme("orcid").value(bareOrcid)));
+            by.identifiers(List.of(new PersonLiteAllOfIdentifiers().scheme("orcid").value(bareOrcid)));
         }
-        return new GrantAllOfContributions()
+        return new GrantContribution()
                 .by(by)
                 .declaredAffiliations(grantAffiliations(doi, investigator.affiliation))
                 .roles(List.of(role));
@@ -751,10 +759,10 @@ public class CrossrefToSkgIfMapper {
                 continue;
             }
             String ror = firstRor(affiliation.id);
-            GrantAllOfBeneficiaries org = new GrantAllOfBeneficiaries()
+            Organisation org = new Organisation()
                     .localIdentifier(ror != null ? ROR_BASE_URL + ror : otf(doi, affiliation.name))
                     .name(affiliation.name)
-                    .entityType(GrantAllOfBeneficiaries.EntityTypeEnum.ORGANISATION);
+                    .entityType("organisation");
             if (ror != null) {
                 org.identifiers(List.of(new AgentAllOfIdentifiers().scheme("ror").value(ror)));
             }

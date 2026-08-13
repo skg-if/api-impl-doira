@@ -7,13 +7,13 @@
     "entity_type" : "single_entity"
   },
   "@graph" : [ {
+    "entity_type" : "product",
+    "product_type" : "research data",
     "local_identifier" : "https://doi.org/10.15151/esrf-dc-2493599001",
     "identifiers" : [ {
       "scheme" : "doi",
       "value" : "10.15151/esrf-dc-2493599001"
     } ],
-    "entity_type" : "product",
-    "product_type" : "research data",
     "titles" : {
       "en" : [ "High-resolution raw tomographic dataset of Aleodon: Maxilla, dentary, femur, and humerus fossil specimens for paleohistological analysis" ]
     },
@@ -22,63 +22,56 @@
     },
     "topics" : [ {
       "term" : {
-        "local_identifier" : "otf___10-15151-esrf-dc-2493599001___ls-3436-ls-3437",
-        "identifiers" : [ ],
         "entity_type" : "topic",
+        "local_identifier" : "otf___10-15151-esrf-dc-2493599001___ls-3436-ls-3437",
         "labels" : {
           "none" : "LS-3436,LS-3437"
         }
       }
     }, {
       "term" : {
-        "local_identifier" : "otf___10-15151-esrf-dc-2493599001___bm05",
-        "identifiers" : [ ],
         "entity_type" : "topic",
+        "local_identifier" : "otf___10-15151-esrf-dc-2493599001___bm05",
         "labels" : {
           "none" : "BM05"
         }
       }
     }, {
       "term" : {
-        "local_identifier" : "otf___10-15151-esrf-dc-2493599001___fossil",
-        "identifiers" : [ ],
         "entity_type" : "topic",
+        "local_identifier" : "otf___10-15151-esrf-dc-2493599001___fossil",
         "labels" : {
           "en" : "fossil"
         }
       }
     }, {
       "term" : {
-        "local_identifier" : "otf___10-15151-esrf-dc-2493599001___therapsid",
-        "identifiers" : [ ],
         "entity_type" : "topic",
+        "local_identifier" : "otf___10-15151-esrf-dc-2493599001___therapsid",
         "labels" : {
           "en" : "therapsid"
         }
       }
     }, {
       "term" : {
-        "local_identifier" : "otf___10-15151-esrf-dc-2493599001___cynodont",
-        "identifiers" : [ ],
         "entity_type" : "topic",
+        "local_identifier" : "otf___10-15151-esrf-dc-2493599001___cynodont",
         "labels" : {
           "en" : "cynodont"
         }
       }
     }, {
       "term" : {
-        "local_identifier" : "otf___10-15151-esrf-dc-2493599001___triassic",
-        "identifiers" : [ ],
         "entity_type" : "topic",
+        "local_identifier" : "otf___10-15151-esrf-dc-2493599001___triassic",
         "labels" : {
           "en" : "Triassic"
         }
       }
     }, {
       "term" : {
-        "local_identifier" : "otf___10-15151-esrf-dc-2493599001___paleohistology",
-        "identifiers" : [ ],
         "entity_type" : "topic",
+        "local_identifier" : "otf___10-15151-esrf-dc-2493599001___paleohistology",
         "labels" : {
           "en" : "paleohistology"
         }
@@ -86,6 +79,7 @@
     } ],
     "contributions" : [ {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "https://orcid.org/0000-0002-1008-0687",
         "identifiers" : [ {
           "scheme" : "orcid",
@@ -93,14 +87,13 @@
         } ],
         "given_name" : "Jonah",
         "family_name" : "Choiniere",
-        "name" : "Choiniere,Jonah",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Choiniere,Jonah"
       },
       "rank" : 1,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "https://orcid.org/0000-0001-8824-9334",
         "identifiers" : [ {
           "scheme" : "orcid",
@@ -108,14 +101,13 @@
         } ],
         "given_name" : "Jennifer",
         "family_name" : "Botha",
-        "name" : "Botha,Jennifer",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Botha,Jennifer"
       },
       "rank" : 2,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "https://orcid.org/0000-0001-8244-6177",
         "identifiers" : [ {
           "scheme" : "orcid",
@@ -123,14 +115,13 @@
         } ],
         "given_name" : "Roger",
         "family_name" : "Benson",
-        "name" : "Benson,Roger",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Benson,Roger"
       },
       "rank" : 3,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "https://orcid.org/0000-0002-6981-9546",
         "identifiers" : [ {
           "scheme" : "orcid",
@@ -138,26 +129,23 @@
         } ],
         "given_name" : "Wade",
         "family_name" : "Harris",
-        "name" : "Harris,Wade",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Harris,Wade"
       },
       "rank" : 4,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-15151-esrf-dc-2493599001___kulik-zoe",
-        "identifiers" : [ ],
         "given_name" : "Zoe",
         "family_name" : "Kulik",
-        "name" : "Kulik,Zoe",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Kulik,Zoe"
       },
       "rank" : 5,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "https://orcid.org/0000-0003-2927-7057",
         "identifiers" : [ {
           "scheme" : "orcid",
@@ -165,38 +153,33 @@
         } ],
         "given_name" : "Lutendo",
         "family_name" : "Mukwevho",
-        "name" : "Mukwevho,Lutendo",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Mukwevho,Lutendo"
       },
       "rank" : 6,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-15151-esrf-dc-2493599001___newham-elis",
-        "identifiers" : [ ],
         "given_name" : "Elis",
         "family_name" : "Newham",
-        "name" : "Newham,Elis",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Newham,Elis"
       },
       "rank" : 7,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "otf___10-15151-esrf-dc-2493599001___twala-enele",
-        "identifiers" : [ ],
         "given_name" : "Enele",
         "family_name" : "Twala",
-        "name" : "Twala,Enele",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Twala,Enele"
       },
       "rank" : 8,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "https://orcid.org/0000-0002-8315-1458",
         "identifiers" : [ {
           "scheme" : "orcid",
@@ -204,14 +187,13 @@
         } ],
         "given_name" : "Vincent",
         "family_name" : "Fernandez",
-        "name" : "Fernandez,Vincent",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Fernandez,Vincent"
       },
       "rank" : 9,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "person",
         "local_identifier" : "https://orcid.org/0000-0002-5468-4896",
         "identifiers" : [ {
           "scheme" : "orcid",
@@ -219,19 +201,15 @@
         } ],
         "given_name" : "Kathleen",
         "family_name" : "Dollman",
-        "name" : "Dollman,Kathleen",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "Dollman,Kathleen"
       },
       "rank" : 10,
       "role" : "author"
     }, {
       "by" : {
+        "entity_type" : "organisation",
         "local_identifier" : "otf___10-15151-esrf-dc-2493599001___european-synchrotron-radiation-facility",
-        "identifiers" : [ ],
-        "name" : "European Synchrotron Radiation Facility",
-        "other_names" : [ ],
-        "types" : [ ]
+        "name" : "European Synchrotron Radiation Facility"
       },
       "rank" : 11,
       "role" : "publisher"
@@ -256,9 +234,8 @@
       "version" : "1",
       "biblio" : {
         "hosting_data_source" : {
-          "local_identifier" : "otf___10-15151-esrf-dc-2493599001___european-synchrotron-radiation-facility",
-          "identifiers" : [ ],
           "entity_type" : "datasource",
+          "local_identifier" : "otf___10-15151-esrf-dc-2493599001___european-synchrotron-radiation-facility",
           "name" : "European Synchrotron Radiation Facility"
         }
       }
