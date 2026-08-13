@@ -4,9 +4,14 @@ This document summarizes how records from **DataCite** and **Crossref** are mapp
 SKG-IF `Product` and `Grant` entities by [`DataCiteToSkgIfMapper`](src/main/java/org/skgif/doi/datacite/mapper/DataCiteToSkgIfMapper.java)
 and [`CrossrefToSkgIfMapper`](src/main/java/org/skgif/doi/crossref/mapper/CrossrefToSkgIfMapper.java).
 
-> **Reference schema version:** the ℹ️ links below point to the
-> [DataCite Metadata Schema 4.7](https://datacite-metadata-schema.readthedocs.io/en/4.7/)
-> documentation - the latest release available at the time this mapping was developed.
+> **Reference docs:** the ℹ️ links below point to
+> [DataCite Metadata Schema 4.7](https://datacite-metadata-schema.readthedocs.io/en/4.7/) (latest
+> release at the time of writing) and the
+> [SKG-IF Interoperability Framework](https://skg-if.github.io/interoperability-framework/) docs.
+> Crossref has no equivalent per-field docs, so its fields aren't individually linked - see instead
+> the [journals and articles](https://www.crossref.org/documentation/schema-library/markup-guide-record-types/journals-and-articles/)
+> and [grants](https://www.crossref.org/documentation/schema-library/markup-guide-record-types/grants/)
+> markup guides and the [REST API reference](https://api.crossref.org/swagger-ui/index.html).
 
 Both mappers follow the same conventions:
 
