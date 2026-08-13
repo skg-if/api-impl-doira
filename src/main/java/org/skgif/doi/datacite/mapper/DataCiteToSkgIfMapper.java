@@ -378,7 +378,7 @@ public class DataCiteToSkgIfMapper {
         }
         // Fall back to DataCite's system-generated record timestamps when the corresponding
         // dateType is absent from dates[] - which in practice is the norm, not the exception:
-        // Created/Submitted/Updated essentially never appear there (see SKG_IF_DOI_MAPPING.md).
+        // Created/Submitted/Updated essentially never appear there (see SKG_IF_DOI_MAPPING_DATES.md).
         // An explicit dates[] entry always takes precedence since these only fire when the
         // getter is still null.
         if (dates.getCreation() == null && attributes.created != null) {

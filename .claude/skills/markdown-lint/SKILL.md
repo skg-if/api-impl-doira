@@ -45,6 +45,9 @@ Exit code `0` and no output means clean. Otherwise it prints one line per findin
 From Git Bash the same paths work directly:
 `.tools/python/python.exe -m pymarkdown -c .claude/skills/markdown-lint/pymarkdown-config.json scan <file>.md`
 
+`scan` also accepts multiple paths/globs in one call - e.g. to check every split-out mapping doc
+at once: `... scan SKG_IF_DOI_MAPPING*.md`.
+
 ## Why a custom config
 
 [`pymarkdown-config.json`](pymarkdown-config.json) (tracked here, not under the
@@ -53,7 +56,8 @@ working in this repo) disables two rules that fire on every doc in this repo by
 deliberate style, not by mistake:
 
 - **MD013 (line-length)** — mapping tables like
-  [`SKG_IF_DOI_MAPPING.md`](../../../SKG_IF_DOI_MAPPING.md) intentionally pack one
+  [`SKG_IF_DOI_MAPPING_PRODUCT.md`](../../../SKG_IF_DOI_MAPPING_PRODUCT.md) and
+  [`SKG_IF_DOI_MAPPING_DATES.md`](../../../SKG_IF_DOI_MAPPING_DATES.md) intentionally pack one
   full field's worth of prose into a single table-row line (markdown tables can't
   span multiple lines per row), so rows regularly run past 80 or even 1000 characters.
 - **MD033 (no-inline-html)** — those same tables rely on `<details>`/`<summary>`/`<em>`
