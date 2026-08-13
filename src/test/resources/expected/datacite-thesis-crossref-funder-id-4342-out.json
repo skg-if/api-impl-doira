@@ -1,0 +1,81 @@
+{
+  "@context" : [ "https://w3id.org/skg-if/context/1.1.0/skg-if.json", "https://w3id.org/skg-if/context/1.0.0/skg-if-api.json", {
+    "@base" : "https://w3id.org/skg-if/sandbox/piri.dkahwp/"
+  } ],
+  "meta" : {
+    "local_identifier" : "http://localhost:8081/skg-if/api/datacite/products/10.82227/repository.uwtsd.ac.uk.00004342",
+    "entity_type" : "single_entity"
+  },
+  "@graph" : [ {
+    "local_identifier" : "https://doi.org/10.82227/repository.uwtsd.ac.uk.00004342",
+    "identifiers" : [ {
+      "scheme" : "doi",
+      "value" : "10.82227/repository.uwtsd.ac.uk.00004342"
+    } ],
+    "entity_type" : "product",
+    "product_type" : "literature",
+    "titles" : {
+      "en" : [ "Maternity Staff Readiness for the Introduction of a Digital Maternity Record in Cwm Taf Morgannwg University Health Board: A Mixed-Methods Study of Implementation Factors" ]
+    },
+    "contributions" : [ {
+      "by" : {
+        "local_identifier" : "otf___10-82227-repository-uwtsd-ac-uk-00004342___seppings-stella",
+        "identifiers" : [ ],
+        "given_name" : "Stella",
+        "family_name" : "Seppings",
+        "name" : "Seppings, Stella",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "rank" : 1,
+      "role" : "author"
+    }, {
+      "by" : {
+        "local_identifier" : "otf___10-82227-repository-uwtsd-ac-uk-00004342___university-of-wales-trinity-saint-david",
+        "identifiers" : [ ],
+        "name" : "University of Wales Trinity Saint David",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "rank" : 2,
+      "role" : "publisher"
+    } ],
+    "manifestations" : [ {
+      "type" : {
+        "defined_in" : "https://schema.datacite.org/meta/kernel-4.7/include/datacite-resourceType-v4.xsd",
+        "labels" : {
+          "en" : "Dissertation"
+        }
+      },
+      "access_rights" : {
+        "status" : "open"
+      },
+      "licence" : "https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode",
+      "biblio" : {
+        "hosting_data_source" : {
+          "local_identifier" : "otf___10-82227-repository-uwtsd-ac-uk-00004342___university-of-wales-trinity-saint-david",
+          "identifiers" : [ ],
+          "entity_type" : "datasource",
+          "name" : "University of Wales Trinity Saint David"
+        }
+      }
+    } ],
+    "funding" : [ {
+      "local_identifier" : "otf___10-82227-repository-uwtsd-ac-uk-00004342___uwtsd",
+      "identifiers" : [ ],
+      "entity_type" : "grant",
+      "titles" : {
+        "en" : [ "UWTSD" ]
+      },
+      "funding_agency" : {
+        "local_identifier" : "https://doi.org/10.13039/100010038",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.13039/100010038"
+        } ],
+        "entity_type" : "organisation",
+        "name" : "University of Wales Trinity Saint David"
+      }
+    } ]
+  } ]
+}

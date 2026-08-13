@@ -1,0 +1,236 @@
+{
+  "data": {
+    "id": "10.17630/e449e75a-1ee9-4490-909c-e3913052cce1",
+    "type": "dois",
+    "attributes": {
+      "doi": "10.17630/e449e75a-1ee9-4490-909c-e3913052cce1",
+      "prefix": "10.17630",
+      "suffix": "e449e75a-1ee9-4490-909c-e3913052cce1",
+      "identifiers": [],
+      "alternateIdentifiers": [],
+      "creators": [
+        {
+          "name": "Wang, Jingxiang",
+          "givenName": "Jingxiang",
+          "familyName": "Wang",
+          "affiliation": [
+            "University of St Andrews"
+          ],
+          "nameIdentifiers": []
+        },
+        {
+          "name": "Hafeez, Hassan",
+          "givenName": "Hassan",
+          "familyName": "Hafeez",
+          "affiliation": [
+            "University of St Andrews"
+          ],
+          "nameIdentifiers": []
+        },
+        {
+          "name": "Tang, Shi",
+          "givenName": "Shi ",
+          "familyName": "Tang",
+          "affiliation": [
+            "Umeå University"
+          ],
+          "nameIdentifiers": []
+        },
+        {
+          "name": "Matulaitis, Tomas",
+          "givenName": "Tomas",
+          "familyName": "Matulaitis",
+          "affiliation": [
+            "University of St Andrews"
+          ],
+          "nameIdentifiers": [
+            {
+              "schemeUri": "https://orcid.org",
+              "nameIdentifier": "https://orcid.org/0000-0003-0470-7356",
+              "nameIdentifierScheme": "ORCID"
+            }
+          ]
+        },
+        {
+          "name": "Edman, Ludvig",
+          "givenName": "Ludvig",
+          "familyName": "Edman",
+          "affiliation": [
+            "Umeå University"
+          ],
+          "nameIdentifiers": []
+        },
+        {
+          "name": "Samuel, Ifor David William",
+          "givenName": "Ifor David William",
+          "familyName": "Samuel",
+          "affiliation": [
+            "University of St Andrews"
+          ],
+          "nameIdentifiers": [
+            {
+              "schemeUri": "https://orcid.org",
+              "nameIdentifier": "https://orcid.org/0000-0001-7821-7208",
+              "nameIdentifierScheme": "ORCID"
+            }
+          ]
+        },
+        {
+          "name": "Zysman-Colman, Eli",
+          "givenName": "Eli",
+          "familyName": "Zysman-Colman",
+          "affiliation": [
+            "University of St Andrews"
+          ],
+          "nameIdentifiers": [
+            {
+              "schemeUri": "https://orcid.org",
+              "nameIdentifier": "https://orcid.org/0000-0001-7183-6022",
+              "nameIdentifierScheme": "ORCID"
+            }
+          ]
+        }
+      ],
+      "titles": [
+        {
+          "lang": "en",
+          "title": "Highly efficient organic light-emitting diodes and light-1 emitting electrochemical cells employing multi-resonant thermally activated delayed fluorescent emitters with bulky donor or acceptor peripheral groups (dataset)"
+        }
+      ],
+      "publisher": "University of St Andrews",
+      "container": {},
+      "publicationYear": 2024,
+      "subjects": [],
+      "contributors": [],
+      "dates": [
+        {
+          "date": "2024-05-07",
+          "dateType": "Available"
+        }
+      ],
+      "language": null,
+      "types": {
+        "ris": "DATA",
+        "bibtex": "misc",
+        "citeproc": "dataset",
+        "schemaOrg": "Dataset",
+        "resourceType": "Dataset",
+        "resourceTypeGeneral": "Dataset"
+      },
+      "relatedIdentifiers": [],
+      "relatedItems": [],
+      "sizes": [
+        "14MB"
+      ],
+      "formats": [
+        "application/zip"
+      ],
+      "version": null,
+      "rightsList": [
+        {
+          "rights": "Creative Commons Attribution 4.0 International",
+          "rightsUri": "https://creativecommons.org/licenses/by/4.0/legalcode",
+          "schemeUri": "https://spdx.org/licenses/",
+          "rightsIdentifier": "cc-by-4.0",
+          "rightsIdentifierScheme": "SPDX"
+        }
+      ],
+      "descriptions": [
+        {
+          "lang": "en",
+          "descriptionType": "Abstract"
+        }
+      ],
+      "geoLocations": [],
+      "fundingReferences": [
+        {
+          "awardTitle": "Multi-resonance TADF materials for highly efficient and stable OLEDs",
+          "funderName": "EPSRC",
+          "awardNumber": "EP/W015137/1"
+        },
+        {
+          "awardTitle": "EPSRC-JSPS Core-to-Core Grant Application",
+          "funderName": "EPSRC",
+          "awardNumber": "EP/R035164/1"
+        },
+        {
+          "awardTitle": "Boron: Beyond the Reagent",
+          "funderName": "UK Research and Innovation",
+          "awardNumber": "EP/W007517/1"
+        }
+      ],
+      "xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8cmVzb3VyY2UgeG1sbnM9Imh0dHA6Ly9kYXRhY2l0ZS5vcmcvc2NoZW1hL2tlcm5lbC00IiB4bWxuczp4c2k9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEvWE1MU2NoZW1hLWluc3RhbmNlIiB4c2k6c2NoZW1hTG9jYXRpb249Imh0dHA6Ly9kYXRhY2l0ZS5vcmcvc2NoZW1hL2tlcm5lbC00IGh0dHA6Ly9zY2hlbWEuZGF0YWNpdGUub3JnL21ldGEva2VybmVsLTQvbWV0YWRhdGEueHNkIj4KICA8aWRlbnRpZmllciBpZGVudGlmaWVyVHlwZT0iRE9JIj4xMC4xNzYzMC9FNDQ5RTc1QS0xRUU5LTQ0OTAtOTA5Qy1FMzkxMzA1MkNDRTE8L2lkZW50aWZpZXI+CiAgPGNyZWF0b3JzPgogICAgPGNyZWF0b3I+CiAgICAgIDxjcmVhdG9yTmFtZT5XYW5nLCBKaW5neGlhbmc8L2NyZWF0b3JOYW1lPgogICAgICA8Z2l2ZW5OYW1lPkppbmd4aWFuZzwvZ2l2ZW5OYW1lPgogICAgICA8ZmFtaWx5TmFtZT5XYW5nPC9mYW1pbHlOYW1lPgogICAgICA8YWZmaWxpYXRpb24geHNpOnR5cGU9ImFmZmlsaWF0aW9uIj5Vbml2ZXJzaXR5IG9mIFN0IEFuZHJld3M8L2FmZmlsaWF0aW9uPgogICAgPC9jcmVhdG9yPgogICAgPGNyZWF0b3I+CiAgICAgIDxjcmVhdG9yTmFtZT5IYWZlZXosIEhhc3NhbjwvY3JlYXRvck5hbWU+CiAgICAgIDxnaXZlbk5hbWU+SGFzc2FuPC9naXZlbk5hbWU+CiAgICAgIDxmYW1pbHlOYW1lPkhhZmVlejwvZmFtaWx5TmFtZT4KICAgICAgPGFmZmlsaWF0aW9uIHhzaTp0eXBlPSJhZmZpbGlhdGlvbiI+VW5pdmVyc2l0eSBvZiBTdCBBbmRyZXdzPC9hZmZpbGlhdGlvbj4KICAgIDwvY3JlYXRvcj4KICAgIDxjcmVhdG9yPgogICAgICA8Y3JlYXRvck5hbWU+VGFuZywgU2hpPC9jcmVhdG9yTmFtZT4KICAgICAgPGdpdmVuTmFtZT5TaGkgPC9naXZlbk5hbWU+CiAgICAgIDxmYW1pbHlOYW1lPlRhbmc8L2ZhbWlseU5hbWU+CiAgICAgIDxhZmZpbGlhdGlvbiB4c2k6dHlwZT0iYWZmaWxpYXRpb24iPlVtZcOlIFVuaXZlcnNpdHk8L2FmZmlsaWF0aW9uPgogICAgPC9jcmVhdG9yPgogICAgPGNyZWF0b3I+CiAgICAgIDxjcmVhdG9yTmFtZT5NYXR1bGFpdGlzLCBUb21hczwvY3JlYXRvck5hbWU+CiAgICAgIDxnaXZlbk5hbWU+VG9tYXM8L2dpdmVuTmFtZT4KICAgICAgPGZhbWlseU5hbWU+TWF0dWxhaXRpczwvZmFtaWx5TmFtZT4KICAgICAgPG5hbWVJZGVudGlmaWVyIHhzaTp0eXBlPSJuYW1lSWRlbnRpZmllciIgbmFtZUlkZW50aWZpZXJTY2hlbWU9Ik9SQ0lEIiBzY2hlbWVVUkk9Imh0dHBzOi8vb3JjaWQub3JnIj4wMDAwLTAwMDMtMDQ3MC03MzU2PC9uYW1lSWRlbnRpZmllcj4KICAgICAgPGFmZmlsaWF0aW9uIHhzaTp0eXBlPSJhZmZpbGlhdGlvbiI+VW5pdmVyc2l0eSBvZiBTdCBBbmRyZXdzPC9hZmZpbGlhdGlvbj4KICAgIDwvY3JlYXRvcj4KICAgIDxjcmVhdG9yPgogICAgICA8Y3JlYXRvck5hbWU+RWRtYW4sIEx1ZHZpZzwvY3JlYXRvck5hbWU+CiAgICAgIDxnaXZlbk5hbWU+THVkdmlnPC9naXZlbk5hbWU+CiAgICAgIDxmYW1pbHlOYW1lPkVkbWFuPC9mYW1pbHlOYW1lPgogICAgICA8YWZmaWxpYXRpb24geHNpOnR5cGU9ImFmZmlsaWF0aW9uIj5VbWXDpSBVbml2ZXJzaXR5PC9hZmZpbGlhdGlvbj4KICAgIDwvY3JlYXRvcj4KICAgIDxjcmVhdG9yPgogICAgICA8Y3JlYXRvck5hbWU+U2FtdWVsLCBJZm9yIERhdmlkIFdpbGxpYW08L2NyZWF0b3JOYW1lPgogICAgICA8Z2l2ZW5OYW1lPklmb3IgRGF2aWQgV2lsbGlhbTwvZ2l2ZW5OYW1lPgogICAgICA8ZmFtaWx5TmFtZT5TYW11ZWw8L2ZhbWlseU5hbWU+CiAgICAgIDxuYW1lSWRlbnRpZmllciB4c2k6dHlwZT0ibmFtZUlkZW50aWZpZXIiIG5hbWVJZGVudGlmaWVyU2NoZW1lPSJPUkNJRCIgc2NoZW1lVVJJPSJodHRwczovL29yY2lkLm9yZyI+MDAwMC0wMDAxLTc4MjEtNzIwODwvbmFtZUlkZW50aWZpZXI+CiAgICAgIDxhZmZpbGlhdGlvbiB4c2k6dHlwZT0iYWZmaWxpYXRpb24iPlVuaXZlcnNpdHkgb2YgU3QgQW5kcmV3czwvYWZmaWxpYXRpb24+CiAgICA8L2NyZWF0b3I+CiAgICA8Y3JlYXRvcj4KICAgICAgPGNyZWF0b3JOYW1lPlp5c21hbi1Db2xtYW4sIEVsaTwvY3JlYXRvck5hbWU+CiAgICAgIDxnaXZlbk5hbWU+RWxpPC9naXZlbk5hbWU+CiAgICAgIDxmYW1pbHlOYW1lPlp5c21hbi1Db2xtYW48L2ZhbWlseU5hbWU+CiAgICAgIDxuYW1lSWRlbnRpZmllciB4c2k6dHlwZT0ibmFtZUlkZW50aWZpZXIiIG5hbWVJZGVudGlmaWVyU2NoZW1lPSJPUkNJRCIgc2NoZW1lVVJJPSJodHRwczovL29yY2lkLm9yZyI+MDAwMC0wMDAxLTcxODMtNjAyMjwvbmFtZUlkZW50aWZpZXI+CiAgICAgIDxhZmZpbGlhdGlvbiB4c2k6dHlwZT0iYWZmaWxpYXRpb24iPlVuaXZlcnNpdHkgb2YgU3QgQW5kcmV3czwvYWZmaWxpYXRpb24+CiAgICA8L2NyZWF0b3I+CiAgPC9jcmVhdG9ycz4KICA8dGl0bGVzPgogICAgPHRpdGxlIHhtbDpsYW5nPSJlbiI+SGlnaGx5IGVmZmljaWVudCBvcmdhbmljIGxpZ2h0LWVtaXR0aW5nIGRpb2RlcyBhbmQgbGlnaHQtMSBlbWl0dGluZyBlbGVjdHJvY2hlbWljYWwgY2VsbHMgZW1wbG95aW5nIG11bHRpLXJlc29uYW50IHRoZXJtYWxseSBhY3RpdmF0ZWQgZGVsYXllZCBmbHVvcmVzY2VudCBlbWl0dGVycyB3aXRoIGJ1bGt5IGRvbm9yIG9yIGFjY2VwdG9yIHBlcmlwaGVyYWwgZ3JvdXBzIChkYXRhc2V0KTwvdGl0bGU+CiAgPC90aXRsZXM+CiAgPHB1Ymxpc2hlcj5Vbml2ZXJzaXR5IG9mIFN0IEFuZHJld3M8L3B1Ymxpc2hlcj4KICA8cHVibGljYXRpb25ZZWFyPjIwMjQ8L3B1YmxpY2F0aW9uWWVhcj4KICA8cmVzb3VyY2VUeXBlIHJlc291cmNlVHlwZUdlbmVyYWw9IkRhdGFzZXQiPkRhdGFzZXQ8L3Jlc291cmNlVHlwZT4KICA8ZGF0ZXM+CiAgICA8ZGF0ZSBkYXRlVHlwZT0iQXZhaWxhYmxlIj4yMDI0LTA1LTA3PC9kYXRlPgogIDwvZGF0ZXM+CiAgPHNpemVzPgogICAgPHNpemU+MTRNQjwvc2l6ZT4KICA8L3NpemVzPgogIDxmb3JtYXRzPgogICAgPGZvcm1hdD5hcHBsaWNhdGlvbi96aXA8L2Zvcm1hdD4KICA8L2Zvcm1hdHM+CiAgPHJpZ2h0c0xpc3Q+CiAgICA8cmlnaHRzIHJpZ2h0c1VSST0iaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbGljZW5zZXMvYnkvNC4wLyI+Q0MgQlk8L3JpZ2h0cz4KICA8L3JpZ2h0c0xpc3Q+CiAgPGRlc2NyaXB0aW9ucz4KICAgIDxkZXNjcmlwdGlvbiBkZXNjcmlwdGlvblR5cGU9IkFic3RyYWN0IiB4bWw6bGFuZz0iZW4iLz4KICA8L2Rlc2NyaXB0aW9ucz4KICA8ZnVuZGluZ1JlZmVyZW5jZXM+CiAgICA8ZnVuZGluZ1JlZmVyZW5jZT4KICAgICAgPGZ1bmRlck5hbWU+RVBTUkM8L2Z1bmRlck5hbWU+CiAgICAgIDxhd2FyZE51bWJlcj5FUC9XMDE1MTM3LzE8L2F3YXJkTnVtYmVyPgogICAgICA8YXdhcmRUaXRsZT5NdWx0aS1yZXNvbmFuY2UgVEFERiBtYXRlcmlhbHMgZm9yIGhpZ2hseSBlZmZpY2llbnQgYW5kIHN0YWJsZSBPTEVEczwvYXdhcmRUaXRsZT4KICAgIDwvZnVuZGluZ1JlZmVyZW5jZT4KICAgIDxmdW5kaW5nUmVmZXJlbmNlPgogICAgICA8ZnVuZGVyTmFtZT5FUFNSQzwvZnVuZGVyTmFtZT4KICAgICAgPGF3YXJkTnVtYmVyPkVQL1IwMzUxNjQvMTwvYXdhcmROdW1iZXI+CiAgICAgIDxhd2FyZFRpdGxlPkVQU1JDLUpTUFMgQ29yZS10by1Db3JlIEdyYW50IEFwcGxpY2F0aW9uPC9hd2FyZFRpdGxlPgogICAgPC9mdW5kaW5nUmVmZXJlbmNlPgogICAgPGZ1bmRpbmdSZWZlcmVuY2U+CiAgICAgIDxmdW5kZXJOYW1lPlVLIFJlc2VhcmNoIGFuZCBJbm5vdmF0aW9uPC9mdW5kZXJOYW1lPgogICAgICA8YXdhcmROdW1iZXI+RVAvVzAwNzUxNy8xPC9hd2FyZE51bWJlcj4KICAgICAgPGF3YXJkVGl0bGU+Qm9yb246IEJleW9uZCB0aGUgUmVhZ2VudDwvYXdhcmRUaXRsZT4KICAgIDwvZnVuZGluZ1JlZmVyZW5jZT4KICA8L2Z1bmRpbmdSZWZlcmVuY2VzPgo8L3Jlc291cmNlPg==",
+      "url": "https://research-portal.st-andrews.ac.uk/en/datasets/e449e75a-1ee9-4490-909c-e3913052cce1",
+      "contentUrl": null,
+      "metadataVersion": 3,
+      "schemaVersion": "http://datacite.org/schema/kernel-4",
+      "source": "fabricaForm",
+      "isActive": true,
+      "state": "findable",
+      "reason": null,
+      "viewCount": 0,
+      "viewsOverTime": [],
+      "downloadCount": 0,
+      "downloadsOverTime": [],
+      "referenceCount": 0,
+      "citationCount": 1,
+      "citationsOverTime": [
+        {
+          "year": "2024",
+          "total": 1
+        }
+      ],
+      "partCount": 0,
+      "partOfCount": 0,
+      "versionCount": 0,
+      "versionOfCount": 0,
+      "created": "2024-05-07T10:07:27.000Z",
+      "registered": "2024-05-07T10:07:27.000Z",
+      "published": "2024",
+      "updated": "2026-08-13T10:21:23.000Z"
+    },
+    "relationships": {
+      "client": {
+        "data": {
+          "id": "bl.standrew",
+          "type": "clients"
+        }
+      },
+      "provider": {
+        "data": {
+          "id": "nahy",
+          "type": "providers"
+        }
+      },
+      "media": {
+        "data": {
+          "id": "10.17630/e449e75a-1ee9-4490-909c-e3913052cce1",
+          "type": "media"
+        }
+      },
+      "references": {
+        "data": []
+      },
+      "citations": {
+        "data": [
+          {
+            "id": "10.1002/agt2.571",
+            "type": "dois"
+          }
+        ]
+      },
+      "parts": {
+        "data": []
+      },
+      "partOf": {
+        "data": []
+      },
+      "versions": {
+        "data": []
+      },
+      "versionOf": {
+        "data": []
+      }
+    }
+  }
+}

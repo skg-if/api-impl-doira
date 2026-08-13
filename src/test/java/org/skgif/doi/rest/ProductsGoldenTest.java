@@ -168,6 +168,32 @@ class ProductsGoldenTest {
     }
 
     /**
+     * DOI 10.82227/repository.uwtsd.ac.uk.00004342 - a real UWTSD repository thesis whose
+     * funding reference identifies the funder via "Crossref Funder ID" rather than "ROR",
+     * proving the otf fallback for `funding[].funding_agency` at the golden-output level (see
+     * {@code DataCiteToSkgIfMapperTest.mapsFundingAgencyToOtfWhenFunderIdentifierTypeIsNotRor}).
+     */
+    @Test
+    void getProductById_matchesExpectedJsonLd_uwtsdThesis4342() throws IOException {
+        assertMatchesExpectedDataCiteJsonLd("10.82227/repository.uwtsd.ac.uk.00004342",
+                "datacite-thesis-crossref-funder-id-4342.json", "expected/datacite-thesis-crossref-funder-id-4342-out.json");
+    }
+
+    /**
+     * DOI 10.17630/e449e75a-1ee9-4490-909c-e3913052cce1 - a real University of St Andrews
+     * dataset whose 3 funding references carry no {@code funderIdentifier} at all, proving the
+     * otf fallback for `funding[].funding_agency` at the golden-output level when the identifier
+     * is entirely absent (rather than merely non-ROR/non-DOI-shaped - see
+     * {@code DataCiteToSkgIfMapperTest.mapsFundingAgencyToOtfWhenFunderIdentifierIsEntirelyAbsent}).
+     */
+    @Test
+    void getProductById_matchesExpectedJsonLd_standrewsDatasetFunderNoIdentifier() throws IOException {
+        assertMatchesExpectedDataCiteJsonLd("10.17630/e449e75a-1ee9-4490-909c-e3913052cce1",
+                "datacite-dataset-funder-no-identifier-e449e75a.json",
+                "expected/datacite-dataset-funder-no-identifier-e449e75a-out.json");
+    }
+
+    /**
      * Full JSON-LD regression test for the DataCite search/list endpoint with multiple,
      * heterogeneous @graph items and full pagination metadata (both prev_page and next_page
      * present, unlike a single-item, single-page response). Reuses the two DOI fixtures already

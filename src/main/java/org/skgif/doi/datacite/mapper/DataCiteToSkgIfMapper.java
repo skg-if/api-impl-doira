@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 /**
  * Maps a DataCite DOI record ({@code attributes}) onto either the SKG-IF {@code Product}
@@ -80,6 +81,7 @@ public class DataCiteToSkgIfMapper {
     private static final String ROR_BASE_URL = "https://ror.org/";
     private static final String DATACITE_RESOURCE_TYPE_SCHEMA_URL =
             "https://schema.datacite.org/meta/kernel-4.7/include/datacite-resourceType-v4.xsd";
+    private static final Pattern DOI_SHAPE = Pattern.compile("10\\.\\d{4,9}/.+");
 
     private static final Map<String, String> DATACITE_DATE_TYPE_TO_SKGIF = Map.of(
             "Accepted", "acceptance",
@@ -429,6 +431,17 @@ public class DataCiteToSkgIfMapper {
         return result.isEmpty() ? null : result;
     }
 
+    /**
+     * DataCite's {@code funderIdentifierType} controlled vocabulary has no literal {@code "DOI"}
+     * value, but {@code "Crossref Funder ID"} (and occasionally other/unlabeled identifiers) are
+     * themselves Funder Registry DOIs in practice - functionally identical to how Crossref's own
+     * mapper treats {@code funder[].DOI}. Rather than special-casing that one type label, this
+     * detects the DOI shape directly on the identifier value, so any DOI-shaped
+     * funderIdentifier is used regardless of what (if anything) its type claims to be - verified
+     * live against a real "Crossref Funder ID"-typed record (see
+     * {@code datacite-thesis-crossref-funder-id-4342.json}). Non-DOI identifier types (GRID,
+     * ISNI, Wikidata) still have no home here and fall back to an otf id.
+     */
     private Organisation fundingAgency(String doi,
             DataCiteFundingReference fundingReference) {
         if (fundingReference.funderName == null) {
@@ -436,18 +449,43 @@ public class DataCiteToSkgIfMapper {
         }
         boolean hasRor = fundingReference.funderIdentifier != null
                 && "ROR".equalsIgnoreCase(fundingReference.funderIdentifierType);
+        String funderDoi = hasRor ? null : extractDoi(fundingReference.funderIdentifier);
         Organisation agency = new Organisation()
                 .localIdentifier(hasRor
                         ? ROR_BASE_URL + stripRorUrl(fundingReference.funderIdentifier)
-                        : otf(doi, fundingReference.funderName))
+                        : funderDoi != null
+                                ? localIdentifiers.toFullLocalIdentifier(funderDoi)
+                                : otf(doi, fundingReference.funderName))
                 .name(fundingReference.funderName)
                 .entityType(Organisation.EntityTypeEnum.ORGANISATION);
         if (hasRor) {
             agency.identifiers(List.of(new AgentAllOfIdentifiers()
                     .scheme("ror")
                     .value(stripRorUrl(fundingReference.funderIdentifier))));
+        } else if (funderDoi != null) {
+            agency.identifiers(List.of(new AgentAllOfIdentifiers()
+                    .scheme("doi")
+                    .value(funderDoi)));
         }
         return agency;
+    }
+
+    /**
+     * Strips a {@code https://doi.org/}/{@code http://doi.org/} prefix if present, then checks
+     * the remainder against the DOI shape ({@code 10.<4-9 digits>/<suffix>}) - returns the bare
+     * DOI, or {@code null} if the identifier isn't DOI-shaped at all.
+     */
+    private String extractDoi(String identifier) {
+        if (identifier == null) {
+            return null;
+        }
+        String candidate = identifier;
+        if (candidate.startsWith("https://doi.org/")) {
+            candidate = candidate.substring("https://doi.org/".length());
+        } else if (candidate.startsWith("http://doi.org/")) {
+            candidate = candidate.substring("http://doi.org/".length());
+        }
+        return DOI_SHAPE.matcher(candidate).matches() ? candidate : null;
     }
 
     private String stripRorUrl(String ror) {

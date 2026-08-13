@@ -2,6 +2,7 @@ package org.skgif.doi.datacite.mapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -170,6 +171,74 @@ class DataCiteToSkgIfMapperTest {
         // DataCite gives the full https://ror.org/... URL - the mapper normalizes to the bare id,
         // consistent with how ESRF's own ROR is stored elsewhere (relevant_organisations).
         assertEquals("02550n020", grant.getFundingAgency().getIdentifiers().get(0).getValue());
+    }
+
+    // datacite-thesis-crossref-funder-id-4342.json: a real UWTSD repository thesis (DOI
+    // 10.82227/repository.uwtsd.ac.uk.00004342) whose sole funding reference identifies the
+    // funder via funderIdentifierType "Crossref Funder ID" rather than "ROR" - unlike
+    // datacite-esrf-es-2210534378.json above. funderIdentifier is a real, DOI-shaped
+    // https://doi.org/10.13039/100010038 URL - the mapper detects that directly (regardless of
+    // what funderIdentifierType claims) rather than requiring the type to literally say "ROR".
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void mapsFundingAgencyToDoiWhenFunderIdentifierIsDoiShapedRegardlessOfType() throws IOException {
+        Product product = mapFixture("datacite-thesis-crossref-funder-id-4342.json");
+
+        assertEquals(1, product.getFunding().size());
+        var grant = product.getFunding().get(0);
+        assertEquals("UWTSD", ((Map<String, List<String>>) grant.getTitles()).get("en").get(0));
+        assertEquals("University of Wales Trinity Saint David", grant.getFundingAgency().getName());
+        assertEquals("https://doi.org/10.13039/100010038", grant.getFundingAgency().getLocalIdentifier());
+        assertEquals("doi", grant.getFundingAgency().getIdentifiers().get(0).getScheme());
+        assertEquals("10.13039/100010038", grant.getFundingAgency().getIdentifiers().get(0).getValue());
+    }
+
+    @Test
+    void doesNotExtractDoiFromNonDoiShapedFunderIdentifier() throws IOException {
+        // A funderIdentifier that isn't ROR and isn't DOI-shaped (e.g. a bare GRID id) must still
+        // fall back to an otf id rather than being mis-parsed.
+        var attributes = readFixture("datacite-thesis-crossref-funder-id-4342.json");
+        attributes.fundingReferences.get(0).funderIdentifierType = "GRID";
+        attributes.fundingReferences.get(0).funderIdentifier = "grid.451003.6";
+
+        Product product = mapper.toProduct(attributes);
+
+        assertNull(product.getFunding().get(0).getFundingAgency().getIdentifiers());
+        assertTrue(product.getFunding().get(0).getFundingAgency().getLocalIdentifier().startsWith("otf___"));
+    }
+
+    @Test
+    void doesNotFabricateManifestationDatesWhenDatesIsEmpty() throws IOException {
+        // "dates": [] (not absent, but genuinely empty) - unlike every other fixture, which has
+        // at least one date.
+        Product product = mapFixture("datacite-thesis-crossref-funder-id-4342.json");
+
+        assertNull(product.getManifestations().get(0).getDates());
+    }
+
+    // datacite-dataset-funder-no-identifier-e449e75a.json: a real University of St Andrews
+    // dataset (DOI 10.17630/e449e75a-1ee9-4490-909c-e3913052cce1) whose 3 funding references
+    // (EPSRC x2, UK Research and Innovation x1) carry funderName/awardNumber/awardTitle but no
+    // funderIdentifier/funderIdentifierType field at all - unlike
+    // datacite-thesis-crossref-funder-id-4342.json above, this isn't a mutated non-DOI-shaped
+    // type, it's the identifier being entirely absent from the source data. Also pins that the
+    // same funder name reused across two grants resolves to the same otf funding_agency id.
+    @Test
+    void mapsFundingAgencyToOtfWhenFunderIdentifierIsEntirelyAbsent() throws IOException {
+        Product product = mapFixture("datacite-dataset-funder-no-identifier-e449e75a.json");
+
+        assertEquals(3, product.getFunding().size());
+        var epsrc1 = product.getFunding().get(0).getFundingAgency();
+        var epsrc2 = product.getFunding().get(1).getFundingAgency();
+        var ukri = product.getFunding().get(2).getFundingAgency();
+
+        assertNull(epsrc1.getIdentifiers());
+        assertNull(epsrc2.getIdentifiers());
+        assertNull(ukri.getIdentifiers());
+        assertTrue(epsrc1.getLocalIdentifier().startsWith("otf___"));
+        assertEquals(epsrc1.getLocalIdentifier(), epsrc2.getLocalIdentifier());
+        assertNotEquals(epsrc1.getLocalIdentifier(), ukri.getLocalIdentifier());
     }
 
     // datacite-zenodo-editor-21232199.json: a real Zenodo journal-article deposit whose
