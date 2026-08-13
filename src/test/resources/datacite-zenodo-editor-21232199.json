@@ -1,0 +1,170 @@
+{
+  "data": {
+    "id": "10.5281/zenodo.21232199",
+    "type": "dois",
+    "attributes": {
+      "doi": "10.5281/zenodo.21232199",
+      "prefix": "10.5281",
+      "suffix": "zenodo.21232199",
+      "identifiers": [],
+      "alternateIdentifiers": [],
+      "creators": [
+        {
+          "name": "Hade, Kanchan S.",
+          "nameType": "Personal",
+          "givenName": "Kanchan S.",
+          "familyName": "Hade",
+          "nameIdentifiers": [],
+          "affiliation": []
+        }
+      ],
+      "titles": [
+        {
+          "title": "Molecular interaction studies of ternary mixture of cis -potassium dioxalatodiaquo chromate (III) dihydrate complex in propanol-water at different temperatures"
+        }
+      ],
+      "publisher": "Zenodo",
+      "container": {},
+      "publicationYear": 2026,
+      "subjects": [
+        {
+          "subject": "Thermo-Acoustic Parameters, Cis –Potassium dioxalatodiaquo Chromate (Iii) Dihydrate Complex, Ultrasonic Velocity, Density, Adiabatic Compressibility, Ternary Mixture."
+        }
+      ],
+      "contributors": [
+        {
+          "name": "Dr. Ramesh V. Bhole",
+          "nameType": "Personal",
+          "familyName": "Dr. Ramesh V. Bhole",
+          "contributorType": "Editor",
+          "nameIdentifiers": [],
+          "affiliation": []
+        }
+      ],
+      "dates": [
+        {
+          "date": "2026-04-30",
+          "dateType": "Issued"
+        }
+      ],
+      "language": "en",
+      "types": {
+        "ris": "JOUR",
+        "bibtex": "article",
+        "citeproc": "article-journal",
+        "schemaOrg": "ScholarlyArticle",
+        "resourceType": "",
+        "resourceTypeGeneral": "JournalArticle"
+      },
+      "relatedIdentifiers": [
+        {
+          "relationType": "HasVersion",
+          "relatedIdentifier": "10.5281/zenodo.21232200",
+          "relatedIdentifierType": "DOI"
+        },
+        {
+          "relationType": "IsPartOf",
+          "relatedIdentifier": "2230-9578",
+          "resourceTypeGeneral": "Collection",
+          "relatedIdentifierType": "ISSN"
+        }
+      ],
+      "relatedItems": [],
+      "sizes": [],
+      "formats": [],
+      "version": null,
+      "rightsList": [
+        {
+          "rights": "Creative Commons Attribution 4.0 International",
+          "rightsUri": "https://creativecommons.org/licenses/by/4.0/legalcode",
+          "schemeUri": "https://spdx.org/licenses/",
+          "rightsIdentifier": "cc-by-4.0",
+          "rightsIdentifierScheme": "SPDX"
+        }
+      ],
+      "descriptions": [
+        {
+          "description": "In Present Study, The Densities (Ρ), Ultrasonic Velocities (U) And Viscosity(ɳ) In A Ternary Liquid Mixture Of Cis –Potassium dioxalatodiaquo Chromate (Iii) Dihydrate Complex With Propanol In Water Have Been Measured At 303.15, 308.15 And 313.15 K Respectively, At Different Concentrations By Using Densitometer, Ultrasonic Interferometer, And Viscometer Respectively. The Measured Data Have Been Used To Compute The Various Thermo-Acoustic Parameters Using  The Standard Relations Namely, Adiabatic Compressibility (Βs), Intermolecular Free Length (Lf), Specific Acoustic Impedance (Z),Wada Constant (W),  Molar Sound Velocity(R), Relative Association (Ra), Apparent Molar Compressibility ( ),Apparent Molar Volume( )Viscosity Relaxation Time (Г),Absorption Coefficient,  Internal Pressure (ᴨ),Free Volume (Vf),Gibb҆ S Free Energy (∆G) And Specific Refraction (R),  Etc. The Nature And The Relative Strength Of The Intermolecular Interaction Between The Components Of The Liquid Mixtures Have Been Successfully Investigated By Ultrasonic Method. The Results Have Been Interpreted In Terms Of Solute-Solvent And Solvent-Solvent Interaction.\n\n ",
+          "descriptionType": "Abstract"
+        }
+      ],
+      "geoLocations": [],
+      "fundingReferences": [],
+      "url": "https://zenodo.org/doi/10.5281/zenodo.21232199",
+      "contentUrl": null,
+      "metadataVersion": 1,
+      "schemaVersion": "http://datacite.org/schema/kernel-4",
+      "source": "api",
+      "isActive": true,
+      "state": "findable",
+      "reason": null,
+      "viewCount": 0,
+      "viewsOverTime": [],
+      "downloadCount": 0,
+      "downloadsOverTime": [],
+      "referenceCount": 0,
+      "citationCount": 0,
+      "citationsOverTime": [],
+      "partCount": 0,
+      "partOfCount": 0,
+      "versionCount": 2,
+      "versionOfCount": 1,
+      "created": "2026-07-07T04:30:34.000Z",
+      "registered": "2026-07-07T04:30:34.000Z",
+      "published": "2026",
+      "updated": "2026-08-13T06:50:13.000Z"
+    },
+    "relationships": {
+      "client": {
+        "data": {
+          "id": "cern.zenodo",
+          "type": "clients"
+        }
+      },
+      "provider": {
+        "data": {
+          "id": "cern",
+          "type": "providers"
+        }
+      },
+      "media": {
+        "data": {
+          "id": "10.5281/zenodo.21232199",
+          "type": "media"
+        }
+      },
+      "references": {
+        "data": []
+      },
+      "citations": {
+        "data": []
+      },
+      "parts": {
+        "data": []
+      },
+      "partOf": {
+        "data": []
+      },
+      "versions": {
+        "data": [
+          {
+            "id": "10.5281/zenodo.21232199",
+            "type": "dois"
+          },
+          {
+            "id": "10.5281/zenodo.21232200",
+            "type": "dois"
+          }
+        ]
+      },
+      "versionOf": {
+        "data": [
+          {
+            "id": "10.5281/zenodo.21232199",
+            "type": "dois"
+          }
+        ]
+      }
+    }
+  }
+}

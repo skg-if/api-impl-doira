@@ -221,9 +221,6 @@ public class DataCiteToSkgIfMapper {
         if ("Editor".equals(dataCiteContributorType)) {
             return ProductContribution.RoleEnum.EDITOR;
         }
-        if ("Publisher".equals(dataCiteContributorType)) {
-            return ProductContribution.RoleEnum.PUBLISHER;
-        }
         return ProductContribution.RoleEnum.AUTHOR;
     }
 

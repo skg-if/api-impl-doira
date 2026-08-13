@@ -172,6 +172,37 @@ class DataCiteToSkgIfMapperTest {
         assertEquals("02550n020", grant.getFundingAgency().getIdentifiers().get(0).getValue());
     }
 
+    // datacite-zenodo-editor-21232199.json: a real Zenodo journal-article deposit whose
+    // contributor carries contributorType "Editor" - unlike datacite-esrf-es-2210534378.json's
+    // contributors ("DataCollector"/"ProjectManager", both of which fall back to author), this
+    // is the first fixture to exercise the editor-role mapping. It also has relatedIdentifiers
+    // of types the mapper doesn't model ("HasVersion", "IsPartOf") and no "Cites"/"IsCitedBy" -
+    // related_products must stay unset rather than surfacing either of them.
+
+    @Test
+    void mapsEditorContributorTypeToEditorRole() throws IOException {
+        Product product = mapFixture("datacite-zenodo-editor-21232199.json");
+
+        // 1 creator (author) + 1 contributor (editor) + 1 publisher.
+        assertEquals(3, product.getContributions().size());
+        ProductContribution editor = product.getContributions().stream()
+                .filter(c -> c.getRole() == ProductContribution.RoleEnum.EDITOR)
+                .findFirst()
+                .orElseThrow();
+        assertEquals("Dr. Ramesh V. Bhole", editor.getBy().getFamilyName());
+        assertTrue(editor.getBy().getLocalIdentifier().startsWith("otf___"));
+    }
+
+    @Test
+    void doesNotSurfaceRelatedProductsFromUnmodeledRelationTypes() throws IOException {
+        // relatedIdentifiers has a "HasVersion" DOI and an "IsPartOf" ISSN - the mapper only
+        // ever looks at "Cites"/"IsCitedBy", so related_products must stay null even though
+        // relatedIdentifiers itself is non-empty.
+        Product product = mapFixture("datacite-zenodo-editor-21232199.json");
+
+        assertNull(product.getRelatedProducts());
+    }
+
     // datacite-award-r3sy-7371.json: a real DataCite Award record (resourceTypeGeneral: "Award")
     // - the grant itself, not a product with a funding reference. Creator = the funding body (The
     // Navigation Fund, with ROR); contributors = a personal project leader (ORCID) and a

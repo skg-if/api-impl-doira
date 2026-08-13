@@ -132,6 +132,17 @@ class ProductsGoldenTest {
     }
 
     /**
+     * DOI 10.5281/zenodo.21232199 - a real Zenodo deposit whose contributor carries
+     * contributorType "Editor", proving the editor-role contribution mapping at the
+     * golden-output level (see {@code DataCiteToSkgIfMapperTest.mapsEditorContributorTypeToEditorRole}).
+     */
+    @Test
+    void getProductById_matchesExpectedJsonLd_zenodoEditor21232199() throws IOException {
+        assertMatchesExpectedDataCiteJsonLd("10.5281/zenodo.21232199", "datacite-zenodo-editor-21232199.json",
+                "expected/datacite-zenodo-editor-21232199-out.json");
+    }
+
+    /**
      * Full JSON-LD regression test for the DataCite search/list endpoint with multiple,
      * heterogeneous @graph items and full pagination metadata (both prev_page and next_page
      * present, unlike a single-item, single-page response). Reuses the two DOI fixtures already

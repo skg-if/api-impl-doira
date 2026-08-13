@@ -1,0 +1,90 @@
+{
+  "@context" : [ "https://w3id.org/skg-if/context/1.1.0/skg-if.json", "https://w3id.org/skg-if/context/1.0.0/skg-if-api.json", {
+    "@base" : "https://w3id.org/skg-if/sandbox/cern.zenodo/"
+  } ],
+  "meta" : {
+    "local_identifier" : "http://localhost:8081/skg-if/api/datacite/products/10.5281/zenodo.21232199",
+    "entity_type" : "single_entity"
+  },
+  "@graph" : [ {
+    "local_identifier" : "https://doi.org/10.5281/zenodo.21232199",
+    "identifiers" : [ {
+      "scheme" : "doi",
+      "value" : "10.5281/zenodo.21232199"
+    } ],
+    "entity_type" : "product",
+    "product_type" : "literature",
+    "titles" : {
+      "en" : [ "Molecular interaction studies of ternary mixture of cis -potassium dioxalatodiaquo chromate (III) dihydrate complex in propanol-water at different temperatures" ]
+    },
+    "abstracts" : {
+      "en" : [ "In Present Study, The Densities (Ρ), Ultrasonic Velocities (U) And Viscosity(ɳ) In A Ternary Liquid Mixture Of Cis –Potassium dioxalatodiaquo Chromate (Iii) Dihydrate Complex With Propanol In Water Have Been Measured At 303.15, 308.15 And 313.15 K Respectively, At Different Concentrations By Using Densitometer, Ultrasonic Interferometer, And Viscometer Respectively. The Measured Data Have Been Used To Compute The Various Thermo-Acoustic Parameters Using  The Standard Relations Namely, Adiabatic Compressibility (Βs), Intermolecular Free Length (Lf), Specific Acoustic Impedance (Z),Wada Constant (W),  Molar Sound Velocity(R), Relative Association (Ra), Apparent Molar Compressibility ( ),Apparent Molar Volume( )Viscosity Relaxation Time (Г),Absorption Coefficient,  Internal Pressure (ᴨ),Free Volume (Vf),Gibb҆ S Free Energy (∆G) And Specific Refraction (R),  Etc. The Nature And The Relative Strength Of The Intermolecular Interaction Between The Components Of The Liquid Mixtures Have Been Successfully Investigated By Ultrasonic Method. The Results Have Been Interpreted In Terms Of Solute-Solvent And Solvent-Solvent Interaction.\n\n " ]
+    },
+    "topics" : [ {
+      "term" : {
+        "local_identifier" : "otf___10-5281-zenodo-21232199___thermo-acoustic-parameters-cis-potassium",
+        "identifiers" : [ ],
+        "entity_type" : "topic",
+        "labels" : {
+          "none" : "Thermo-Acoustic Parameters, Cis –Potassium dioxalatodiaquo Chromate (Iii) Dihydrate Complex, Ultrasonic Velocity, Density, Adiabatic Compressibility, Ternary Mixture."
+        }
+      }
+    } ],
+    "contributions" : [ {
+      "by" : {
+        "local_identifier" : "otf___10-5281-zenodo-21232199___hade-kanchan-s",
+        "identifiers" : [ ],
+        "given_name" : "Kanchan S.",
+        "family_name" : "Hade",
+        "name" : "Hade, Kanchan S.",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "rank" : 1,
+      "role" : "author"
+    }, {
+      "by" : {
+        "local_identifier" : "otf___10-5281-zenodo-21232199___dr-ramesh-v-bhole",
+        "identifiers" : [ ],
+        "family_name" : "Dr. Ramesh V. Bhole",
+        "name" : "Dr. Ramesh V. Bhole",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "rank" : 2,
+      "role" : "editor"
+    }, {
+      "by" : {
+        "local_identifier" : "otf___10-5281-zenodo-21232199___zenodo",
+        "identifiers" : [ ],
+        "name" : "Zenodo",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "rank" : 3,
+      "role" : "publisher"
+    } ],
+    "manifestations" : [ {
+      "type" : {
+        "labels" : {
+          "en" : "JournalArticle"
+        }
+      },
+      "dates" : {
+        "publication" : [ "2026-04-30" ]
+      },
+      "access_rights" : {
+        "status" : "open"
+      },
+      "licence" : "https://creativecommons.org/licenses/by/4.0/legalcode",
+      "biblio" : {
+        "hosting_data_source" : {
+          "local_identifier" : "otf___10-5281-zenodo-21232199___zenodo",
+          "identifiers" : [ ],
+          "entity_type" : "datasource",
+          "name" : "Zenodo"
+        }
+      }
+    } ]
+  } ]
+}
