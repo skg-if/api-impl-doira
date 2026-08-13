@@ -11,7 +11,8 @@ and [`CrossrefToSkgIfMapper`](src/main/java/org/skgif/doi/crossref/mapper/Crossr
 > Crossref has no equivalent per-field docs, so its fields aren't individually linked - see instead
 > the [journals and articles](https://www.crossref.org/documentation/schema-library/markup-guide-record-types/journals-and-articles/)
 > and [grants](https://www.crossref.org/documentation/schema-library/markup-guide-record-types/grants/)
-> markup guides and the [REST API reference](https://api.crossref.org/swagger-ui/index.html).
+> markup guides, the [REST API reference](https://api.crossref.org/swagger-ui/index.html), and the
+> [XML samples](https://www.crossref.org/xml-samples/).
 
 Both mappers follow the same conventions:
 
