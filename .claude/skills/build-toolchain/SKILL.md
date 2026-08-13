@@ -53,9 +53,39 @@ the user or machine environment.
 
 ## Running the build
 
+Full suite:
+
 ```powershell
-mvn clean test
+mvn -q -B clean test
 ```
+
+`-q` (quiet) drops plugin/download log noise; `-B` (batch mode) drops the
+interactive progress-bar/ANSI noise. Maven still prints a `BUILD FAILURE` line and
+the list of failing tests through `-q` - this doesn't hide real failures.
+
+When iterating on one class rather than validating the whole change, scope the run
+instead of re-running everything:
+
+```powershell
+mvn -q -B test -Dtest=CrossrefToSkgIfMapperTest
+```
+
+### Reading results afterward - use the `.txt` reports, not the `.xml` ones
+
+Every run writes two report files per test class under `target/surefire-reports/`:
+a plain-text summary (`<FQCN>.txt`) and a JUnit XML report (`TEST-<FQCN>.xml`). The
+XML version duplicates the full captured stdout/stack traces and is enormous by
+comparison - e.g. `ProductsResourceTest`'s `.txt` summary is ~330 bytes; its `.xml`
+report for the exact same run is ~60KB. Reading the `.xml` version by default costs
+~180x more for no extra information in the common case. Read (or grep across) the
+`.txt` files first:
+
+```powershell
+Get-Content target\surefire-reports\org.skgif.doi.rest.ProductsResourceTest.txt
+```
+
+Only open the matching `.xml` report when a `.txt` failure needs the full stack
+trace the summary truncated.
 
 ## Regenerating golden JSON-LD fixtures
 

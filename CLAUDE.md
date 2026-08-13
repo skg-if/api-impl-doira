@@ -5,6 +5,19 @@
 There is no system-wide JDK/Maven on this machine. For building, testing, or running
 `mvn`/`java` in any form, use the `build-toolchain` skill.
 
+## Grep before reading large files
+
+`SKG_IF_DOI_MAPPING.md` (~66KB) and the OpenAPI specs (`src/main/openapi/skg-if-openapi.yaml`,
+`target/generated-sources/.../openapi.yaml`) are large enough that reading the whole file costs
+real tokens regardless of how much of it is actually relevant. Grep for the specific field/row
+first to get a line number, then Read a narrow window around it - reserve a full read for tasks
+that genuinely need whole-document context (e.g. auditing every row of a table).
+
+For test failures, read `target/surefire-reports/*.txt` (plain-text summary) instead of the
+matching `TEST-*.xml` report - see the `build-toolchain` skill for the measured size gap
+(~180x smaller for the same pass/fail information), and for the `-q`/`-B`/`-Dtest=` flags that
+keep `mvn` output itself from being noisy.
+
 ## Keep SKG_IF_DOI_MAPPING.md in sync
 
 [`SKG_IF_DOI_MAPPING.md`](SKG_IF_DOI_MAPPING.md) documents, field by field, how
