@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ONIXDOISerialArticleWorkRegistrationMessage xmlns="http://www.editeur.org/onix/DOIMetadata/2.0"
+                                             xmlns:cl="http://www.medra.org/DOIMetadata/2.0/Citations"
+                                             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                             xsi:schemaLocation="http://www.editeur.org/onix/DOIMetadata/2.0 https://www.medra.org/schema/onix/DOIMetadata/2.0/ONIX_DOIMetadata_2.0.xsd">
+   <Header>
+      <FromCompany>mEDRA</FromCompany>
+      <FromEmail>medra@medra.org</FromEmail>
+      <ToCompany>PublicService</ToCompany>
+      <SentDate>20260813</SentDate>
+   </Header>
+   <DOISerialArticleWork>
+      <NotificationType>06</NotificationType>
+      <DOI>10.19276/plinius.2019.01004</DOI>
+      <DOIWebsiteLink>https://www.socminpet.it/files/download/vol-45/dalessio.pdf</DOIWebsiteLink>
+      <RegistrantName>Societa' Italiana di Mineralogia e Petrologia</RegistrantName>
+      <RegistrationAuthority>mEDRA</RegistrationAuthority>
+      <SerialPublication>
+         <SerialWork>
+            <Title>
+               <TitleType>01</TitleType>
+               <TitleText>Plinius</TitleText>
+            </Title>
+            <Publisher>
+               <PublishingRole>01</PublishingRole>
+               <PublisherName>Societa' Italiana di Mineralogia e Petrologia</PublisherName>
+            </Publisher>
+            <CountryOfPublication>IT</CountryOfPublication>
+         </SerialWork>
+         <SerialVersion>
+            <ProductIdentifier>
+               <ProductIDType>07</ProductIDType>
+               <IDValue>1972-1366</IDValue>
+            </ProductIdentifier>
+            <ProductForm>JD</ProductForm>
+            <EpubFormat>02</EpubFormat>
+         </SerialVersion>
+      </SerialPublication>
+      <JournalIssue>
+         <JournalVolumeNumber>45</JournalVolumeNumber>
+         <JournalIssueDate>
+            <DateFormat>05</DateFormat>
+            <Date>2019</Date>
+         </JournalIssueDate>
+      </JournalIssue>
+      <ContentItem>
+         <TextItem>
+            <PageRun>
+               <FirstPageNumber>24</FirstPageNumber>
+               <LastPageNumber>31</LastPageNumber>
+            </PageRun>
+            <NumberOfPages>8</NumberOfPages>
+         </TextItem>
+         <Title>
+            <TitleType>01</TitleType>
+            <TitleText>Synthesis, phase transitions, degassing behaviour of melanophlogite (type I clathrate)</TitleText>
+         </Title>
+         <Contributor>
+            <SequenceNumber>1</SequenceNumber>
+            <ContributorRole>A01</ContributorRole>
+            <PersonName>Daniela D'Alessio</PersonName>
+            <PersonNameInverted>D'Alessio, Daniela</PersonNameInverted>
+            <NamesBeforeKey>Daniela</NamesBeforeKey>
+            <KeyNames>D'Alessio</KeyNames>
+         </Contributor>
+         <Language>
+            <LanguageRole>01</LanguageRole>
+            <LanguageCode>eng</LanguageCode>
+         </Language>
+         <PublicationDate>2019</PublicationDate>
+      </ContentItem>
+   </DOISerialArticleWork>
+</ONIXDOISerialArticleWorkRegistrationMessage>

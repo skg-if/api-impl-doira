@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ONIXDOISerialArticleVersionRegistrationMessage xmlns="http://www.editeur.org/onix/DOIMetadata/2.0"
+                                                xmlns:cl="http://www.medra.org/DOIMetadata/2.0/Citations"
+                                                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                                xsi:schemaLocation="http://www.editeur.org/onix/DOIMetadata/2.0 https://www.medra.org/schema/onix/DOIMetadata/2.0/ONIX_DOIMetadata_2.0.xsd">
+   <Header>
+      <FromCompany>mEDRA</FromCompany>
+      <FromEmail>medra@medra.org</FromEmail>
+      <ToCompany>PublicService</ToCompany>
+      <SentDate>20260813</SentDate>
+   </Header>
+   <DOISerialArticleVersion>
+      <NotificationType>06</NotificationType>
+      <DOI>10.12919/sapere.2018.04.3</DOI>
+      <DOIWebsiteLink>http://www.saperescienza.it/luglio-agosto2018/i-neutroni-al-servizio-della-medicina</DOIWebsiteLink>
+      <RegistrantName>Edizioni Dedalo</RegistrantName>
+      <SerialPublication>
+         <SerialWork>
+            <Title>
+               <TitleType>01</TitleType>
+               <TitleText>Sapere 4/2018</TitleText>
+            </Title>
+            <Publisher>
+               <PublishingRole>01</PublishingRole>
+               <PublisherName>Edizioni Dedalo</PublisherName>
+            </Publisher>
+            <CountryOfPublication>IT</CountryOfPublication>
+         </SerialWork>
+         <SerialVersion>
+            <ProductIdentifier>
+               <ProductIDType>06</ProductIDType>
+               <IDValue>10.12919/sapere.2018.04.3</IDValue>
+            </ProductIdentifier>
+            <ProductForm>JD</ProductForm>
+         </SerialVersion>
+      </SerialPublication>
+      <JournalIssue>
+         <JournalIssueNumber>4</JournalIssueNumber>
+         <JournalIssueDate>
+            <DateFormat>01</DateFormat>
+            <Date>201807</Date>
+         </JournalIssueDate>
+      </JournalIssue>
+      <ContentItem>
+         <TextItem>
+            <PageRun>
+               <FirstPageNumber>24</FirstPageNumber>
+               <LastPageNumber>29</LastPageNumber>
+            </PageRun>
+         </TextItem>
+         <Title>
+            <TitleType>01</TitleType>
+            <TitleText>I neutroni al servizio della medicina</TitleText>
+         </Title>
+         <Contributor>
+            <ContributorRole>A01</ContributorRole>
+            <PersonNameInverted>Fragneto, Giovanna</PersonNameInverted>
+         </Contributor>
+         <Language>
+            <LanguageRole>01</LanguageRole>
+            <LanguageCode>ita</LanguageCode>
+         </Language>
+         <PublicationDate>2018</PublicationDate>
+      </ContentItem>
+   </DOISerialArticleVersion>
+</ONIXDOISerialArticleVersionRegistrationMessage>

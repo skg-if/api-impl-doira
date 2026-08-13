@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ONIXDOISerialArticleVersionRegistrationMessage xmlns="http://www.editeur.org/onix/DOIMetadata/2.0"
+                                                xmlns:cl="http://www.medra.org/DOIMetadata/2.0/Citations"
+                                                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                                xsi:schemaLocation="http://www.editeur.org/onix/DOIMetadata/2.0 https://www.medra.org/schema/onix/DOIMetadata/2.0/ONIX_DOIMetadata_2.0.xsd">
+   <Header>
+      <FromCompany>mEDRA</FromCompany>
+      <FromEmail>medra@medra.org</FromEmail>
+      <ToCompany>PublicService</ToCompany>
+      <SentDate>20260813</SentDate>
+   </Header>
+   <DOISerialArticleVersion>
+      <NotificationType>06</NotificationType>
+      <DOI>10.1478/AAPP.98S1A9</DOI>
+      <DOIWebsiteLink>https://riviste.unime.it/index.php/AAPP/article/view/AAPP.98S1A9</DOIWebsiteLink>
+      <RegistrantName>Accademia Peloritana dei Pericolanti - Classe di Scienze Fisiche, Matematiche e Naturali</RegistrantName>
+      <RegistrationAuthority>mEDRA</RegistrationAuthority>
+      <ProductIdentifier>
+         <ProductIDType>01</ProductIDType>
+         <IDValue>AAPP.98S1A9</IDValue>
+      </ProductIdentifier>
+      <SerialPublication>
+         <SerialWork>
+            <Title language="ita">
+               <TitleType>01</TitleType>
+               <TitleText>Atti della Accademia Perloritana dei Pericolanti. Classe di Scienze Fisiche, Matematiche e Naturali</TitleText>
+            </Title>
+            <Title language="eng">
+               <TitleType>01</TitleType>
+               <TitleText>AAPP Physical, Mathematical, and Natural Sciences</TitleText>
+            </Title>
+            <Title language="ita">
+               <TitleType>05</TitleType>
+               <TitleText>Atti Accad. Pelorit. Pericol. Cl. Sci. Fis. Mat. Nat.</TitleText>
+            </Title>
+            <Title language="eng">
+               <TitleType>05</TitleType>
+               <TitleText>AAPP Phys. Math. Nat. Sci.</TitleText>
+            </Title>
+            <ImprintName>Accademia Peloritana dei Pericolanti</ImprintName>
+            <Publisher>
+               <PublishingRole>01</PublishingRole>
+               <PublisherName>Accademia Peloritana dei Pericolanti</PublisherName>
+            </Publisher>
+            <CountryOfPublication>IT</CountryOfPublication>
+         </SerialWork>
+         <SerialVersion>
+            <ProductIdentifier>
+               <ProductIDType>07</ProductIDType>
+               <IDValue>18251242</IDValue>
+            </ProductIdentifier>
+            <ProductForm>JD</ProductForm>
+            <EpubFormat>01</EpubFormat>
+         </SerialVersion>
+      </SerialPublication>
+      <JournalIssue>
+         <JournalVolumeNumber>98</JournalVolumeNumber>
+         <JournalIssueNumber>S1</JournalIssueNumber>
+         <JournalIssueDate>
+            <DateFormat>05</DateFormat>
+            <Date>2020</Date>
+         </JournalIssueDate>
+      </JournalIssue>
+      <ContentItem>
+         <TextItem>
+            <TextItemType>11</TextItemType>
+            <PageRun>
+               <FirstPageNumber>A9-1</FirstPageNumber>
+               <LastPageNumber>A9-8</LastPageNumber>
+            </PageRun>
+            <NumberOfPages>8</NumberOfPages>
+         </TextItem>
+         <Title>
+            <TitleType>01</TitleType>
+            <TitleText>Transverse THz dynamics of phospholipid membranes: A neutron scattering study</TitleText>
+         </Title>
+         <Contributor>
+            <SequenceNumber>1</SequenceNumber>
+            <ContributorRole>A01</ContributorRole>
+            <PersonName>Valeria Conti Nibali</PersonName>
+            <PersonNameInverted>Conti Nibali, Valeria</PersonNameInverted>
+         </Contributor>
+         <Contributor>
+            <SequenceNumber>2</SequenceNumber>
+            <ContributorRole>A01</ContributorRole>
+            <PersonName>Ulderico Wanderlingh</PersonName>
+            <PersonNameInverted>Wanderlingh, Ulderico</PersonNameInverted>
+         </Contributor>
+         <Contributor>
+            <SequenceNumber>3</SequenceNumber>
+            <ContributorRole>A01</ContributorRole>
+            <PersonName>Giovanna D'Angelo</PersonName>
+            <PersonNameInverted>D'Angelo, Giovanna</PersonNameInverted>
+         </Contributor>
+         <Contributor>
+            <SequenceNumber>4</SequenceNumber>
+            <ContributorRole>A01</ContributorRole>
+            <PersonName>Caterina Branca</PersonName>
+            <PersonNameInverted>Branca, Caterina</PersonNameInverted>
+         </Contributor>
+         <Contributor>
+            <SequenceNumber>5</SequenceNumber>
+            <ContributorRole>A01</ContributorRole>
+            <PersonName>Alessio De Francesco</PersonName>
+            <PersonNameInverted>De Francesco, Alessio</PersonNameInverted>
+         </Contributor>
+         <Contributor>
+            <SequenceNumber>6</SequenceNumber>
+            <ContributorRole>A01</ContributorRole>
+            <PersonName>Caterina Petrillo</PersonName>
+            <PersonNameInverted>Petrillo, Caterina</PersonNameInverted>
+         </Contributor>
+         <Contributor>
+            <SequenceNumber>7</SequenceNumber>
+            <ContributorRole>A01</ContributorRole>
+            <PersonName>Alessandro Paciaroni</PersonName>
+            <PersonNameInverted>Paciaroni, Alessandro</PersonNameInverted>
+         </Contributor>
+         <Contributor>
+            <SequenceNumber>8</SequenceNumber>
+            <ContributorRole>A01</ContributorRole>
+            <PersonName>Francesco Sacchetti</PersonName>
+            <PersonNameInverted>Sacchetti, Francesco</PersonNameInverted>
+         </Contributor>
+         <Language>
+            <LanguageRole>01</LanguageRole>
+            <LanguageCode>eng</LanguageCode>
+         </Language>
+         <PublicationDate>20201001</PublicationDate>
+      </ContentItem>
+   </DOISerialArticleVersion>
+</ONIXDOISerialArticleVersionRegistrationMessage>

@@ -57,3 +57,22 @@ unread. Neither provider has a source for `access`, `decision`, `distribution`, 
 `request` -
 see [known limitations](SKG_IF_DOI_MAPPING_LIMITATIONS.md#known-limitations) also for the one near-miss (`embargo`), and for the
 fallback-only nature of the DataCite top-level attributes and Crossref's `update-to[]` above.
+
+## mEDRA
+
+mEDRA's ONIX-for-DOI records carry only one date field this table has a home for:
+`ContentItem/PublicationDate` → `publication`, a bare digit string (`"2019"`, `"202103"`, or
+`"20210813"` - year, year+month, or full date, distinguished by string length alone since ONIX
+gives no separate format marker for it, unlike `JournalIssueDate` below) converted to the same
+partial-ISO form (`"2019"`, `"2021-03"`, `"2021-08-13"`) the other two providers' partial dates
+use. Every other SKG-IF date type (`creation`, `modified`, `acceptance`, `deposit`, `embargo`,
+etc.) has no mEDRA source at all - ONIX-for-DOI has no metadata-management dates (no equivalent
+of DataCite's `created`/`registered`/`updated` or Crossref's `deposited`/`indexed`).
+
+`JournalIssue/JournalIssueDate` (`DateFormat 01` = year+month, `DateFormat 05` = year-only) is a
+real ONIX field but is deliberately not mapped to any Product date - it describes the *issue*
+the article appeared in, not the article itself, and SKG-IF's `manifestations[].dates` has no
+"issue date" type distinct from `publication` that wouldn't misrepresent it as the article's own
+publication date (some records, e.g. the proceedings-chapter fixture, have no `PublicationDate`
+of their own at all, only a `JournalIssueDate` - conflating the two would fabricate a date the
+record doesn't actually assert for the article).

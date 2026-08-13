@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ONIXDOISerialArticleWorkRegistrationMessage xmlns="http://www.editeur.org/onix/DOIMetadata/2.0"
+                                             xmlns:cl="http://www.medra.org/DOIMetadata/2.0/Citations"
+                                             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                             xsi:schemaLocation="http://www.editeur.org/onix/DOIMetadata/2.0 https://www.medra.org/schema/onix/DOIMetadata/2.0/ONIX_DOIMetadata_2.0.xsd">
+   <Header>
+      <FromCompany>mEDRA</FromCompany>
+      <FromEmail>medra@medra.org</FromEmail>
+      <ToCompany>PublicService</ToCompany>
+      <SentDate>20260813</SentDate>
+   </Header>
+   <DOISerialArticleWork>
+      <NotificationType>07</NotificationType>
+      <DOI>10.1393/ncc/i2021-21084-7</DOI>
+      <DOIWebsiteLink>http://www.sif.it/10.1393/ncc/i2021-21084-7</DOIWebsiteLink>
+      <RegistrantName>SIF</RegistrantName>
+      <SerialPublication>
+         <SerialWork>
+            <Title language="ita">
+               <TitleType>01</TitleType>
+               <TitleText>Il Nuovo Cimento C</TitleText>
+            </Title>
+            <Publisher>
+               <PublishingRole>01</PublishingRole>
+               <PublisherName>SIF</PublisherName>
+            </Publisher>
+            <CountryOfPublication>IT</CountryOfPublication>
+         </SerialWork>
+         <SerialVersion>
+            <ProductIdentifier>
+               <ProductIDType>07</ProductIDType>
+               <IDValue>03905551</IDValue>
+            </ProductIdentifier>
+            <ProductForm>JB</ProductForm>
+         </SerialVersion>
+         <SerialVersion>
+            <ProductIdentifier>
+               <ProductIDType>07</ProductIDType>
+               <IDValue>03905551</IDValue>
+            </ProductIdentifier>
+            <ProductForm>JD</ProductForm>
+         </SerialVersion>
+      </SerialPublication>
+      <JournalIssue>
+         <JournalVolumeNumber>44</JournalVolumeNumber>
+         <JournalIssueNumber>203</JournalIssueNumber>
+         <JournalIssueDate>
+            <DateFormat>01</DateFormat>
+            <Date>202103</Date>
+         </JournalIssueDate>
+      </JournalIssue>
+      <ContentItem>
+         <TextItem>
+            <PageRun>
+               <FirstPageNumber>1</FirstPageNumber>
+               <LastPageNumber>4</LastPageNumber>
+            </PageRun>
+         </TextItem>
+         <Title language="eng" textformat="02">
+            <TitleType>01</TitleType>
+            <TitleText>Lifetime analysis of short-lived states in &lt;sup&gt;17&lt;/sup&gt;N</TitleText>
+         </Title>
+         <Language>
+            <LanguageRole>01</LanguageRole>
+            <LanguageCode>eng</LanguageCode>
+         </Language>
+         <PublicationDate>20210813</PublicationDate>
+         <CopyrightStatement>
+            <CopyrightYear>2021</CopyrightYear>
+            <CopyrightOwner>
+               <CorporateName>Societ Italiana di Fisica</CorporateName>
+            </CopyrightOwner>
+         </CopyrightStatement>
+      </ContentItem>
+   </DOISerialArticleWork>
+</ONIXDOISerialArticleWorkRegistrationMessage>
