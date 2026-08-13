@@ -106,7 +106,7 @@ not just the ones with a real source in either provider.
 | <details><summary>`distribution`</summary><em>The date on which something is distributed, for example the date on which a preprint of a document is e-mailed to colleagues and other academics by the author(s), or the date on which a printed announcement of forthcoming theatre events is mailed to those on the theatre's mailing list.</em></details> | *(not available)* | *(not available)* | – not available | – not available |
 | <details><summary>`embargo`</summary><em>The date before which an entity should not be published, or before which a press release should not be reported on. For open-access journal articles, the embargo date is the date before which availability of the open-access version of the article is restricted by the publisher, following subscription-access availability of the published work.</em></details> | <details><summary>`Available` [ℹ️](https://datacite-metadata-schema.readthedocs.io/en/4.7/appendices/appendix-1/dateType/#available), but only when its day (`YYYY-MM-DD`) differs from every other date already on the record (`dates[]` entries, or the top-level `created`/`registered`/`updated`/`published` fallbacks) - a same-day `Available` means "published and immediately available," not an embargo, and is dropped rather than emitted anywhere</summary><em>The date the resource is made publicly available. May be a range.</em></details> | *(not available - see [known limitations](#known-limitations))* | ✅ [in](src/test/resources/datacite-esrf-es-2210534378.json)·[out](src/test/resources/expected/datacite-esrf-es-2210534378-out.json) (genuine-embargo case)<br>✅ [in](src/test/resources/datacite-dataset-funder-no-identifier-e449e75a.json)·[out](src/test/resources/expected/datacite-dataset-funder-no-identifier-e449e75a-out.json) (same-day, dropped) | ❌ not in any fixture |
 | <details><summary>`modified`</summary><em>The date on which an entity has been modified.</em></details> | <details><summary>`Updated` [ℹ️](https://datacite-metadata-schema.readthedocs.io/en/4.7/appendices/appendix-1/dateType/#updated), falling back to the top-level `updated` attribute when absent (same rationale as `creation`)</summary><em>The date of the last update to the resource, when the resource is being added to. May be a range.</em></details> | *(not available)* | ✅ (same golden pair as `creation` above) | – not available |
-| <details><summary>`publication`</summary><em>The date of formal issuance of a resource (e.g. a publication or a patent).</em></details> | <details><summary>`Issued` [ℹ️](https://datacite-metadata-schema.readthedocs.io/en/4.7/appendices/appendix-1/dateType/#issued), falling back to the top-level `published` attribute when absent</summary><em>The date that the resource is published or distributed, e.g., to a data centre.</em></details> | <details><summary>`published-print` [ℹ️](https://github.com/CrossRef/rest-api-doc/blob/master/api_format.md#work)</summary><em>Date on which the work was published in print.</em></details>, <details><summary>`published-online` [ℹ️](https://github.com/CrossRef/rest-api-doc/blob/master/api_format.md#work)</summary><em>Date on which the work was published online.</em></details>, <details><summary>`issued` [ℹ️](https://github.com/CrossRef/rest-api-doc/blob/master/api_format.md#work)</summary><em>Earliest of `published-print` and `published-online`.</em></details> | ✅ [in](src/test/resources/datacite-esrf-dc-2493599001.json)·[out](src/test/resources/expected/datacite-esrf-dc-2493599001-out.json) | ✅ [in](src/test/resources/crossref-journal-article.json)·[out](src/test/resources/expected/crossref-journal-article-out.json) |
+| <details><summary>`publication`</summary><em>The date of formal issuance of a resource (e.g. a publication or a patent).</em></details> | <details><summary>`Issued` [ℹ️](https://datacite-metadata-schema.readthedocs.io/en/4.7/appendices/appendix-1/dateType/#issued), falling back to the top-level `published` attribute when absent</summary><em>The date that the resource is published or distributed, e.g., to a data centre.</em></details> | <details><summary>`published-print` [ℹ️](https://github.com/CrossRef/rest-api-doc/blob/master/api_format.md#work) [ℹ️](https://data.crossref.org/reports/help/schema_doc/5.5.0/schema_5_5_0.html#publication_date)</summary><em>Date on which the work was published in print.</em></details>, <details><summary>`published-online` [ℹ️](https://github.com/CrossRef/rest-api-doc/blob/master/api_format.md#work) [ℹ️](https://data.crossref.org/reports/help/schema_doc/5.5.0/schema_5_5_0.html#publication_date)</summary><em>Date on which the work was published online.</em></details>, <details><summary>`issued` [ℹ️](https://github.com/CrossRef/rest-api-doc/blob/master/api_format.md#work)</summary><em>Earliest of `published-print` and `published-online`.</em></details> | ✅ [in](src/test/resources/datacite-esrf-dc-2493599001.json)·[out](src/test/resources/expected/datacite-esrf-dc-2493599001-out.json) | ✅ [in](src/test/resources/crossref-journal-article.json)·[out](src/test/resources/expected/crossref-journal-article-out.json) |
 | <details><summary>`received`</summary><em>The date on which some item is received, for example a document being received by a publisher.</em></details> | *(not available)* | *(not available)* | – not available | – not available |
 | <details><summary>`request`\*</summary><em>The date on which an agent is requested to do something, for example a reviewer is requested to write a review of a paper submitted to a journal for publication, or an author is requested to supply a revised version of the paper in response to the reviews received.</em></details> | *(not available)* | *(not available)* | – not available | – not available |
 | <details><summary>`retraction`</summary><em>The date on which something, for example a claim or a journal article, is retracted.</em></details> | <details><summary>`Withdrawn` [ℹ️](https://datacite-metadata-schema.readthedocs.io/en/4.7/appendices/appendix-1/dateType/#withdrawn)</summary><em>The date the resource is removed.</em></details> | <details><summary>`update-to[].updated` [ℹ️](https://data.crossref.org/reports/help/schema_doc/5.5.0/schema_5_5_0.html#update) where `type == "retraction"`</summary><em>Date on which the update was published.</em></details> | ❌ not in any fixture | ✅ (same golden pair as `correction` above) |
@@ -159,8 +159,8 @@ A DOI record is routed to the **Grants** endpoint instead of **Products** when:
 
 ## Known limitations
 
-- **Person `entity_type`** is never emitted on `contributions[].by` (both providers) - an
-  openapi-generator limitation on the `by` oneOf, not a data availability gap.
+### DataCite
+
 - **DataCite Award records** lack any generic source for `grant_number`, `currency`,
   `funded_amount`, `duration`, `website`, `funding_stream`, or `acronym` - left unset rather than
   guessed at.
@@ -177,6 +177,18 @@ A DOI record is routed to the **Grants** endpoint instead of **Products** when:
   `DataCiteToSkgIfMapperTest.explicitDatesEntryWinsOverTopLevelAttributeFallback`). In practice
   they're the primary source, not a rare fallback - no fixture's `dates[]` has ever carried a
   `Created`/`Submitted`/`Updated` entry.
+- **DataCite's `fundingReferences[].funderIdentifierType`** has no literal `"DOI"` value in its
+  controlled vocabulary, so `funding_agency` detects a Funder Registry DOI by checking whether
+  `funderIdentifier` itself is DOI-shaped, regardless of what the type label says (covers
+  `"Crossref Funder ID"` and any other/unlabeled DOI in practice - see
+  [`datacite-thesis-crossref-funder-id-4342.json`](src/test/resources/datacite-thesis-crossref-funder-id-4342.json)).
+  Genuinely non-DOI schemes (ISNI, GRID, Wikidata) still have no home here and fall back to an
+  otf id, same as an entirely absent `funderIdentifier` (see
+  [`datacite-dataset-funder-no-identifier-e449e75a.json`](src/test/resources/datacite-dataset-funder-no-identifier-e449e75a.json),
+  where the same funder name recurring across 2 grants resolves to the same otf id both times).
+
+### Crossref
+
 - **Crossref's per-license `start` date (+ `delay-in-days`)** - present in several committed
   fixtures already (e.g. [`crossref-journal-article.json`](src/test/resources/crossref-journal-article.json))
   - would be the natural source for SKG-IF's `embargo` date type, but `CrossrefLicense`
@@ -208,20 +220,15 @@ A DOI record is routed to the **Grants** endpoint instead of **Products** when:
   Crossref's own README marks **deprecated** in favour of `https://api.crossref.org/` - but the
   current Swagger UI ([`api.crossref.org/swagger-ui`](https://api.crossref.org/swagger-ui/index.html))
   documents endpoints/parameters, not per-field response-schema descriptions, so the deprecated
-  doc remains the only place these seven REST-API-only fields are actually defined. `accepted`,
-  `posted`, and `update-to[]` instead link to the still-current
+  doc remains the only place `created`/`deposited`/`indexed`/`issued`/generic `published` are
+  actually defined. `accepted`, `posted`, and `update-to[]` instead link to the still-current
   [schema documentation](https://data.crossref.org/reports/help/schema_doc/5.5.0/index.html) for
   Crossref's deposit/submission XSD, which does define them (as `acceptance_date`, `posted_date`,
-  and the `update` element respectively) and isn't affected by this deprecation.
-- **DataCite's `fundingReferences[].funderIdentifierType`** has no literal `"DOI"` value in its
-  controlled vocabulary, so `funding_agency` detects a Funder Registry DOI by checking whether
-  `funderIdentifier` itself is DOI-shaped, regardless of what the type label says (covers
-  `"Crossref Funder ID"` and any other/unlabeled DOI in practice - see
-  [`datacite-thesis-crossref-funder-id-4342.json`](src/test/resources/datacite-thesis-crossref-funder-id-4342.json)).
-  Genuinely non-DOI schemes (ISNI, GRID, Wikidata) still have no home here and fall back to an
-  otf id, same as an entirely absent `funderIdentifier` (see
-  [`datacite-dataset-funder-no-identifier-e449e75a.json`](src/test/resources/datacite-dataset-funder-no-identifier-e449e75a.json),
-  where the same funder name recurring across 2 grants resolves to the same otf id both times).
+  and the `update` element respectively) and isn't affected by this deprecation. `published-print`
+  and `published-online` carry a second ℹ️ pointing at that same current schema doc's
+  `publication_date` element - the submission-side source for both (distinguished there by a
+  `media_type` attribute) - alongside their deprecated-doc link, since the REST API's split into
+  two separately-named fields has no single matching schema element of its own.
 - **Crossref** has no software-versioning field, no organisation-level `relevantOrganisations`
   outside per-contributor affiliations, and no `acronym` field for grants.
 - **Crossref grant records** with multiple `project[]` entries (e.g. joint awards) contribute
@@ -260,3 +267,8 @@ A DOI record is routed to the **Grants** endpoint instead of **Products** when:
   requests; a miss (no journal-level DOI registered, or a non-2xx response/network error) is
   never cached at all, so it's retried on the very next call rather than a transient failure
   being indistinguishable from "this journal has no DOI".
+
+### Other
+
+- **Person `entity_type`** is never emitted on `contributions[].by` (both providers) - an
+  openapi-generator limitation on the `by` oneOf, not a data availability gap.
