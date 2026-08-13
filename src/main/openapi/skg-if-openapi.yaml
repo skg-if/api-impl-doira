@@ -2133,6 +2133,7 @@ components:
             entity_type:
               type: string
               default: "agent"
+              pattern: '^agent$'
               x-faker:
                 fake: ["agent"]
             identifiers:
@@ -2174,6 +2175,7 @@ components:
             entity_type:
               type: string
               default: "organisation"
+              pattern: '^organisation$'
               x-faker:
                 fake: ["organisation"]
             identifiers:
@@ -2349,6 +2351,7 @@ components:
             entity_type:
               type: string
               default: "person"
+              pattern: '^person$'
               x-faker:
                 fake: ["person"]
             identifiers:
