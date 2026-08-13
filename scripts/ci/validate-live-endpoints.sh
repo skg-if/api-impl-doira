@@ -68,10 +68,29 @@ classify_status() {
     fi
 }
 
-echo "Installing prism CLI and jq..."
+echo "Installing jq (prism itself is run via npx, not installed globally - see below)..."
 apt-get update -qq
 apt-get install -y --no-install-recommends nodejs npm jq >/dev/null
-npm install -g @stoplight/prism-cli >/dev/null
+
+# Deliberately npx, not `npm install -g @stoplight/prism-cli`: a global install resolves nested
+# deps (e.g. @faker-js/faker, pulled in by prism-http's mocker code even though only proxy mode
+# is used here) against apt's often-old bundled npm, which can fail with a bare
+# "Cannot find module '@faker-js/faker'" at prism startup. `npx` resolves/caches the package
+# fresh per npm's own installer instead, which doesn't hit this. Version pinned to major 4 to
+# match the reference workflow's `stoplight/prism:4` Docker tag.
+run_prism() {
+    npx --yes @stoplight/prism-cli@4 "$@"
+}
+
+# Pre-warm npx's package cache once, outside the loop below, so: (a) a real resolution/module
+# failure surfaces immediately with a clear message instead of buried in the first iteration's
+# 30s startup-timeout log, and (b) every iteration inside the loop hits a warm cache instead of
+# re-resolving from the registry.
+echo "Pre-warming prism-cli via npx..."
+if ! run_prism --version; then
+    echo "Failed to resolve/run @stoplight/prism-cli via npx - see output above" >&2
+    exit 1
+fi
 
 echo "Starting the app (target/quarkus-app/quarkus-run.jar)..."
 java -jar target/quarkus-app/quarkus-run.jar &
@@ -86,7 +105,7 @@ for PROVIDER in $PROVIDERS; do
     for RESOURCE in $RESOURCES; do
         echo "=== ${PROVIDER} ${RESOURCE} ==="
 
-        prism proxy -h 127.0.0.1 -p "$PRISM_PORT" "$SPEC_PATH" \
+        run_prism proxy -h 127.0.0.1 -p "$PRISM_PORT" "$SPEC_PATH" \
             "${APP_BASE}/${PROVIDER}" --errors >prism.log 2>&1 &
         PRISM_PID=$!
         if ! wait_for_port "$PRISM_PORT" 30; then
