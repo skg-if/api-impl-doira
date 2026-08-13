@@ -65,7 +65,7 @@ golden-JSON comparison test exists for this case, so no "expected output" file c
 
 **DataCite `resourceTypeGeneral` → SKG-IF `product_type`:** [ℹ️](https://datacite-metadata-schema.readthedocs.io/en/4.7/properties/resourcetype/)
 
-| SKG-IF `product_type` [ℹ️](https://skg-if.github.io/interoperability-framework/docs/research-product.html#product_type) | DataCite values |
+| SKG-IF `product_type` [ℹ️](https://skg-if.github.io/interoperability-framework/docs/research-product.html#product_type) | DataCite values [ℹ️](https://datacite-metadata-schema.readthedocs.io/en/4.7/properties/resourcetype/#a-resourcetypegeneral) |
 |---|---|
 | `research software` | `Software`, `ComputationalNotebook`, `Workflow` |
 | `literature` | `Book`, `BookChapter`, `ConferencePaper`, `ConferenceProceeding`, `DataPaper`, `Dissertation`, `JournalArticle`, `Journal`, `Preprint`, `Report`, `Text`, `PeerReview`, `StudyRegistration`, `OutputManagementPlan` |
@@ -75,7 +75,7 @@ golden-JSON comparison test exists for this case, so no "expected output" file c
 
 **Crossref `type` → SKG-IF `product_type`:**
 
-| SKG-IF `product_type` [ℹ️](https://skg-if.github.io/interoperability-framework/docs/research-product.html#product_type) | Crossref values |
+| SKG-IF `product_type` [ℹ️](https://skg-if.github.io/interoperability-framework/docs/research-product.html#product_type) | Crossref values [ℹ️](https://api.crossref.org/types) |
 |---|---|
 | `research data` | `dataset` |
 | `literature` | `journal-article`, `book`, `book-chapter`, `book-section`, `book-part`, `book-series`, `book-set`, `book-track`, `monograph`, `edited-book`, `reference-book`, `reference-entry`, `proceedings`, `proceedings-article`, `proceedings-series`, `report`, `report-series`, `report-component`, `dissertation`, `peer-review`, `posted-content`, `journal`, `journal-issue`, `journal-volume`, `component` |
