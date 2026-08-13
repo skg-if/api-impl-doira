@@ -545,11 +545,14 @@ class CrossrefToSkgIfMapperTest {
     void toGrant_mapsTitlesAndAbstractsFromProject() throws IOException {
         Grant grant = mapGrantFixture("crossref-grant.json");
 
-        Map<String, List<String>> titles = (Map<String, List<String>>) grant.getTitles();
-        assertTrue(titles.get("en").get(0).contains("Biocontainment Level 2"));
+        Map<String, String> titles = (Map<String, String>) grant.getTitles();
+        assertTrue(titles.get("en").contains("Biocontainment Level 2"));
 
-        Map<String, List<String>> abstracts = (Map<String, List<String>>) grant.getAbstracts();
-        assertEquals(2, abstracts.get("en").size());
+        // Two project-description entries in the fixture, concatenated into one string since
+        // Grant.abstracts (unlike Product.abstracts) is a plain string per language.
+        Map<String, String> abstracts = (Map<String, String>) grant.getAbstracts();
+        assertTrue(abstracts.get("en").contains("Provision of cutting edge cell-sorter"));
+        assertTrue(abstracts.get("en").contains("Our bodies are composed of trillions"));
     }
 
     @Test

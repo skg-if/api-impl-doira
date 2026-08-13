@@ -140,31 +140,55 @@ public class DataCiteToSkgIfMapper {
                 .localIdentifier(localIdentifiers.toFullLocalIdentifier(attributes.doi))
                 .entityType(Grant.EntityTypeEnum.GRANT)
                 .identifiers(List.of(new GrantLiteAllOfIdentifiers().scheme("doi").value(attributes.doi)))
-                .titles(titles(attributes))
-                .abstracts(abstracts(attributes))
+                .titles(grantTitles(attributes))
+                .abstracts(grantAbstracts(attributes))
                 .fundingAgency(grantFundingAgency(attributes.doi, fundingAgencyCreator, attributes.publisher))
                 .contributions(grantContributions(attributes.doi, creators, contributors, fundingAgencyCreator))
                 .beneficiaries(grantBeneficiaries(attributes.doi, contributors));
     }
 
     private Map<String, List<String>> titles(DataCiteAttributes attributes) {
-        if (attributes.titles == null || attributes.titles.isEmpty()) {
-            return null;
-        }
-        List<String> values = attributes.titles.stream().map(t -> t.title).filter(Objects::nonNull).toList();
+        List<String> values = titleValues(attributes);
         return values.isEmpty() ? null : Map.of("en", values);
     }
 
     private Map<String, List<String>> abstracts(DataCiteAttributes attributes) {
-        if (attributes.descriptions == null) {
-            return null;
+        List<String> values = abstractValues(attributes);
+        return values.isEmpty() ? null : Map.of("en", values);
+    }
+
+    /**
+     * Unlike {@code Product.titles}/{@code abstracts} (array of strings per language, for
+     * multiple manifestations of the same product), {@code Grant.titles}/{@code abstracts} are a
+     * plain string per language - so multiple DataCite {@code titles[]}/{@code
+     * descriptions[type=Abstract]} entries are concatenated into one string.
+     */
+    private Map<String, String> grantTitles(DataCiteAttributes attributes) {
+        List<String> values = titleValues(attributes);
+        return values.isEmpty() ? null : Map.of("en", String.join(" ", values));
+    }
+
+    private Map<String, String> grantAbstracts(DataCiteAttributes attributes) {
+        List<String> values = abstractValues(attributes);
+        return values.isEmpty() ? null : Map.of("en", String.join("\n\n", values));
+    }
+
+    private List<String> titleValues(DataCiteAttributes attributes) {
+        if (attributes.titles == null || attributes.titles.isEmpty()) {
+            return List.of();
         }
-        List<String> values = attributes.descriptions.stream()
+        return attributes.titles.stream().map(t -> t.title).filter(Objects::nonNull).toList();
+    }
+
+    private List<String> abstractValues(DataCiteAttributes attributes) {
+        if (attributes.descriptions == null) {
+            return List.of();
+        }
+        return attributes.descriptions.stream()
                 .filter(d -> "Abstract".equals(d.descriptionType))
                 .map(d -> d.description)
                 .filter(Objects::nonNull)
                 .toList();
-        return values.isEmpty() ? null : Map.of("en", values);
     }
 
     private List<ProductAllOfTopics> topics(DataCiteAttributes attributes) {
@@ -491,7 +515,7 @@ public class DataCiteToSkgIfMapper {
                     .localIdentifier(otf(attributes.doi, label))
                     .entityType(GrantLite.EntityTypeEnum.GRANT)
                     .grantNumber(fundingReference.awardNumber)
-                    .titles(fundingReference.awardTitle != null ? Map.of("en", List.of(fundingReference.awardTitle)) : null)
+                    .titles(fundingReference.awardTitle != null ? Map.of("en", fundingReference.awardTitle) : null)
                     .fundingAgency(fundingAgency(attributes.doi, fundingReference));
             result.add(grant);
         }

@@ -652,24 +652,29 @@ public class CrossrefToSkgIfMapper {
         return cites.isEmpty() ? null : new ProductsRelated().cites(cites);
     }
 
-    private Map<String, List<String>> grantTitles(List<CrossrefProject> projects) {
+    /**
+     * Unlike {@code Product.titles}/{@code abstracts} (array of strings per language),
+     * {@code Grant.titles}/{@code abstracts} are a plain string per language - so titles/
+     * descriptions from multiple {@code project[]} entries are concatenated into one string.
+     */
+    private Map<String, String> grantTitles(List<CrossrefProject> projects) {
         List<String> values = projects.stream()
                 .filter(p -> p.projectTitle != null)
                 .flatMap(p -> p.projectTitle.stream())
                 .map(t -> t.title)
                 .filter(Objects::nonNull)
                 .toList();
-        return values.isEmpty() ? null : Map.of("en", values);
+        return values.isEmpty() ? null : Map.of("en", String.join(" ", values));
     }
 
-    private Map<String, List<String>> grantAbstracts(List<CrossrefProject> projects) {
+    private Map<String, String> grantAbstracts(List<CrossrefProject> projects) {
         List<String> values = projects.stream()
                 .filter(p -> p.projectDescription != null)
                 .flatMap(p -> p.projectDescription.stream())
                 .map(d -> d.description)
                 .filter(Objects::nonNull)
                 .toList();
-        return values.isEmpty() ? null : Map.of("en", values);
+        return values.isEmpty() ? null : Map.of("en", String.join("\n\n", values));
     }
 
     private Organisation grantFundingAgency(String doi, CrossrefFunding primaryFunding, List<CrossrefFunder> topLevelFunders) {

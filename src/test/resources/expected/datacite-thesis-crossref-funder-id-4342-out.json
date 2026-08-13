@@ -65,7 +65,7 @@
       "entity_type" : "grant",
       "local_identifier" : "otf___10-82227-repository-uwtsd-ac-uk-00004342___uwtsd",
       "titles" : {
-        "en" : [ "UWTSD" ]
+        "en" : "UWTSD"
       },
       "funding_agency" : {
         "entity_type" : "organisation",

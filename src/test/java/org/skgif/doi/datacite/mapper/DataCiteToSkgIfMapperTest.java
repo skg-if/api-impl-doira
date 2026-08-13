@@ -175,7 +175,7 @@ class DataCiteToSkgIfMapperTest {
         assertEquals(1, product.getFunding().size());
         GrantLite grant = (GrantLite) product.getFunding().get(0);
         assertEquals("MX-2738", grant.getGrantNumber());
-        assertTrue(((Map<String, List<String>>) grant.getTitles()).get("en").get(0).contains("Swiss consortium"));
+        assertTrue(((Map<String, String>) grant.getTitles()).get("en").contains("Swiss consortium"));
         assertEquals("European Synchrotron Radiation Facility", grant.getFundingAgency().getName());
         assertEquals("ror", grant.getFundingAgency().getIdentifiers().get(0).getScheme());
         // DataCite gives the full https://ror.org/... URL - the mapper normalizes to the bare id,
@@ -197,7 +197,7 @@ class DataCiteToSkgIfMapperTest {
 
         assertEquals(1, product.getFunding().size());
         GrantLite grant = (GrantLite) product.getFunding().get(0);
-        assertEquals("UWTSD", ((Map<String, List<String>>) grant.getTitles()).get("en").get(0));
+        assertEquals("UWTSD", ((Map<String, String>) grant.getTitles()).get("en"));
         assertEquals("University of Wales Trinity Saint David", grant.getFundingAgency().getName());
         assertEquals("https://doi.org/10.13039/100010038", grant.getFundingAgency().getLocalIdentifier());
         assertEquals("doi", grant.getFundingAgency().getIdentifiers().get(0).getScheme());
@@ -475,11 +475,11 @@ class DataCiteToSkgIfMapperTest {
     void toGrant_mapsTitlesAndAbstracts() throws IOException {
         Grant grant = mapGrantFixture("datacite-award-r3sy-7371.json");
 
-        Map<String, List<String>> titles = (Map<String, List<String>>) grant.getTitles();
-        assertTrue(titles.get("en").get(0).contains("2i2c"));
+        Map<String, String> titles = (Map<String, String>) grant.getTitles();
+        assertTrue(titles.get("en").contains("2i2c"));
 
-        Map<String, List<String>> abstracts = (Map<String, List<String>>) grant.getAbstracts();
-        assertTrue(abstracts.get("en").get(0).contains("open cloud service"));
+        Map<String, String> abstracts = (Map<String, String>) grant.getAbstracts();
+        assertTrue(abstracts.get("en").contains("open cloud service"));
     }
 
     @Test

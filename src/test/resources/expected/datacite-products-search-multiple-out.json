@@ -407,7 +407,7 @@
       "local_identifier" : "otf___10-15151-esrf-es-2210534378___mx-2738",
       "grant_number" : "MX-2738",
       "titles" : {
-        "en" : [ "Swiss consortium in macromolecular X-ray crystallography structure determination\nfor academic researchers: EPFL, UNIL, UNIGE, Zurich and SLS" ]
+        "en" : "Swiss consortium in macromolecular X-ray crystallography structure determination\nfor academic researchers: EPFL, UNIL, UNIGE, Zurich and SLS"
       },
       "funding_agency" : {
         "entity_type" : "organisation",
