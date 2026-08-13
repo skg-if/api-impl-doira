@@ -57,10 +57,25 @@ wait_for_port() {
     return 0
 }
 
+# A 404/501 can come from two very different places: the real app legitimately saying "not
+# found"/"not implemented" (its errors use type "https://skg-if.github.io/api/errors#..." - see
+# JsonLdResponses.notFound), or Prism itself failing to route the request at all (e.g.
+# NO_PATH_MATCHED_ERROR - its own errors all use type "https://stoplight.io/prism/errors#...").
+# The latter means the check never even reached the app, so it must fail, not skip.
+is_prism_own_error() {
+    local body_file=$1
+    jq -e '(.type // "") | startswith("https://stoplight.io/prism/errors#")' "$body_file" >/dev/null 2>&1
+}
+
 classify_status() {
     local status=$1
+    local body_file=$2
     if [[ " $NOT_FOUND_STATUSES " == *" $status "* ]]; then
-        echo "skip"
+        if is_prism_own_error "$body_file"; then
+            echo "fail"
+        else
+            echo "skip"
+        fi
     elif [ "$status" -ge 200 ] && [ "$status" -lt 300 ]; then
         echo "pass"
     else
@@ -124,16 +139,18 @@ for PROVIDER in $PROVIDERS; do
             FILTER="$CONTRACT_TEST_FILTER_GRANTS"
         fi
 
+        ENCODED_FILTER=$(jq -rn --arg v "$FILTER" '$v|@uri')
+        LIST_URL="${PRISM_BASE}/${RESOURCE}?filter=${ENCODED_FILTER}"
         LIST_STATUS=$(curl -s -G --data-urlencode "filter=${FILTER}" \
             -o resp.json -w '%{http_code}' "${PRISM_BASE}/${RESOURCE}")
-        LIST_RESULT=$(classify_status "$LIST_STATUS")
+        LIST_RESULT=$(classify_status "$LIST_STATUS" resp.json)
         if [ "$LIST_RESULT" = "fail" ]; then
-            echo "FAIL: GET ${RESOURCE} (filter=${FILTER}) -> HTTP ${LIST_STATUS}" >&2
+            echo "FAIL: GET ${LIST_URL} -> HTTP ${LIST_STATUS}" >&2
             cat resp.json >&2
             tail -n 40 prism.log >&2
             FAILED=1
         else
-            echo "${LIST_RESULT}: GET ${RESOURCE} (filter=${FILTER}) -> HTTP ${LIST_STATUS}"
+            echo "${LIST_RESULT}: GET ${LIST_URL} -> HTTP ${LIST_STATUS}"
         fi
 
         BYID_RESULT="skip"
@@ -147,15 +164,16 @@ for PROVIDER in $PROVIDERS; do
                 # Prism itself with NO_PATH_MATCHED_ERROR before ever reaching the app. Percent-
                 # encoding it into one segment lets Prism route it; the app decodes it back fine.
                 ENCODED_ID=$(jq -rn --arg v "$ID" '$v|@uri')
-                BYID_STATUS=$(curl -s -o resp_byid.json -w '%{http_code}' "${PRISM_BASE}/${RESOURCE}/${ENCODED_ID}")
-                BYID_RESULT=$(classify_status "$BYID_STATUS")
+                BYID_URL="${PRISM_BASE}/${RESOURCE}/${ENCODED_ID}"
+                BYID_STATUS=$(curl -s -o resp_byid.json -w '%{http_code}' "$BYID_URL")
+                BYID_RESULT=$(classify_status "$BYID_STATUS" resp_byid.json)
                 if [ "$BYID_RESULT" = "fail" ]; then
-                    echo "FAIL: GET ${RESOURCE}/${ID} -> HTTP ${BYID_STATUS}" >&2
+                    echo "FAIL: GET ${BYID_URL} (id=${ID}) -> HTTP ${BYID_STATUS}" >&2
                     cat resp_byid.json >&2
                     tail -n 40 prism.log >&2
                     FAILED=1
                 else
-                    echo "${BYID_RESULT}: GET ${RESOURCE}/${ID} -> HTTP ${BYID_STATUS}"
+                    echo "${BYID_RESULT}: GET ${BYID_URL} (id=${ID}) -> HTTP ${BYID_STATUS}"
                 fi
             else
                 echo "skip: no results for filter=${FILTER}, nothing to chain to"
