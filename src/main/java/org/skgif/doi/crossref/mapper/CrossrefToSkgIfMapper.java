@@ -74,6 +74,7 @@ public class CrossrefToSkgIfMapper {
     private static final String ORCID_HTTP_PREFIX = "http://orcid.org/";
     private static final String ORCID_BASE_URL = "https://orcid.org/";
     private static final String ROR_BASE_URL = "https://ror.org/";
+    private static final String CROSSREF_TYPES_BASE_URL = "https://api.crossref.org/types/";
 
     private final LocalIdentifiers localIdentifiers;
     private final CrossrefJournalDoiResolver journalDoiResolver;
@@ -321,7 +322,12 @@ public class CrossrefToSkgIfMapper {
     }
 
     private ProductManifestationType manifestationType(CrossrefWork work) {
-        return work.type != null ? new ProductManifestationType().labels(Map.of("en", work.type)) : null;
+        return work.type != null
+                ? new ProductManifestationType()
+                        .propertyClass(CROSSREF_TYPES_BASE_URL + work.type)
+                        .definedIn(CROSSREF_TYPES_BASE_URL)
+                        .labels(Map.of("en", work.type))
+                : null;
     }
 
     private ProductManifestationDates dates(CrossrefWork work) {

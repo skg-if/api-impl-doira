@@ -78,6 +78,8 @@ public class DataCiteToSkgIfMapper {
 
     private static final String ORCID_BASE_URL = "https://orcid.org/";
     private static final String ROR_BASE_URL = "https://ror.org/";
+    private static final String DATACITE_RESOURCE_TYPE_SCHEMA_URL =
+            "https://schema.datacite.org/meta/kernel-4.7/include/datacite-resourceType-v4.xsd";
 
     private static final Map<String, String> DATACITE_DATE_TYPE_TO_SKGIF = Map.of(
             "Accepted", "acceptance",
@@ -327,7 +329,9 @@ public class DataCiteToSkgIfMapper {
         if (resourceType == null) {
             return null;
         }
-        return new ProductManifestationType().labels(Map.of("en", resourceType));
+        return new ProductManifestationType()
+                .definedIn(DATACITE_RESOURCE_TYPE_SCHEMA_URL)
+                .labels(Map.of("en", resourceType));
     }
 
     private String resourceTypeGeneral(DataCiteAttributes attributes) {

@@ -217,6 +217,8 @@
     } ],
     "manifestations" : [ {
       "type" : {
+        "class" : "https://api.crossref.org/types/journal-article",
+        "defined_in" : "https://api.crossref.org/types/",
         "labels" : {
           "en" : "journal-article"
         }

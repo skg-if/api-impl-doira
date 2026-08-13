@@ -268,6 +268,7 @@
     } ],
     "manifestations" : [ {
       "type" : {
+        "defined_in" : "https://schema.datacite.org/meta/kernel-4.7/include/datacite-resourceType-v4.xsd",
         "labels" : {
           "en" : "Dataset"
         }
@@ -413,6 +414,7 @@
     } ],
     "manifestations" : [ {
       "type" : {
+        "defined_in" : "https://schema.datacite.org/meta/kernel-4.7/include/datacite-resourceType-v4.xsd",
         "labels" : {
           "en" : "Dataset"
         }

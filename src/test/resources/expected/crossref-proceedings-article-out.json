@@ -114,6 +114,8 @@
     } ],
     "manifestations" : [ {
       "type" : {
+        "class" : "https://api.crossref.org/types/proceedings-article",
+        "defined_in" : "https://api.crossref.org/types/",
         "labels" : {
           "en" : "proceedings-article"
         }

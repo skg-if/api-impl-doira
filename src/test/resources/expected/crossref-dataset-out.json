@@ -50,6 +50,8 @@
     } ],
     "manifestations" : [ {
       "type" : {
+        "class" : "https://api.crossref.org/types/dataset",
+        "defined_in" : "https://api.crossref.org/types/",
         "labels" : {
           "en" : "dataset"
         }

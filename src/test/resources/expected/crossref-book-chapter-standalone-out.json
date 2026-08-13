@@ -54,6 +54,8 @@
     } ],
     "manifestations" : [ {
       "type" : {
+        "class" : "https://api.crossref.org/types/book-chapter",
+        "defined_in" : "https://api.crossref.org/types/",
         "labels" : {
           "en" : "book-chapter"
         }
