@@ -13,6 +13,7 @@ import org.skgif.doi.crossref.dto.CrossrefInvestigator;
 import org.skgif.doi.crossref.dto.CrossrefLicense;
 import org.skgif.doi.crossref.dto.CrossrefProject;
 import org.skgif.doi.crossref.dto.CrossrefReference;
+import org.skgif.doi.crossref.dto.CrossrefUpdateTo;
 import org.skgif.doi.crossref.dto.CrossrefWork;
 import org.skgif.doi.crossref.xml.CrossrefVenueMetadata;
 import org.skgif.doi.generated.model.AgentAllOfIdentifiers;
@@ -340,6 +341,17 @@ public class CrossrefToSkgIfMapper {
         any |= addDateItem(dates, "publication", work.publishedPrint);
         any |= addDateItem(dates, "publication", work.publishedOnline);
         any |= addDateItem(dates, "publication", work.issued);
+        if (work.updateTo != null) {
+            for (CrossrefUpdateTo update : work.updateTo) {
+                // "correction"/"retraction" are the only type values Crossref's own docs give
+                // as examples (no exhaustive enum is published) - any other value is ignored.
+                if ("correction".equals(update.type)) {
+                    any |= addDateItem(dates, "correction", update.updated);
+                } else if ("retraction".equals(update.type)) {
+                    any |= addDateItem(dates, "retraction", update.updated);
+                }
+            }
+        }
         return any ? dates : null;
     }
 
@@ -357,6 +369,8 @@ public class CrossrefToSkgIfMapper {
             case "access" -> dates.addAccessItem(iso);
             case "acceptance" -> dates.addAcceptanceItem(iso);
             case "publication" -> dates.addPublicationItem(iso);
+            case "correction" -> dates.addCorrectionItem(iso);
+            case "retraction" -> dates.addRetractionItem(iso);
             default -> {
                 return false;
             }

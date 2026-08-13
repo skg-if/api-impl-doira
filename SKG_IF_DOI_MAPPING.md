@@ -48,7 +48,7 @@ this provider
 | `contributions[].by` (person) [ℹ️](https://skg-if.github.io/interoperability-framework/docs/research-product.html#contributions) | `creators[]/contributors[].name/givenName/familyName/nameIdentifiers` (ORCID → full URL, else otf) [ℹ️](https://datacite-metadata-schema.readthedocs.io/en/4.7/properties/creator/) [ℹ️](https://datacite-metadata-schema.readthedocs.io/en/4.7/properties/contributor/) | `author[]/editor[].given/family/orcid` (ORCID already a full URL; normalized to bare, then re-prefixed) | ✅ ORCID: [in](src/test/resources/datacite-esrf-dc-2493599001.json)·[out](src/test/resources/expected/datacite-esrf-dc-2493599001-out.json) | ✅ ORCID: [in](src/test/resources/crossref-journal-article-with-orcid.json)·[out](src/test/resources/expected/crossref-journal-article-with-orcid-out.json) (`CrossrefToSkgIfMapperTest.mapsAuthorsAsAuthorContributionsWithOrcidWhenPresent`)<br>✅ otf fallback: [in](src/test/resources/crossref-journal-article.json)·[out](src/test/resources/expected/crossref-journal-article-out.json) (`CrossrefToSkgIfMapperTest.mapsAuthorsAsAuthorContributionsWithoutOrcidWhenAbsent`) | Both cases can appear on the same record: the `s41467-022-33468-6` fixture mixes ORCID-bearing and ORCID-absent authors |
 | `contributions[].declaredAffiliations` [ℹ️](https://skg-if.github.io/interoperability-framework/docs/research-product.html#contributions) | `creators[]/contributors[].affiliation[]` (ROR if `affiliationIdentifierScheme == "ROR"`, else otf) [ℹ️](https://datacite-metadata-schema.readthedocs.io/en/4.7/properties/creator/) [ℹ️](https://datacite-metadata-schema.readthedocs.io/en/4.7/properties/contributor/) | `author[]/editor[].affiliation[]` (ROR if asserted directly on the affiliation, else otf) | ❌ with ROR: no fixture has `affiliationIdentifierScheme`<br>✅ otf fallback: [in](src/test/resources/datacite-esrf-es-2210534378.json)·[out](src/test/resources/expected/datacite-esrf-es-2210534378-out.json) | ✅ with ROR: [in](src/test/resources/crossref-journal-article-with-ror-affiliation.json)·[out](src/test/resources/expected/crossref-journal-article-with-ror-affiliation-out.json) (`CrossrefToSkgIfMapperTest.mapsDeclaredAffiliationsWithRorWhenPresent`)<br>✅ name-only otf fallback: [in](src/test/resources/crossref-journal-article-with-funder.json)·[out](src/test/resources/expected/crossref-journal-article-with-funder-out.json) (`CrossrefToSkgIfMapperTest.mapsDeclaredAffiliationsWithNameOnlyOtfFallbackWhenNoRor`) | Some publishers (e.g. APS) assert a ROR on author affiliations directly - the mapper's prior assumption that Crossref never carries one here was wrong |
 | `manifestations[].type` [ℹ️](https://skg-if.github.io/interoperability-framework/docs/research-product.html#manifestations) | `types.resourceTypeGeneral` label + `defined_in` (`https://schema.datacite.org/meta/kernel-4.7/include/datacite-resourceType-v4.xsd`) [ℹ️](https://datacite-metadata-schema.readthedocs.io/en/4.7/properties/resourcetype/) | `type` label + `class` (`https://api.crossref.org/types/<type>`) + `defined_in` (`https://api.crossref.org/types/`) | ✅ (same golden evidence as `product_type`) | ✅ (same golden evidence as `product_type`) | DataCite: `defined_in` points at the XSD defining the closed `resourceTypeGeneral` enum - there's no per-value URL to use as `class`, unlike Crossref. Crossref: `class` is a dereferenceable URL into Crossref's own types vocabulary (e.g. `https://api.crossref.org/types/book`), `defined_in` points at the vocabulary listing itself (`https://api.crossref.org/types/`) |
-| `manifestations[].dates` [ℹ️](https://skg-if.github.io/interoperability-framework/docs/research-product.html#manifestations) | `dates[]` via [date-type table](#date-type-mapping) [ℹ️](https://datacite-metadata-schema.readthedocs.io/en/4.7/properties/date/) | `created`, `deposited`, `posted`, `accepted`, `published-print`, `published-online`, `issued` | ✅ (see date-type table below) | ✅ (see date-type table below) | |
+| `manifestations[].dates` [ℹ️](https://skg-if.github.io/interoperability-framework/docs/research-product.html#manifestations) | `dates[]`, falling back to the top-level `created`/`registered`/`updated`/`published` attributes, via [date-type table](#date-type-mapping) [ℹ️](https://datacite-metadata-schema.readthedocs.io/en/4.7/properties/date/) | `created`, `deposited`, `posted`, `accepted`, `published-print`, `published-online`, `issued`, `update-to[]` | ✅ (see date-type table below) | ✅ (see date-type table below) | |
 | `manifestations[].access_rights.status` [ℹ️](https://skg-if.github.io/interoperability-framework/docs/research-product.html#manifestations) | `rightsList[]` - `open` if any `rightsUri` contains `creativecommons.org` [ℹ️](https://datacite-metadata-schema.readthedocs.io/en/4.7/properties/rights/) | `license[]` - `open` if any `url` contains `creativecommons.org` | ✅ [in](src/test/resources/datacite-esrf-dc-2493599001.json)·[out](src/test/resources/expected/datacite-esrf-dc-2493599001-out.json) | ✅ open: [in](src/test/resources/crossref-journal-article-with-funder.json)·[out](src/test/resources/expected/crossref-journal-article-with-funder-out.json)<br>✅ open: [in](src/test/resources/crossref-journal-article-with-orcid.json)·[out](src/test/resources/expected/crossref-journal-article-with-orcid-out.json) (CC-BY)<br>✅ non-open: [in](src/test/resources/crossref-journal-article-with-ror-affiliation.json)·[out](src/test/resources/expected/crossref-journal-article-with-ror-affiliation-out.json) (APS default licence, `access_rights: {}`) | Both the open and non-open paths are proven at the golden-output level now |
 | `manifestations[].licence` [ℹ️](https://skg-if.github.io/interoperability-framework/docs/research-product.html#manifestations) | `rightsList[0].rightsUri` [ℹ️](https://datacite-metadata-schema.readthedocs.io/en/4.7/properties/rights/) | `license[0].url` | ✅ [in](src/test/resources/datacite-esrf-dc-2493599001.json)·[out](src/test/resources/expected/datacite-esrf-dc-2493599001-out.json) | ✅ [in](src/test/resources/crossref-journal-article.json)·[out](src/test/resources/expected/crossref-journal-article-out.json) (non-CC URL - proves the non-open path too) | First entry only |
 | `manifestations[].version` [ℹ️](https://skg-if.github.io/interoperability-framework/docs/research-product.html#manifestations) | `version` [ℹ️](https://datacite-metadata-schema.readthedocs.io/en/4.7/properties/version/) | *(not available)* | ✅ [in](src/test/resources/datacite-esrf-dc-2493599001.json)·[out](src/test/resources/expected/datacite-esrf-dc-2493599001-out.json) (`"1"`; the es fixture/golden also proves the `null`→omitted case) | – not available | Crossref doesn't register software versions |
@@ -96,27 +96,28 @@ not just the ones with a real source in either provider.
 | SKG-IF date type [ℹ️](https://skg-if.github.io/interoperability-framework/docs/research-product.html#manifestations) | DataCite `dateType` [ℹ️](https://datacite-metadata-schema.readthedocs.io/en/4.7/properties/date/) | Crossref field | DataCite tested | Crossref tested |
 |---|---|---|---|---|
 | `acceptance` | `Accepted` | `accepted` | ❌ not in any fixture | ❌ not in any fixture |
-| `access` | `Available` | `posted` | ✅ [in](src/test/resources/datacite-esrf-es-2210534378.json)·[out](src/test/resources/expected/datacite-esrf-es-2210534378-out.json) | ❌ not in any fixture |
+| `access` | *(not available)* | `posted` | – not available | ❌ not in any fixture |
 | `collected` | `Collected` | *(not available)* | ✅ [in](src/test/resources/datacite-esrf-es-2210534378.json)·[out](src/test/resources/expected/datacite-esrf-es-2210534378-out.json) | – not available |
 | `copyright` | `Copyrighted` | *(not available)* | ❌ not in any fixture | – not available |
-| `correction` | *(not available)* | *(not available)* | – not available | – not available |
-| `creation` | `Created` | `created` | ❌ not in any fixture (DataCite's `Created` never appears) | ✅ [in](src/test/resources/crossref-journal-article.json)·[out](src/test/resources/expected/crossref-journal-article-out.json) |
+| `correction` | *(not available)* | `update-to[].updated` where `type == "correction"` | – not available | ✅ [in](src/test/resources/crossref-journal-article-with-update-to.json)·[out](src/test/resources/expected/crossref-journal-article-with-update-to-out.json) |
+| `creation` | `Created`, falling back to the top-level `created` attribute when absent (the case in every fixture today - `Created` never appears in `dates[]`) | `created` | ✅ [in](src/test/resources/datacite-thesis-crossref-funder-id-4342.json)·[out](src/test/resources/expected/datacite-thesis-crossref-funder-id-4342-out.json) (`DataCiteToSkgIfMapperTest.mapsCreationDepositModifiedPublicationFromTopLevelAttributesWhenDatesArrayLacksThem`) | ✅ [in](src/test/resources/crossref-journal-article.json)·[out](src/test/resources/expected/crossref-journal-article-out.json) |
 | `decision` | *(not available)* | *(not available)* | – not available | – not available |
-| `deposit` | `Submitted` | `deposited` | ❌ not in any fixture | ✅ [in](src/test/resources/crossref-journal-article.json)·[out](src/test/resources/expected/crossref-journal-article-out.json) |
+| `deposit` | `Submitted`, falling back to the top-level `registered` attribute when absent (same rationale as `creation`) | `deposited` | ✅ (same golden pair as `creation` above) | ✅ [in](src/test/resources/crossref-journal-article.json)·[out](src/test/resources/expected/crossref-journal-article-out.json) |
 | `distribution` | *(not available)* | *(not available)* | – not available | – not available |
-| `embargo` | *(not available)* | *(not available - see [known limitations](#known-limitations))* | – not available | ❌ not in any fixture |
-| `modified` | `Updated` | *(not available)* | ❌ not in any fixture | – not available |
-| `publication` | `Issued` | `published-print`, `published-online`, `issued` | ✅ [in](src/test/resources/datacite-esrf-dc-2493599001.json)·[out](src/test/resources/expected/datacite-esrf-dc-2493599001-out.json) | ✅ [in](src/test/resources/crossref-journal-article.json)·[out](src/test/resources/expected/crossref-journal-article-out.json) |
+| `embargo` | `Available`, but only when its day (`YYYY-MM-DD`) differs from every other date already on the record (`dates[]` entries, or the top-level `created`/`registered`/`updated`/`published` fallbacks) - a same-day `Available` means "published and immediately available," not an embargo, and is dropped rather than emitted anywhere | *(not available - see [known limitations](#known-limitations))* | ✅ [in](src/test/resources/datacite-esrf-es-2210534378.json)·[out](src/test/resources/expected/datacite-esrf-es-2210534378-out.json) (genuine-embargo case)<br>✅ [in](src/test/resources/datacite-dataset-funder-no-identifier-e449e75a.json)·[out](src/test/resources/expected/datacite-dataset-funder-no-identifier-e449e75a-out.json) (same-day, dropped) | ❌ not in any fixture |
+| `modified` | `Updated`, falling back to the top-level `updated` attribute when absent (same rationale as `creation`) | *(not available)* | ✅ (same golden pair as `creation` above) | – not available |
+| `publication` | `Issued`, falling back to the top-level `published` attribute when absent | `published-print`, `published-online`, `issued` | ✅ [in](src/test/resources/datacite-esrf-dc-2493599001.json)·[out](src/test/resources/expected/datacite-esrf-dc-2493599001-out.json) | ✅ [in](src/test/resources/crossref-journal-article.json)·[out](src/test/resources/expected/crossref-journal-article-out.json) |
 | `received` | *(not available)* | *(not available)* | – not available | – not available |
 | `request`\* | *(not available)* | *(not available)* | – not available | – not available |
-| `retraction` | `Withdrawn` | *(not available)* | ❌ not in any fixture | – not available |
+| `retraction` | `Withdrawn` | `update-to[].updated` where `type == "retraction"` | ❌ not in any fixture | ✅ (same golden pair as `correction` above) |
 | `validity` | `Valid` | *(not available)* | ❌ not in any fixture | – not available |
 
 \* Unlike every other date type in this table, SKG-IF models `request` as a single string, not an
 array of dates.
 
-Neither provider has a source for `correction`, `decision`, `distribution`, `received`, or
-`request` - see [known limitations](#known-limitations) for the one near-miss (`embargo`).
+Neither provider has a source for `decision`, `distribution`, `received`, or `request` - see
+[known limitations](#known-limitations) for the one near-miss (`embargo`), and for the
+fallback-only nature of the DataCite top-level attributes and Crossref's `update-to[]` above.
 
 ---
 
@@ -160,15 +161,42 @@ A DOI record is routed to the **Grants** endpoint instead of **Products** when:
 - **DataCite Award records** lack any generic source for `grant_number`, `currency`,
   `funded_amount`, `duration`, `website`, `funding_stream`, or `acronym` - left unset rather than
   guessed at.
-- **DataCite's `Other` `dateType` value** has no SKG-IF equivalent - it's absent from
-  `DataCiteToSkgIfMapper#DATACITE_DATE_TYPE_TO_SKGIF` and silently dropped, same as any
-  unrecognized `dateType`.
+- **DataCite's `Other` and `Coverage` `dateType` values** have no SKG-IF equivalent - both are
+  absent from `DataCiteToSkgIfMapper#DATACITE_DATE_TYPE_TO_SKGIF` and silently dropped, same as
+  any other unrecognized `dateType` (see `DataCiteToSkgIfMapperTest.dropsUnrecognizedDateTypesLikeCoverage`).
+  `Coverage` describes the temporal span covered by the resource's *content* (e.g. a historical
+  dataset spanning 1900-1950), not an event in the resource's own lifecycle - conceptually closest
+  to `collected`, but SKG-IF has no field for it either.
+- **DataCite's top-level `created`/`registered`/`updated`/`published` attributes** (system
+  timestamps, distinct from the researcher-asserted `dates[]` array - see `DataCiteAttributes`)
+  are read by the mapper only as *fallbacks* for `creation`/`deposit`/`modified`/`publication`
+  respectively: an explicit `dates[]` entry always wins when both exist (see
+  `DataCiteToSkgIfMapperTest.explicitDatesEntryWinsOverTopLevelAttributeFallback`). In practice
+  they're the primary source, not a rare fallback - no fixture's `dates[]` has ever carried a
+  `Created`/`Submitted`/`Updated` entry.
 - **Crossref's per-license `start` date (+ `delay-in-days`)** - present in several committed
   fixtures already (e.g. [`crossref-journal-article.json`](src/test/resources/crossref-journal-article.json))
   - would be the natural source for SKG-IF's `embargo` date type, but `CrossrefLicense`
   (`src/main/java/org/skgif/doi/crossref/dto/CrossrefLicense.java`) only deserializes `URL` today;
   `start`/`delay-in-days` reach neither the DTO nor the mapper. Flagged here as a real,
-  unimplemented gap rather than a documentation oversight.
+  unimplemented gap rather than a documentation oversight. DataCite's side of `embargo` (via
+  `Available`, with the same-day dedup rule described in the date-type table above) is handled -
+  this limitation is Crossref-only.
+- **Crossref's `update-to[].type`** isn't documented as an exhaustive enum - only the two example
+  values Crossref's own docs give (`"correction"`, `"retraction"`) are recognized by
+  `CrossrefToSkgIfMapper#dates`; any other value (e.g. `"erratum"`, `"removal"`,
+  `"partial_retraction"`, `"expression_of_concern"`) is ignored rather than guessed at (see
+  [`crossref-journal-article-with-update-to.json`](src/test/resources/crossref-journal-article-with-update-to.json),
+  a hand-built fixture since no live-captured record with `update-to[]` was available).
+- **Crossref's `indexed` field** (present on every work, reflecting when Crossref last
+  re-indexed the record) is deliberately *not* read as a `modified` source despite the superficial
+  resemblance - Crossref's own documentation notes re-indexing doesn't imply a metadata change.
+  `deposited` (already mapped to `deposit`) is Crossref's genuine most-recent-metadata-update
+  signal.
+- **Crossref's generic `published` field** duplicates `issued` in every fixture observed (Crossref
+  computes it as the earliest of `published-print`/`published-online`, same as `issued`) - reading
+  it would add no new information over the existing `issued`/`published-print`/`published-online`
+  sources for `publication`, so it's deliberately left unread.
 - **DataCite's `fundingReferences[].funderIdentifierType`** has no literal `"DOI"` value in its
   controlled vocabulary, so `funding_agency` detects a Funder Registry DOI by checking whether
   `funderIdentifier` itself is DOI-shaped, regardless of what the type label says (covers

@@ -39,10 +39,12 @@ import org.skgif.doi.generated.model.ProductsRelatedCitesInner;
 import org.skgif.doi.util.LocalIdentifiers;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -85,7 +87,7 @@ public class DataCiteToSkgIfMapper {
 
     private static final Map<String, String> DATACITE_DATE_TYPE_TO_SKGIF = Map.of(
             "Accepted", "acceptance",
-            "Available", "access",
+            "Available", "embargo",
             "Collected", "collected",
             "Copyrighted", "copyright",
             "Created", "creation",
@@ -341,32 +343,98 @@ public class DataCiteToSkgIfMapper {
     }
 
     private ProductManifestationDates dates(DataCiteAttributes attributes) {
-        if (attributes.dates == null || attributes.dates.isEmpty()) {
-            return null;
-        }
         ProductManifestationDates dates = new ProductManifestationDates();
         boolean any = false;
-        for (DataCiteDate date : attributes.dates) {
-            String skgIfDateType = DATACITE_DATE_TYPE_TO_SKGIF.get(date.dateType);
-            if (skgIfDateType == null || date.date == null) {
-                continue;
-            }
-            any = true;
-            switch (skgIfDateType) {
-                case "acceptance" -> dates.addAcceptanceItem(date.date);
-                case "access" -> dates.addAccessItem(date.date);
-                case "collected" -> dates.addCollectedItem(date.date);
-                case "copyright" -> dates.addCopyrightItem(date.date);
-                case "creation" -> dates.addCreationItem(date.date);
-                case "publication" -> dates.addPublicationItem(date.date);
-                case "deposit" -> dates.addDepositItem(date.date);
-                case "modified" -> dates.addModifiedItem(date.date);
-                case "validity" -> dates.addValidityItem(date.date);
-                case "retraction" -> dates.addRetractionItem(date.date);
-                default -> any = false;
+        if (attributes.dates != null) {
+            for (DataCiteDate date : attributes.dates) {
+                String skgIfDateType = DATACITE_DATE_TYPE_TO_SKGIF.get(date.dateType);
+                if (skgIfDateType == null || date.date == null) {
+                    continue;
+                }
+                // An `Available` date only signals a genuine embargo when it differs (at day
+                // granularity) from every other date already known for this record - if it
+                // coincides with e.g. `Issued` or the top-level `created` timestamp, that's just
+                // "published and immediately available," not an embargo end date, so it's dropped
+                // rather than emitted anywhere.
+                if ("embargo".equals(skgIfDateType)
+                        && otherRecordDays(attributes, date).contains(normalizeDay(date.date))) {
+                    continue;
+                }
+                any = true;
+                switch (skgIfDateType) {
+                    case "acceptance" -> dates.addAcceptanceItem(date.date);
+                    case "collected" -> dates.addCollectedItem(date.date);
+                    case "copyright" -> dates.addCopyrightItem(date.date);
+                    case "creation" -> dates.addCreationItem(date.date);
+                    case "publication" -> dates.addPublicationItem(date.date);
+                    case "deposit" -> dates.addDepositItem(date.date);
+                    case "modified" -> dates.addModifiedItem(date.date);
+                    case "validity" -> dates.addValidityItem(date.date);
+                    case "retraction" -> dates.addRetractionItem(date.date);
+                    case "embargo" -> dates.addEmbargoItem(date.date);
+                    default -> any = false;
+                }
             }
         }
+        // Fall back to DataCite's system-generated record timestamps when the corresponding
+        // dateType is absent from dates[] - which in practice is the norm, not the exception:
+        // Created/Submitted/Updated essentially never appear there (see SKG_IF_DOI_MAPPING.md).
+        // An explicit dates[] entry always takes precedence since these only fire when the
+        // getter is still null.
+        if (dates.getCreation() == null && attributes.created != null) {
+            dates.addCreationItem(attributes.created);
+            any = true;
+        }
+        if (dates.getDeposit() == null && attributes.registered != null) {
+            dates.addDepositItem(attributes.registered);
+            any = true;
+        }
+        if (dates.getModified() == null && attributes.updated != null) {
+            dates.addModifiedItem(attributes.updated);
+            any = true;
+        }
+        if (dates.getPublication() == null && attributes.published != null) {
+            dates.addPublicationItem(attributes.published);
+            any = true;
+        }
         return any ? dates : null;
+    }
+
+    /**
+     * Day-normalized (YYYY-MM-DD) set of every other date already known for this record - the
+     * rest of {@code attributes.dates} plus the top-level fallback timestamps - used to tell a
+     * genuine embargo end date apart from an {@code Available} entry that merely restates another
+     * date on the record.
+     */
+    private Set<String> otherRecordDays(DataCiteAttributes attributes, DataCiteDate excluding) {
+        Set<String> days = new HashSet<>();
+        for (DataCiteDate date : attributes.dates) {
+            if (date != excluding && date.date != null) {
+                days.add(normalizeDay(date.date));
+            }
+        }
+        if (attributes.created != null) {
+            days.add(normalizeDay(attributes.created));
+        }
+        if (attributes.registered != null) {
+            days.add(normalizeDay(attributes.registered));
+        }
+        if (attributes.updated != null) {
+            days.add(normalizeDay(attributes.updated));
+        }
+        if (attributes.published != null) {
+            days.add(normalizeDay(attributes.published));
+        }
+        return days;
+    }
+
+    /**
+     * Truncates a DataCite date string to its YYYY-MM-DD day, so a full timestamp
+     * ({@code "2024-05-07T10:07:27.000Z"}) compares equal to a date-only value for the same day
+     * ({@code "2024-05-07"}). Partial values (e.g. a bare year {@code "2028"}) are left as-is.
+     */
+    private String normalizeDay(String date) {
+        return date.length() >= 10 ? date.substring(0, 10) : date;
     }
 
     private ProductManifestationAccessRights accessRights(DataCiteAttributes attributes) {

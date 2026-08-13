@@ -295,6 +295,19 @@ class ProductsGoldenTest {
     }
 
     /**
+     * DOI 10.9999/update-to-test.1 - a hand-built fixture (Crossref's real {@code update-to[]}
+     * field wasn't present on any live-captured fixture available when this was added) proving
+     * {@code correction}/{@code retraction} dates map from {@code update-to[].updated} at the
+     * golden-output level, and that an unrecognized {@code type} (here {@code "erratum"}) is
+     * ignored rather than guessed at (see {@code CrossrefToSkgIfMapper#dates}).
+     */
+    @Test
+    void getProductById_matchesExpectedJsonLd_journalArticleWithUpdateTo() throws IOException {
+        assertMatchesExpectedCrossrefJsonLd("10.9999/update-to-test.1", "crossref-journal-article-with-update-to.json",
+                "expected/crossref-journal-article-with-update-to-out.json");
+    }
+
+    /**
      * DOI 10.1155/2016/1353212 - a real Hindawi journal article with a funder that has neither
      * an award number nor a Funder Registry DOI, and a JATS-XML abstract - proving the otf
      * funder/abstract-stripping paths at the golden-output level.

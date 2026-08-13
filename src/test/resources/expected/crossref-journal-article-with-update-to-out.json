@@ -1,0 +1,74 @@
+{
+  "@context" : [ "https://w3id.org/skg-if/context/1.1.0/skg-if.json", "https://w3id.org/skg-if/context/1.0.0/skg-if-api.json", {
+    "@base" : "https://w3id.org/skg-if/sandbox/esrf/"
+  } ],
+  "meta" : {
+    "local_identifier" : "http://localhost:8081/skg-if/api/crossref/products/10.9999/update-to-test.1",
+    "entity_type" : "single_entity"
+  },
+  "@graph" : [ {
+    "local_identifier" : "https://doi.org/10.9999/update-to-test.1",
+    "identifiers" : [ {
+      "scheme" : "doi",
+      "value" : "10.9999/update-to-test.1"
+    } ],
+    "entity_type" : "product",
+    "product_type" : "literature",
+    "titles" : {
+      "en" : [ "A Study Requiring Two Corrections" ]
+    },
+    "contributions" : [ {
+      "by" : {
+        "local_identifier" : "otf___10-9999-update-to-test-1___ada-tester",
+        "identifiers" : [ ],
+        "given_name" : "Ada",
+        "family_name" : "Tester",
+        "name" : "Ada Tester",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "rank" : 1,
+      "role" : "author"
+    }, {
+      "by" : {
+        "local_identifier" : "otf___10-9999-update-to-test-1___test-publisher",
+        "identifiers" : [ ],
+        "name" : "Test Publisher",
+        "other_names" : [ ],
+        "types" : [ ]
+      },
+      "rank" : 2,
+      "role" : "publisher"
+    } ],
+    "manifestations" : [ {
+      "type" : {
+        "class" : "https://api.crossref.org/types/journal-article",
+        "defined_in" : "https://api.crossref.org/types/",
+        "labels" : {
+          "en" : "journal-article"
+        }
+      },
+      "dates" : {
+        "correction" : [ "2021-03-05" ],
+        "creation" : [ "2020-01-10" ],
+        "deposit" : [ "2020-01-15" ],
+        "publication" : [ "2020-02-01" ],
+        "retraction" : [ "2022-06-20" ]
+      },
+      "biblio" : {
+        "in" : {
+          "local_identifier" : "otf___10-9999-update-to-test-1___journal-of-synthetic-fixtures",
+          "identifiers" : [ ],
+          "entity_type" : "venue",
+          "name" : "Journal of Synthetic Fixtures"
+        },
+        "hosting_data_source" : {
+          "local_identifier" : "otf___10-9999-update-to-test-1___test-publisher",
+          "identifiers" : [ ],
+          "entity_type" : "datasource",
+          "name" : "Test Publisher"
+        }
+      }
+    } ]
+  } ]
+}

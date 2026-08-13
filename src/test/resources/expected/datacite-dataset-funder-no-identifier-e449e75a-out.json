@@ -185,7 +185,10 @@
         }
       },
       "dates" : {
-        "access" : [ "2024-05-07" ]
+        "creation" : [ "2024-05-07T10:07:27.000Z" ],
+        "deposit" : [ "2024-05-07T10:07:27.000Z" ],
+        "modified" : [ "2026-08-13T10:21:23.000Z" ],
+        "publication" : [ "2024" ]
       },
       "access_rights" : {
         "status" : "open"

@@ -591,4 +591,25 @@ class CrossrefToSkgIfMapperTest {
 
         assertNull(grant.getAcronym());
     }
+
+    @Test
+    void mapsUpdateToCorrectionAndRetractionDates() throws IOException {
+        Product product = mapFixture("crossref-journal-article-with-update-to.json");
+
+        var dates = product.getManifestations().get(0).getDates();
+        assertEquals(List.of("2021-03-05"), dates.getCorrection());
+        assertEquals(List.of("2022-06-20"), dates.getRetraction());
+    }
+
+    @Test
+    void ignoresUnrecognizedUpdateToType() throws IOException {
+        // The fixture also carries an "erratum" entry - Crossref's update-to[].type isn't
+        // exhaustively documented (only "correction"/"retraction" are confirmed), so any other
+        // value must be ignored rather than guessed at.
+        Product product = mapFixture("crossref-journal-article-with-update-to.json");
+
+        var dates = product.getManifestations().get(0).getDates();
+        assertEquals(1, dates.getCorrection().size());
+        assertEquals(1, dates.getRetraction().size());
+    }
 }

@@ -50,6 +50,8 @@ public class CrossrefWork {
     public CrossrefDate publishedOnline;
     public CrossrefDate posted;
     public CrossrefDate accepted;
+    @JsonProperty("update-to")
+    public List<CrossrefUpdateTo> updateTo;
 
     // Grant-type records only.
     public String award;

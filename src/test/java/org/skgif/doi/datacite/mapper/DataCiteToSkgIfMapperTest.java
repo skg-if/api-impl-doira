@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.skgif.doi.datacite.dto.DataCiteDate;
 import org.skgif.doi.datacite.dto.DataCiteDoiResponse;
 import org.skgif.doi.generated.model.Grant;
 import org.skgif.doi.generated.model.Product;
@@ -209,12 +210,95 @@ class DataCiteToSkgIfMapperTest {
     }
 
     @Test
-    void doesNotFabricateManifestationDatesWhenDatesIsEmpty() throws IOException {
+    void mapsCreationDepositModifiedPublicationFromTopLevelAttributesWhenDatesArrayLacksThem()
+            throws IOException {
         // "dates": [] (not absent, but genuinely empty) - unlike every other fixture, which has
-        // at least one date.
-        Product product = mapFixture("datacite-thesis-crossref-funder-id-4342.json");
+        // at least one date. Every DataCite record still carries the system-generated
+        // created/registered/updated/published attributes though, and those are the only
+        // real-world source for creation/deposit/modified/publication in practice: no fixture's
+        // dates[] ever has a Created/Submitted/Updated entry.
+        var attributes = readFixture("datacite-thesis-crossref-funder-id-4342.json");
+
+        Product product = mapper.toProduct(attributes);
+
+        var dates = product.getManifestations().get(0).getDates();
+        assertEquals(List.of(attributes.created), dates.getCreation());
+        assertEquals(List.of(attributes.registered), dates.getDeposit());
+        assertEquals(List.of(attributes.updated), dates.getModified());
+        assertEquals(List.of(attributes.published), dates.getPublication());
+    }
+
+    @Test
+    void doesNotFabricateManifestationDatesWhenNoDateSourceExistsAtAll() throws IOException {
+        var attributes = readFixture("datacite-thesis-crossref-funder-id-4342.json");
+        attributes.created = null;
+        attributes.registered = null;
+        attributes.updated = null;
+        attributes.published = null;
+
+        Product product = mapper.toProduct(attributes);
 
         assertNull(product.getManifestations().get(0).getDates());
+    }
+
+    @Test
+    void explicitDatesEntryWinsOverTopLevelAttributeFallback() throws IOException {
+        var attributes = readFixture("datacite-esrf-dc-2493599001.json");
+        var created = new DataCiteDate();
+        created.dateType = "Created";
+        created.date = "2020-01-01";
+        attributes.dates.add(created);
+        assertNotEquals(created.date, attributes.created);
+
+        Product product = mapper.toProduct(attributes);
+
+        assertEquals(List.of(created.date), product.getManifestations().get(0).getDates().getCreation());
+    }
+
+    @Test
+    void dropsUnrecognizedDateTypesLikeCoverage() throws IOException {
+        // "Coverage" is a real DataCite 4.7 dateType (the temporal span a resource's *content*
+        // covers, not an event in the resource's own lifecycle) with no SKG-IF equivalent - it
+        // must be silently dropped, same as "Other", and must not by itself trigger a non-null
+        // dates object.
+        var attributes = readFixture("datacite-thesis-crossref-funder-id-4342.json");
+        attributes.created = null;
+        attributes.registered = null;
+        attributes.updated = null;
+        attributes.published = null;
+        var coverage = new DataCiteDate();
+        coverage.dateType = "Coverage";
+        coverage.date = "1990/2000";
+        attributes.dates.add(coverage);
+
+        Product product = mapper.toProduct(attributes);
+
+        assertNull(product.getManifestations().get(0).getDates());
+    }
+
+    @Test
+    void mapsAvailableToEmbargoWhenItDiffersFromEveryOtherRecordDate() throws IOException {
+        // datacite-esrf-es-2210534378.json is a genuine embargo case: Collected 2025-09-05,
+        // Issued 2028, Available 2028-09-06 - none of those coincide, so Available is a real
+        // embargo end date.
+        Product product = mapFixture("datacite-esrf-es-2210534378.json");
+
+        var dates = product.getManifestations().get(0).getDates();
+        assertEquals(List.of("2028-09-06"), dates.getEmbargo());
+        assertNull(dates.getAccess());
+    }
+
+    @Test
+    void dropsAvailableWhenItMatchesAnotherRecordDateOnTheSameDay() throws IOException {
+        // datacite-dataset-funder-no-identifier-e449e75a.json has a single Available date,
+        // 2024-05-07, which is the same day as the top-level created/registered timestamps
+        // (2024-05-07T10:07:27.000Z) - that's "published and immediately available," not an
+        // embargo, so it must be dropped rather than surfacing as access or embargo.
+        Product product = mapFixture("datacite-dataset-funder-no-identifier-e449e75a.json");
+
+        var dates = product.getManifestations().get(0).getDates();
+        assertNull(dates.getEmbargo());
+        assertNull(dates.getAccess());
     }
 
     // datacite-dataset-funder-no-identifier-e449e75a.json: a real University of St Andrews
