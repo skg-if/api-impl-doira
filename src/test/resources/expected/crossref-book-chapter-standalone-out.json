@@ -63,6 +63,7 @@
       "dates" : {
         "creation" : [ "2022-03-15" ],
         "deposit" : [ "2022-03-15" ],
+        "modified" : [ "2022-03-15" ],
         "publication" : [ "2022", "2022-03-16", "2022" ]
       },
       "access_rights" : { },

@@ -336,6 +336,7 @@
       "dates" : {
         "creation" : [ "2022-10-17" ],
         "deposit" : [ "2022-10-17" ],
+        "modified" : [ "2022-10-17" ],
         "publication" : [ "2022-10-17", "2022-10-17" ]
       },
       "access_rights" : {

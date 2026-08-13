@@ -86,7 +86,8 @@
       },
       "dates" : {
         "creation" : [ "2002-11-27" ],
-        "deposit" : [ "2017-06-15" ]
+        "deposit" : [ "2017-06-15" ],
+        "modified" : [ "2017-06-15" ]
       },
       "biblio" : {
         "pages" : {

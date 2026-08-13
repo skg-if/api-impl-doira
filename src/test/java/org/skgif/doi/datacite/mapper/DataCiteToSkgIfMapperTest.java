@@ -210,8 +210,7 @@ class DataCiteToSkgIfMapperTest {
     }
 
     @Test
-    void mapsCreationDepositModifiedPublicationFromTopLevelAttributesWhenDatesArrayLacksThem()
-            throws IOException {
+    void fallsBackToTopLevelAttributesWhenDatesArrayIsEmpty() throws IOException {
         // "dates": [] (not absent, but genuinely empty) - unlike every other fixture, which has
         // at least one date. Every DataCite record still carries the system-generated
         // created/registered/updated/published attributes though, and those are the only

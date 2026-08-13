@@ -111,6 +111,7 @@
       "dates" : {
         "creation" : [ "2017-08-24" ],
         "deposit" : [ "2025-06-25" ],
+        "modified" : [ "2025-06-25" ],
         "publication" : [ "2017", "2017-08-25", "2017" ]
       },
       "access_rights" : { },

@@ -48,7 +48,6 @@ public class CrossrefWork {
     public CrossrefDate publishedPrint;
     @JsonProperty("published-online")
     public CrossrefDate publishedOnline;
-    public CrossrefDate posted;
     public CrossrefDate accepted;
     @JsonProperty("update-to")
     public List<CrossrefUpdateTo> updateTo;

@@ -593,6 +593,17 @@ class CrossrefToSkgIfMapperTest {
     }
 
     @Test
+    void mapsDepositedIntoBothDepositAndModified() throws IOException {
+        // Crossref documents `deposited` as "date on which the work metadata was most recently
+        // updated" - the same field feeds both SKG-IF dates, not just `deposit`.
+        Product product = mapFixture("crossref-journal-article.json");
+
+        var dates = product.getManifestations().get(0).getDates();
+        assertEquals(List.of("2023-05-18"), dates.getDeposit());
+        assertEquals(List.of("2023-05-18"), dates.getModified());
+    }
+
+    @Test
     void mapsUpdateToCorrectionAndRetractionDates() throws IOException {
         Product product = mapFixture("crossref-journal-article-with-update-to.json");
 

@@ -227,6 +227,7 @@
         "acceptance" : [ "2024-10-30" ],
         "creation" : [ "2024-11-19" ],
         "deposit" : [ "2024-11-19" ],
+        "modified" : [ "2024-11-19" ],
         "publication" : [ "2024-11-19", "2024-11-19" ]
       },
       "access_rights" : { },

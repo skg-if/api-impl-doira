@@ -336,7 +336,10 @@ public class CrossrefToSkgIfMapper {
         boolean any = false;
         any |= addDateItem(dates, "creation", work.created);
         any |= addDateItem(dates, "deposit", work.deposited);
-        any |= addDateItem(dates, "access", work.posted);
+        // Crossref documents `deposited` as "date on which the work metadata was most recently
+        // updated" - that's SKG-IF's `modified`, not just `deposit`, and Crossref has no other
+        // candidate for `modified` (`indexed` is deliberately excluded - see the mapping doc).
+        any |= addDateItem(dates, "modified", work.deposited);
         any |= addDateItem(dates, "acceptance", work.accepted);
         any |= addDateItem(dates, "publication", work.publishedPrint);
         any |= addDateItem(dates, "publication", work.publishedOnline);
@@ -366,7 +369,7 @@ public class CrossrefToSkgIfMapper {
         switch (type) {
             case "creation" -> dates.addCreationItem(iso);
             case "deposit" -> dates.addDepositItem(iso);
-            case "access" -> dates.addAccessItem(iso);
+            case "modified" -> dates.addModifiedItem(iso);
             case "acceptance" -> dates.addAcceptanceItem(iso);
             case "publication" -> dates.addPublicationItem(iso);
             case "correction" -> dates.addCorrectionItem(iso);

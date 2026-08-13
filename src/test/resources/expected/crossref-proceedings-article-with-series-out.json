@@ -75,6 +75,7 @@
       "dates" : {
         "creation" : [ "2022-01-03" ],
         "deposit" : [ "2023-02-14" ],
+        "modified" : [ "2023-02-14" ],
         "publication" : [ "2021", "2021" ]
       },
       "biblio" : {

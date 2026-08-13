@@ -62,6 +62,7 @@
       "dates" : {
         "creation" : [ "2015-12-22" ],
         "deposit" : [ "2016-07-26" ],
+        "modified" : [ "2016-07-26" ],
         "publication" : [ "2016", "2016" ]
       },
       "access_rights" : {
