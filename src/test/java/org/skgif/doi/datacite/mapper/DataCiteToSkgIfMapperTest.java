@@ -194,13 +194,99 @@ class DataCiteToSkgIfMapperTest {
     }
 
     @Test
-    void doesNotSurfaceRelatedProductsFromUnmodeledRelationTypes() throws IOException {
-        // relatedIdentifiers has a "HasVersion" DOI and an "IsPartOf" ISSN - the mapper only
-        // ever looks at "Cites"/"IsCitedBy", so related_products must stay null even though
-        // relatedIdentifiers itself is non-empty.
+    void surfacesIsPartOfButNotUnmodeledHasVersion() throws IOException {
+        // relatedIdentifiers has a "HasVersion" DOI (unmodeled - stays out entirely) and an
+        // "IsPartOf" ISSN, which now does surface as related_products.is_part_of.
         Product product = mapFixture("datacite-zenodo-editor-21232199.json");
 
-        assertNull(product.getRelatedProducts());
+        assertNull(product.getRelatedProducts().getCites());
+        assertEquals(1, product.getRelatedProducts().getIsPartOf().size());
+        assertEquals("issn", product.getRelatedProducts().getIsPartOf().get(0).getIdentifiers().get(0).getScheme());
+        assertEquals("2230-9578", product.getRelatedProducts().getIsPartOf().get(0).getIdentifiers().get(0).getValue());
+    }
+
+    // datacite-zenodo-cites-references-21914195.json: a real Zenodo deposit (DOI
+    // 10.5281/zenodo.21914195) whose relatedIdentifiers mix DataCite's two citation-like
+    // relation types - "Cites" and "References" - alongside "IsPartOf"/"IsDocumentedBy" (now
+    // modeled too, into their own fields - see the zenodo.21827103 block below) and
+    // "IsDerivedFrom"/"HasVersion" (still unmodeled). Both citation types must land in the
+    // same related_products.cites array, since SKG-IF has no separate field for "References".
+
+    @Test
+    void mapsBothCitesAndReferencesRelationTypesIntoTheSameCitesArray() throws IOException {
+        Product product = mapFixture("datacite-zenodo-cites-references-21914195.json");
+
+        // 2 "Cites" entries + 1 "References" entry = 3 cites; "IsDerivedFrom"/"HasVersion"
+        // (still unmodeled) must not add any more, and "IsPartOf"/"IsDocumentedBy" land in
+        // their own fields rather than here.
+        assertEquals(3, product.getRelatedProducts().getCites().size());
+        boolean hasReferencesEntry = product.getRelatedProducts().getCites().stream()
+                .anyMatch(c -> "https://doi.org/10.5281/zenodo.21913675".equals(c.getLocalIdentifier()));
+        assertTrue(hasReferencesEntry);
+    }
+
+    @Test
+    void mapsNonDoiRelatedIdentifierToOtfId() throws IOException {
+        // The "Cites" entry with relatedIdentifierType "ISBN" (978-963-281-509-1) has no DOI,
+        // so it must fall back to an otf id rather than being dropped or mis-typed as a DOI.
+        Product product = mapFixture("datacite-zenodo-cites-references-21914195.json");
+
+        var isbnCite = product.getRelatedProducts().getCites().stream()
+                .filter(c -> c.getLocalIdentifier().startsWith("otf___"))
+                .findFirst()
+                .orElseThrow();
+        assertEquals("isbn", isbnCite.getIdentifiers().get(0).getScheme());
+        assertEquals("978-963-281-509-1", isbnCite.getIdentifiers().get(0).getValue());
+    }
+
+    // datacite-zenodo-relations-21827103.json: a real Zenodo dataset (DOI
+    // 10.5281/zenodo.21827103) whose relatedIdentifiers exercise 4 relation types the mapper
+    // didn't previously model - "IsSupplementedBy", "IsDocumentedBy", "IsNewVersionOf", and
+    // "IsPartOf" - each landing in its own related_products field rather than "cites". It also
+    // carries a decoy, "IsSupplementTo" (the inverse of "IsSupplementedBy", easy to confuse by
+    // name), and "HasVersion", neither of which the mapper models - both must stay excluded.
+
+    @Test
+    void mapsIsSupplementedByIsDocumentedByAndIsNewVersionOf() throws IOException {
+        Product product = mapFixture("datacite-zenodo-relations-21827103.json");
+        var related = product.getRelatedProducts();
+
+        assertEquals(1, related.getIsSupplementedBy().size());
+        assertEquals("url", related.getIsSupplementedBy().get(0).getIdentifiers().get(0).getScheme());
+        assertEquals("https://github.com/vicgos/MICRO", related.getIsSupplementedBy().get(0).getIdentifiers().get(0).getValue());
+
+        assertEquals(1, related.getIsDocumentedBy().size());
+        assertEquals("handle", related.getIsDocumentedBy().get(0).getIdentifiers().get(0).getScheme());
+
+        assertEquals(2, related.getIsNewVersionOf().size());
+        boolean hasNsdVersion = related.getIsNewVersionOf().stream()
+                .anyMatch(r -> "10.18712/NSD-NSD2457-V3".equals(r.getIdentifiers().get(0).getValue()));
+        assertTrue(hasNsdVersion);
+    }
+
+    @Test
+    void mapsIsPartOfWithFullDoiLocalIdentifier() throws IOException {
+        Product product = mapFixture("datacite-zenodo-relations-21827103.json");
+        var related = product.getRelatedProducts();
+
+        assertEquals(2, related.getIsPartOf().size());
+        boolean hasKnownPart = related.getIsPartOf().stream()
+                .anyMatch(r -> "https://doi.org/10.5281/zenodo.21827101".equals(r.getLocalIdentifier()));
+        assertTrue(hasKnownPart);
+    }
+
+    @Test
+    void doesNotConfuseIsSupplementToWithIsSupplementedByOrSurfaceHasVersion() throws IOException {
+        Product product = mapFixture("datacite-zenodo-relations-21827103.json");
+        var related = product.getRelatedProducts();
+
+        // "IsSupplementTo" and "IsSupplementedBy" both target the same identifier (10852/56047)
+        // in this fixture, so a substring/prefix mixup would silently double it into
+        // is_supplemented_by - it must appear there exactly once, from "IsSupplementedBy" only.
+        assertEquals(1, related.getIsSupplementedBy().size());
+        // Neither "IsSupplementTo" nor "HasVersion" have a related_products field at all -
+        // cites/citedBy stay null, not just empty.
+        assertNull(related.getCites());
     }
 
     // datacite-award-r3sy-7371.json: a real DataCite Award record (resourceTypeGeneral: "Award")

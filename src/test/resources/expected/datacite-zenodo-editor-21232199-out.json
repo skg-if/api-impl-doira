@@ -85,6 +85,16 @@
           "name" : "Zenodo"
         }
       }
-    } ]
+    } ],
+    "related_products" : {
+      "is_part_of" : [ {
+        "local_identifier" : "otf___10-5281-zenodo-21232199___2230-9578",
+        "identifiers" : [ {
+          "scheme" : "issn",
+          "value" : "2230-9578"
+        } ],
+        "entity_type" : "product"
+      } ]
+    }
   } ]
 }

@@ -143,6 +143,31 @@ class ProductsGoldenTest {
     }
 
     /**
+     * DOI 10.5281/zenodo.21914195 - a real Zenodo deposit whose relatedIdentifiers mix both
+     * DataCite citation-like relation types ("Cites" and "References"), proving both feed
+     * related_products.cites at the golden-output level (see {@code
+     * DataCiteToSkgIfMapperTest.mapsBothCitesAndReferencesRelationTypesIntoTheSameCitesArray}).
+     */
+    @Test
+    void getProductById_matchesExpectedJsonLd_zenodoCitesReferences21914195() throws IOException {
+        assertMatchesExpectedDataCiteJsonLd("10.5281/zenodo.21914195", "datacite-zenodo-cites-references-21914195.json",
+                "expected/datacite-zenodo-cites-references-21914195-out.json");
+    }
+
+    /**
+     * DOI 10.5281/zenodo.21827103 - a real Zenodo dataset whose relatedIdentifiers exercise
+     * "IsSupplementedBy", "IsDocumentedBy", "IsNewVersionOf", and "IsPartOf" - each landing in
+     * its own related_products field - alongside a decoy "IsSupplementTo" and an unmodeled
+     * "HasVersion" (see {@code DataCiteToSkgIfMapperTest.mapsIsSupplementedByIsDocumentedByAndIsNewVersionOf}
+     * et al.).
+     */
+    @Test
+    void getProductById_matchesExpectedJsonLd_zenodoRelations21827103() throws IOException {
+        assertMatchesExpectedDataCiteJsonLd("10.5281/zenodo.21827103", "datacite-zenodo-relations-21827103.json",
+                "expected/datacite-zenodo-relations-21827103-out.json");
+    }
+
+    /**
      * Full JSON-LD regression test for the DataCite search/list endpoint with multiple,
      * heterogeneous @graph items and full pagination metadata (both prev_page and next_page
      * present, unlike a single-item, single-page response). Reuses the two DOI fixtures already

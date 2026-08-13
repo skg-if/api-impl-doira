@@ -1,0 +1,217 @@
+{
+  "data": {
+    "id": "10.5281/zenodo.21914195",
+    "type": "dois",
+    "attributes": {
+      "doi": "10.5281/zenodo.21914195",
+      "prefix": "10.5281",
+      "suffix": "zenodo.21914195",
+      "identifiers": [],
+      "alternateIdentifiers": [],
+      "creators": [
+        {
+          "name": "Santa Anna, Ammanuel",
+          "nameType": "Personal",
+          "givenName": "Ammanuel",
+          "familyName": "Santa Anna",
+          "affiliation": [
+            "Luminous Prosperity"
+          ],
+          "nameIdentifiers": [
+            {
+              "nameIdentifier": "0009-0008-3244-0306",
+              "nameIdentifierScheme": "ORCID"
+            }
+          ]
+        }
+      ],
+      "titles": [
+        {
+          "title": "The Luminous Library: A Reading System for Books That Compute"
+        }
+      ],
+      "publisher": "Luminous Prosperity Inc.",
+      "container": {},
+      "publicationYear": 2026,
+      "subjects": [
+        {
+          "subject": "luminous library"
+        },
+        {
+          "subject": "books that compute"
+        },
+        {
+          "subject": "reading system"
+        }
+      ],
+      "contributors": [
+        {
+          "name": "Santa Anna, Ammanuel",
+          "nameType": "Personal",
+          "givenName": "Ammanuel",
+          "familyName": "Santa Anna",
+          "affiliation": [
+            "Luminous Prosperity"
+          ],
+          "contributorType": "RightsHolder",
+          "nameIdentifiers": []
+        }
+      ],
+      "dates": [
+        {
+          "date": "2026-08-13",
+          "dateType": "Issued"
+        }
+      ],
+      "language": "en",
+      "types": {
+        "ris": "GEN",
+        "bibtex": "misc",
+        "citeproc": "article",
+        "schemaOrg": "CreativeWork",
+        "resourceType": "Other",
+        "resourceTypeGeneral": "Text"
+      },
+      "relatedIdentifiers": [
+        {
+          "relationType": "Cites",
+          "relatedIdentifier": "10.7208/chicago/9780226401232.001.0001",
+          "resourceTypeGeneral": "Book",
+          "relatedIdentifierType": "DOI"
+        },
+        {
+          "relationType": "Cites",
+          "relatedIdentifier": "978-963-281-509-1",
+          "resourceTypeGeneral": "Book",
+          "relatedIdentifierType": "ISBN"
+        },
+        {
+          "relationType": "References",
+          "relatedIdentifier": "10.5281/zenodo.21913675",
+          "relatedIdentifierType": "DOI"
+        },
+        {
+          "relationType": "IsDerivedFrom",
+          "relatedIdentifier": "10.5281/zenodo.21913722",
+          "relatedIdentifierType": "DOI"
+        },
+        {
+          "relationType": "IsPartOf",
+          "relatedIdentifier": "10.5281/zenodo.21844677",
+          "relatedIdentifierType": "DOI"
+        },
+        {
+          "relationType": "IsDocumentedBy",
+          "relatedIdentifier": "10.5281/zenodo.21914930",
+          "relatedIdentifierType": "DOI"
+        },
+        {
+          "relationType": "HasVersion",
+          "relatedIdentifier": "10.5281/zenodo.21914196",
+          "relatedIdentifierType": "DOI"
+        }
+      ],
+      "relatedItems": [],
+      "sizes": [],
+      "formats": [],
+      "version": "1.0.0",
+      "rightsList": [
+        {
+          "rights": "Creative Commons Attribution 4.0 International",
+          "rightsUri": "https://creativecommons.org/licenses/by/4.0/legalcode",
+          "schemeUri": "https://spdx.org/licenses/",
+          "rightsIdentifier": "cc-by-4.0",
+          "rightsIdentifierScheme": "SPDX"
+        }
+      ],
+      "descriptions": [
+        {
+          "description": "Five wings. Twenty-one titles. One reading system. The Luminous Library is the specification for books that compute.",
+          "descriptionType": "Abstract"
+        }
+      ],
+      "geoLocations": [],
+      "fundingReferences": [],
+      "url": "https://zenodo.org/doi/10.5281/zenodo.21914195",
+      "contentUrl": null,
+      "metadataVersion": 1,
+      "schemaVersion": "http://datacite.org/schema/kernel-4",
+      "source": "api",
+      "isActive": true,
+      "state": "findable",
+      "reason": null,
+      "viewCount": 0,
+      "viewsOverTime": [],
+      "downloadCount": 0,
+      "downloadsOverTime": [],
+      "referenceCount": 7,
+      "citationCount": 0,
+      "citationsOverTime": [],
+      "partCount": 0,
+      "partOfCount": 20,
+      "versionCount": 1,
+      "versionOfCount": 0,
+      "created": "2026-08-13T07:10:04.000Z",
+      "registered": "2026-08-13T07:10:04.000Z",
+      "published": "2026",
+      "updated": "2026-08-13T08:04:47.000Z"
+    },
+    "relationships": {
+      "client": {
+        "data": {
+          "id": "cern.zenodo",
+          "type": "clients"
+        }
+      },
+      "provider": {
+        "data": {
+          "id": "cern",
+          "type": "providers"
+        }
+      },
+      "media": {
+        "data": {
+          "id": "10.5281/zenodo.21914195",
+          "type": "media"
+        }
+      },
+      "references": {
+        "data": [
+          {
+            "id": "10.7208/chicago/9780226401232.001.0001",
+            "type": "dois"
+          },
+          {
+            "id": "10.5281/zenodo.21913675",
+            "type": "dois"
+          }
+        ]
+      },
+      "citations": {
+        "data": []
+      },
+      "parts": {
+        "data": []
+      },
+      "partOf": {
+        "data": [
+          {
+            "id": "10.5281/zenodo.21844677",
+            "type": "dois"
+          }
+        ]
+      },
+      "versions": {
+        "data": [
+          {
+            "id": "10.5281/zenodo.21914196",
+            "type": "dois"
+          }
+        ]
+      },
+      "versionOf": {
+        "data": []
+      }
+    }
+  }
+}

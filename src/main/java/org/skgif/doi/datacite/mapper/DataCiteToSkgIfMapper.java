@@ -609,14 +609,41 @@ public class DataCiteToSkgIfMapper {
         if (attributes.relatedIdentifiers == null || attributes.relatedIdentifiers.isEmpty()) {
             return null;
         }
-        List<ProductsRelatedCitesInner> cites = relatedByType(attributes, "Cites");
+        // DataCite's controlled vocabulary has both "Cites" and "References" for what SKG-IF
+        // models as a single relation - real records use either (verified live against
+        // 10.5281/zenodo.21914195, which has 12 "Cites" entries plus one separate "References"
+        // entry) - both feed the same output array.
+        List<ProductsRelatedCitesInner> cites = new ArrayList<>();
+        cites.addAll(relatedByType(attributes, "Cites"));
+        cites.addAll(relatedByType(attributes, "References"));
         List<ProductsRelatedCitesInner> citedBy = relatedByType(attributes, "IsCitedBy");
-        if (cites.isEmpty() && citedBy.isEmpty()) {
+        // "IsSupplementTo" is a distinct DataCite relation type from "IsSupplementedBy" (the
+        // inverse direction) - verified live against 10.5281/zenodo.21827103, which carries
+        // both an "IsSupplementedBy" and, on a different related identifier, an "IsSupplementTo"
+        // that must NOT be picked up here.
+        List<ProductsRelatedCitesInner> isSupplementedBy = relatedByType(attributes, "IsSupplementedBy");
+        List<ProductsRelatedCitesInner> isDocumentedBy = relatedByType(attributes, "IsDocumentedBy");
+        List<ProductsRelatedCitesInner> isNewVersionOf = relatedByType(attributes, "IsNewVersionOf");
+        List<ProductsRelatedCitesInner> isPartOf = relatedByType(attributes, "IsPartOf");
+        if (cites.isEmpty() && citedBy.isEmpty() && isSupplementedBy.isEmpty() && isDocumentedBy.isEmpty()
+                && isNewVersionOf.isEmpty() && isPartOf.isEmpty()) {
             return null;
         }
         ProductsRelated related = new ProductsRelated();
         if (!cites.isEmpty()) {
             related.cites(cites);
+        }
+        if (!isSupplementedBy.isEmpty()) {
+            related.isSupplementedBy(isSupplementedBy);
+        }
+        if (!isDocumentedBy.isEmpty()) {
+            related.isDocumentedBy(isDocumentedBy);
+        }
+        if (!isNewVersionOf.isEmpty()) {
+            related.isNewVersionOf(isNewVersionOf);
+        }
+        if (!isPartOf.isEmpty()) {
+            related.isPartOf(isPartOf);
         }
         return related;
     }
