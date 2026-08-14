@@ -12,7 +12,13 @@ build:
     - linux
   image: maven:3.9-eclipse-temurin-21
   script:
-    - mvn -B package
+    - |
+      if echo "$CI_COMMIT_MESSAGE" | grep -qiE 'notests?|skiptests?'; then
+        echo "Commit message requests skipping tests - skipping unit tests"
+        mvn -B package -DskipTests
+      else
+        mvn -B package
+      fi
   cache:
     key: "$CI_COMMIT_REF_SLUG-m2"
     paths:
@@ -29,6 +35,10 @@ validate-live-api:
   image: maven:3.9-eclipse-temurin-21
   needs:
     - build
+  rules:
+    - if: '$CI_COMMIT_MESSAGE =~ /notests?|skiptests?/i'
+      when: never
+    - when: on_success
   variables:
     # Free-text filter applied to the initial /products (resp. /grants) list search on both
     # providers (DataCite + Crossref share the `cf.search.title` filter key - see

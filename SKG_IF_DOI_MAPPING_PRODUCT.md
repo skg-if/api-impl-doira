@@ -4,6 +4,8 @@
 assertion, no golden JSON (see footnote) · ❌ not exercised by any test · – not applicable for
 this provider
 
+**Jump to:** [DataCite](#datacite) · [Crossref](#crossref) · [mEDRA](#medra)
+
 ## DataCite
 
 | SKG-IF field | DataCite source | DataCite tested | Notes |
