@@ -1,0 +1,25 @@
+{
+  "name": "Quarkus Cloud Environment",
+  "image": "mcr.microsoft.com/devcontainers/java:1-21-bookworm",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "redhat.java",
+        "vscjava.vscode-maven",
+        "vscjava.vscode-java-debug",
+        "vscjava.vscode-java-dependency",
+        "redhat.vscode-quarkus"
+      ]
+    }
+  },
+  "forwardPorts": [8080],
+  "portsAttributes": {
+    "8080": {
+      "label": "Quarkus Dev Server",
+      "onAutoForward": "notify",
+      "visibility": "private"
+    }
+  },
+  "postCreateCommand": "./mvnw -q dependency:go-offline",
+  "postStartCommand": "./mvnw quarkus:dev"
+}
