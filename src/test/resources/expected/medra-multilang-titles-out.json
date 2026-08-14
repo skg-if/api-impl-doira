@@ -1,0 +1,129 @@
+{
+  "@context" : [ "https://w3id.org/skg-if/context/1.1.0/skg-if.json", "https://w3id.org/skg-if/context/1.0.0/skg-if-api.json", {
+    "@base" : "https://w3id.org/skg-if/sandbox/esrf/"
+  } ],
+  "meta" : {
+    "local_identifier" : "http://localhost:8081/skg-if/api/medra/products/10.1478/AAPP.98S1A9",
+    "entity_type" : "single_entity"
+  },
+  "@graph" : [ {
+    "entity_type" : "product",
+    "product_type" : "literature",
+    "local_identifier" : "https://doi.org/10.1478/AAPP.98S1A9",
+    "identifiers" : [ {
+      "scheme" : "doi",
+      "value" : "10.1478/AAPP.98S1A9"
+    } ],
+    "titles" : {
+      "en" : [ "Transverse THz dynamics of phospholipid membranes: A neutron scattering study" ]
+    },
+    "contributions" : [ {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-1478-aapp-98s1a9___valeria-conti-nibali",
+        "given_name" : "Valeria",
+        "family_name" : "Conti Nibali",
+        "name" : "Valeria Conti Nibali"
+      },
+      "rank" : 1,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-1478-aapp-98s1a9___ulderico-wanderlingh",
+        "given_name" : "Ulderico",
+        "family_name" : "Wanderlingh",
+        "name" : "Ulderico Wanderlingh"
+      },
+      "rank" : 2,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-1478-aapp-98s1a9___giovanna-d-angelo",
+        "given_name" : "Giovanna",
+        "family_name" : "D'Angelo",
+        "name" : "Giovanna D'Angelo"
+      },
+      "rank" : 3,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-1478-aapp-98s1a9___caterina-branca",
+        "given_name" : "Caterina",
+        "family_name" : "Branca",
+        "name" : "Caterina Branca"
+      },
+      "rank" : 4,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-1478-aapp-98s1a9___alessio-de-francesco",
+        "given_name" : "Alessio",
+        "family_name" : "De Francesco",
+        "name" : "Alessio De Francesco"
+      },
+      "rank" : 5,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-1478-aapp-98s1a9___caterina-petrillo",
+        "given_name" : "Caterina",
+        "family_name" : "Petrillo",
+        "name" : "Caterina Petrillo"
+      },
+      "rank" : 6,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-1478-aapp-98s1a9___alessandro-paciaroni",
+        "given_name" : "Alessandro",
+        "family_name" : "Paciaroni",
+        "name" : "Alessandro Paciaroni"
+      },
+      "rank" : 7,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-1478-aapp-98s1a9___francesco-sacchetti",
+        "given_name" : "Francesco",
+        "family_name" : "Sacchetti",
+        "name" : "Francesco Sacchetti"
+      },
+      "rank" : 8,
+      "role" : "author"
+    } ],
+    "manifestations" : [ {
+      "type" : {
+        "defined_in" : "https://www.medra.org/stdoc/ONIX_DOI_Serial_Article_2.0_v.2.pdf",
+        "labels" : {
+          "en" : "DOISerialArticleVersion"
+        }
+      },
+      "dates" : {
+        "publication" : [ "2020-10-01" ]
+      },
+      "biblio" : {
+        "in" : {
+          "entity_type" : "venue",
+          "local_identifier" : "otf___10-1478-aapp-98s1a9___atti-della-accademia-perloritana-dei-per",
+          "identifiers" : [ {
+            "scheme" : "issn",
+            "value" : "18251242"
+          } ],
+          "name" : "Atti della Accademia Perloritana dei Pericolanti. Classe di Scienze Fisiche, Matematiche e Naturali"
+        },
+        "hosting_data_source" : {
+          "entity_type" : "datasource",
+          "local_identifier" : "otf___10-1478-aapp-98s1a9___accademia-peloritana-dei-pericolanti",
+          "name" : "Accademia Peloritana dei Pericolanti"
+        }
+      }
+    } ]
+  } ]
+}

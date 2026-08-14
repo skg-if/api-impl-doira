@@ -1,0 +1,106 @@
+package org.skgif.doi.rest;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
+import java.util.Optional;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.skgif.doi.generated.model.MetaSingleEntity;
+import org.skgif.doi.generated.model.Product;
+import org.skgif.doi.medra.MedraClient;
+import org.skgif.doi.medra.dto.MedraWork;
+import org.skgif.doi.medra.mapper.MedraToSkgIfMapper;
+import org.skgif.doi.medra.xml.MedraOnixXmlParser;
+import org.skgif.doi.util.LocalIdentifiers;
+
+/**
+ * SKG-IF Products endpoint, backed live by mEDRA's ONIX-for-DOI metadata API (no local storage) -
+ * the mEDRA-provider sibling of {@link ProductsResource}/{@link CrossrefProductsResource}, see
+ * {@code ProductsResource}'s javadoc for why the JSON-LD envelope is hand-assembled via {@link
+ * JsonLdResponses}. Provider selection is by URL path, not auto-detected: this only ever serves
+ * mEDRA-registered DOIs, at {@code /medra/products}.
+ *
+ * <p>Single-item lookup only - unlike {@code ProductsResource}/{@code CrossrefProductsResource},
+ * there is no bare {@code GET /medra/products} list endpoint here. {@code
+ * api.medra.org/metadata/{doi}} is a DOI-keyed metadata lookup, not a search/list API (no mEDRA
+ * equivalent of Crossref's {@code filter=}/DataCite's list query was found), so there is no query
+ * to back a list endpoint with. See SKG_IF_DOI_MAPPING_LIMITATIONS.md.
+ */
+@Path("/medra/products")
+public class MedraProductsResource {
+
+    private static final String RESOURCE_PATH = "/medra/products";
+
+    @Inject
+    @RestClient
+    MedraClient medraClient;
+
+    @Inject
+    MedraToSkgIfMapper mapper;
+
+    @Inject
+    LocalIdentifiers localIdentifiers;
+
+    @Inject
+    ObjectMapper objectMapper;
+
+    @ConfigProperty(name = "skgif.sandbox.base-url")
+    String sandboxBaseUrl;
+
+    @ConfigProperty(name = "skgif.context.base")
+    String fallbackContextBase;
+
+    @GET
+    @Path("/{local_identifier: .+}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getProductById(@PathParam("local_identifier") String localIdentifierParam,
+            @Context UriInfo uriInfo) {
+        String doi = localIdentifiers.toDoi(localIdentifierParam);
+
+        String xml;
+        try (Response response = medraClient.getMetadata(doi)) {
+            if (response.getStatus() != Response.Status.OK.getStatusCode()) {
+                return notFound(localIdentifierParam);
+            }
+            xml = response.readEntity(String.class);
+        } catch (RuntimeException e) {
+            return notFound(localIdentifierParam);
+        }
+
+        Optional<MedraWork> work = MedraOnixXmlParser.parse(xml);
+        if (work.isEmpty()) {
+            return notFound(localIdentifierParam);
+        }
+
+        Product product = mapper.toProduct(work.get());
+        String selfHref = JsonLdResponses.selfLink(uriInfo, RESOURCE_PATH, doi);
+
+        MetaSingleEntity meta = new MetaSingleEntity()
+                .localIdentifier(selfHref)
+                .entityType(MetaSingleEntity.EntityTypeEnum.SINGLE_ENTITY);
+
+        String contextBase =
+                JsonLdResponses.contextBaseFor(Optional.<String>empty(), sandboxBaseUrl, fallbackContextBase);
+        ObjectNode root = JsonLdResponses.envelope(objectMapper, contextBase);
+        root.set("meta", objectMapper.valueToTree(meta));
+        ArrayNode graph = objectMapper.createArrayNode();
+        graph.add(objectMapper.valueToTree(product));
+        root.set("@graph", graph);
+
+        return Response.ok(root).build();
+    }
+
+    private Response notFound(String requestedId) {
+        return JsonLdResponses.notFound("No product found for local_identifier '" + requestedId + "'");
+    }
+}

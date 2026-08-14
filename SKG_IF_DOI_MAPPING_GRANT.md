@@ -1,7 +1,8 @@
 # Grant entity
 
 DataCite has no dedicated Award schema fields for funder/amount/duration, so its mapping relies
-on a heuristic; Crossref's `grant` type carries these explicitly.
+on a heuristic; Crossref's `grant` type carries these explicitly. mEDRA has no Grant mapping at
+all - see [Product ↔ Grant routing](#product--grant-routing) below.
 
 **Coverage legend:** ✅ golden-JSON test (input → expected output, byte-compared) · ❌ not
 exercised by any test · – not applicable for this provider
@@ -28,3 +29,9 @@ A DOI record is routed to the **Grants** endpoint instead of **Products** when:
 
 - DataCite: `types.resourceTypeGeneral == "Award"` (`ResourceTypeMapping.isAward`)
 - Crossref: `type == "grant"` (`CrossrefTypeMapping.isGrant`)
+- mEDRA: **never** - ONIX-for-DOI has no grant/funding/award concept of any kind (verified
+  against 7 live examples - see [Known limitations](SKG_IF_DOI_MAPPING_LIMITATIONS.md)), and
+  `api.medra.org/metadata/{doi}` has no query/search mechanism to discover grant-type records
+  even hypothetically (it's a DOI-keyed metadata lookup, not a search API). Every mEDRA DOI is
+  served as a Product; there is no `MedraGrantsResource`/`/medra/grants` endpoint and no
+  `MedraToSkgIfMapper#toGrant` method.
