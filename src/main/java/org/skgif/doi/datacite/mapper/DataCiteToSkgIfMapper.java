@@ -127,6 +127,9 @@ public class DataCiteToSkgIfMapper {
      * multiple DataCite members) is: the first creator carrying a ROR identifier is the
      * funding body itself; every other creator plus all contributors are the grant's
      * contributions; organisational contributors are also listed as beneficiaries.
+     *
+     * @param attributes the DataCite Award record to map
+     * @return the mapped Grant
      */
     public Grant toGrant(DataCiteAttributes attributes) {
         Objects.requireNonNull(attributes.doi, "DataCite record has no DOI");
@@ -162,6 +165,9 @@ public class DataCiteToSkgIfMapper {
      * multiple manifestations of the same product), {@code Grant.titles}/{@code abstracts} are a
      * plain string per language - so multiple DataCite {@code titles[]}/{@code
      * descriptions[type=Abstract]} entries are concatenated into one string.
+     *
+     * @param attributes the DataCite record to read titles from
+     * @return the concatenated titles keyed by "en", or null if none carry a title
      */
     private Map<String, String> grantTitles(DataCiteAttributes attributes) {
         List<String> values = titleValues(attributes);
@@ -271,6 +277,10 @@ public class DataCiteToSkgIfMapper {
      * DataCite's top-level {@code publisher} is a bare string with no external identifier
      * system behind it, so - like the {@code hosting_data_source} use of the same field - this
      * always gets an otf id.
+     *
+     * @param doi the owning record's DOI, used to build a deterministic otf id
+     * @param name the organisation's name
+     * @return an Organisation reference with an otf local_identifier
      */
     private ProductContributionBy organisationRef(String doi, String name) {
         return new Organisation()
@@ -428,6 +438,10 @@ public class DataCiteToSkgIfMapper {
      * rest of {@code attributes.dates} plus the top-level fallback timestamps - used to tell a
      * genuine embargo end date apart from an {@code Available} entry that merely restates another
      * date on the record.
+     *
+     * @param attributes the DataCite record to collect known dates from
+     * @param excluding the date entry to exclude from the result set
+     * @return the day-normalized (YYYY-MM-DD) set of every other known date
      */
     private Set<String> otherRecordDays(DataCiteAttributes attributes, DataCiteDate excluding) {
         Set<String> days = new HashSet<>();
@@ -455,6 +469,9 @@ public class DataCiteToSkgIfMapper {
      * Truncates a DataCite date string to its YYYY-MM-DD day, so a full timestamp
      * ({@code "2024-05-07T10:07:27.000Z"}) compares equal to a date-only value for the same day
      * ({@code "2024-05-07"}). Partial values (e.g. a bare year {@code "2028"}) are left as-is.
+     *
+     * @param date a DataCite date string, full timestamp or partial
+     * @return the date truncated to its YYYY-MM-DD day, or unchanged if shorter than 10 chars
      */
     private String normalizeDay(String date) {
         return date.length() >= 10 ? date.substring(0, 10) : date;
@@ -491,6 +508,9 @@ public class DataCiteToSkgIfMapper {
      * DataCite's own {@code publisher} field is the closest generic equivalent of "where this
      * record is hosted" - unlike an organisation's ROR, there's no external identifier system
      * for an arbitrary publisher string, so this always gets an otf id.
+     *
+     * @param attributes the DataCite record to derive a hosting data source from
+     * @return a DataSourceLite for attributes.publisher, with an otf local_identifier
      */
     private ProductManifestationBiblioHostingDataSource hostingDataSource(DataCiteAttributes attributes) {
         return new DataSourceLite()
@@ -532,6 +552,11 @@ public class DataCiteToSkgIfMapper {
      * live against a real "Crossref Funder ID"-typed record (see
      * {@code datacite-thesis-crossref-funder-id-4342.json}). Non-DOI identifier types (GRID,
      * ISNI, Wikidata) still have no home here and fall back to an otf id.
+     *
+     * @param doi the owning record's DOI, used to build a deterministic otf id when the funder
+     *     has neither a ROR nor a DOI-shaped identifier
+     * @param fundingReference the DataCite funding reference to derive a funding agency from
+     * @return the mapped Organisation, or null if fundingReference has no funder name
      */
     private Organisation fundingAgency(String doi,
             DataCiteFundingReference fundingReference) {
@@ -565,6 +590,9 @@ public class DataCiteToSkgIfMapper {
      * Strips a {@code https://doi.org/}/{@code http://doi.org/} prefix if present, then checks
      * the remainder against the DOI shape ({@code 10.<4-9 digits>/<suffix>}) - returns the bare
      * DOI, or {@code null} if the identifier isn't DOI-shaped at all.
+     *
+     * @param identifier the raw identifier value to check, or null
+     * @return the bare DOI, or null if identifier is null or not DOI-shaped
      */
     private String extractDoi(String identifier) {
         if (identifier == null) {
@@ -697,6 +725,10 @@ public class DataCiteToSkgIfMapper {
      * as the grant's beneficiaries, alongside appearing in {@code contributions} - both are
      * legitimate per the spec's own worked example (GraspOS: Brown University is both a
      * contribution's declared affiliation and a top-level beneficiary).
+     *
+     * @param doi the owning record's DOI, used to build a deterministic otf id
+     * @param contributors the record's contributors
+     * @return the organisational contributors mapped as beneficiaries, or null if there are none
      */
     private List<GrantAllOfBeneficiaries> grantBeneficiaries(String doi, List<DataCiteContributor> contributors) {
         List<DataCiteAffiliation> organizationalContributors = new ArrayList<>();
@@ -721,6 +753,10 @@ public class DataCiteToSkgIfMapper {
      * with no stable identifier of their own. Built from the owning product's DOI (rather than
      * e.g. a timestamp) so it's deterministic - repeated calls for the same DOI produce the same
      * id instead of a fresh one every time.
+     *
+     * @param doi the owning product's DOI
+     * @param label a human-readable label for the entity (e.g. a name), slugged into the id
+     * @return an "otf___&lt;doi-slug&gt;___&lt;label-slug&gt;" identifier
      */
     private String otf(String doi, String label) {
         return "otf___" + slug(doi) + "___" + slug(label);

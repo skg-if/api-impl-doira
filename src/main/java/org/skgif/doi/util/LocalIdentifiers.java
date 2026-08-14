@@ -50,6 +50,9 @@ public class LocalIdentifiers {
      * Turns an incoming {@code local_identifier} path parameter - either the full
      * {@code https://doi.org/...} form (MUST resolve) or the bare DOI (SHOULD resolve) -
      * into the plain DOI used to call DataCite.
+     *
+     * @param pathParam the incoming local_identifier path parameter, full or bare form
+     * @return the plain DOI
      */
     public String toDoi(String pathParam) {
         if (pathParam.startsWith(baseUrl)) {
@@ -64,7 +67,12 @@ public class LocalIdentifiers {
         return pathParam;
     }
 
-    /** The full, dereferenceable local_identifier form for a given DOI. */
+    /**
+     * The full, dereferenceable local_identifier form for a given DOI.
+     *
+     * @param doi the plain DOI
+     * @return the full local_identifier ({@code baseUrl + doi})
+     */
     public String toFullLocalIdentifier(String doi) {
         return baseUrl + doi;
     }

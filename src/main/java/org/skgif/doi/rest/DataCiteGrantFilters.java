@@ -112,6 +112,9 @@ final class DataCiteGrantFilters {
      * A {@code contributions.by.identifiers.value} filter doesn't say which scheme it's for
      * (unlike Product, where it's always orcid) - so this matches either an ORCID or a ROR full
      * URL against either creators or contributors.
+     *
+     * @param bareValue the bare ORCID or ROR id from the filter value
+     * @return a Lucene clause matching bareValue as either an ORCID or ROR URL, on either role
      */
     private static String byIdentifierValueClause(String bareValue) {
         String orcid = ORCID_BASE_URL + escape(bareValue);
@@ -122,7 +125,13 @@ final class DataCiteGrantFilters {
                 + "\" OR contributors.nameIdentifiers.nameIdentifier:\"" + ror + "\")";
     }
 
-    /** Bare ROR id -> the given single field, matched against the full ROR URL. */
+    /**
+     * Bare ROR id -> the given single field, matched against the full ROR URL.
+     *
+     * @param field the DataCite field to match against
+     * @param bareRor the bare ROR id from the filter value
+     * @return a Lucene clause matching field against the full ROR URL for bareRor
+     */
     private static String rorClause(String field, String bareRor) {
         return field + ":\"" + escape(ROR_BASE_URL + bareRor) + "\"";
     }

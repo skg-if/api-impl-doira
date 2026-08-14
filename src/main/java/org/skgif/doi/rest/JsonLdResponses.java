@@ -47,6 +47,11 @@ final class JsonLdResponses {
      * own namespace rather than always the deployment's default. Falls back to {@code
      * fallbackContextBase} when the DOI carries no client relationship (e.g. malformed/partial
      * DataCite data).
+     *
+     * @param data the single-item DataCite DOI record to derive a client namespace from
+     * @param sandboxBaseUrl the base URL to namespace under (with the client id appended)
+     * @param fallbackContextBase the {@code @base} to use when no client id can be derived
+     * @return the namespaced {@code @base}, or fallbackContextBase if data carries no client id
      */
     static String contextBaseFor(DataCiteDoiData data, String sandboxBaseUrl, String fallbackContextBase) {
         String clientId = clientId(data);
@@ -58,6 +63,11 @@ final class JsonLdResponses {
      * single JSON-LD document can only declare one {@code @base}, so this namespaces to the
      * first result's DataCite client - in practice every result on a page shares the same
      * client, since {@code datacite.prefix} scopes a deployment to one organisation.
+     *
+     * @param items the page of DataCite DOI records to derive a client namespace from
+     * @param sandboxBaseUrl the base URL to namespace under (with the client id appended)
+     * @param fallbackContextBase the {@code @base} to use when no client id can be derived
+     * @return the namespaced {@code @base}, or fallbackContextBase if no item carries a client id
      */
     static String contextBaseFor(List<DataCiteDoiData> items, String sandboxBaseUrl, String fallbackContextBase) {
         if (items == null) {
@@ -77,6 +87,11 @@ final class JsonLdResponses {
      * has no equivalent to {@code relationships.client.data.id} mapped yet - see {@code
      * CrossrefProductsResource}/{@code CrossrefGrantsResource}, which always pass {@code
      * Optional.empty()} here).
+     *
+     * @param namespaceId the provider-specific namespace id, if any
+     * @param sandboxBaseUrl the base URL to namespace under (with the namespace id appended)
+     * @param fallbackContextBase the {@code @base} to use when namespaceId is absent/blank
+     * @return the namespaced {@code @base}, or fallbackContextBase if namespaceId is absent/blank
      */
     static String contextBaseFor(Optional<String> namespaceId, String sandboxBaseUrl, String fallbackContextBase) {
         return namespaceId.filter(id -> !id.isBlank())
@@ -120,6 +135,7 @@ final class JsonLdResponses {
      *     @graph[i].local_identifier) - per the spec's own worked examples, this is NOT the API
      *     URL; the API URL only appears in {@code urls[].href}.
      * @param apiSelfHref this API's own resolvable URL for the entity
+     * @return an ApiItem referencing entityLocalIdentifier, with apiSelfHref as its self link
      */
     static ApiItem apiItem(String entityLocalIdentifier, String apiSelfHref) {
         return new ApiItem()

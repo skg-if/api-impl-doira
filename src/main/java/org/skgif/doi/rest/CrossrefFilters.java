@@ -122,6 +122,10 @@ final class CrossrefFilters {
      * the (possibly several) {@code type} values {@link CrossrefTypeMapping} maps onto that
      * product_type. Crossref's own comma-joining already means OR-across-repeated-filter-name,
      * so this returns the already-comma-joined sub-clause directly.
+     *
+     * @param value the SKG-IF product_type filter value
+     * @return the comma-joined Crossref {@code type:} sub-clause, or NO_MATCH_CLAUSE if value is
+     *     unrecognized or maps to no Crossref type
      */
     private static String productTypeClause(String value) {
         Product.ProductTypeEnum productType;

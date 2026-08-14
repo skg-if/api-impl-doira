@@ -60,7 +60,12 @@ public final class CrossrefTypeMapping {
         }
     }
 
-    /** {@code grant} is deliberately absent from the map above - never reaches this method. */
+    /**
+     * {@code grant} is deliberately absent from the map above - never reaches this method.
+     *
+     * @param type the Crossref work's raw {@code type} value
+     * @return the corresponding SKG-IF product_type, or OTHER if unrecognized
+     */
     public static Product.ProductTypeEnum productType(String type) {
         return TO_PRODUCT_TYPE.getOrDefault(type, Product.ProductTypeEnum.OTHER);
     }
@@ -74,6 +79,9 @@ public final class CrossrefTypeMapping {
      * accurate Venue requires fetching Crossref's XML transform (see {@code
      * CrossrefXmlTransformClient}) rather than relying on the ambiguous {@code container-title[]}
      * REST JSON array alone.
+     *
+     * @param work the Crossref work record to check
+     * @return true if work is a chapter-in-a-book or paper-in-proceedings type
      */
     public static boolean isXmlVenueEnrichable(CrossrefWork work) {
         return work != null && XML_VENUE_ENRICHABLE_TYPES.contains(work.type);
@@ -83,6 +91,9 @@ public final class CrossrefTypeMapping {
      * The Crossref {@code type} values that map to the given SKG-IF product_type, alphabetically
      * sorted so callers building a query clause from this (see {@code CrossrefFilters}) get
      * deterministic output regardless of the backing map's iteration order.
+     *
+     * @param productType the SKG-IF product_type to find matching Crossref types for
+     * @return the matching Crossref type values, alphabetically sorted
      */
     public static List<String> typesFor(Product.ProductTypeEnum productType) {
         return TO_PRODUCT_TYPE.entrySet().stream()

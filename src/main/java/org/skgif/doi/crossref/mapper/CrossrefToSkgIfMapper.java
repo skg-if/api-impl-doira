@@ -90,6 +90,13 @@ public class CrossrefToSkgIfMapper {
         this.journalDoiResolver = journalDoiResolver;
     }
 
+    /**
+     * Convenience overload with no XML-parsed venue metadata - equivalent to calling {@link
+     * #toProduct(CrossrefWork, CrossrefVenueMetadata)} with a null venueMetadata.
+     *
+     * @param work the Crossref work record to map
+     * @return the mapped Product
+     */
     public Product toProduct(CrossrefWork work) {
         return toProduct(work, null);
     }
@@ -102,6 +109,10 @@ public class CrossrefToSkgIfMapper {
      * real container title/DOI/ISBN instead of the ambiguous {@code container-title[0]} - when
      * available; behaves exactly like the single-arg overload when {@code venueMetadata} is
      * {@code null} (e.g. the XML fetch failed, or this isn't an enrichable record).
+     *
+     * @param work the Crossref work record to map
+     * @param venueMetadata venue metadata parsed from Crossref's XML transform endpoint, or null
+     * @return the mapped Product
      */
     public Product toProduct(CrossrefWork work, CrossrefVenueMetadata venueMetadata) {
         Objects.requireNonNull(work.doi, "Crossref record has no DOI");
@@ -130,6 +141,9 @@ public class CrossrefToSkgIfMapper {
      * of them contribute titles/abstracts/contributions/beneficiaries, but the funding
      * amount/currency/duration/scheme are taken from the first project's first funding entry -
      * Crossref gives no generic way to represent "this grant has N different amounts".
+     *
+     * @param work the Crossref {@code type: "grant"} work record to map
+     * @return the mapped Grant
      */
     public Grant toGrant(CrossrefWork work) {
         Objects.requireNonNull(work.doi, "Crossref record has no DOI");
@@ -168,6 +182,9 @@ public class CrossrefToSkgIfMapper {
      * Crossref's {@code abstract} is a single JATS-XML-tagged string (e.g. {@code
      * <jats:p>...</jats:p>}), not plain text like DataCite's - this strips the tags rather than
      * attempting to preserve any structure, since SKG-IF's {@code abstracts} field is plain text.
+     *
+     * @param work the Crossref work record to read the abstract from
+     * @return the abstract, plain-text and tag-stripped, keyed by "en"; null if absent/empty
      */
     private Map<String, List<String>> abstracts(CrossrefWork work) {
         if (work.abstractText == null) {
@@ -246,6 +263,10 @@ public class CrossrefToSkgIfMapper {
      * Crossref's top-level {@code publisher} is a bare string with no external identifier
      * system behind it, so - like the {@code hosting_data_source} use of the same field - this
      * always gets an otf id.
+     *
+     * @param doi the owning record's DOI, used to build a deterministic otf id
+     * @param name the organisation's name
+     * @return an Organisation reference with an otf local_identifier
      */
     private ProductContributionBy organisationRef(String doi, String name) {
         return new Organisation()
@@ -254,7 +275,12 @@ public class CrossrefToSkgIfMapper {
                 .entityType("organisation");
     }
 
-    /** Crossref's ORCID field is already a full URL (http or https) - normalize both to bare. */
+    /**
+     * Crossref's ORCID field is already a full URL (http or https) - normalize both to bare.
+     *
+     * @param orcidUrl the full ORCID URL (http or https), or null
+     * @return the bare ORCID id, or null if orcidUrl is null
+     */
     private String bareOrcid(String orcidUrl) {
         if (orcidUrl == null) {
             return null;
@@ -282,6 +308,10 @@ public class CrossrefToSkgIfMapper {
      * Crossref author/editor affiliations are usually name-only, but some publishers (e.g. APS)
      * do assert a ROR on them directly - same occasional-ROR situation as DataCite creator
      * affiliations, so this checks for one before falling back to an otf id.
+     *
+     * @param doi the owning record's DOI, used to build a deterministic otf id
+     * @param affiliations the author/editor's declared affiliations
+     * @return the mapped affiliations, or null if affiliations is null/empty
      */
     private List<ProductAllOfRelevantOrganisations> affiliations(String doi, List<CrossrefAffiliation> affiliations) {
         if (affiliations == null || affiliations.isEmpty()) {
@@ -462,6 +492,10 @@ public class CrossrefToSkgIfMapper {
      * the XML-enriched container DOI above (real {@code local_identifier}, {@code doi} entry
      * alongside {@code issn}); when not (no journal-level DOI registered, or the lookup fails),
      * falls back to the {@code container-title[0]}+otf-id+ISSN-only heuristic.
+     *
+     * @param work the Crossref work record to derive a venue from
+     * @param venueMetadata venue metadata parsed from Crossref's XML transform endpoint, or null
+     * @return the mapped Venue, or null if no container information is available
      */
     private ProductManifestationBiblioIn venue(CrossrefWork work, CrossrefVenueMetadata venueMetadata) {
         if (venueMetadata != null && venueMetadata.containerTitle() != null) {
@@ -525,6 +559,9 @@ public class CrossrefToSkgIfMapper {
     /**
      * Crossref's own {@code publisher} field is the closest generic equivalent of "where this
      * record is hosted" - same otf-id convention as DataCite's hostingDataSource.
+     *
+     * @param work the Crossref work record to derive a hosting data source from
+     * @return a DataSourceLite for work.publisher, with an otf local_identifier
      */
     private ProductManifestationBiblioHostingDataSource hostingDataSource(CrossrefWork work) {
         return new DataSourceLite()
@@ -567,6 +604,11 @@ public class CrossrefToSkgIfMapper {
      * The Funder Registry DOI plays the role DataCite's ROR-typed {@code funderIdentifier} plays
      * - note the identifier scheme emitted here is {@code doi}, not {@code ror}, since that's
      * genuinely what Crossref gives (a funder's Funder Registry DOI, not its ROR).
+     *
+     * @param doi the owning record's DOI, used to build a deterministic otf id when funder has
+     *     no Funder Registry DOI
+     * @param funder the Crossref funder record
+     * @return an Organisation for funder, identified by its Funder Registry DOI when present
      */
     private Organisation fundingAgencyOrg(String doi, CrossrefFunder funder) {
         String funderDoi = funderDoi(funder);
@@ -584,6 +626,9 @@ public class CrossrefToSkgIfMapper {
      * A top-level {@code work.funder[]} entry carries the Funder Registry DOI directly as {@code
      * DOI}; a grant record's {@code project[].funding[].funder} only has it inside {@code id[]}
      * (verified live against a real grant record) - check both.
+     *
+     * @param funder the Crossref funder record to read a Funder Registry DOI from
+     * @return the funder's Funder Registry DOI, or null if it has none
      */
     private String funderDoi(CrossrefFunder funder) {
         if (funder.doi != null) {
@@ -603,6 +648,10 @@ public class CrossrefToSkgIfMapper {
      * An "on-the-fly" identifier per the SKG-IF Entity.local_identifier convention, for entities
      * with no stable identifier of their own - same convention as {@code DataCiteToSkgIfMapper},
      * built from the owning record's DOI so it's deterministic.
+     *
+     * @param doi the owning record's DOI
+     * @param label a human-readable label for the entity (e.g. a name), slugged into the id
+     * @return an "otf___&lt;doi-slug&gt;___&lt;label-slug&gt;" identifier
      */
     private String otf(String doi, String label) {
         return "otf___" + slug(doi) + "___" + slug(label);
@@ -634,6 +683,9 @@ public class CrossrefToSkgIfMapper {
      * <a href="https://www.crossref.org/documentation/schema-library/markup-guide-metadata-segments/relationships/">Crossref's
      * relationships markup guide</a>) and reliably populates when a publisher asserts it - so
      * unlike citations, it's read directly from {@code relation} rather than {@code reference[]}.
+     *
+     * @param work the Crossref work record to derive related products from
+     * @return the mapped related products (cites/isSupplementedBy), or null if there are none
      */
     private ProductsRelated relatedProducts(CrossrefWork work) {
         List<ProductsRelatedCitesInner> cites = new ArrayList<>();
@@ -672,6 +724,10 @@ public class CrossrefToSkgIfMapper {
      * Entries under {@code work.relation.get(relationType)} - DOI-shaped entries (Crossref's
      * {@code id-type: "doi"}) become a real, full-URL identifier just like a DOI-bearing {@code
      * reference[]} entry; anything else falls back to an otf id built from the raw {@code id}.
+     *
+     * @param work the Crossref work record to read {@code relation} from
+     * @param relationType the relation key to read (e.g. "is-supplemented-by")
+     * @return the mapped related-product entries for relationType, or empty if none/absent
      */
     private List<ProductsRelatedCitesInner> relatedByRelationType(CrossrefWork work, String relationType) {
         List<ProductsRelatedCitesInner> result = new ArrayList<>();
@@ -704,6 +760,9 @@ public class CrossrefToSkgIfMapper {
      * Unlike {@code Product.titles}/{@code abstracts} (array of strings per language),
      * {@code Grant.titles}/{@code abstracts} are a plain string per language - so titles/
      * descriptions from multiple {@code project[]} entries are concatenated into one string.
+     *
+     * @param projects the grant DOI's project entries
+     * @return the concatenated titles keyed by "en", or null if none carry a title
      */
     private Map<String, String> grantTitles(List<CrossrefProject> projects) {
         List<String> values = projects.stream()
@@ -829,6 +888,10 @@ public class CrossrefToSkgIfMapper {
      * DataCite Awards do - this reuses the investigators' own declared affiliations as
      * beneficiaries (deduped by name), the closest available analogue. Same documented judgment
      * call as {@code DataCiteToSkgIfMapper#grantBeneficiaries}.
+     *
+     * @param doi the owning grant DOI, used to build a deterministic otf id
+     * @param projects the grant DOI's project entries
+     * @return the deduped beneficiary organisations, or null if none have a declared affiliation
      */
     private List<GrantAllOfBeneficiaries> grantBeneficiaries(String doi, List<CrossrefProject> projects) {
         Map<String, CrossrefAffiliation> byName = new LinkedHashMap<>();

@@ -44,7 +44,12 @@ public final class ResourceTypeMapping {
         }
     }
 
-    /** {@code Award} is deliberately absent from the map above - never reaches this method. */
+    /**
+     * {@code Award} is deliberately absent from the map above - never reaches this method.
+     *
+     * @param resourceTypeGeneral the DataCite {@code resourceTypeGeneral} value
+     * @return the corresponding SKG-IF product_type, or OTHER if unrecognized
+     */
     public static Product.ProductTypeEnum productType(String resourceTypeGeneral) {
         return TO_PRODUCT_TYPE.getOrDefault(resourceTypeGeneral, Product.ProductTypeEnum.OTHER);
     }
@@ -58,6 +63,9 @@ public final class ResourceTypeMapping {
      * product_type, alphabetically sorted so callers building a query clause from this (see
      * {@code DataCiteProductFilters}) get deterministic output regardless of the backing map's
      * iteration order.
+     *
+     * @param productType the SKG-IF product_type to find matching DataCite values for
+     * @return the matching resourceTypeGeneral values, alphabetically sorted
      */
     public static List<String> resourceTypesFor(Product.ProductTypeEnum productType) {
         return TO_PRODUCT_TYPE.entrySet().stream()

@@ -121,6 +121,9 @@ final class DataCiteProductFilters {
      * the (possibly several) {@code resourceTypeGeneral} values that {@link ResourceTypeMapping}
      * maps onto that product_type, ORed together. An unrecognized product_type value is a
      * well-formed filter that simply never matches.
+     *
+     * @param value the SKG-IF product_type filter value
+     * @return an OR'd Lucene clause over the matching resourceTypeGeneral values
      */
     private static String productTypeClause(String value) {
         Product.ProductTypeEnum productType;
@@ -138,12 +141,22 @@ final class DataCiteProductFilters {
                 .collect(Collectors.joining(" OR ")) + ")";
     }
 
-    /** Bare orcid -> matches creators/contributors nameIdentifiers, either role. */
+    /**
+     * Bare orcid -> matches creators/contributors nameIdentifiers, either role.
+     *
+     * @param bareOrcid the bare ORCID id from the filter value
+     * @return a Lucene clause matching bareOrcid as a full ORCID URL, on either role
+     */
     private static String orcidClause(String bareOrcid) {
         return FilterQuerySyntax.creatorOrContributorClause("nameIdentifiers.nameIdentifier", ORCID_BASE_URL + bareOrcid);
     }
 
-    /** Bare ROR id -> matches creators/contributors affiliation identifiers, either role. */
+    /**
+     * Bare ROR id -> matches creators/contributors affiliation identifiers, either role.
+     *
+     * @param bareRor the bare ROR id from the filter value
+     * @return a Lucene clause matching bareRor as a full ROR URL, on either role's affiliation
+     */
     private static String rorClause(String bareRor) {
         return FilterQuerySyntax.creatorOrContributorClause("affiliation.affiliationIdentifier", ROR_BASE_URL + bareRor);
     }

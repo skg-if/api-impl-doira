@@ -72,6 +72,9 @@ public class MedraToSkgIfMapper {
      * {@code "en"} when absent, same convention as {@code CrossrefToSkgIfMapper.titles}), keeping
      * every {@code TitleType} for that language in document order - mEDRA gives no field to
      * distinguish "full" vs. "abbreviated" title once inside {@code Product.titles} anyway.
+     *
+     * @param work the mEDRA record to read ContentItem-level titles from
+     * @return the titles grouped by language, or null if work has none
      */
     private Map<String, List<String>> titles(MedraWork work) {
         if (work.titles() == null || work.titles().isEmpty()) {
@@ -121,6 +124,10 @@ public class MedraToSkgIfMapper {
      * PersonNameInverted} (e.g. "Cotte M.") isn't safely splittable, so given/family stay unset
      * rather than guessed at. No ORCID (or any other person identifier) was observed on any
      * contributor in the fixtures examined, so the local_identifier is always an otf id.
+     *
+     * @param doi the owning record's DOI, used to build a deterministic otf id
+     * @param contributor the ONIX-for-DOI contributor to derive a person reference from
+     * @return the mapped PersonLite, or null if contributor carries none of the three name shapes
      */
     private ProductContributionBy personRef(String doi, MedraContributor contributor) {
         String givenName;
@@ -161,7 +168,12 @@ public class MedraToSkgIfMapper {
         return given + " " + family;
     }
 
-    /** Splits an ONIX {@code PersonNameInverted} string (e.g. "Fragneto, Giovanna") into {family, given}. */
+    /**
+     * Splits an ONIX {@code PersonNameInverted} string (e.g. "Fragneto, Giovanna") into {family, given}.
+     *
+     * @param inverted an inverted-order name string ("Family, Given"), or null
+     * @return an array of {family, given}, or null if inverted is null
+     */
     private String[] splitInverted(String inverted) {
         if (inverted == null) {
             return null;
@@ -183,6 +195,9 @@ public class MedraToSkgIfMapper {
      * {@code DOISerialArticleVersion}, whichever ONIX-DOI message variant registered it) rather
      * than a fixed string - read straight off the document instead of hardcoded, unlike {@code
      * product_type} (always {@code literature}, since only this one schema family is handled).
+     *
+     * @param work the mEDRA record to read the manifestation type label from
+     * @return the mapped ProductManifestationType, or null if work.workElementName() is null
      */
     private ProductManifestationType manifestationType(MedraWork work) {
         if (work.workElementName() == null) {
@@ -204,6 +219,9 @@ public class MedraToSkgIfMapper {
      * SKG-IF home of its own - see SKG_IF_DOI_MAPPING_DATES.md) - length alone distinguishes
      * year-only ("2019"), year+month ("202103"), and full-date ("20210813") forms, confirmed
      * across all 6 fixtures.
+     *
+     * @param raw the raw mEDRA PublicationDate digit string, or null
+     * @return the ISO-normalized date (year, year-month, or full date), or null if unrecognized
      */
     private String isoDate(String raw) {
         if (raw == null) {
@@ -233,6 +251,9 @@ public class MedraToSkgIfMapper {
      * mEDRA gives no journal-DOI equivalent to Crossref's {@code CrossrefJournalDoiResolver} - the
      * venue's {@code local_identifier} is always an otf id, backed only by the journal/series'
      * own ISSN(s) as its {@code identifiers[]}.
+     *
+     * @param work the mEDRA record to derive a venue from
+     * @return the mapped Venue, or null if work.journalTitle() is null
      */
     private ProductManifestationBiblioIn venue(MedraWork work) {
         if (work.journalTitle() == null) {
@@ -250,7 +271,13 @@ public class MedraToSkgIfMapper {
         return venue;
     }
 
-    /** mEDRA's {@code PublisherName} (falling back to {@code RegistrantName}) has no external ID system. */
+    /**
+     * mEDRA's {@code PublisherName} (falling back to {@code RegistrantName}) has no external ID system.
+     *
+     * @param doi the owning record's DOI, used to build a deterministic otf id
+     * @param name the publisher or registrant name
+     * @return a DataSourceLite for name, with an otf local_identifier
+     */
     private ProductManifestationBiblioHostingDataSource hostingDataSource(String doi, String name) {
         return new DataSourceLite()
                 .localIdentifier(otf(doi, name))
@@ -261,6 +288,10 @@ public class MedraToSkgIfMapper {
     /**
      * An "on-the-fly" identifier per the SKG-IF Entity.local_identifier convention - same
      * convention as {@code CrossrefToSkgIfMapper}/{@code DataCiteToSkgIfMapper}.
+     *
+     * @param doi the owning record's DOI
+     * @param label a human-readable label for the entity (e.g. a name), slugged into the id
+     * @return an "otf___&lt;doi-slug&gt;___&lt;label-slug&gt;" identifier
      */
     private String otf(String doi, String label) {
         return "otf___" + slug(doi) + "___" + slug(label);

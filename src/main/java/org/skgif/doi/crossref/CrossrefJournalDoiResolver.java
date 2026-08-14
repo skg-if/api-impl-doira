@@ -50,6 +50,9 @@ public class CrossrefJournalDoiResolver {
      * network/timeout error, or no matching record - degrades to an empty result for that ISSN
      * rather than propagating, so callers can always fall back to their existing otf-id
      * behavior.
+     *
+     * @param issns the journal's ISSN(s) to try, in order
+     * @return the first journal-level DOI found, or empty if none resolve
      */
     public Optional<String> resolveJournalDoi(List<String> issns) {
         if (issns == null) {

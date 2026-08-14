@@ -158,6 +158,29 @@
           </systemPropertyVariables>
         </configuration>
       </plugin>
+      <plugin>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>3.6.0</version>
+        <configuration>
+          <configLocation>checkstyle.xml</configLocation>
+          <sourceDirectories>
+            <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
+          </sourceDirectories>
+          <includeTestSourceDirectory>false</includeTestSourceDirectory>
+          <skip>${skipTests}</skip>
+          <failOnViolation>true</failOnViolation>
+          <violationSeverity>warning</violationSeverity>
+        </configuration>
+        <executions>
+          <execution>
+            <id>javadoc-tag-check</id>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 </project>

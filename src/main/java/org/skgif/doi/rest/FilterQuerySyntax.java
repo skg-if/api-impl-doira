@@ -30,6 +30,10 @@ final class FilterQuerySyntax {
      * Splits on commas EXCEPT where the text between a comma and the next colon isn't one of
      * {@code supportedKeys} - see the class javadoc for why. A value with no comma in it, or the
      * final segment of the filter string, always ends up as a single segment either way.
+     *
+     * @param filter the raw SKG-IF filter query string
+     * @param supportedKeys the filter keys the caller recognizes
+     * @return the filter string split into key:value segments
      */
     static List<String> splitSegments(String filter, Set<String> supportedKeys) {
         List<String> segments = new ArrayList<>();
@@ -64,13 +68,24 @@ final class FilterQuerySyntax {
      * Builds {@code "(creators.<field>:\"value\" OR contributors.<field>:\"value\")"} - the
      * recurring shape for DataCite by/declared_affiliations filters, which must match against
      * either {@code creators[]} or {@code contributors[]} (see {@code DataCiteToSkgIfMapper}).
+     *
+     * @param field the DataCite field to match against (without the creators./contributors. prefix)
+     * @param value the filter value to match
+     * @return an OR'd Lucene clause matching field on either creators or contributors
      */
     static String creatorOrContributorClause(String field, String value) {
         String escaped = escape(value);
         return "(creators." + field + ":\"" + escaped + "\" OR contributors." + field + ":\"" + escaped + "\")";
     }
 
-    /** For attributes we only ever emit one fixed scheme/value for - no-op if it matches, else forces zero results. */
+    /**
+     * For attributes we only ever emit one fixed scheme/value for - no-op if it matches, else forces zero results.
+     *
+     * @param value the filter value to check
+     * @param expectedScheme the only scheme value this API ever emits for the attribute
+     * @param noMatchClause the clause to return when value doesn't match expectedScheme
+     * @return null (no-op) if value matches expectedScheme, else noMatchClause
+     */
     static String schemeOnlyFilter(String value, String expectedScheme, String noMatchClause) {
         return expectedScheme.equalsIgnoreCase(value) ? null : noMatchClause;
     }
@@ -81,6 +96,13 @@ final class FilterQuerySyntax {
      * to {@code clauseBuilder} to produce a clause (or {@code null} to omit it from the result).
      * Shared by every provider's filter parser so the malformed-segment / unsupported-filter
      * error messages exist in exactly one place.
+     *
+     * @param filter the raw SKG-IF filter query string
+     * @param supportedKeys the filter keys this provider/entity implementation recognizes
+     * @param clauseBuilder builds a provider-specific clause from each valid (key, value) pair,
+     *     or returns null to omit it from the result
+     * @return the non-null clauses built from filter's segments
+     * @throws UnsupportedFilterException if a segment is malformed, or its key isn't in supportedKeys
      */
     static List<String> parseClauses(String filter, Set<String> supportedKeys,
             BiFunction<String, String, String> clauseBuilder) {

@@ -51,6 +51,22 @@ Set `JAVA_HOME`/`PATH` this way in every command/tool invocation that needs them
 Bash/PowerShell tool call starts a fresh process) - do not attempt to persist them to
 the user or machine environment.
 
+## Checking for compile errors only
+
+When the goal is just "does this change compile" - e.g. right after editing a
+`.java` file, before writing/running any tests - don't run the `test` goal at all.
+`compile`/`test-compile` skip surefire entirely, so the only output is javac
+diagnostics:
+
+```powershell
+mvn -q -B compile         # main sources only
+mvn -q -B test-compile    # also compiles test sources, still doesn't run them
+```
+
+This is both faster and far smaller than `clean test` for a step that's only
+checking for typos/type errors, and it means a failing compile doesn't also pay
+for a full surefire run that can't succeed anyway.
+
 ## Running the build
 
 Full suite:
@@ -63,12 +79,35 @@ mvn -q -B clean test
 interactive progress-bar/ANSI noise. Maven still prints a `BUILD FAILURE` line and
 the list of failing tests through `-q` - this doesn't hide real failures.
 
+Reserve `clean` for a final verification pass. While iterating, drop it - an
+incremental `mvn -q -B test` reuses already-compiled classes and doesn't reprint
+compiler/plugin setup output for files that haven't changed.
+
 When iterating on one class rather than validating the whole change, scope the run
-instead of re-running everything:
+instead of re-running everything - reach for this by default whenever the change
+is localized to one mapper/resource, not just when a full run already failed:
 
 ```powershell
 mvn -q -B test -Dtest=CrossrefToSkgIfMapperTest
 ```
+
+### Large failures: redirect to a file and grep before reading
+
+`-q` keeps a *passing* build's console output small, but a *failing* one still
+streams every stack trace straight into the command's captured output - which is
+read in full every time. For a build/test run that might fail with a lot of
+output (many broken tests, a cascading compile error), redirect to a log file and
+search it instead of capturing everything directly:
+
+```powershell
+mvn -q -B test *> target\build.log
+Select-String -Path target\build.log -Pattern 'ERROR|BUILD FAILURE|FAILED|Tests run:.*Failures: [1-9]|Tests run:.*Errors: [1-9]'
+```
+
+Only `Get-Content target\build.log` in full (or open the specific `.txt`/`.xml`
+report below) once the matched lines identify which class/line needs the full
+trace. On a clean build this adds one extra command but costs nothing; on a
+large failure it avoids paying for output that's mostly irrelevant duplication.
 
 ### Reading results afterward - use the `.txt` reports, not the `.xml` ones
 

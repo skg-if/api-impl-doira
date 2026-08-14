@@ -250,6 +250,9 @@ public class CrossrefProductsResource {
      * shape the parser doesn't recognize - degrades to {@code null}, so the caller falls back to
      * the existing {@code container-title[0]} venue rather than failing the whole product
      * response over an enrichment call.
+     *
+     * @param doi the DOI to fetch XML venue metadata for
+     * @return the parsed venue metadata, or null if the fetch/parse fails or finds nothing
      */
     private CrossrefVenueMetadata fetchVenueMetadata(String doi) {
         try (Response response = crossrefXmlTransformClient.getXmlTransform(doi)) {
