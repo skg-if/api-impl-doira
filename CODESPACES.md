@@ -6,11 +6,27 @@ mode automatically.
 
 ## Start a Codespace
 
-1. On GitHub, click **Code -> Codespaces -> Create codespace on main**.
+1. Go to [github.com/codespaces](https://github.com/codespaces) and click **New
+   codespace** - pick this repo (`skg-if/api-impl-doira`) and the `main` branch.
+   (The repo's own **Code -> Codespaces** dropdown only offers to create one and
+   doesn't reliably list existing ones - the codespaces.new page is where you'll
+   find every codespace you already have, running or stopped.)
 2. Wait for the container to build (first time only) - `postCreateCommand` pre-warms
    the Maven dependency cache.
-3. On start, `postStartCommand` runs `./mvnw quarkus:dev` automatically. Watch the
-   terminal for `Listening on: http://0.0.0.0:8080`.
+3. On start, `postStartCommand` runs `quarkus:dev` automatically (continuous testing
+   and the interactive dev console are disabled so it doesn't sit waiting on
+   keypresses). The terminal should show:
+
+   ```
+   ✔ Finishing up...
+   ✔ Running postCreateCommand...
+   ⠏ Running postStartCommand...
+     › ./mvnw quarkus:dev -Dquarkus.test.continuous-testing=disabled -Dquarkus.console.enabled=false
+   ```
+
+   Give it a minute, then check for `Listening on: http://0.0.0.0:8080` (open the
+   terminal's own dropdown to find the instance actually running this command, or
+   just run the same line yourself in a fresh terminal).
 
 ## Use it
 
@@ -29,7 +45,8 @@ mode automatically.
 - Codespaces auto-stop after a period of inactivity (configurable in your GitHub
   Codespaces settings). Stopping doesn't delete it - your `.m2` cache and any
   uncommitted changes persist until you delete the codespace.
-- **Code -> Codespaces -> ... -> Delete** to remove it entirely once you're done.
+- On [github.com/codespaces](https://github.com/codespaces), use the **...** menu on
+  the entry -> **Delete** to remove it entirely once you're done.
 
 ## Troubleshooting
 
