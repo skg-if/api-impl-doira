@@ -28,6 +28,8 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.openapi.annotations.media.ExampleObject;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.util.ArrayList;
@@ -83,7 +85,19 @@ public class ProductsResource {
     @GET
     @Path("/{local_identifier: .+}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getProductById(@PathParam("local_identifier") String localIdentifierParam,
+    public Response getProductById(
+            @Parameter(description = "DOI to look up (with or without the SKG base domain prefix)", examples = {
+                    @ExampleObject(name = "dataset", value = "10.15151/esrf-dc-2493599001"),
+                    @ExampleObject(name = "dataset-2", value = "10.15151/esrf-es-2210534378"),
+                    @ExampleObject(name = "software", value = "10.5281/zenodo.21826016"),
+                    @ExampleObject(name = "text", value = "10.5281/zenodo.20750072"),
+                    @ExampleObject(name = "editor-contributor", value = "10.5281/zenodo.21232199"),
+                    @ExampleObject(name = "cites-references", value = "10.5281/zenodo.21914195"),
+                    @ExampleObject(name = "relations", value = "10.5281/zenodo.21827103"),
+                    @ExampleObject(name = "thesis-funder-id", value = "10.82227/repository.uwtsd.ac.uk.00004342"),
+                    @ExampleObject(name = "dataset-funder-no-identifier",
+                            value = "10.17630/e449e75a-1ee9-4490-909c-e3913052cce1")
+            }) @PathParam("local_identifier") String localIdentifierParam,
             @Context UriInfo uriInfo) {
         String doi = localIdentifiers.toDoi(localIdentifierParam);
 

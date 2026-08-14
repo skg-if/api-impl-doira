@@ -28,6 +28,8 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.openapi.annotations.media.ExampleObject;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.util.ArrayList;
@@ -77,7 +79,10 @@ public class GrantsResource {
     @GET
     @Path("/{local_identifier: .+}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getGrantById(@PathParam("local_identifier") String localIdentifierParam,
+    public Response getGrantById(
+            @Parameter(description = "DOI to look up (with or without the SKG base domain prefix)", examples = {
+                    @ExampleObject(name = "award", value = "10.71707/r3sy-7371")
+            }) @PathParam("local_identifier") String localIdentifierParam,
             @Context UriInfo uriInfo) {
         String doi = localIdentifiers.toDoi(localIdentifierParam);
 

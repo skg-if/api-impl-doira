@@ -14,6 +14,8 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import java.util.Optional;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.openapi.annotations.media.ExampleObject;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.skgif.doi.generated.model.MetaSingleEntity;
 import org.skgif.doi.generated.model.Product;
@@ -63,7 +65,16 @@ public class MedraProductsResource {
     @GET
     @Path("/{local_identifier: .+}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getProductById(@PathParam("local_identifier") String localIdentifierParam,
+    public Response getProductById(
+            @Parameter(description = "DOI to look up (with or without the SKG base domain prefix)", examples = {
+                    @ExampleObject(name = "plinius", value = "10.19276/plinius.2019.01004"),
+                    @ExampleObject(name = "ncc-2021", value = "10.1393/ncc/i2021-21084-7"),
+                    @ExampleObject(name = "ncc-2025", value = "10.1393/ncc/i2025-25069-2"),
+                    @ExampleObject(name = "aapp", value = "10.1478/AAPP.98S1A9"),
+                    @ExampleObject(name = "sapere", value = "10.12919/sapere.2018.04.3"),
+                    @ExampleObject(name = "ecai", value = "10.3254/978-1-61499-732-0-119"),
+                    @ExampleObject(name = "il-nuovo-cimento", value = "10.1400/255846")
+            }) @PathParam("local_identifier") String localIdentifierParam,
             @Context UriInfo uriInfo) {
         String doi = localIdentifiers.toDoi(localIdentifierParam);
 
