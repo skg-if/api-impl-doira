@@ -117,12 +117,11 @@ final class JsonLdResponses {
     }
 
     static String pageLink(UriInfo uriInfo, String resourcePath, String filter, int pageNumber, int pageSize) {
-        StringBuilder sb = new StringBuilder(baseUri(uriInfo) + resourcePath + "?");
+        String base = baseUri(uriInfo) + resourcePath + "?";
         if (filter != null && !filter.isBlank()) {
-            sb.append("filter=").append(filter).append('&');
+            base += "filter=" + filter + "&";
         }
-        sb.append("page=").append(pageNumber).append("&page_size=").append(pageSize);
-        return sb.toString();
+        return base + "page=" + pageNumber + "&page_size=" + pageSize;
     }
 
     static String collectionLink(UriInfo uriInfo, String resourcePath, String filter) {

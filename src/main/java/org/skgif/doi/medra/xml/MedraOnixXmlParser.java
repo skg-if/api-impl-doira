@@ -1,13 +1,16 @@
 package org.skgif.doi.medra.xml;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import org.skgif.doi.medra.dto.MedraContributor;
 import org.skgif.doi.medra.dto.MedraTitle;
@@ -16,6 +19,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * Parses mEDRA's ONIX-for-DOI 2.0 XML (as served by {@code https://api.medra.org/metadata/{doi}})
@@ -36,6 +40,8 @@ import org.xml.sax.InputSource;
  * Optional.empty()}.
  */
 public final class MedraOnixXmlParser {
+
+    private static final String TITLE_TYPE_FULL = "01";
 
     private MedraOnixXmlParser() {
     }
@@ -97,9 +103,9 @@ public final class MedraOnixXmlParser {
      * @param xpath the XPath instance to evaluate queries with
      * @param contentItem the {@code ContentItem} node to read titles from
      * @return the ContentItem's titles, in document order
-     * @throws Exception if the XPath evaluation fails
+     * @throws XPathExpressionException if the XPath evaluation fails
      */
-    private static List<MedraTitle> titles(XPath xpath, Node contentItem) throws Exception {
+    private static List<MedraTitle> titles(XPath xpath, Node contentItem) throws XPathExpressionException {
         NodeList nodes = (NodeList) xpath.evaluate("*[local-name()='Title']", contentItem, XPathConstants.NODESET);
         List<MedraTitle> titles = new ArrayList<>();
         for (int i = 0; i < nodes.getLength(); i++) {
@@ -126,9 +132,9 @@ public final class MedraOnixXmlParser {
      * @param xpath the XPath instance to evaluate queries with
      * @param serialWork the {@code SerialWork} node to read the journal/series title from
      * @return the journal/series' own name, or null if none found
-     * @throws Exception if the XPath evaluation fails
+     * @throws XPathExpressionException if the XPath evaluation fails
      */
-    private static String journalTitle(XPath xpath, Node serialWork) throws Exception {
+    private static String journalTitle(XPath xpath, Node serialWork) throws XPathExpressionException {
         NodeList nodes = (NodeList) xpath.evaluate("*[local-name()='Title']", serialWork, XPathConstants.NODESET);
         String firstAny = null;
         for (int i = 0; i < nodes.getLength(); i++) {
@@ -140,14 +146,15 @@ public final class MedraOnixXmlParser {
             if (firstAny == null) {
                 firstAny = text;
             }
-            if ("01".equals(text(xpath, titleNode, "*[local-name()='TitleType']"))) {
+            if (TITLE_TYPE_FULL.equals(text(xpath, titleNode, "*[local-name()='TitleType']"))) {
                 return text;
             }
         }
         return firstAny;
     }
 
-    private static List<MedraContributor> contributors(XPath xpath, Node contentItem) throws Exception {
+    private static List<MedraContributor> contributors(XPath xpath, Node contentItem)
+            throws XPathExpressionException {
         NodeList nodes =
                 (NodeList) xpath.evaluate("*[local-name()='Contributor']", contentItem, XPathConstants.NODESET);
         List<MedraContributor> contributors = new ArrayList<>();
@@ -163,7 +170,7 @@ public final class MedraOnixXmlParser {
         return contributors;
     }
 
-    private static Document parseDocument(String xml) throws Exception {
+    private static Document parseDocument(String xml) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         // XXE hardening - this parses content fetched live from the network.
         factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
@@ -175,12 +182,13 @@ public final class MedraOnixXmlParser {
         return builder.parse(new InputSource(new StringReader(xml)));
     }
 
-    private static String text(XPath xpath, Node context, String expression) throws Exception {
+    private static String text(XPath xpath, Node context, String expression) throws XPathExpressionException {
         String value = (String) xpath.evaluate(expression, context, XPathConstants.STRING);
         return value == null || value.isBlank() ? null : value.trim();
     }
 
-    private static List<String> textList(XPath xpath, Node context, String expression) throws Exception {
+    private static List<String> textList(XPath xpath, Node context, String expression)
+            throws XPathExpressionException {
         NodeList nodes = (NodeList) xpath.evaluate(expression, context, XPathConstants.NODESET);
         List<String> values = new ArrayList<>();
         for (int i = 0; i < nodes.getLength(); i++) {

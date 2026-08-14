@@ -130,6 +130,8 @@ final class FilterQuerySyntax {
     }
 
     static final class UnsupportedFilterException extends RuntimeException {
+        private static final long serialVersionUID = 1L;
+
         UnsupportedFilterException(String message) {
             super(java.util.Objects.requireNonNull(message));
         }

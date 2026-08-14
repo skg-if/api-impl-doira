@@ -30,6 +30,9 @@ public class DataCiteAttributes {
     public String version;
     public String url;
 
+    // Field name mirrors the DataCite JSON key ("title") it's deserialized from, same as every
+    // other DTO field in this class - not a naming smell.
+    @SuppressWarnings("PMD.AvoidFieldNameMatchingTypeName")
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Title {
         public String title;

@@ -53,6 +53,7 @@ import java.util.Optional;
 public class DataCiteProductsResource {
 
     private static final String RESOURCE_PATH = "/datacite/products";
+    private static final int FIRST_PAGE_NUMBER = 1;
 
     @Inject
     @RestClient
@@ -198,7 +199,7 @@ public class DataCiteProductsResource {
                     .localIdentifier(JsonLdResponses.pageLink(uriInfo, RESOURCE_PATH, filter, pageNumber + 1, size))
                     .entityType(SearchResultPage.EntityTypeEnum.SEARCH_RESULT_PAGE));
         }
-        if (pageNumber > 1) {
+        if (pageNumber > FIRST_PAGE_NUMBER) {
             meta.prevPage(new SearchResultPage()
                     .localIdentifier(JsonLdResponses.pageLink(uriInfo, RESOURCE_PATH, filter, pageNumber - 1, size))
                     .entityType(SearchResultPage.EntityTypeEnum.SEARCH_RESULT_PAGE));

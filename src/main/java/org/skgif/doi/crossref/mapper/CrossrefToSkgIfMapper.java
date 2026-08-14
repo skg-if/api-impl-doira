@@ -51,12 +51,14 @@ import org.skgif.doi.generated.model.ProductsRelatedItem;
 import org.skgif.doi.generated.model.Topic;
 import org.skgif.doi.generated.model.VenueLite;
 import org.skgif.doi.generated.model.VenueLiteAllOfIdentifiers;
+import org.skgif.doi.spec.EntityTypes;
 import org.skgif.doi.util.ExternalIdentifierUrls;
 import org.skgif.doi.util.LocalIdentifiers;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -78,6 +80,11 @@ public class CrossrefToSkgIfMapper {
 
     private static final String CROSSREF_TYPES_BASE_URL = "https://api.crossref.org/types/";
     private static final int MAX_SLUG_LENGTH = 40;
+    private static final String SCHEME_DOI = "doi";
+    private static final String DATE_TYPE_PUBLICATION = "publication";
+    private static final String DATE_TYPE_CORRECTION = "correction";
+    private static final String DATE_TYPE_RETRACTION = "retraction";
+    private static final int PAGE_RANGE_PARTS = 2;
 
     private final LocalIdentifiers localIdentifiers;
     private final CrossrefJournalDoiResolver journalDoiResolver;
@@ -121,7 +128,7 @@ public class CrossrefToSkgIfMapper {
         return new Product()
                 .localIdentifier(localIdentifiers.toFullLocalIdentifier(work.doi))
                 .productType(CrossrefTypeMapping.productType(work.type))
-                .identifiers(List.of(new ProductAllOfIdentifiers().scheme("doi").value(work.doi)))
+                .identifiers(List.of(new ProductAllOfIdentifiers().scheme(SCHEME_DOI).value(work.doi)))
                 .titles(titles(work))
                 .abstracts(abstracts(work))
                 .topics(topics(work))
@@ -157,7 +164,7 @@ public class CrossrefToSkgIfMapper {
         return new Grant()
                 .localIdentifier(localIdentifiers.toFullLocalIdentifier(work.doi))
                 .entityType(Grant.EntityTypeEnum.GRANT)
-                .identifiers(List.of(new GrantLiteAllOfIdentifiers().scheme("doi").value(work.doi)))
+                .identifiers(List.of(new GrantLiteAllOfIdentifiers().scheme(SCHEME_DOI).value(work.doi)))
                 .titles(grantTitles(projects))
                 .abstracts(grantAbstracts(projects))
                 .grantNumber(work.award)
@@ -240,7 +247,7 @@ public class CrossrefToSkgIfMapper {
         if (work.publisher != null) {
             contributions.add(new ProductContribution()
                     .by(organisationRef(work.doi, work.publisher))
-                    .rank(rank++)
+                    .rank(rank)
                     .role(ProductContribution.RoleEnum.PUBLISHER));
         }
         return contributions.isEmpty() ? null : contributions;
@@ -254,7 +261,7 @@ public class CrossrefToSkgIfMapper {
                 .name(name)
                 .givenName(given)
                 .familyName(family)
-                .entityType("person");
+                .entityType(EntityTypes.PERSON);
         if (bareOrcid != null) {
             by.identifiers(List.of(new PersonLiteAllOfIdentifiers().scheme("orcid").value(bareOrcid)));
         }
@@ -274,7 +281,7 @@ public class CrossrefToSkgIfMapper {
         return new Organisation()
                 .localIdentifier(otf(doi, name))
                 .name(name)
-                .entityType("organisation");
+                .entityType(EntityTypes.ORGANISATION);
     }
 
     /**
@@ -330,7 +337,7 @@ public class CrossrefToSkgIfMapper {
                             ? ExternalIdentifierUrls.ROR_BASE_URL + ror
                             : otf(doi, affiliation.name))
                     .name(affiliation.name)
-                    .entityType("organisation");
+                    .entityType(EntityTypes.ORGANISATION);
             if (ror != null) {
                 org.identifiers(List.of(new AgentAllOfIdentifiers().scheme("ror").value(ror)));
             }
@@ -384,17 +391,17 @@ public class CrossrefToSkgIfMapper {
         // candidate for `modified` (`indexed` is deliberately excluded - see the mapping doc).
         any |= addDateItem(dates, "modified", work.deposited);
         any |= addDateItem(dates, "acceptance", work.accepted);
-        any |= addDateItem(dates, "publication", work.publishedPrint);
-        any |= addDateItem(dates, "publication", work.publishedOnline);
-        any |= addDateItem(dates, "publication", work.issued);
+        any |= addDateItem(dates, DATE_TYPE_PUBLICATION, work.publishedPrint);
+        any |= addDateItem(dates, DATE_TYPE_PUBLICATION, work.publishedOnline);
+        any |= addDateItem(dates, DATE_TYPE_PUBLICATION, work.issued);
         if (work.updateTo != null) {
             for (CrossrefUpdateTo update : work.updateTo) {
                 // "correction"/"retraction" are the only type values Crossref's own docs give
                 // as examples (no exhaustive enum is published) - any other value is ignored.
-                if ("correction".equals(update.type)) {
-                    any |= addDateItem(dates, "correction", update.updated);
-                } else if ("retraction".equals(update.type)) {
-                    any |= addDateItem(dates, "retraction", update.updated);
+                if (DATE_TYPE_CORRECTION.equals(update.type)) {
+                    any |= addDateItem(dates, DATE_TYPE_CORRECTION, update.updated);
+                } else if (DATE_TYPE_RETRACTION.equals(update.type)) {
+                    any |= addDateItem(dates, DATE_TYPE_RETRACTION, update.updated);
                 }
             }
         }
@@ -414,9 +421,9 @@ public class CrossrefToSkgIfMapper {
             case "deposit" -> dates.addDepositItem(iso);
             case "modified" -> dates.addModifiedItem(iso);
             case "acceptance" -> dates.addAcceptanceItem(iso);
-            case "publication" -> dates.addPublicationItem(iso);
-            case "correction" -> dates.addCorrectionItem(iso);
-            case "retraction" -> dates.addRetractionItem(iso);
+            case DATE_TYPE_PUBLICATION -> dates.addPublicationItem(iso);
+            case DATE_TYPE_CORRECTION -> dates.addCorrectionItem(iso);
+            case DATE_TYPE_RETRACTION -> dates.addRetractionItem(iso);
             default -> {
                 return false;
             }
@@ -470,9 +477,9 @@ public class CrossrefToSkgIfMapper {
         if (page == null || page.isBlank()) {
             return null;
         }
-        String[] parts = page.split("-", 2);
+        String[] parts = page.split("-", PAGE_RANGE_PARTS);
         ProductManifestationBiblioPages pages = new ProductManifestationBiblioPages().first(parts[0].trim());
-        if (parts.length > 1) {
+        if (parts.length == PAGE_RANGE_PARTS) {
             pages.last(parts[1].trim());
         }
         return pages;
@@ -519,12 +526,12 @@ public class CrossrefToSkgIfMapper {
         VenueLite venue = new VenueLite()
                 .localIdentifier(journalDoi != null ? localIdentifiers.toFullLocalIdentifier(journalDoi)
                         : otf(work.doi, name))
-                .entityType("venue")
+                .entityType(EntityTypes.VENUE)
                 .name(name);
 
         List<VenueLiteAllOfIdentifiers> identifiers = new ArrayList<>();
         if (journalDoi != null) {
-            identifiers.add(new VenueLiteAllOfIdentifiers().scheme("doi").value(journalDoi));
+            identifiers.add(new VenueLiteAllOfIdentifiers().scheme(SCHEME_DOI).value(journalDoi));
         }
         issns.forEach(issn -> identifiers.add(new VenueLiteAllOfIdentifiers().scheme("issn").value(issn)));
         if (!identifiers.isEmpty()) {
@@ -539,12 +546,12 @@ public class CrossrefToSkgIfMapper {
         VenueLite venue = new VenueLite()
                 .localIdentifier(containerDoi != null ? localIdentifiers.toFullLocalIdentifier(containerDoi)
                         : otf(doi, name))
-                .entityType("venue")
+                .entityType(EntityTypes.VENUE)
                 .name(name);
 
         List<VenueLiteAllOfIdentifiers> identifiers = new ArrayList<>();
         if (containerDoi != null) {
-            identifiers.add(new VenueLiteAllOfIdentifiers().scheme("doi").value(containerDoi));
+            identifiers.add(new VenueLiteAllOfIdentifiers().scheme(SCHEME_DOI).value(containerDoi));
         }
         if (venueMetadata.seriesIssns() != null) {
             venueMetadata.seriesIssns().stream()
@@ -623,9 +630,9 @@ public class CrossrefToSkgIfMapper {
                         ? localIdentifiers.toFullLocalIdentifier(funderDoi)
                         : otf(doi, funder.name))
                 .name(funder.name)
-                .entityType("organisation");
+                .entityType(EntityTypes.ORGANISATION);
         if (funderDoi != null) {
-            agency.identifiers(List.of(new AgentAllOfIdentifiers().scheme("doi").value(funderDoi)));
+            agency.identifiers(List.of(new AgentAllOfIdentifiers().scheme(SCHEME_DOI).value(funderDoi)));
         }
         return agency;
     }
@@ -669,7 +676,7 @@ public class CrossrefToSkgIfMapper {
         if (text == null) {
             return "unknown";
         }
-        String slug = text.toLowerCase().replaceAll("[^a-z0-9]+", "-").replaceAll("^-+|-+$", "");
+        String slug = text.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]+", "-").replaceAll("^-+|-+$", "");
         if (slug.isEmpty()) {
             return "unknown";
         }
@@ -705,14 +712,15 @@ public class CrossrefToSkgIfMapper {
                     // own products and every other DOI-identified entity.
                     cites.add(new ProductsRelatedItem()
                             .localIdentifier(localIdentifiers.toFullLocalIdentifier(reference.doi))
-                            .entityType("product")
-                            .identifiers(List.of(new EntityIdentifiersInner().scheme("doi").value(reference.doi))));
+                            .entityType(EntityTypes.PRODUCT)
+                            .identifiers(
+                                    List.of(new EntityIdentifiersInner().scheme(SCHEME_DOI).value(reference.doi))));
                     continue;
                 }
                 String label = reference.unstructured != null ? reference.unstructured : reference.key;
                 cites.add(new ProductsRelatedItem()
                         .localIdentifier(otf(work.doi, label))
-                        .entityType("product"));
+                        .entityType(EntityTypes.PRODUCT));
             }
         }
         List<ProductsRelatedCitesInner> isSupplementedBy = relatedByRelationType(work, "is-supplemented-by");
@@ -751,16 +759,16 @@ public class CrossrefToSkgIfMapper {
             if (entry.id == null) {
                 continue;
             }
-            if ("doi".equalsIgnoreCase(entry.idType)) {
+            if (SCHEME_DOI.equalsIgnoreCase(entry.idType)) {
                 result.add(new ProductsRelatedItem()
                         .localIdentifier(localIdentifiers.toFullLocalIdentifier(entry.id))
-                        .entityType("product")
-                        .identifiers(List.of(new EntityIdentifiersInner().scheme("doi").value(entry.id))));
+                        .entityType(EntityTypes.PRODUCT)
+                        .identifiers(List.of(new EntityIdentifiersInner().scheme(SCHEME_DOI).value(entry.id))));
                 continue;
             }
             result.add(new ProductsRelatedItem()
                     .localIdentifier(otf(work.doi, entry.id))
-                    .entityType("product"));
+                    .entityType(EntityTypes.PRODUCT));
         }
         return result;
     }
@@ -861,7 +869,7 @@ public class CrossrefToSkgIfMapper {
                 .name(name)
                 .givenName(investigator.given)
                 .familyName(investigator.family)
-                .entityType("person");
+                .entityType(EntityTypes.PERSON);
         if (bareOrcid != null) {
             by.identifiers(List.of(new PersonLiteAllOfIdentifiers().scheme("orcid").value(bareOrcid)));
         }
@@ -886,7 +894,7 @@ public class CrossrefToSkgIfMapper {
                             ? ExternalIdentifierUrls.ROR_BASE_URL + ror
                             : otf(doi, affiliation.name))
                     .name(affiliation.name)
-                    .entityType("organisation");
+                    .entityType(EntityTypes.ORGANISATION);
             if (ror != null) {
                 org.identifiers(List.of(new AgentAllOfIdentifiers().scheme("ror").value(ror)));
             }

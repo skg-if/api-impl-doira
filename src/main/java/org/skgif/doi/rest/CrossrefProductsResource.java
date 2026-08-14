@@ -50,6 +50,7 @@ import java.util.Optional;
 public class CrossrefProductsResource {
 
     private static final String RESOURCE_PATH = "/crossref/products";
+    private static final int FIRST_PAGE_NUMBER = 1;
 
     @Inject
     @RestClient
@@ -184,18 +185,16 @@ public class CrossrefProductsResource {
         long totalResults = 0;
         if (response.message != null) {
             totalResults = response.message.totalResults;
-            if (response.message.items != null) {
-                for (CrossrefWork work : response.message.items) {
-                    // Crossref's filter= has no negation operator (see CrossrefFilters), so
-                    // grant-type records are excluded here rather than in the query itself -
-                    // unlike DataCite's "NOT resourceTypeGeneral:Award" query clause.
-                    if (work.doi == null || CrossrefTypeMapping.isGrant(work)) {
-                        continue;
-                    }
-                    products.add(mapper.toProduct(work));
-                    apiItems.add(JsonLdResponses.apiItem(localIdentifiers.toFullLocalIdentifier(work.doi),
-                            JsonLdResponses.selfLink(uriInfo, RESOURCE_PATH, work.doi)));
+            for (CrossrefWork work : Optional.ofNullable(response.message.items).orElse(List.of())) {
+                // Crossref's filter= has no negation operator (see CrossrefFilters), so
+                // grant-type records are excluded here rather than in the query itself -
+                // unlike DataCite's "NOT resourceTypeGeneral:Award" query clause.
+                if (work.doi == null || CrossrefTypeMapping.isGrant(work)) {
+                    continue;
                 }
+                products.add(mapper.toProduct(work));
+                apiItems.add(JsonLdResponses.apiItem(localIdentifiers.toFullLocalIdentifier(work.doi),
+                        JsonLdResponses.selfLink(uriInfo, RESOURCE_PATH, work.doi)));
             }
         }
 
@@ -210,7 +209,7 @@ public class CrossrefProductsResource {
                     .localIdentifier(JsonLdResponses.pageLink(uriInfo, RESOURCE_PATH, filter, pageNumber + 1, size))
                     .entityType(SearchResultPage.EntityTypeEnum.SEARCH_RESULT_PAGE));
         }
-        if (pageNumber > 1) {
+        if (pageNumber > FIRST_PAGE_NUMBER) {
             meta.prevPage(new SearchResultPage()
                     .localIdentifier(JsonLdResponses.pageLink(uriInfo, RESOURCE_PATH, filter, pageNumber - 1, size))
                     .entityType(SearchResultPage.EntityTypeEnum.SEARCH_RESULT_PAGE));

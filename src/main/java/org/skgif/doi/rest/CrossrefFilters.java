@@ -5,6 +5,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.skgif.doi.crossref.CrossrefTypeMapping;
 import org.skgif.doi.generated.model.Product;
+import org.skgif.doi.spec.GrantFilterKeys;
+import org.skgif.doi.spec.ProductFilterKeys;
 import org.skgif.doi.util.ExternalIdentifierUrls;
 
 /**
@@ -30,24 +32,24 @@ final class CrossrefFilters {
     private static final String NO_MATCH_CLAUSE = "doi:__no_match__";
 
     private static final Set<String> PRODUCT_SUPPORTED = Set.of(
-            "product_type",
-            "identifiers.id",
-            "identifiers.scheme",
-            "contributions.by.identifiers.id",
-            "contributions.by.identifiers.scheme",
-            "cf.contributions_orcid",
-            "funding.grant_number",
-            "cf.search.title",
-            "cf.search.title_abstract");
+            ProductFilterKeys.PRODUCT_TYPE,
+            ProductFilterKeys.IDENTIFIERS_ID,
+            ProductFilterKeys.IDENTIFIERS_SCHEME,
+            ProductFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_ID,
+            ProductFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME,
+            ProductFilterKeys.CF_CONTRIBUTIONS_ORCID,
+            ProductFilterKeys.FUNDING_GRANT_NUMBER,
+            ProductFilterKeys.CF_SEARCH_TITLE,
+            ProductFilterKeys.CF_SEARCH_TITLE_ABSTRACT);
 
     private static final Set<String> GRANT_SUPPORTED = Set.of(
-            "identifiers.value",
-            "identifiers.scheme",
-            "contributions.by.identifiers.value",
-            "contributions.by.identifiers.scheme",
-            "funding_agency.identifiers.value",
-            "cf.search.title",
-            "cf.search.title_abstract");
+            GrantFilterKeys.IDENTIFIERS_VALUE,
+            GrantFilterKeys.IDENTIFIERS_SCHEME,
+            GrantFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_VALUE,
+            GrantFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME,
+            GrantFilterKeys.FUNDING_AGENCY_IDENTIFIERS_VALUE,
+            GrantFilterKeys.CF_SEARCH_TITLE,
+            GrantFilterKeys.CF_SEARCH_TITLE_ABSTRACT);
 
     private CrossrefFilters() {
     }
@@ -77,18 +79,20 @@ final class CrossrefFilters {
 
     private static String toProductClause(String key, String value, ParsedFilter.Builder builder) {
         return switch (key) {
-            case "product_type" -> productTypeClause(value);
-            case "identifiers.id" -> "doi:" + FilterQuerySyntax.stripDoiUrl(value);
-            case "identifiers.scheme" -> FilterQuerySyntax.schemeOnlyFilter(value, "doi", NO_MATCH_CLAUSE);
-            case "contributions.by.identifiers.id", "cf.contributions_orcid" -> "orcid:" + stripOrcidUrl(value);
-            case "contributions.by.identifiers.scheme" ->
+            case ProductFilterKeys.PRODUCT_TYPE -> productTypeClause(value);
+            case ProductFilterKeys.IDENTIFIERS_ID -> "doi:" + FilterQuerySyntax.stripDoiUrl(value);
+            case ProductFilterKeys.IDENTIFIERS_SCHEME ->
+                    FilterQuerySyntax.schemeOnlyFilter(value, "doi", NO_MATCH_CLAUSE);
+            case ProductFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_ID, ProductFilterKeys.CF_CONTRIBUTIONS_ORCID ->
+                    "orcid:" + stripOrcidUrl(value);
+            case ProductFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME ->
                 FilterQuerySyntax.schemeOnlyFilter(value, "orcid", NO_MATCH_CLAUSE);
-            case "funding.grant_number" -> "award.number:" + value;
-            case "cf.search.title" -> {
+            case ProductFilterKeys.FUNDING_GRANT_NUMBER -> "award.number:" + value;
+            case ProductFilterKeys.CF_SEARCH_TITLE -> {
                 builder.queryTitle(value);
                 yield null;
             }
-            case "cf.search.title_abstract" -> {
+            case ProductFilterKeys.CF_SEARCH_TITLE_ABSTRACT -> {
                 builder.queryBibliographic(value);
                 yield null;
             }
@@ -98,19 +102,20 @@ final class CrossrefFilters {
 
     private static String toGrantClause(String key, String value, ParsedFilter.Builder builder) {
         return switch (key) {
-            case "identifiers.value" -> "doi:" + FilterQuerySyntax.stripDoiUrl(value);
-            case "identifiers.scheme" -> FilterQuerySyntax.schemeOnlyFilter(value, "doi", NO_MATCH_CLAUSE);
-            case "contributions.by.identifiers.value" -> "orcid:" + stripOrcidUrl(value);
+            case GrantFilterKeys.IDENTIFIERS_VALUE -> "doi:" + FilterQuerySyntax.stripDoiUrl(value);
+            case GrantFilterKeys.IDENTIFIERS_SCHEME ->
+                    FilterQuerySyntax.schemeOnlyFilter(value, "doi", NO_MATCH_CLAUSE);
+            case GrantFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_VALUE -> "orcid:" + stripOrcidUrl(value);
             // Grant contributions can be organisational (ror) too, but Crossref's "orcid" filter
             // only ever matches a person - a ror-scoped value harmlessly never matches.
-            case "contributions.by.identifiers.scheme" ->
+            case GrantFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME ->
                     ("orcid".equalsIgnoreCase(value) || "ror".equalsIgnoreCase(value)) ? null : NO_MATCH_CLAUSE;
-            case "funding_agency.identifiers.value" -> "award.funder:" + value;
-            case "cf.search.title" -> {
+            case GrantFilterKeys.FUNDING_AGENCY_IDENTIFIERS_VALUE -> "award.funder:" + value;
+            case GrantFilterKeys.CF_SEARCH_TITLE -> {
                 builder.queryTitle(value);
                 yield null;
             }
-            case "cf.search.title_abstract" -> {
+            case GrantFilterKeys.CF_SEARCH_TITLE_ABSTRACT -> {
                 builder.queryBibliographic(value);
                 yield null;
             }
@@ -160,6 +165,9 @@ final class CrossrefFilters {
             this.queryBibliographic = queryBibliographic;
         }
 
+        // Fields intentionally share their names with their fluent setters below, same
+        // builder idiom checkstyle.xml's HiddenField already special-cases for this codebase.
+        @SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
         private static final class Builder {
             private String filter;
             private String queryTitle;

@@ -1,18 +1,22 @@
 package org.skgif.doi.crossref.xml;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * Parses Crossref's XML "transform" representation ({@code application/vnd.crossref.unixsd+xml})
@@ -94,12 +98,13 @@ public final class CrossrefVenueMetadataXmlParser {
                     volume, isbns, publisherName, publisherPlace));
         } catch (Exception e) {
             // Malformed/unexpected XML shape degrades to the REST-JSON-only venue - never worth
-            // failing the whole product response over an enrichment call.
+            // failing the whole product response over an enrichment call, including from an
+            // unexpected runtime error (e.g. a null deref on a surprising document shape).
             return Optional.empty();
         }
     }
 
-    private static Document parseDocument(String xml) throws Exception {
+    private static Document parseDocument(String xml) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         // XXE hardening - this parses content fetched live from the network.
         factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
@@ -111,12 +116,13 @@ public final class CrossrefVenueMetadataXmlParser {
         return builder.parse(new InputSource(new StringReader(xml)));
     }
 
-    private static String text(XPath xpath, Node context, String expression) throws Exception {
+    private static String text(XPath xpath, Node context, String expression) throws XPathExpressionException {
         String value = (String) xpath.evaluate(expression, context, XPathConstants.STRING);
         return value == null || value.isBlank() ? null : value.trim();
     }
 
-    private static List<String> textList(XPath xpath, Node context, String expression) throws Exception {
+    private static List<String> textList(XPath xpath, Node context, String expression)
+            throws XPathExpressionException {
         NodeList nodes = (NodeList) xpath.evaluate(expression, context, XPathConstants.NODESET);
         List<String> values = new ArrayList<>();
         for (int i = 0; i < nodes.getLength(); i++) {

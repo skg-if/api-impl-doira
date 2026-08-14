@@ -33,6 +33,10 @@ public interface CrossrefClient {
      * @param mailto contact email for Crossref's polite-pool API access
      * @return the matching Crossref work list response
      */
+    // Each parameter maps 1:1 to its own @QueryParam - the standard MicroProfile REST Client
+    // interface shape; bundling them into a container object would need a @BeanParam DTO for no
+    // real clarity gain over six named, individually-documented query parameters.
+    @SuppressWarnings("PMD.UseObjectForClearerAPI")
     @GET
     CrossrefWorkListResponse listWorks(
             @QueryParam("filter") String filter,

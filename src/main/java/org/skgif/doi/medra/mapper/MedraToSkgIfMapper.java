@@ -4,6 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import org.skgif.doi.generated.model.DataSourceLite;
@@ -23,6 +24,7 @@ import org.skgif.doi.generated.model.VenueLiteAllOfIdentifiers;
 import org.skgif.doi.medra.dto.MedraContributor;
 import org.skgif.doi.medra.dto.MedraTitle;
 import org.skgif.doi.medra.dto.MedraWork;
+import org.skgif.doi.spec.EntityTypes;
 import org.skgif.doi.util.LocalIdentifiers;
 
 /**
@@ -166,7 +168,7 @@ public class MedraToSkgIfMapper {
                 .name(name)
                 .givenName(givenName)
                 .familyName(familyName)
-                .entityType("person");
+                .entityType(EntityTypes.PERSON);
     }
 
     private String displayName(String given, String family) {
@@ -275,7 +277,7 @@ public class MedraToSkgIfMapper {
         }
         VenueLite venue = new VenueLite()
                 .localIdentifier(otf(work.doi(), work.journalTitle()))
-                .entityType("venue")
+                .entityType(EntityTypes.VENUE)
                 .name(work.journalTitle());
         if (work.issns() != null && !work.issns().isEmpty()) {
             venue.identifiers(work.issns().stream()
@@ -315,7 +317,7 @@ public class MedraToSkgIfMapper {
         if (text == null) {
             return "unknown";
         }
-        String slug = text.toLowerCase().replaceAll("[^a-z0-9]+", "-").replaceAll("^-+|-+$", "");
+        String slug = text.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]+", "-").replaceAll("^-+|-+$", "");
         if (slug.isEmpty()) {
             return "unknown";
         }

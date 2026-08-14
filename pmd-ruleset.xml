@@ -1,0 +1,123 @@
+<?xml version="1.0"?>
+<ruleset name="skg-if-api"
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+
+  <description>
+    Based on PMD's bundled category rulesets, tuned for this codebase to complement checkstyle
+    (which only checks style/formatting - naming, whitespace, imports, javadoc presence). PMD
+    catches what checkstyle structurally can't: semantic smells, duplication, and error-prone
+    patterns. codestyle.xml and documentation.xml are intentionally not included - those overlap
+    with what checkstyle already enforces. Rules disabled below produced large volumes of
+    low-value violations on the existing codebase - see rationale comments, mirroring the
+    approach in checkstyle.xml.
+  </description>
+
+  <rule ref="category/java/bestpractices.xml">
+    <!--
+      UnusedPrivateMethod disabled: only ever fired on methods whose sole call site is a method
+      reference (e.g. `this::isOpenLicence` in a stream().anyMatch(), `DataCiteGrantFilters::toClause`
+      passed as a ClauseBuilder) - PMD's symbol table doesn't reliably trace usage through method
+      references once the generated OpenAPI sources are on the compile classpath (these 4
+      violations only appeared in a full `mvn clean test` run, not a standalone `pmd:check`).
+      All 4 methods are genuinely called; rewriting them into explicit lambdas just to satisfy a
+      buggy analysis isn't worth the churn.
+    -->
+    <exclude name="UnusedPrivateMethod"/>
+  </rule>
+
+  <rule ref="category/java/errorprone.xml">
+    <!--
+      NullAssignment disabled: every violation found is the same `x = cond ? y : null`
+      null-safe-accessor idiom (e.g. resource getById methods extracting a possibly-absent field,
+      MedraToSkgIfMapper#personRef) - null is a deliberate, legitimate sentinel here, not a code
+      smell to refactor away.
+    -->
+    <exclude name="NullAssignment"/>
+    <!--
+      ReturnEmptyCollectionRatherThanNull disabled: this codebase runs with
+      quarkus.jackson.serialization-inclusion=non-null (see application.properties), so a mapper
+      method returning null vs. an empty List/Map is not a style choice - null omits the field
+      from the JSON-LD output entirely, while an empty collection would serialize as [] or {}.
+      "Fixing" this would silently change the API's output contract (e.g.
+      CrossrefToSkgIfMapper#titles/#abstracts/#topics, DataCiteToSkgIfMapper#topics/#funding).
+    -->
+    <exclude name="ReturnEmptyCollectionRatherThanNull"/>
+    <!--
+      CompareObjectsWithEquals disabled: both violations found (DataCiteToSkgIfMapper#otherRecordDays,
+      #grantContributions) are intentional reference-identity checks - excluding one specific
+      object instance while iterating the same list it came from (e.g. `date != excluding`) -
+      not accidental == vs .equals() confusion.
+    -->
+    <exclude name="CompareObjectsWithEquals"/>
+  </rule>
+
+  <rule ref="category/java/design.xml">
+    <!--
+      LawOfDemeter disabled: fires on any getter chain (e.g. list.get(0).getTitle()), which is
+      inherent to mapper code - produced 124 of 260 total violations on a first trial run,
+      almost entirely inside CrossrefToSkgIfMapper/DataCiteToSkgIfMapper. Same rationale as
+      checkstyle.xml's VisibilityModifier: flags the normal shape of this codebase, not a smell.
+    -->
+    <exclude name="LawOfDemeter"/>
+    <!--
+      DataClass disabled: fires once per plain-data DTO class (CrossrefContributor,
+      CrossrefFunder, CrossrefProject, etc.) - those are intentionally field-only holders for
+      Jackson (de)serialization, the same DTOs checkstyle.xml's VisibilityModifier was already
+      disabled for.
+    -->
+    <exclude name="DataClass"/>
+    <!--
+      AvoidCatchingGenericException disabled: all 5 violations found are the same "best-effort
+      enrichment/parse, never fail the whole response over it" pattern, each with an existing
+      code comment saying so explicitly (CrossrefJournalDoiResolver#fetchJournalDoi,
+      CrossrefVenueMetadataXmlParser#parse, MedraOnixXmlParser#parse,
+      CrossrefProductsResource#fetchVenueMetadata, MedraProductsResource#getProductById).
+      Narrowing these catches would remove the intended safety net against unexpected runtime
+      errors, not just checked exceptions - checkstyle.xml's IllegalCatch trial flagged the exact
+      same 5 locations independently.
+    -->
+    <exclude name="AvoidCatchingGenericException"/>
+    <!--
+      The following are real findings on CrossrefToSkgIfMapper/DataCiteToSkgIfMapper/
+      MedraToSkgIfMapper (900+ line, one-class-per-source-format converters) and JsonLdResponses,
+      but they're also self-contradictory to fix here: extracting methods to reduce
+      CyclomaticComplexity directly worsens TooManyMethods/GodClass on the same class. A real fix
+      means splitting these mapper classes apart - a large, independent refactor of code covered
+      by the golden-fixture tests, not a lint cleanup. Left disabled pending that decision.
+    -->
+    <exclude name="CyclomaticComplexity"/>
+    <exclude name="NPathComplexity"/>
+    <exclude name="CognitiveComplexity"/>
+    <exclude name="GodClass"/>
+    <exclude name="TooManyMethods"/>
+    <exclude name="TooManyFields"/>
+    <exclude name="CouplingBetweenObjects"/>
+    <exclude name="ExcessiveImports"/>
+    <exclude name="LoosePackageCoupling"/>
+  </rule>
+
+  <rule ref="category/java/multithreading.xml">
+    <!--
+      UseConcurrentHashMap disabled: flagged a local, non-shared HashMap in
+      CrossrefTypeMapping.buildMap - PMD's usual false-positive-prone heuristic that assumes
+      shared mutable state which isn't actually present here.
+    -->
+    <exclude name="UseConcurrentHashMap"/>
+  </rule>
+
+  <rule ref="category/java/performance.xml">
+    <!--
+      AvoidInstantiatingObjectsInLoops disabled: every violation found builds a new model object
+      per source-list item inside a mapping loop (e.g. one Topic per subject, one Organisation per
+      affiliation) - the object depends on the loop variable and cannot be hoisted out, since
+      producing exactly that per-item object is the loop's entire purpose. Inherent to what a
+      mapper does, not a smell.
+    -->
+    <exclude name="AvoidInstantiatingObjectsInLoops"/>
+  </rule>
+
+  <rule ref="category/java/security.xml"/>
+
+</ruleset>
