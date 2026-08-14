@@ -1,0 +1,56 @@
+{
+  "@context" : [ "https://w3id.org/skg-if/context/1.1.0/skg-if.json", "https://w3id.org/skg-if/context/1.0.0/skg-if-api.json", {
+    "@base" : "https://w3id.org/skg-if/sandbox/esrf/"
+  } ],
+  "meta" : {
+    "local_identifier" : "http://localhost:8081/skg-if/api/medra/products/10.1400/255846",
+    "entity_type" : "single_entity"
+  },
+  "@graph" : [ {
+    "entity_type" : "product",
+    "product_type" : "literature",
+    "local_identifier" : "https://doi.org/10.1400/255846",
+    "identifiers" : [ {
+      "scheme" : "doi",
+      "value" : "10.1400/255846"
+    } ],
+    "titles" : {
+      "en" : [ "An italian book for brazilian children : Heart, by Edmondo De Amicis (1886)" ]
+    },
+    "contributions" : [ {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-1400-255846___maria-helena-camara-bastos",
+        "given_name" : "Maria Helena",
+        "family_name" : "Camara Bastos",
+        "name" : "Maria Helena Camara Bastos"
+      },
+      "rank" : 1,
+      "role" : "author"
+    } ],
+    "manifestations" : [ {
+      "type" : {
+        "defined_in" : "https://www.medra.org/stdoc/ONIX_DOI_Serial_Article_2.0_v.2.pdf",
+        "labels" : {
+          "en" : "DOISerialArticleWork"
+        }
+      },
+      "biblio" : {
+        "in" : {
+          "entity_type" : "venue",
+          "local_identifier" : "otf___10-1400-255846___history-of-education-and-children-s-lite",
+          "identifiers" : [ {
+            "scheme" : "issn",
+            "value" : "19711131"
+          } ],
+          "name" : "History of Education and Children's Literature"
+        },
+        "hosting_data_source" : {
+          "entity_type" : "datasource",
+          "local_identifier" : "otf___10-1400-255846___eum-edizioni-universit-di-macerata",
+          "name" : "EUM-Edizioni Università di Macerata"
+        }
+      }
+    } ]
+  } ]
+}

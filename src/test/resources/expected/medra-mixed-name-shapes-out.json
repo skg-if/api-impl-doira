@@ -1,0 +1,59 @@
+{
+  "@context" : [ "https://w3id.org/skg-if/context/1.1.0/skg-if.json", "https://w3id.org/skg-if/context/1.0.0/skg-if-api.json", {
+    "@base" : "https://w3id.org/skg-if/sandbox/esrf/"
+  } ],
+  "meta" : {
+    "local_identifier" : "http://localhost:8081/skg-if/api/medra/products/10.19276/plinius.2019.01004",
+    "entity_type" : "single_entity"
+  },
+  "@graph" : [ {
+    "entity_type" : "product",
+    "product_type" : "literature",
+    "local_identifier" : "https://doi.org/10.19276/plinius.2019.01004",
+    "identifiers" : [ {
+      "scheme" : "doi",
+      "value" : "10.19276/plinius.2019.01004"
+    } ],
+    "titles" : {
+      "en" : [ "Synthesis, phase transitions, degassing behaviour of melanophlogite (type I clathrate)" ]
+    },
+    "contributions" : [ {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-19276-plinius-2019-01004___daniela-d-alessio",
+        "given_name" : "Daniela",
+        "family_name" : "D'Alessio",
+        "name" : "Daniela D'Alessio"
+      },
+      "rank" : 1,
+      "role" : "author"
+    } ],
+    "manifestations" : [ {
+      "type" : {
+        "defined_in" : "https://www.medra.org/stdoc/ONIX_DOI_Serial_Article_2.0_v.2.pdf",
+        "labels" : {
+          "en" : "DOISerialArticleWork"
+        }
+      },
+      "dates" : {
+        "publication" : [ "2019" ]
+      },
+      "biblio" : {
+        "in" : {
+          "entity_type" : "venue",
+          "local_identifier" : "otf___10-19276-plinius-2019-01004___plinius",
+          "identifiers" : [ {
+            "scheme" : "issn",
+            "value" : "1972-1366"
+          } ],
+          "name" : "Plinius"
+        },
+        "hosting_data_source" : {
+          "entity_type" : "datasource",
+          "local_identifier" : "otf___10-19276-plinius-2019-01004___societa-italiana-di-mineralogia-e-petrol",
+          "name" : "Societa' Italiana di Mineralogia e Petrologia"
+        }
+      }
+    } ]
+  } ]
+}

@@ -1,0 +1,282 @@
+{
+  "@context" : [ "https://w3id.org/skg-if/context/1.1.0/skg-if.json", "https://w3id.org/skg-if/context/1.0.0/skg-if-api.json", {
+    "@base" : "https://w3id.org/skg-if/sandbox/esrf/"
+  } ],
+  "meta" : {
+    "local_identifier" : "http://localhost:8081/skg-if/api/medra/products/10.1393/ncc/i2025-25069-2",
+    "entity_type" : "single_entity"
+  },
+  "@graph" : [ {
+    "entity_type" : "product",
+    "product_type" : "literature",
+    "local_identifier" : "https://doi.org/10.1393/ncc/i2025-25069-2",
+    "identifiers" : [ {
+      "scheme" : "doi",
+      "value" : "10.1393/ncc/i2025-25069-2"
+    } ],
+    "titles" : {
+      "eng" : [ "Performance of the AMD model for the low-energy reaction <sup>18</sup>O + <sup>12</sup>C at 16.7 MeV/nucleon" ]
+    },
+    "abstracts" : {
+      "en" : [ "This study investigates the performance of the antisymmetrized molecular dynamics (AMD) transport model in simulating the low-energy nuclear reactions <sup>18</sup>O + <sup>12</sup>C at 16.7 MeV/nucleon. The experimental data, gathered using the GARFIELD+RCo detector at Laboratori Nazionali di Legnaro, are compared with the AMD model coupled with the GEMINI++ decay code. The study found that the model accurately predicts the behaviour of fragments with $ Z \\geq 10 $, while discrepancies were pointed out in the production of fragments with $ 4 &lt; Z &lt; 10 $." ]
+    },
+    "contributions" : [ {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-1393-ncc-i2025-25069-2___l-baldesi",
+        "given_name" : "L.",
+        "family_name" : "Baldesi",
+        "name" : "L. Baldesi"
+      },
+      "rank" : 1,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-1393-ncc-i2025-25069-2___s-barlini",
+        "given_name" : "S.",
+        "family_name" : "Barlini",
+        "name" : "S. Barlini"
+      },
+      "rank" : 2,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-1393-ncc-i2025-25069-2___a-a-stefanini",
+        "given_name" : "A.A.",
+        "family_name" : "Stefanini",
+        "name" : "A.A. Stefanini"
+      },
+      "rank" : 3,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-1393-ncc-i2025-25069-2___a-camaiani",
+        "given_name" : "A.",
+        "family_name" : "Camaiani",
+        "name" : "A. Camaiani"
+      },
+      "rank" : 4,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-1393-ncc-i2025-25069-2___s-piantelli",
+        "given_name" : "S.",
+        "family_name" : "Piantelli",
+        "name" : "S. Piantelli"
+      },
+      "rank" : 5,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-1393-ncc-i2025-25069-2___g-casini",
+        "given_name" : "G.",
+        "family_name" : "Casini",
+        "name" : "G. Casini"
+      },
+      "rank" : 6,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-1393-ncc-i2025-25069-2___c-ciampi",
+        "given_name" : "C.",
+        "family_name" : "Ciampi",
+        "name" : "C. Ciampi"
+      },
+      "rank" : 7,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-1393-ncc-i2025-25069-2___m-cinausero",
+        "given_name" : "M.",
+        "family_name" : "Cinausero",
+        "name" : "M. Cinausero"
+      },
+      "rank" : 8,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-1393-ncc-i2025-25069-2___m-cicerchia",
+        "given_name" : "M.",
+        "family_name" : "Cicerchia",
+        "name" : "M. Cicerchia"
+      },
+      "rank" : 9,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-1393-ncc-i2025-25069-2___d-dell-aquila",
+        "given_name" : "D.",
+        "family_name" : "Dell'Aquila",
+        "name" : "D. Dell'Aquila"
+      },
+      "rank" : 10,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-1393-ncc-i2025-25069-2___l-domenichetti",
+        "given_name" : "L.",
+        "family_name" : "Domenichetti",
+        "name" : "L. Domenichetti"
+      },
+      "rank" : 11,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-1393-ncc-i2025-25069-2___d-fabris",
+        "given_name" : "D.",
+        "family_name" : "Fabris",
+        "name" : "D. Fabris"
+      },
+      "rank" : 12,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-1393-ncc-i2025-25069-2___c-frosin",
+        "given_name" : "C.",
+        "family_name" : "Frosin",
+        "name" : "C. Frosin"
+      },
+      "rank" : 13,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-1393-ncc-i2025-25069-2___a-gozzelino",
+        "given_name" : "A.",
+        "family_name" : "Gozzelino",
+        "name" : "A. Gozzelino"
+      },
+      "rank" : 14,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-1393-ncc-i2025-25069-2___i-lombardo",
+        "given_name" : "I.",
+        "family_name" : "Lombardo",
+        "name" : "I. Lombardo"
+      },
+      "rank" : 15,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-1393-ncc-i2025-25069-2___t-marchi",
+        "given_name" : "T.",
+        "family_name" : "Marchi",
+        "name" : "T. Marchi"
+      },
+      "rank" : 16,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-1393-ncc-i2025-25069-2___s-moretto",
+        "given_name" : "S.",
+        "family_name" : "Moretto",
+        "name" : "S. Moretto"
+      },
+      "rank" : 17,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-1393-ncc-i2025-25069-2___a-mengarelli",
+        "given_name" : "A.",
+        "family_name" : "Mengarelli",
+        "name" : "A. Mengarelli"
+      },
+      "rank" : 18,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-1393-ncc-i2025-25069-2___a-olmi",
+        "given_name" : "A.",
+        "family_name" : "Olmi",
+        "name" : "A. Olmi"
+      },
+      "rank" : 19,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-1393-ncc-i2025-25069-2___g-pasquali",
+        "given_name" : "G.",
+        "family_name" : "Pasquali",
+        "name" : "G. Pasquali"
+      },
+      "rank" : 20,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-1393-ncc-i2025-25069-2___l-scomparin",
+        "given_name" : "L.",
+        "family_name" : "Scomparin",
+        "name" : "L. Scomparin"
+      },
+      "rank" : 21,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-1393-ncc-i2025-25069-2___s-valdr",
+        "given_name" : "S.",
+        "family_name" : "Valdré",
+        "name" : "S. Valdré"
+      },
+      "rank" : 22,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-1393-ncc-i2025-25069-2___e-vanzan",
+        "given_name" : "E.",
+        "family_name" : "Vanzan",
+        "name" : "E. Vanzan"
+      },
+      "rank" : 23,
+      "role" : "author"
+    } ],
+    "manifestations" : [ {
+      "type" : {
+        "defined_in" : "https://www.medra.org/stdoc/ONIX_DOI_Serial_Article_2.0_v.2.pdf",
+        "labels" : {
+          "en" : "DOISerialArticleWork"
+        }
+      },
+      "dates" : {
+        "publication" : [ "2025-01-14" ]
+      },
+      "biblio" : {
+        "in" : {
+          "entity_type" : "venue",
+          "local_identifier" : "otf___10-1393-ncc-i2025-25069-2___il-nuovo-cimento-c",
+          "identifiers" : [ {
+            "scheme" : "issn",
+            "value" : "03905551"
+          } ],
+          "name" : "Il Nuovo Cimento C"
+        },
+        "hosting_data_source" : {
+          "entity_type" : "datasource",
+          "local_identifier" : "otf___10-1393-ncc-i2025-25069-2___sif",
+          "name" : "SIF"
+        }
+      }
+    } ]
+  } ]
+}

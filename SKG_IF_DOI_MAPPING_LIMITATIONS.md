@@ -125,3 +125,66 @@
   requests; a miss (no journal-level DOI registered, or a non-2xx response/network error) is
   never cached at all, so it's retried on the very next call rather than a transient failure
   being indistinguishable from "this journal has no DOI".
+
+## mEDRA
+
+- **No funding/grant data of any kind** - ONIX-for-DOI has no `Grant`, `Funding`, or `Project`
+  element (verified against 7 live examples). `/medra/grants` doesn't exist, and
+  `MedraToSkgIfMapper` has no `toGrant` method - see
+  [Product ↔ Grant routing](SKG_IF_DOI_MAPPING_GRANT.md#product--grant-routing).
+- **No list/search endpoint** - `api.medra.org/metadata/{doi}` is a DOI-keyed metadata lookup,
+  not a search/facet/browse API (no mEDRA equivalent of Crossref's `filter=`/DataCite's list
+  query was found). `MedraProductsResource` therefore exposes only `GET
+  /medra/products/{local_identifier}`, never a bare `GET /medra/products`.
+- **No ORCID (or any other person identifier) was observed on any contributor** in the 6+1
+  ONIX-for-DOI records examined - `MedraToSkgIfMapper#personRef` always mints an otf id for
+  contributors, unlike DataCite/Crossref's ORCID-when-present path.
+- **A bare `PersonName` with no `PersonNameInverted` sibling** (e.g. `"Cotte M."`, seen on
+  [`medra-version-message-book-series.xml`](src/test/resources/medra-version-message-book-series.xml))
+  isn't safely splittable into given/family name - mEDRA gives no delimiter convention for it
+  (unlike Crossref's already-split `given`/`family` fields), so both stay unset rather than
+  guessed at.
+- **Only the ONIX-for-DOI "Serial Article" schema is handled** - the only schema family observed
+  live, across both its `ONIXDOISerialArticleWorkRegistrationMessage` and
+  `ONIXDOISerialArticleVersionRegistrationMessage` root-element forms (confirmed to differ only
+  in element naming, not in the nesting `MedraOnixXmlParser` relies on). A record in any other
+  schema family (none of the 6 requested example DOIs turned out to actually be one, including a
+  book-series proceedings chapter that mEDRA itself modeled as a Serial Article) finds no
+  `ContentItem` and degrades to `Optional.empty()`, which the REST layer turns into a 404 rather
+  than a guessed-at partial mapping.
+  **TODO: implement Monograph / Monograph Chapter / Serial Title / Serial Issue support** - mEDRA
+  documents four more ONIX-DOI 2.0 schema families beyond Serial Article at
+  [`medra.org/en/metadata_td.htm`](https://www.medra.org/en/metadata_td.htm) (Monographs,
+  Monograph Chapters, Serial Titles, Serial Issues, each with its own spec PDF linked from that
+  page). A DOI registered under any of those is currently unreachable via `/medra/products`.
+- **EDItEUR's own ONIX-DOI landing page** ([`editeur.org/97/ONIX-DOI-Registration-Formats`](https://www.editeur.org/97/ONIX-DOI-Registration-Formats/))
+  currently advertises spec version 1.1, but every live record fetched during this provider's
+  implementation declared schema/namespace version `2.0` (`xsi:schemaLocation` pointing at
+  `ONIX_DOIMetadata_2.0.xsd`) - the `medra.org`-hosted
+  [`ONIX_DOI_Serial_Article_2.0_v.2.pdf`](https://www.medra.org/stdoc/ONIX_DOI_Serial_Article_2.0_v.2.pdf)
+  is the version that actually matches production data. This is a documentation-source
+  discrepancy on mEDRA/EDItEUR's side, not a mapper bug.
+- **No journal-DOI resolution equivalent to `CrossrefJournalDoiResolver`** - the venue's
+  `local_identifier` is always an otf id, backed only by the journal/series' own ISSN(s) (when
+  present - `SerialVersion/ProductIdentifier` is occasionally coded with a non-ISSN
+  `ProductIDType`, e.g. `06` (DOI) rather than `07` (ISSN), on
+  [`medra-personname-inverted-only.xml`](src/test/resources/medra-personname-inverted-only.xml),
+  or carries a proprietary `01` id as a *second* `ProductIdentifier` sibling alongside the real
+  `07` ISSN within the same `SerialVersion`, on
+  [`medra-multiple-product-identifiers.xml`](src/test/resources/medra-multiple-product-identifiers.xml) -
+  the parser correctly excludes both non-`07` cases rather than misreading them as an ISSN).
+- **`JournalIssue/JournalIssueDate`, `manifestations[].biblio.issue/volume/pages`, and
+  `topics[].term`** all have real ONIX source fields (`JournalVolumeNumber`,
+  `JournalIssueNumber`, `TextItem/PageRun`) that aren't mapped - see the corresponding rows in
+  [Product entity mapping](SKG_IF_DOI_MAPPING_PRODUCT.md#product-entity) and
+  [Date-type mapping](SKG_IF_DOI_MAPPING_DATES.md#medra) for why each is left out rather than
+  guessed at.
+- **mEDRA's HTML-named-entity quirk**: title/abstract/copyright text occasionally embeds HTML
+  named character entities (e.g. `&ldquo;`, `&rdquo;`, `&mldr;`, `&copy;`, `&agrave;`) that
+  aren't valid XML entities on their own - ONIX escapes the leading `&` again (`&amp;ldquo;`) so
+  the document parses, which means the parsed text contains the *literal* entity reference
+  string (e.g. `&ldquo;Enrico Fermi&rdquo;`) rather than the actual Unicode character it names.
+  `MedraOnixXmlParser` does not attempt to resolve these - passed straight through as received
+  (see the `&amp;lt;sup&amp;gt;`-wrapped superscript digits in
+  [`medra-no-contributors.xml`](src/test/resources/medra-no-contributors.xml)'s title for the
+  same phenomenon applied to markup rather than named entities).

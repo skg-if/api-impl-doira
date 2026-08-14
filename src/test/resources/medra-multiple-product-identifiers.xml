@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ONIXDOISerialArticleWorkRegistrationMessage xmlns="http://www.editeur.org/onix/DOIMetadata/2.0"
+                                             xmlns:cl="http://www.medra.org/DOIMetadata/2.0/Citations"
+                                             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                             xsi:schemaLocation="http://www.editeur.org/onix/DOIMetadata/2.0 https://www.medra.org/schema/onix/DOIMetadata/2.0/ONIX_DOIMetadata_2.0.xsd">
+   <Header>
+      <FromCompany>mEDRA</FromCompany>
+      <FromEmail>medra@medra.org</FromEmail>
+      <ToCompany>PublicService</ToCompany>
+      <SentDate>20260814</SentDate>
+   </Header>
+   <DOISerialArticleWork>
+      <NotificationType>07</NotificationType>
+      <DOI>10.1400/255846</DOI>
+      <DOIWebsiteLink>http://digital.casalini.it/10.1400/255846</DOIWebsiteLink>
+      <DOIResolution>
+         <TargetResource>
+            <TargetResourceSequenceNumber>1</TargetResourceSequenceNumber>
+            <TargetResourceProvider>01</TargetResourceProvider>
+            <TargetResourceType>URL</TargetResourceType>
+            <TargetResourceValue>http://digital.casalini.it/10.1400/255846</TargetResourceValue>
+            <TargetResourceRole>AD</TargetResourceRole>
+            <TargetResourceLabel>AD01</TargetResourceLabel>
+            <TargetResourceDescription>View this document on Casalini Torrossa</TargetResourceDescription>
+         </TargetResource>
+         <TargetResource>
+            <TargetResourceSequenceNumber>2</TargetResourceSequenceNumber>
+            <TargetResourceProvider>01</TargetResourceProvider>
+            <TargetResourceType>URL</TargetResourceType>
+            <TargetResourceValue>http://eum.unimc.it/it/catalogo/572-hecl-xii-2-2017</TargetResourceValue>
+            <TargetResourceRole>AD</TargetResourceRole>
+            <TargetResourceLabel>AD01</TargetResourceLabel>
+            <TargetResourceDescription>View this document on eum website</TargetResourceDescription>
+         </TargetResource>
+         <TargetResource>
+            <TargetResourceSequenceNumber>3</TargetResourceSequenceNumber>
+            <TargetResourceProvider>01</TargetResourceProvider>
+            <TargetResourceType>URL</TargetResourceType>
+            <TargetResourceValue>http://www.hecl.it/</TargetResourceValue>
+            <TargetResourceRole>AD</TargetResourceRole>
+            <TargetResourceLabel>AD01</TargetResourceLabel>
+            <TargetResourceDescription>View this document on journal website</TargetResourceDescription>
+         </TargetResource>
+      </DOIResolution>
+      <RegistrantName>Casalini Libri</RegistrantName>
+      <RegistrationAuthority>mEDRA</RegistrationAuthority>
+      <SerialPublication>
+         <SerialWork>
+            <Title>
+               <TitleType>01</TitleType>
+               <TitleText>History of Education and Children's Literature</TitleText>
+            </Title>
+            <Publisher>
+               <PublishingRole>01</PublishingRole>
+               <PublisherName>EUM-Edizioni Università di Macerata</PublisherName>
+            </Publisher>
+            <CountryOfPublication>IT</CountryOfPublication>
+         </SerialWork>
+         <SerialVersion>
+            <ProductIdentifier>
+               <ProductIDType>01</ProductIDType>
+               <IDValue>4242485</IDValue>
+            </ProductIdentifier>
+            <ProductIdentifier>
+               <ProductIDType>07</ProductIDType>
+               <IDValue>19711131</IDValue>
+            </ProductIdentifier>
+            <ProductForm>JD</ProductForm>
+         </SerialVersion>
+      </SerialPublication>
+      <JournalIssue>
+         <JournalIssueNumber>2</JournalIssueNumber>
+         <JournalIssueDesignation>XII</JournalIssueDesignation>
+         <JournalIssueDate>
+            <DateFormat>05</DateFormat>
+            <Date>2017</Date>
+         </JournalIssueDate>
+      </JournalIssue>
+      <ContentItem>
+         <SequenceNumber>021</SequenceNumber>
+         <TextItem>
+            <NumberOfPages>29</NumberOfPages>
+         </TextItem>
+         <Title>
+            <TitleType>01</TitleType>
+            <TitleText>An italian book for brazilian children : Heart, by Edmondo De Amicis (1886)</TitleText>
+         </Title>
+         <Contributor>
+            <ContributorRole>A01</ContributorRole>
+            <PersonNameInverted>Camara Bastos, Maria Helena</PersonNameInverted>
+         </Contributor>
+      </ContentItem>
+   </DOISerialArticleWork>
+</ONIXDOISerialArticleWorkRegistrationMessage>

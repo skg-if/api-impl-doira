@@ -25,11 +25,12 @@ import org.skgif.doi.crossref.dto.CrossrefWorkResponse;
 import org.skgif.doi.datacite.DataCiteClient;
 import org.skgif.doi.datacite.dto.DataCiteDoiListResponse;
 import org.skgif.doi.datacite.dto.DataCiteDoiResponse;
+import org.skgif.doi.medra.MedraClient;
 
 /**
- * Full JSON-LD output regression tests for {@code /datacite/products} and {@code
- * /crossref/products}: the actual response body must exactly match (structurally - key order
- * doesn't matter) the corresponding checked-in document under {@code
+ * Full JSON-LD output regression tests for {@code /datacite/products}, {@code
+ * /crossref/products}, and {@code /medra/products}: the actual response body must exactly match
+ * (structurally - key order doesn't matter) the corresponding checked-in document under {@code
  * src/test/resources/expected/}. These committed documents double as a live, readable reference
  * for what this API actually produces for a real record.
  *
@@ -56,6 +57,10 @@ class ProductsGoldenTest {
     @InjectMock
     @RestClient
     CrossrefXmlTransformClient crossrefXmlTransformClient;
+
+    @InjectMock
+    @RestClient
+    MedraClient medraClient;
 
     private DataCiteDoiResponse loadDataCiteFixture(String resourceName) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -369,6 +374,100 @@ class ProductsGoldenTest {
     void getProductById_matchesExpectedJsonLd_proceedingsArticleStandalone() throws IOException {
         assertMatchesExpectedCrossrefJsonLd("10.1109/freq.1998.717994", "crossref-proceedings-article-standalone.json",
                 "crossref-proceedings-article-standalone.xml", "expected/crossref-proceedings-article-standalone-out.json");
+    }
+
+    /**
+     * DOI 10.19276/plinius.2019.01004 - a mEDRA-registered journal article whose single
+     * contributor carries all four ONIX name fields together ({@code NamesBeforeKey}/{@code
+     * KeyNames} and {@code PersonName}/{@code PersonNameInverted}) - proves the structured-pair
+     * precedence at the golden-output level (see {@code MedraToSkgIfMapper#personRef}).
+     */
+    @Test
+    void getProductById_matchesExpectedJsonLd_medraMixedNameShapes() throws IOException {
+        assertMatchesExpectedMedraJsonLd("10.19276/plinius.2019.01004", "medra-mixed-name-shapes.xml",
+                "expected/medra-mixed-name-shapes-out.json");
+    }
+
+    /**
+     * DOI 10.3254/978-1-61499-732-0-119 - a mEDRA-registered proceedings chapter (registered
+     * under the {@code ...VersionRegistrationMessage} root variant, IOS Press book series
+     * modeled as a journal) whose contributors carry only a bare {@code PersonName}, and whose
+     * record has an abstract - proves the no-inverted-form fallback and abstract mapping at the
+     * golden-output level.
+     */
+    @Test
+    void getProductById_matchesExpectedJsonLd_medraVersionMessageBookSeries() throws IOException {
+        assertMatchesExpectedMedraJsonLd("10.3254/978-1-61499-732-0-119", "medra-version-message-book-series.xml",
+                "expected/medra-version-message-book-series-out.json");
+    }
+
+    /**
+     * DOI 10.1393/ncc/i2025-25069-2 - a mEDRA-registered journal article with 23 authors, all
+     * using the {@code NamesBeforeKey}/{@code KeyNames} name shape.
+     */
+    @Test
+    void getProductById_matchesExpectedJsonLd_medraManyAuthors() throws IOException {
+        assertMatchesExpectedMedraJsonLd("10.1393/ncc/i2025-25069-2", "medra-many-authors.xml",
+                "expected/medra-many-authors-out.json");
+    }
+
+    /**
+     * DOI 10.1393/ncc/i2021-21084-7 - a mEDRA-registered journal article with zero
+     * {@code Contributor} elements at all - proves {@code contributions} is omitted rather than
+     * an empty list at the golden-output level.
+     */
+    @Test
+    void getProductById_matchesExpectedJsonLd_medraNoContributors() throws IOException {
+        assertMatchesExpectedMedraJsonLd("10.1393/ncc/i2021-21084-7", "medra-no-contributors.xml",
+                "expected/medra-no-contributors-out.json");
+    }
+
+    /**
+     * DOI 10.1478/AAPP.98S1A9 - a mEDRA-registered journal article whose journal carries 4
+     * {@code Title} entries (2 languages x 2 title types) - proves the article-vs-journal title
+     * disambiguation and the first-full-title-in-document-order venue-name heuristic at the
+     * golden-output level (see {@code MedraOnixXmlParser#journalTitle}).
+     */
+    @Test
+    void getProductById_matchesExpectedJsonLd_medraMultilangTitles() throws IOException {
+        assertMatchesExpectedMedraJsonLd("10.1478/AAPP.98S1A9", "medra-multilang-titles.xml",
+                "expected/medra-multilang-titles-out.json");
+    }
+
+    /**
+     * DOI 10.12919/sapere.2018.04.3 - a mEDRA-registered journal article whose single contributor
+     * carries only {@code PersonNameInverted}, with no {@code PersonName} sibling at all - proves
+     * the invert-and-recompose fallback at the golden-output level.
+     */
+    @Test
+    void getProductById_matchesExpectedJsonLd_medraPersonNameInvertedOnly() throws IOException {
+        assertMatchesExpectedMedraJsonLd("10.12919/sapere.2018.04.3", "medra-personname-inverted-only.xml",
+                "expected/medra-personname-inverted-only-out.json");
+    }
+
+    /**
+     * DOI 10.1400/255846 - a mEDRA-registered journal article whose {@code SerialVersion} carries
+     * two {@code ProductIdentifier} siblings (a proprietary id, {@code ProductIDType 01}, and the
+     * ISSN, {@code ProductIDType 07}) rather than one-per-{@code SerialVersion} as in the other
+     * fixtures - proves the ISSN-only filter still picks the right one when both share a parent.
+     * Its {@code ContentItem} also has no {@code PublicationDate} at all (only a
+     * {@code JournalIssueDate}, deliberately unmapped), and its sole contributor's
+     * {@code PersonNameInverted} ("Camara Bastos, Maria Helena") has a two-word family name -
+     * proves the split-on-first-comma-only behaviour at the golden-output level.
+     */
+    @Test
+    void getProductById_matchesExpectedJsonLd_medraMultipleProductIdentifiers() throws IOException {
+        assertMatchesExpectedMedraJsonLd("10.1400/255846", "medra-multiple-product-identifiers.xml",
+                "expected/medra-multiple-product-identifiers-out.json");
+    }
+
+    private void assertMatchesExpectedMedraJsonLd(String doi, String medraXmlFixture, String expectedJsonLdResource)
+            throws IOException {
+        Response xmlResponse = okXmlResponse(medraXmlFixture);
+        when(medraClient.getMetadata(eq(doi))).thenReturn(xmlResponse);
+
+        String actualBody = given().when().get(BASE + "/medra/products/" + doi).then().statusCode(200).extract().asString();
+        compareOrWriteGolden(new ObjectMapper().readTree(actualBody), expectedJsonLdResource);
     }
 
     private void assertMatchesExpectedDataCiteJsonLd(String doi, String dataCiteFixture, String expectedJsonLdResource)
