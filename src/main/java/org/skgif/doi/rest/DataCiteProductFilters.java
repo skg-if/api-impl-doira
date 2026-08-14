@@ -1,6 +1,5 @@
 package org.skgif.doi.rest;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -34,7 +33,6 @@ final class DataCiteProductFilters {
     private static final String NO_MATCH_CLAUSE = FilterQuerySyntax.NO_MATCH_CLAUSE;
     private static final String ORCID_BASE_URL = "https://orcid.org/";
     private static final String ROR_BASE_URL = "https://ror.org/";
-    private static final String DOI_URL_PREFIX = "https://doi.org/";
 
     private static final Set<String> SUPPORTED = Set.of(
             "product_type",
@@ -67,24 +65,7 @@ final class DataCiteProductFilters {
         if (filter == null || filter.isBlank()) {
             return null;
         }
-        List<String> clauses = new ArrayList<>();
-        for (String segment : FilterQuerySyntax.splitSegments(filter, SUPPORTED)) {
-            int idx = segment.indexOf(':');
-            if (idx < 0) {
-                throw new FilterQuerySyntax.UnsupportedFilterException(
-                        "Malformed filter segment '" + segment + "', expected 'key:value'");
-            }
-            String key = segment.substring(0, idx).trim();
-            String value = segment.substring(idx + 1).trim();
-            if (!SUPPORTED.contains(key)) {
-                throw new FilterQuerySyntax.UnsupportedFilterException("The filter '" + key
-                        + "' is not supported by this implementation, valid filters are " + String.join(", ", SUPPORTED));
-            }
-            String clause = toClause(key, value);
-            if (clause != null) {
-                clauses.add(clause);
-            }
-        }
+        List<String> clauses = FilterQuerySyntax.parseClauses(filter, SUPPORTED, DataCiteProductFilters::toClause);
         return clauses.isEmpty() ? null : String.join(" AND ", clauses);
     }
 
@@ -93,7 +74,7 @@ final class DataCiteProductFilters {
             case "product_type" -> productTypeClause(value);
             case "identifiers.id" -> "doi:\"" + escape(value) + "\"";
             // We only ever expose doi identifiers, so any other requested scheme never matches.
-            case "identifiers.scheme" -> schemeOnlyFilter(value, "doi");
+            case "identifiers.scheme" -> FilterQuerySyntax.schemeOnlyFilter(value, "doi", NO_MATCH_CLAUSE);
 
             // contributions.by.* - "contributions" is populated from both DataCite creators[]
             // and contributors[] (see DataCiteToSkgIfMapper), so every by-filter has to match
@@ -102,30 +83,24 @@ final class DataCiteProductFilters {
                     // by.local_identifier is already the full https://orcid.org/... URL when
                     // known (or an unguessable otf id otherwise, which harmlessly never
                     // matches) - DataCite stores nameIdentifier in that same full-URL form.
-                    "(creators.nameIdentifiers.nameIdentifier:\"" + escape(value)
-                            + "\" OR contributors.nameIdentifiers.nameIdentifier:\"" + escape(value) + "\")";
+                    FilterQuerySyntax.creatorOrContributorClause("nameIdentifiers.nameIdentifier", value);
             case "cf.contributions_orcid", "contributions.by.identifiers.id" -> orcidClause(value);
             // We only ever emit "orcid" as the scheme for by.identifiers.
-            case "contributions.by.identifiers.scheme" -> schemeOnlyFilter(value, "orcid");
-            case "contributions.by.family_name" ->
-                    "(creators.familyName:\"" + escape(value) + "\" OR contributors.familyName:\"" + escape(value) + "\")";
-            case "contributions.by.given_name" ->
-                    "(creators.givenName:\"" + escape(value) + "\" OR contributors.givenName:\"" + escape(value) + "\")";
-            case "contributions.by.name" ->
-                    "(creators.name:\"" + escape(value) + "\" OR contributors.name:\"" + escape(value) + "\")";
+            case "contributions.by.identifiers.scheme" -> FilterQuerySyntax.schemeOnlyFilter(value, "orcid", NO_MATCH_CLAUSE);
+            case "contributions.by.family_name" -> FilterQuerySyntax.creatorOrContributorClause("familyName", value);
+            case "contributions.by.given_name" -> FilterQuerySyntax.creatorOrContributorClause("givenName", value);
+            case "contributions.by.name" -> FilterQuerySyntax.creatorOrContributorClause("name", value);
 
             // contributions.declared_affiliations.* - same creators[]/contributors[] duality.
             case "contributions.declared_affiliations.local_identifier" ->
                     // Mirrors by.local_identifier above: already a full https://ror.org/... URL
                     // when known, matching DataCite's own stored affiliationIdentifier format
                     // (confirmed live: 15166 matches for the full-URL form vs. 2 for bare).
-                    "(creators.affiliation.affiliationIdentifier:\"" + escape(value)
-                            + "\" OR contributors.affiliation.affiliationIdentifier:\"" + escape(value) + "\")";
+                    FilterQuerySyntax.creatorOrContributorClause("affiliation.affiliationIdentifier", value);
             case "contributions.declared_affiliations.identifiers.id", "cf.contributions_aff_ror" -> rorClause(value);
             // We only ever emit "ror" as the scheme for declared_affiliations.identifiers.
-            case "contributions.declared_affiliations.identifiers.scheme" -> schemeOnlyFilter(value, "ror");
-            case "contributions.declared_affiliations.name" ->
-                    "(creators.affiliation.name:\"" + escape(value) + "\" OR contributors.affiliation.name:\"" + escape(value) + "\")";
+            case "contributions.declared_affiliations.identifiers.scheme" -> FilterQuerySyntax.schemeOnlyFilter(value, "ror", NO_MATCH_CLAUSE);
+            case "contributions.declared_affiliations.name" -> FilterQuerySyntax.creatorOrContributorClause("affiliation.name", value);
 
             case "funding.grant_number" -> "fundingReferences.awardNumber:\"" + escape(value) + "\"";
 
@@ -136,7 +111,7 @@ final class DataCiteProductFilters {
             // scopable to the same relatedIdentifiers array element in a flat query string -
             // a pre-existing simplification, not something introduced here).
             case "cf.cites", "cf.cited_by", "cf.cites_doi", "cf.cited_by_doi" ->
-                    "relatedIdentifiers.relatedIdentifier:\"" + escape(stripDoiUrl(value)) + "\"";
+                    "relatedIdentifiers.relatedIdentifier:\"" + escape(FilterQuerySyntax.stripDoiUrl(value)) + "\"";
             default -> null;
         };
     }
@@ -165,25 +140,12 @@ final class DataCiteProductFilters {
 
     /** Bare orcid -> matches creators/contributors nameIdentifiers, either role. */
     private static String orcidClause(String bareOrcid) {
-        String value = ORCID_BASE_URL + escape(bareOrcid);
-        return "(creators.nameIdentifiers.nameIdentifier:\"" + value
-                + "\" OR contributors.nameIdentifiers.nameIdentifier:\"" + value + "\")";
+        return FilterQuerySyntax.creatorOrContributorClause("nameIdentifiers.nameIdentifier", ORCID_BASE_URL + bareOrcid);
     }
 
     /** Bare ROR id -> matches creators/contributors affiliation identifiers, either role. */
     private static String rorClause(String bareRor) {
-        String value = ROR_BASE_URL + escape(bareRor);
-        return "(creators.affiliation.affiliationIdentifier:\"" + value
-                + "\" OR contributors.affiliation.affiliationIdentifier:\"" + value + "\")";
-    }
-
-    /** For attributes we only ever emit one fixed scheme/value for - no-op if it matches, else forces zero results. */
-    private static String schemeOnlyFilter(String value, String expectedScheme) {
-        return expectedScheme.equalsIgnoreCase(value) ? null : NO_MATCH_CLAUSE;
-    }
-
-    private static String stripDoiUrl(String value) {
-        return value.startsWith(DOI_URL_PREFIX) ? value.substring(DOI_URL_PREFIX.length()) : value;
+        return FilterQuerySyntax.creatorOrContributorClause("affiliation.affiliationIdentifier", ROR_BASE_URL + bareRor);
     }
 
     private static String escape(String value) {

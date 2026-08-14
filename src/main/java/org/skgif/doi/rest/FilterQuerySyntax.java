@@ -3,6 +3,7 @@ package org.skgif.doi.rest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiFunction;
 
 /**
  * Shared mechanics for translating the SKG-IF {@code filter} query syntax (comma-separated
@@ -49,8 +50,59 @@ final class FilterQuerySyntax {
         }
     }
 
+    static final String DOI_URL_PREFIX = "https://doi.org/";
+
     static String escape(String value) {
         return value.replace("\"", "\\\"");
+    }
+
+    static String stripDoiUrl(String value) {
+        return value.startsWith(DOI_URL_PREFIX) ? value.substring(DOI_URL_PREFIX.length()) : value;
+    }
+
+    /**
+     * Builds {@code "(creators.<field>:\"value\" OR contributors.<field>:\"value\")"} - the
+     * recurring shape for DataCite by/declared_affiliations filters, which must match against
+     * either {@code creators[]} or {@code contributors[]} (see {@code DataCiteToSkgIfMapper}).
+     */
+    static String creatorOrContributorClause(String field, String value) {
+        String escaped = escape(value);
+        return "(creators." + field + ":\"" + escaped + "\" OR contributors." + field + ":\"" + escaped + "\")";
+    }
+
+    /** For attributes we only ever emit one fixed scheme/value for - no-op if it matches, else forces zero results. */
+    static String schemeOnlyFilter(String value, String expectedScheme, String noMatchClause) {
+        return expectedScheme.equalsIgnoreCase(value) ? null : noMatchClause;
+    }
+
+    /**
+     * Splits {@code filter} into segments (see {@link #splitSegments}), validates each one as a
+     * {@code key:value} pair with {@code key} in {@code supportedKeys}, and hands each valid pair
+     * to {@code clauseBuilder} to produce a clause (or {@code null} to omit it from the result).
+     * Shared by every provider's filter parser so the malformed-segment / unsupported-filter
+     * error messages exist in exactly one place.
+     */
+    static List<String> parseClauses(String filter, Set<String> supportedKeys,
+            BiFunction<String, String, String> clauseBuilder) {
+        List<String> clauses = new ArrayList<>();
+        for (String segment : splitSegments(filter, supportedKeys)) {
+            int idx = segment.indexOf(':');
+            if (idx < 0) {
+                throw new UnsupportedFilterException(
+                        "Malformed filter segment '" + segment + "', expected 'key:value'");
+            }
+            String key = segment.substring(0, idx).trim();
+            String value = segment.substring(idx + 1).trim();
+            if (!supportedKeys.contains(key)) {
+                throw new UnsupportedFilterException("The filter '" + key
+                        + "' is not supported by this implementation, valid filters are " + String.join(", ", supportedKeys));
+            }
+            String clause = clauseBuilder.apply(key, value);
+            if (clause != null) {
+                clauses.add(clause);
+            }
+        }
+        return clauses;
     }
 
     static final class UnsupportedFilterException extends RuntimeException {

@@ -1,6 +1,5 @@
 package org.skgif.doi.rest;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -29,7 +28,6 @@ final class CrossrefFilters {
 
     private static final String NO_MATCH_CLAUSE = "doi:__no_match__";
     private static final String ORCID_URL_PREFIX = "https://orcid.org/";
-    private static final String DOI_URL_PREFIX = "https://doi.org/";
 
     private static final Set<String> PRODUCT_SUPPORTED = Set.of(
             "product_type",
@@ -71,24 +69,8 @@ final class CrossrefFilters {
         if (filter == null || filter.isBlank()) {
             return result.build();
         }
-        List<String> clauses = new ArrayList<>();
-        for (String segment : FilterQuerySyntax.splitSegments(filter, supported)) {
-            int idx = segment.indexOf(':');
-            if (idx < 0) {
-                throw new FilterQuerySyntax.UnsupportedFilterException(
-                        "Malformed filter segment '" + segment + "', expected 'key:value'");
-            }
-            String key = segment.substring(0, idx).trim();
-            String value = segment.substring(idx + 1).trim();
-            if (!supported.contains(key)) {
-                throw new FilterQuerySyntax.UnsupportedFilterException("The filter '" + key
-                        + "' is not supported by this implementation, valid filters are " + String.join(", ", supported));
-            }
-            String clause = clauseBuilder.clause(key, value, result);
-            if (clause != null) {
-                clauses.add(clause);
-            }
-        }
+        List<String> clauses = FilterQuerySyntax.parseClauses(filter, supported,
+                (key, value) -> clauseBuilder.clause(key, value, result));
         result.filter(clauses.isEmpty() ? null : String.join(",", clauses));
         return result.build();
     }
@@ -96,10 +78,10 @@ final class CrossrefFilters {
     private static String toProductClause(String key, String value, ParsedFilter.Builder builder) {
         return switch (key) {
             case "product_type" -> productTypeClause(value);
-            case "identifiers.id" -> "doi:" + stripDoiUrl(value);
-            case "identifiers.scheme" -> schemeOnlyFilter(value, "doi");
+            case "identifiers.id" -> "doi:" + FilterQuerySyntax.stripDoiUrl(value);
+            case "identifiers.scheme" -> FilterQuerySyntax.schemeOnlyFilter(value, "doi", NO_MATCH_CLAUSE);
             case "contributions.by.identifiers.id", "cf.contributions_orcid" -> "orcid:" + stripOrcidUrl(value);
-            case "contributions.by.identifiers.scheme" -> schemeOnlyFilter(value, "orcid");
+            case "contributions.by.identifiers.scheme" -> FilterQuerySyntax.schemeOnlyFilter(value, "orcid", NO_MATCH_CLAUSE);
             case "funding.grant_number" -> "award.number:" + value;
             case "cf.search.title" -> {
                 builder.queryTitle(value);
@@ -115,8 +97,8 @@ final class CrossrefFilters {
 
     private static String toGrantClause(String key, String value, ParsedFilter.Builder builder) {
         return switch (key) {
-            case "identifiers.value" -> "doi:" + stripDoiUrl(value);
-            case "identifiers.scheme" -> schemeOnlyFilter(value, "doi");
+            case "identifiers.value" -> "doi:" + FilterQuerySyntax.stripDoiUrl(value);
+            case "identifiers.scheme" -> FilterQuerySyntax.schemeOnlyFilter(value, "doi", NO_MATCH_CLAUSE);
             case "contributions.by.identifiers.value" -> "orcid:" + stripOrcidUrl(value);
             // Grant contributions can be organisational (ror) too, but Crossref's "orcid" filter
             // only ever matches a person - a ror-scoped value harmlessly never matches.
@@ -153,14 +135,6 @@ final class CrossrefFilters {
             return NO_MATCH_CLAUSE;
         }
         return types.stream().map(type -> "type:" + type).collect(Collectors.joining(","));
-    }
-
-    private static String schemeOnlyFilter(String value, String expectedScheme) {
-        return expectedScheme.equalsIgnoreCase(value) ? null : NO_MATCH_CLAUSE;
-    }
-
-    private static String stripDoiUrl(String value) {
-        return value.startsWith(DOI_URL_PREFIX) ? value.substring(DOI_URL_PREFIX.length()) : value;
     }
 
     private static String stripOrcidUrl(String value) {
