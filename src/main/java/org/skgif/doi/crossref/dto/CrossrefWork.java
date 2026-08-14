@@ -3,6 +3,7 @@ package org.skgif.doi.crossref.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A single Crossref {@code works} record ({@code message} in the API envelope). Unlike
@@ -40,6 +41,7 @@ public class CrossrefWork {
     public List<CrossrefFunder> funder;
     public List<CrossrefLicense> license;
     public List<CrossrefReference> reference;
+    public Map<String, List<CrossrefIdEntry>> relation;
 
     public CrossrefDate issued;
     public CrossrefDate created;

@@ -1,0 +1,239 @@
+{
+  "@context" : [ "https://w3id.org/skg-if/context/1.1.0/skg-if.json", "https://w3id.org/skg-if/context/1.0.0/skg-if-api.json", {
+    "@base" : "https://w3id.org/skg-if/sandbox/esrf/"
+  } ],
+  "meta" : {
+    "local_identifier" : "http://localhost:8081/skg-if/api/crossref/products/10.1107/s2414314618016334",
+    "entity_type" : "single_entity"
+  },
+  "@graph" : [ {
+    "entity_type" : "product",
+    "product_type" : "literature",
+    "local_identifier" : "https://doi.org/10.1107/s2414314618016334",
+    "identifiers" : [ {
+      "scheme" : "doi",
+      "value" : "10.1107/s2414314618016334"
+    } ],
+    "titles" : {
+      "en" : [ "1-(3-Hydroxypropyl)-3-phenylquinoxalin-2(1<i>H</i>)-one" ]
+    },
+    "abstracts" : {
+      "en" : [ "In the title molecule, C17H16N2O2, the quinoxaline portion is slightly folded about the N...N axis with an angle of 4.27 (4)°. In the crystal, O—H...O and weak C—H...O hydrogen bonds link molecules along the b-axis direction. In addition, two sets of weak C—H...π(ring) interactions form a two-dimensional `step' motif parallel to the bc plane." ]
+    },
+    "contributions" : [ {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-1107-s2414314618016334___nadeem-abad",
+        "given_name" : "Nadeem",
+        "family_name" : "Abad",
+        "name" : "Nadeem Abad"
+      },
+      "rank" : 1,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "https://orcid.org/0000-0002-6885-5692",
+        "identifiers" : [ {
+          "scheme" : "orcid",
+          "value" : "0000-0002-6885-5692"
+        } ],
+        "given_name" : "Youssef",
+        "family_name" : "Ramli",
+        "name" : "Youssef Ramli"
+      },
+      "rank" : 2,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-1107-s2414314618016334___sanae-lahmidi",
+        "given_name" : "Sanae",
+        "family_name" : "Lahmidi",
+        "name" : "Sanae Lahmidi"
+      },
+      "rank" : 3,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-1107-s2414314618016334___mohamed-el-hafi",
+        "given_name" : "Mohamed",
+        "family_name" : "El Hafi",
+        "name" : "Mohamed El Hafi"
+      },
+      "rank" : 4,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "otf___10-1107-s2414314618016334___el-mokhtar-essassi",
+        "given_name" : "El Mokhtar",
+        "family_name" : "Essassi",
+        "name" : "El Mokhtar Essassi"
+      },
+      "rank" : 5,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "https://orcid.org/0000-0003-3488-1945",
+        "identifiers" : [ {
+          "scheme" : "orcid",
+          "value" : "0000-0003-3488-1945"
+        } ],
+        "given_name" : "Joel T.",
+        "family_name" : "Mague",
+        "name" : "Joel T. Mague"
+      },
+      "rank" : 6,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "organisation",
+        "local_identifier" : "otf___10-1107-s2414314618016334___international-union-of-crystallography-i",
+        "name" : "International Union of Crystallography (IUCr)"
+      },
+      "rank" : 7,
+      "role" : "publisher"
+    } ],
+    "manifestations" : [ {
+      "type" : {
+        "class" : "https://api.crossref.org/types/journal-article",
+        "defined_in" : "https://api.crossref.org/types/",
+        "labels" : {
+          "en" : "journal-article"
+        }
+      },
+      "dates" : {
+        "creation" : [ "2018-11-30" ],
+        "deposit" : [ "2025-01-13" ],
+        "modified" : [ "2025-01-13" ],
+        "publication" : [ "2018-11-28", "2018-11-30", "2018-11-28" ]
+      },
+      "access_rights" : {
+        "status" : "open"
+      },
+      "licence" : "http://creativecommons.org/licenses/by/2.0/uk/legalcode",
+      "biblio" : {
+        "issue" : "11",
+        "volume" : "3",
+        "in" : {
+          "entity_type" : "venue",
+          "local_identifier" : "otf___10-1107-s2414314618016334___iucrdata",
+          "identifiers" : [ {
+            "scheme" : "issn",
+            "value" : "2414-3146"
+          } ],
+          "name" : "IUCrData"
+        },
+        "hosting_data_source" : {
+          "entity_type" : "datasource",
+          "local_identifier" : "otf___10-1107-s2414314618016334___international-union-of-crystallography-i",
+          "name" : "International Union of Crystallography (IUCr)"
+        }
+      }
+    } ],
+    "related_products" : {
+      "cites" : [ {
+        "entity_type" : "product",
+        "local_identifier" : "otf___10-1107-s2414314618016334___brandenburg-k-putz-h-2012-diamond-crysta",
+        "identifiers" : [ ]
+      }, {
+        "entity_type" : "product",
+        "local_identifier" : "otf___10-1107-s2414314618016334___bruker-2016-apex3-sadabs-and-saint-bruke",
+        "identifiers" : [ ]
+      }, {
+        "entity_type" : "product",
+        "local_identifier" : "otf___10-1107-s2414314618016334___lh4040-bb3",
+        "identifiers" : [ ]
+      }, {
+        "entity_type" : "product",
+        "local_identifier" : "https://doi.org/10.1107/S1600576714022985",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1107/S1600576714022985"
+        } ]
+      }, {
+        "entity_type" : "product",
+        "local_identifier" : "https://doi.org/10.1107/S2414314617017631",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1107/S2414314617017631"
+        } ]
+      }, {
+        "entity_type" : "product",
+        "local_identifier" : "otf___10-1107-s2414314618016334___lh4040-bb6",
+        "identifiers" : [ ]
+      }, {
+        "entity_type" : "product",
+        "local_identifier" : "otf___10-1107-s2414314618016334___lh4040-bb7",
+        "identifiers" : [ ]
+      }, {
+        "entity_type" : "product",
+        "local_identifier" : "https://doi.org/10.1107/S1600536813020035",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1107/S1600536813020035"
+        } ]
+      }, {
+        "entity_type" : "product",
+        "local_identifier" : "https://doi.org/10.1107/S160053681101703X",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1107/S160053681101703X"
+        } ]
+      }, {
+        "entity_type" : "product",
+        "local_identifier" : "https://doi.org/10.1107/S0108767307043930",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1107/S0108767307043930"
+        } ]
+      }, {
+        "entity_type" : "product",
+        "local_identifier" : "https://doi.org/10.1107/S2053273314026370",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1107/S2053273314026370"
+        } ]
+      }, {
+        "entity_type" : "product",
+        "local_identifier" : "https://doi.org/10.1107/S2053229614024218",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1107/S2053229614024218"
+        } ]
+      } ],
+      "is_supplemented_by" : [ {
+        "entity_type" : "product",
+        "local_identifier" : "https://doi.org/10.1107/S2414314618016334/lh4040sup1.cif",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1107/S2414314618016334/lh4040sup1.cif"
+        } ]
+      }, {
+        "entity_type" : "product",
+        "local_identifier" : "https://doi.org/10.1107/S2414314618016334/lh4040Isup2.hkl",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1107/S2414314618016334/lh4040Isup2.hkl"
+        } ]
+      }, {
+        "entity_type" : "product",
+        "local_identifier" : "https://doi.org/10.1107/S2414314618016334/lh4040Isup3.cdx",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1107/S2414314618016334/lh4040Isup3.cdx"
+        } ]
+      }, {
+        "entity_type" : "product",
+        "local_identifier" : "https://doi.org/10.1107/S2414314618016334/lh4040Isup4.cml",
+        "identifiers" : [ {
+          "scheme" : "doi",
+          "value" : "10.1107/S2414314618016334/lh4040Isup4.cml"
+        } ]
+      } ]
+    }
+  } ]
+}

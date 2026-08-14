@@ -1,0 +1,518 @@
+{
+  "status": "ok",
+  "message-type": "work",
+  "message-version": "1.0.0",
+  "message": {
+    "indexed": {
+      "date-parts": [
+        [
+          2025,
+          2,
+          21
+        ]
+      ],
+      "date-time": "2025-02-21T22:24:59Z",
+      "timestamp": 1740176699805,
+      "version": "3.37.3"
+    },
+    "reference-count": 12,
+    "publisher": "International Union of Crystallography (IUCr)",
+    "issue": "11",
+    "license": [
+      {
+        "start": {
+          "date-parts": [
+            [
+              2018,
+              11,
+              30
+            ]
+          ],
+          "date-time": "2018-11-30T00:00:00Z",
+          "timestamp": 1543536000000
+        },
+        "content-version": "vor",
+        "delay-in-days": 2,
+        "URL": "http://creativecommons.org/licenses/by/2.0/uk/legalcode"
+      },
+      {
+        "start": {
+          "date-parts": [
+            [
+              2018,
+              11,
+              30
+            ]
+          ],
+          "date-time": "2018-11-30T00:00:00Z",
+          "timestamp": 1543536000000
+        },
+        "content-version": "tdm",
+        "delay-in-days": 2,
+        "URL": "http://creativecommons.org/licenses/by/2.0/uk/legalcode"
+      }
+    ],
+    "content-domain": {
+      "domain": [
+        "iucr.org",
+        "wiley.com",
+        "iucrj.org"
+      ],
+      "crossmark-restriction": true
+    },
+    "short-container-title": [
+      "IUCrData",
+      "IUCr Data",
+      "International Union Crystallogr Data",
+      "Int Union Cryst Data"
+    ],
+    "published-print": {
+      "date-parts": [
+        [
+          2018,
+          11,
+          28
+        ]
+      ]
+    },
+    "abstract": "<jats:p>In the title molecule, C<jats:sub>17</jats:sub>H<jats:sub>16</jats:sub>N<jats:sub>2</jats:sub>O<jats:sub>2</jats:sub>, the quinoxaline portion is slightly folded about the N...N axis with an angle of 4.27 (4)°. In the crystal, O—H...O and weak C—H...O hydrogen bonds link molecules along the <jats:italic>b-</jats:italic>axis direction. In addition, two sets of weak C—H...π(ring) interactions form a two-dimensional `step' motif parallel to the <jats:italic>bc</jats:italic> plane.</jats:p>",
+    "DOI": "10.1107/s2414314618016334",
+    "type": "journal-article",
+    "created": {
+      "date-parts": [
+        [
+          2018,
+          11,
+          30
+        ]
+      ],
+      "date-time": "2018-11-30T09:23:41Z",
+      "timestamp": 1543569821000
+    },
+    "update-policy": "https://doi.org/10.1107/cm_01",
+    "source": "Crossref",
+    "is-referenced-by-count": 2,
+    "title": [
+      "1-(3-Hydroxypropyl)-3-phenylquinoxalin-2(1<i>H</i>)-one"
+    ],
+    "prefix": "10.1107",
+    "volume": "3",
+    "author": [
+      {
+        "given": "Nadeem",
+        "family": "Abad",
+        "sequence": "first",
+        "affiliation": [],
+        "role": [
+          {
+            "role": "author",
+            "vocabulary": "crossref"
+          }
+        ]
+      },
+      {
+        "ORCID": "https://orcid.org/0000-0002-6885-5692",
+        "authenticated-orcid": true,
+        "given": "Youssef",
+        "family": "Ramli",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "role": "author",
+            "vocabulary": "crossref"
+          }
+        ]
+      },
+      {
+        "given": "Sanae",
+        "family": "Lahmidi",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "role": "author",
+            "vocabulary": "crossref"
+          }
+        ]
+      },
+      {
+        "given": "Mohamed",
+        "family": "El Hafi",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "role": "author",
+            "vocabulary": "crossref"
+          }
+        ]
+      },
+      {
+        "given": "El Mokhtar",
+        "family": "Essassi",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "role": "author",
+            "vocabulary": "crossref"
+          }
+        ]
+      },
+      {
+        "ORCID": "https://orcid.org/0000-0003-3488-1945",
+        "authenticated-orcid": true,
+        "given": "Joel T.",
+        "family": "Mague",
+        "sequence": "additional",
+        "affiliation": [],
+        "role": [
+          {
+            "role": "author",
+            "vocabulary": "crossref"
+          }
+        ]
+      }
+    ],
+    "member": "329",
+    "published-online": {
+      "date-parts": [
+        [
+          2018,
+          11,
+          30
+        ]
+      ]
+    },
+    "reference": [
+      {
+        "key": "lh4040_bb1",
+        "unstructured": "Brandenburg, K. & Putz, H. (2012). DIAMOND, Crystal Impact GbR, Bonn, Germany."
+      },
+      {
+        "key": "lh4040_bb2",
+        "unstructured": "Bruker (2016). APEX3, SADABS and SAINT. Bruker AXS, Madison, Wisconsin, USA."
+      },
+      {
+        "key": "lh4040_bb3",
+        "first-page": "109",
+        "volume": "15",
+        "author": "Caleb",
+        "year": "2016",
+        "journal-title": "J. Maroc. Chim. Hétérocycl"
+      },
+      {
+        "key": "lh4040_bb4",
+        "doi-asserted-by": "crossref",
+        "first-page": "3",
+        "DOI": "10.1107/S1600576714022985",
+        "volume": "48",
+        "author": "Krause",
+        "year": "2015",
+        "journal-title": "J. Appl. Cryst."
+      },
+      {
+        "key": "lh4040_bb5",
+        "doi-asserted-by": "crossref",
+        "unstructured": "Missioui, M., Mague, J. T., El Fal, M., Taoufik, J., Essassi, E. M. & Ramli, Y. (2017). IUCrData, 2, x171763.",
+        "DOI": "10.1107/S2414314617017631"
+      },
+      {
+        "key": "lh4040_bb6",
+        "first-page": "67",
+        "volume": "11",
+        "author": "Ramli",
+        "year": "2010",
+        "journal-title": "Sci. Study Res. Chem. Chem. Eng. Biotechnol. Food Ind."
+      },
+      {
+        "key": "lh4040_bb7",
+        "first-page": "109",
+        "volume": "27",
+        "author": "Ramli",
+        "year": "2015",
+        "journal-title": "Adv. Chem. Res"
+      },
+      {
+        "key": "lh4040_bb8",
+        "doi-asserted-by": "crossref",
+        "first-page": "o1320",
+        "DOI": "10.1107/S1600536813020035",
+        "volume": "69",
+        "author": "Ramli",
+        "year": "2013",
+        "journal-title": "Acta Cryst. E"
+      },
+      {
+        "key": "lh4040_bb9",
+        "doi-asserted-by": "crossref",
+        "first-page": "o1374",
+        "DOI": "10.1107/S160053681101703X",
+        "volume": "67",
+        "author": "Ramli",
+        "year": "2011",
+        "journal-title": "Acta Cryst. E"
+      },
+      {
+        "key": "lh4040_bb10",
+        "doi-asserted-by": "crossref",
+        "first-page": "112",
+        "DOI": "10.1107/S0108767307043930",
+        "volume": "64",
+        "author": "Sheldrick",
+        "year": "2008",
+        "journal-title": "Acta Cryst. A"
+      },
+      {
+        "key": "lh4040_bb11",
+        "doi-asserted-by": "crossref",
+        "first-page": "3",
+        "DOI": "10.1107/S2053273314026370",
+        "volume": "71",
+        "author": "Sheldrick",
+        "year": "2015",
+        "journal-title": "Acta Cryst. A"
+      },
+      {
+        "key": "lh4040_bb12",
+        "doi-asserted-by": "crossref",
+        "first-page": "3",
+        "DOI": "10.1107/S2053229614024218",
+        "volume": "71",
+        "author": "Sheldrick",
+        "year": "2015",
+        "journal-title": "Acta Cryst. C"
+      }
+    ],
+    "container-title": [
+      "IUCrData"
+    ],
+    "original-title": [],
+    "link": [
+      {
+        "URL": "http://journals.iucr.org/x/issues/2018/11/00/lh4040/lh4040.pdf",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "text-mining"
+      },
+      {
+        "URL": "http://journals.iucr.org/x/issues/2018/11/00/lh4040/lh4040.pdf",
+        "content-type": "unspecified",
+        "content-version": "vor",
+        "intended-application": "similarity-checking"
+      }
+    ],
+    "deposited": {
+      "date-parts": [
+        [
+          2025,
+          1,
+          13
+        ]
+      ],
+      "date-time": "2025-01-13T10:42:54Z",
+      "timestamp": 1736764974000
+    },
+    "score": 1,
+    "resource": {
+      "primary": {
+        "URL": "https://journals.iucr.org/paper?S2414314618016334"
+      }
+    },
+    "subtitle": [],
+    "short-title": [],
+    "issued": {
+      "date-parts": [
+        [
+          2018,
+          11,
+          28
+        ]
+      ]
+    },
+    "references-count": 12,
+    "journal-issue": {
+      "issue": "11",
+      "published-online": {
+        "date-parts": [
+          [
+            2018,
+            11
+          ]
+        ]
+      }
+    },
+    "alternative-id": [
+      "S2414314618016334"
+    ],
+    "URL": "https://doi.org/10.1107/s2414314618016334",
+    "relation": {
+      "is-supplemented-by": [
+        {
+          "id-type": "doi",
+          "id": "10.1107/S2414314618016334/lh4040sup1.cif",
+          "asserted-by": "subject"
+        },
+        {
+          "id-type": "doi",
+          "id": "10.1107/S2414314618016334/lh4040Isup2.hkl",
+          "asserted-by": "subject"
+        },
+        {
+          "id-type": "doi",
+          "id": "10.1107/S2414314618016334/lh4040Isup3.cdx",
+          "asserted-by": "subject"
+        },
+        {
+          "id-type": "doi",
+          "id": "10.1107/S2414314618016334/lh4040Isup4.cml",
+          "asserted-by": "subject"
+        }
+      ]
+    },
+    "ISSN": [
+      "2414-3146"
+    ],
+    "issn-type": [
+      {
+        "type": "electronic",
+        "value": "2414-3146"
+      }
+    ],
+    "subject": [],
+    "published": {
+      "date-parts": [
+        [
+          2018,
+          11,
+          28
+        ]
+      ]
+    },
+    "assertion": [
+      {
+        "value": "IUCrData",
+        "order": 0,
+        "name": "journal",
+        "label": "Publication",
+        "explanation": {
+          "URL": "http://journals.iucr.org/x"
+        },
+        "group": {
+          "name": "general",
+          "label": "General"
+        }
+      },
+      {
+        "value": "data reports",
+        "order": 1,
+        "name": "content_type",
+        "label": "Content type",
+        "explanation": {
+          "URL": "https://journals.iucr.org/x/services/notesforauthors.html"
+        },
+        "group": {
+          "name": "general",
+          "label": "General"
+        }
+      },
+      {
+        "value": "Available",
+        "URL": "http://scripts.iucr.org/cgi-bin/citedin?lh4040",
+        "order": 2,
+        "name": "article_metrics",
+        "label": "Article metrics",
+        "group": {
+          "name": "general",
+          "label": "General"
+        }
+      },
+      {
+        "value": "Yes",
+        "order": 0,
+        "name": "peer_reviewed",
+        "label": "Peer reviewed",
+        "group": {
+          "name": "peer_review",
+          "label": "Peer review"
+        }
+      },
+      {
+        "value": "Single blind",
+        "order": 1,
+        "name": "review_process",
+        "label": "Review process",
+        "group": {
+          "name": "peer_review",
+          "label": "Peer review"
+        }
+      },
+      {
+        "value": "12 October 2018",
+        "order": 0,
+        "name": "received",
+        "label": "Received",
+        "group": {
+          "name": "publication_history",
+          "label": "Publication history"
+        }
+      },
+      {
+        "value": "17 November 2018",
+        "order": 1,
+        "name": "accepted",
+        "label": "Accepted",
+        "group": {
+          "name": "publication_history",
+          "label": "Publication history"
+        }
+      },
+      {
+        "value": "30 November 2018",
+        "order": 2,
+        "name": "published_online",
+        "label": "Published online",
+        "group": {
+          "name": "publication_history",
+          "label": "Publication history"
+        }
+      },
+      {
+        "value": "This data article has supporting information",
+        "name": "supplementary_materials",
+        "label": "Supplementary materials",
+        "explanation": {
+          "URL": "http://scripts.iucr.org/cgi-bin/sendsup?lh4040"
+        }
+      },
+      {
+        "value": "© 2018 Abad et al.",
+        "order": 0,
+        "name": "copyright",
+        "label": "Copyright",
+        "explanation": {
+          "URL": "http://journals.iucr.org/services/copyrightpolicy.html"
+        },
+        "group": {
+          "name": "copyright_and_licencing",
+          "label": "Copyright and licencing"
+        }
+      },
+      {
+        "value": "Creative Commons Attribution (CC-BY)",
+        "order": 1,
+        "name": "license",
+        "label": "Licence",
+        "explanation": {
+          "URL": "http://creativecommons.org/licenses/by/2.0/uk/legalcode"
+        },
+        "group": {
+          "name": "copyright_and_licencing",
+          "label": "Copyright and licencing"
+        }
+      }
+    ],
+    "article-number": "x181633"
+  }
+}

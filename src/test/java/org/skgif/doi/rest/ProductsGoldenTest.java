@@ -237,6 +237,19 @@ class ProductsGoldenTest {
     }
 
     /**
+     * Real IUCr {@code IUCrData} article carrying a populated {@code relation.is-supplemented-by}
+     * (4 DOI-shaped supplement-file entries) alongside a normal {@code reference[]} - proves
+     * {@code related_products.is_supplemented_by} at the golden-output level and that adding it
+     * doesn't disturb {@code cites}.
+     */
+    @Test
+    void getProductById_matchesExpectedJsonLd_journalArticleWithIsSupplementedBy() throws IOException {
+        assertMatchesExpectedCrossrefJsonLd("10.1107/s2414314618016334",
+                "crossref-journal-article-with-is-supplemented-by.json",
+                "expected/crossref-journal-article-with-is-supplemented-by-out.json");
+    }
+
+    /**
      * Same DOI as above, but with Nature's ISSN (0028-0836) resolving live to a real Crossref
      * {@code type: "journal"} DOI ({@code 10.1038/41586.1476-4687} - see {@code
      * crossref-journal-doi-lookup-nature.json}, captured from the real API) via {@code

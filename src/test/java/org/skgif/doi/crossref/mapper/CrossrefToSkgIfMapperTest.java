@@ -27,6 +27,7 @@ import org.skgif.doi.generated.model.Product;
 import org.skgif.doi.generated.model.ProductContribution;
 import org.skgif.doi.generated.model.ProductManifestation;
 import org.skgif.doi.generated.model.ProductManifestationAccessRights;
+import org.skgif.doi.generated.model.ProductsRelatedCitesInner;
 import org.skgif.doi.generated.model.ProductsRelatedItem;
 import org.skgif.doi.generated.model.VenueLite;
 import org.skgif.doi.generated.model.VenueLiteAllOfIdentifiers;
@@ -201,6 +202,40 @@ class CrossrefToSkgIfMapperTest {
         boolean hasOtfReference = product.getRelatedProducts().getCites().stream()
                 .anyMatch(c -> ((ProductsRelatedItem) c).getLocalIdentifier().startsWith("otf___"));
         assertTrue(hasOtfReference);
+    }
+
+    // crossref-journal-article-with-is-supplemented-by.json: a real IUCrData article (DOI
+    // 10.1107/s2414314618016334) whose relation map carries 4 real is-supplemented-by entries
+    // (all DOI-shaped supplement-file identifiers), alongside a normal reference[] - the first
+    // fixture to exercise related_products.is_supplemented_by for Crossref.
+
+    @Test
+    void mapsIsSupplementedByFromRelationMap() throws IOException {
+        Product product = mapFixture("crossref-journal-article-with-is-supplemented-by.json");
+
+        List<ProductsRelatedCitesInner> isSupplementedBy = product.getRelatedProducts().getIsSupplementedBy();
+        assertEquals(4, isSupplementedBy.size());
+        ProductsRelatedItem first = (ProductsRelatedItem) isSupplementedBy.get(0);
+        assertEquals("https://doi.org/10.1107/S2414314618016334/lh4040sup1.cif", first.getLocalIdentifier());
+        assertEquals("doi", first.getIdentifiers().get(0).getScheme());
+        assertEquals("10.1107/S2414314618016334/lh4040sup1.cif", first.getIdentifiers().get(0).getValue());
+
+        // Same fixture also has a normal reference[] - adding is_supplemented_by must not
+        // disturb cites.
+        assertFalse(product.getRelatedProducts().getCites().isEmpty());
+    }
+
+    @Test
+    void mapsIsSupplementedByToOtfIdWhenRelationEntryIsNotDoiShaped() throws IOException {
+        // No real fixture is expected to carry a non-DOI is-supplemented-by entry - mutated in
+        // Java from the real fixture's own DOI-shaped entry to prove the otf fallback still works.
+        CrossrefWork work = readFixture("crossref-journal-article-with-is-supplemented-by.json");
+        work.relation.get("is-supplemented-by").get(0).idType = "handle";
+
+        Product product = mapper.toProduct(work);
+
+        ProductsRelatedItem item = (ProductsRelatedItem) product.getRelatedProducts().getIsSupplementedBy().get(0);
+        assertTrue(item.getLocalIdentifier().startsWith("otf___"));
     }
 
     @Test

@@ -623,33 +623,81 @@ public class CrossrefToSkgIfMapper {
      * Unlike DataCite (where citations live in {@code relatedIdentifiers[relationType=Cites]}),
      * Crossref's citation list is {@code reference[]} - verified live that plain works commonly
      * carry an empty {@code relation} map even with a populated {@code reference[]}, so that
-     * hashmap (documented for other relation types like is-preprint-of/is-supplement-to) is not
-     * a reliable source of "this work cites DOI X" and isn't used here. Only entries the
-     * depositing publisher asserted a DOI for get a real identifier; free-text-only references
-     * still get an entry with an otf id (same fallback DataCite's {@code relatedByType} uses for
-     * non-DOI related identifiers) rather than being dropped.
+     * hashmap is not a reliable source of "this work cites DOI X" and isn't used for {@code
+     * cites} here. Only entries the depositing publisher asserted a DOI for get a real
+     * identifier; free-text-only references still get an entry with an otf id (same fallback
+     * DataCite's {@code relatedByType} uses for non-DOI related identifiers) rather than being
+     * dropped.
+     *
+     * <p>{@code is-supplemented-by}, by contrast, is a distinct controlled-vocabulary
+     * {@code relation} key that Crossref documents explicitly (see
+     * <a href="https://www.crossref.org/documentation/schema-library/markup-guide-metadata-segments/relationships/">Crossref's
+     * relationships markup guide</a>) and reliably populates when a publisher asserts it - so
+     * unlike citations, it's read directly from {@code relation} rather than {@code reference[]}.
      */
     private ProductsRelated relatedProducts(CrossrefWork work) {
-        if (work.reference == null || work.reference.isEmpty()) {
+        List<ProductsRelatedCitesInner> cites = new ArrayList<>();
+        if (work.reference != null) {
+            for (CrossrefReference reference : work.reference) {
+                if (reference.doi != null) {
+                    // Full https://doi.org/... URL, consistent with how this API identifies its
+                    // own products and every other DOI-identified entity.
+                    cites.add(new ProductsRelatedItem()
+                            .localIdentifier(localIdentifiers.toFullLocalIdentifier(reference.doi))
+                            .entityType("product")
+                            .identifiers(List.of(new EntityIdentifiersInner().scheme("doi").value(reference.doi))));
+                    continue;
+                }
+                String label = reference.unstructured != null ? reference.unstructured : reference.key;
+                cites.add(new ProductsRelatedItem()
+                        .localIdentifier(otf(work.doi, label))
+                        .entityType("product"));
+            }
+        }
+        List<ProductsRelatedCitesInner> isSupplementedBy = relatedByRelationType(work, "is-supplemented-by");
+        if (cites.isEmpty() && isSupplementedBy.isEmpty()) {
             return null;
         }
-        List<ProductsRelatedCitesInner> cites = new ArrayList<>();
-        for (CrossrefReference reference : work.reference) {
-            if (reference.doi != null) {
-                // Full https://doi.org/... URL, consistent with how this API identifies its own
-                // products and every other DOI-identified entity.
-                cites.add(new ProductsRelatedItem()
-                        .localIdentifier(localIdentifiers.toFullLocalIdentifier(reference.doi))
-                        .entityType("product")
-                        .identifiers(List.of(new EntityIdentifiersInner().scheme("doi").value(reference.doi))));
+        ProductsRelated related = new ProductsRelated();
+        if (!cites.isEmpty()) {
+            related.cites(cites);
+        }
+        if (!isSupplementedBy.isEmpty()) {
+            related.isSupplementedBy(isSupplementedBy);
+        }
+        return related;
+    }
+
+    /**
+     * Entries under {@code work.relation.get(relationType)} - DOI-shaped entries (Crossref's
+     * {@code id-type: "doi"}) become a real, full-URL identifier just like a DOI-bearing {@code
+     * reference[]} entry; anything else falls back to an otf id built from the raw {@code id}.
+     */
+    private List<ProductsRelatedCitesInner> relatedByRelationType(CrossrefWork work, String relationType) {
+        List<ProductsRelatedCitesInner> result = new ArrayList<>();
+        if (work.relation == null) {
+            return result;
+        }
+        List<CrossrefIdEntry> entries = work.relation.get(relationType);
+        if (entries == null) {
+            return result;
+        }
+        for (CrossrefIdEntry entry : entries) {
+            if (entry.id == null) {
                 continue;
             }
-            String label = reference.unstructured != null ? reference.unstructured : reference.key;
-            cites.add(new ProductsRelatedItem()
-                    .localIdentifier(otf(work.doi, label))
+            if ("doi".equalsIgnoreCase(entry.idType)) {
+                result.add(new ProductsRelatedItem()
+                        .localIdentifier(localIdentifiers.toFullLocalIdentifier(entry.id))
+                        .entityType("product")
+                        .identifiers(List.of(new EntityIdentifiersInner().scheme("doi").value(entry.id))));
+                continue;
+            }
+            result.add(new ProductsRelatedItem()
+                    .localIdentifier(otf(work.doi, entry.id))
                     .entityType("product"));
         }
-        return cites.isEmpty() ? null : new ProductsRelated().cites(cites);
+        return result;
     }
 
     /**
