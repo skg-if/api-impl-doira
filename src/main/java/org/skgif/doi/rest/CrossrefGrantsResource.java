@@ -38,7 +38,7 @@ import java.util.Optional;
 
 /**
  * SKG-IF Grants endpoint, backed live by the Crossref REST API - the Crossref-provider sibling
- * of {@link GrantsResource}. Serves only Crossref DOIs with {@code type: "grant"}; every other
+ * of {@link DataCiteGrantsResource}. Serves only Crossref DOIs with {@code type: "grant"}; every other
  * Crossref DOI is a product, see {@link CrossrefProductsResource}.
  */
 @Path("/crossref/grants")

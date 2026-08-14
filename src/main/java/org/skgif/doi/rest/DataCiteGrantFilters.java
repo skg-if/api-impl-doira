@@ -7,7 +7,7 @@ import java.util.Set;
 /**
  * Translates the SKG-IF {@code filter} query syntax into a DataCite REST API {@code query}
  * string for the {@code /datacite/grants} endpoint - see {@link FilterQuerySyntax} for the shared
- * comma-splitting mechanics, and {@link ProductFilters} for the equivalent on {@code
+ * comma-splitting mechanics, and {@link DataCiteProductFilters} for the equivalent on {@code
  * /datacite/products}. Only a modest, explicitly-supported subset of the spec's Grant filter keys is
  * implemented - per the spec, "each filter implementation is optional" and unsupported filters
  * must 422.
@@ -24,7 +24,7 @@ import java.util.Set;
  * country} sub-filters of {@code beneficiaries.*}, {@code contributions.declared_affiliations.*}
  * and {@code funding_agency.*}.
  */
-final class GrantFilters {
+final class DataCiteGrantFilters {
 
     private static final String NO_MATCH_CLAUSE = FilterQuerySyntax.NO_MATCH_CLAUSE;
     private static final String ORCID_BASE_URL = "https://orcid.org/";
@@ -52,7 +52,7 @@ final class GrantFilters {
             "cf.search.title",
             "cf.search.title_abstract");
 
-    private GrantFilters() {
+    private DataCiteGrantFilters() {
     }
 
     static String toDataCiteQuery(String filter) {

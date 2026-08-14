@@ -75,13 +75,13 @@ mvn -q -B test -Dtest=CrossrefToSkgIfMapperTest
 Every run writes two report files per test class under `target/surefire-reports/`:
 a plain-text summary (`<FQCN>.txt`) and a JUnit XML report (`TEST-<FQCN>.xml`). The
 XML version duplicates the full captured stdout/stack traces and is enormous by
-comparison - e.g. `ProductsResourceTest`'s `.txt` summary is ~330 bytes; its `.xml`
+comparison - e.g. `DataCiteProductsResourceTest`'s `.txt` summary is ~330 bytes; its `.xml`
 report for the exact same run is ~60KB. Reading the `.xml` version by default costs
 ~180x more for no extra information in the common case. Read (or grep across) the
 `.txt` files first:
 
 ```powershell
-Get-Content target\surefire-reports\org.skgif.doi.rest.ProductsResourceTest.txt
+Get-Content target\surefire-reports\org.skgif.doi.rest.DataCiteProductsResourceTest.txt
 ```
 
 Only open the matching `.xml` report when a `.txt` failure needs the full stack
@@ -93,6 +93,6 @@ After an intentional change to `DataCiteToSkgIfMapper` (or anything else that ch
 the response shape) - see README.md's Testing section for the full explanation:
 
 ```powershell
-mvn test -Dtest=ProductsResourceTest,GrantsResourceTest -Dgolden.regenerate=true
+mvn test -Dtest=DataCiteProductsResourceTest,DataCiteGrantsResourceTest -Dgolden.regenerate=true
 git diff src/test/resources/expected/   # review before committing
 ```

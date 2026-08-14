@@ -29,7 +29,7 @@ import org.skgif.doi.generated.model.Product;
  *       docs: affiliations have no country attribute at all.
  * </ul>
  */
-final class ProductFilters {
+final class DataCiteProductFilters {
 
     private static final String NO_MATCH_CLAUSE = FilterQuerySyntax.NO_MATCH_CLAUSE;
     private static final String ORCID_BASE_URL = "https://orcid.org/";
@@ -60,7 +60,7 @@ final class ProductFilters {
             "cf.cites_doi",
             "cf.cited_by_doi");
 
-    private ProductFilters() {
+    private DataCiteProductFilters() {
     }
 
     static String toDataCiteQuery(String filter) {

@@ -84,7 +84,7 @@ reference documents in `src/test/resources/expected/`. After an intentional chan
 shape), regenerate the relevant provider's fixtures:
 
 ```bash
-mvn test -Dtest=ProductsResourceTest,GrantsResourceTest -Dgolden.regenerate=true          # DataCite
+mvn test -Dtest=DataCiteProductsResourceTest,DataCiteGrantsResourceTest -Dgolden.regenerate=true          # DataCite
 mvn test -Dtest=CrossrefProductsResourceTest,CrossrefGrantsResourceTest -Dgolden.regenerate=true  # Crossref
 git diff src/test/resources/expected/   # review before committing
 ```
@@ -115,7 +115,7 @@ Key properties (`src/main/resources/application.properties`):
 - `src/main/openapi/skg-if-openapi.yaml` - vendored, version-pinned copy of the official SKG-IF
   OpenAPI spec (with one documented local patch, noted in the file's header comment)
 - `org.skgif.doi.generated.*` - JAX-RS/model classes generated from that spec via
-  `openapi-generator-maven-plugin` (models only are actually used - see `ProductsResource`'s
+  `openapi-generator-maven-plugin` (models only are actually used - see `DataCiteProductsResource`'s
   javadoc for why the generated `ProductApi`/`GrantApi` interfaces aren't implemented directly).
   Provider-agnostic - both DataCite and Crossref map onto these same `Product`/`Grant` classes.
 - `org.skgif.doi.datacite` - DataCite REST client, DTOs (`datacite.dto`), `ResourceTypeMapping`

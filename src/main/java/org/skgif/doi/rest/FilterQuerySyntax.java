@@ -7,7 +7,7 @@ import java.util.Set;
 /**
  * Shared mechanics for translating the SKG-IF {@code filter} query syntax (comma-separated
  * {@code key:value}, AND-combined) into a DataCite REST API {@code query} string, used by both
- * {@link ProductFilters} and {@link GrantFilters}.
+ * {@link DataCiteProductFilters} and {@link DataCiteGrantFilters}.
  *
  * <p>The spec defines the format as plain comma-separated {@code key:value} pairs with no
  * escaping mechanism for a comma that's part of a value itself (e.g. an affiliation name like

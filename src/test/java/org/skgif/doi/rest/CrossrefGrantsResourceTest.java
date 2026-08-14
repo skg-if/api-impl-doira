@@ -23,7 +23,7 @@ import org.skgif.doi.crossref.dto.CrossrefWorkListResponse;
 import org.skgif.doi.crossref.dto.CrossrefWorkResponse;
 
 /**
- * The Crossref-provider sibling of {@code GrantsResourceTest}, at the separate {@code
+ * The Crossref-provider sibling of {@code DataCiteGrantsResourceTest}, at the separate {@code
  * /crossref/grants} path. Golden JSON-LD output regression tests live in
  * {@link GrantsGoldenTest}.
  */

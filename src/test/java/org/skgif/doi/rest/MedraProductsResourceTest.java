@@ -18,7 +18,7 @@ import org.skgif.doi.medra.MedraClient;
 
 /**
  * The mEDRA-provider sibling of {@code CrossrefProductsResourceTest}/{@code
- * ProductsResourceTest}, at the separate {@code /medra/products} path - see {@code
+ * DataCiteProductsResourceTest}, at the separate {@code /medra/products} path - see {@code
  * MedraProductsResource}'s javadoc for why there is no list-endpoint counterpart here. Golden
  * JSON-LD output regression tests live in {@link ProductsGoldenTest}.
  */

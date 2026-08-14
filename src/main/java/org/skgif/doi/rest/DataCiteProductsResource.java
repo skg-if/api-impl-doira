@@ -39,7 +39,7 @@ import java.util.Optional;
 /**
  * SKG-IF Products endpoint, backed live by the DataCite REST API (no local storage). Serves
  * any DataCite DOI except {@code resourceTypeGeneral: "Award"} ones, which are grants, not
- * products - see {@link GrantsResource}.
+ * products - see {@link DataCiteGrantsResource}.
  *
  * <p>This does not implement the generated {@code ProductApi} interface: openapi-generator's
  * merge of the spec's {@code @context} anyOf (two fixed context URLs + an {@code @base} object)
@@ -50,7 +50,7 @@ import java.util.Optional;
  * used for everything nested inside it.
  */
 @Path("/datacite/products")
-public class ProductsResource {
+public class DataCiteProductsResource {
 
     private static final String RESOURCE_PATH = "/datacite/products";
 
@@ -146,7 +146,7 @@ public class ProductsResource {
 
         String query;
         try {
-            query = ProductFilters.toDataCiteQuery(filter);
+            query = DataCiteProductFilters.toDataCiteQuery(filter);
         } catch (FilterQuerySyntax.UnsupportedFilterException e) {
             return JsonLdResponses.invalidFilter(uriInfo, e.getMessage());
         }

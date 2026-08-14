@@ -41,7 +41,7 @@ filename mention to satisfy the test.
 
 ## Golden-file tests
 
-`ProductsResourceTest`/`GrantsResourceTest` (DataCite) and `CrossrefProductsResourceTest`/
+`DataCiteProductsResourceTest`/`DataCiteGrantsResourceTest` (DataCite) and `CrossrefProductsResourceTest`/
 `CrossrefGrantsResourceTest` (Crossref) byte-compare full JSON-LD responses against committed
 fixtures in `src/test/resources/expected/`. After a mapper change that alters response shape,
 regenerate the affected provider's fixtures with `-Dgolden.regenerate=true` (see README's Testing

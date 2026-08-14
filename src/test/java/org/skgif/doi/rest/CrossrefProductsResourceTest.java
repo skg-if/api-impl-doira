@@ -25,7 +25,7 @@ import org.skgif.doi.crossref.dto.CrossrefWorkListResponse;
 import org.skgif.doi.crossref.dto.CrossrefWorkResponse;
 
 /**
- * The Crossref-provider sibling of {@code ProductsResourceTest}, at the separate {@code
+ * The Crossref-provider sibling of {@code DataCiteProductsResourceTest}, at the separate {@code
  * /crossref/products} path (see {@code CrossrefProductsResource}'s javadoc for why provider
  * selection is URL-driven rather than auto-detected). Golden JSON-LD output regression tests
  * live in {@link ProductsGoldenTest}.
@@ -292,7 +292,7 @@ class CrossrefProductsResourceTest {
     /**
      * A Crossref {@code type: "grant"} DOI requested via {@code /crossref/products} must 404,
      * pointing the caller at {@code /crossref/grants} instead - mirrors {@code
-     * ProductsResourceTest#getProductById_awardDoi_returns404PointingToGrants}.
+     * DataCiteProductsResourceTest#getProductById_awardDoi_returns404PointingToGrants}.
      */
     @Test
     void getProductById_grantDoi_returns404PointingToGrants() throws IOException {

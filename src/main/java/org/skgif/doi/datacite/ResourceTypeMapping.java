@@ -10,10 +10,10 @@ import org.skgif.doi.generated.model.Product;
  * Single source of truth for how DataCite's {@code resourceTypeGeneral} controlled vocabulary
  * maps onto SKG-IF's 4-value {@code product_type} enum, and for recognizing DataCite's
  * {@code "Award"} type - which isn't a product at all, it's routed to the Grants endpoint
- * instead (see {@code GrantsResource}/{@code ProductsResource}).
+ * instead (see {@code DataCiteGrantsResource}/{@code DataCiteProductsResource}).
  *
  * <p>Used both by {@code DataCiteToSkgIfMapper} (forward: resourceTypeGeneral -> product_type)
- * and {@code ProductFilters} (reverse: product_type -> the DataCite values that produce it),
+ * and {@code DataCiteProductFilters} (reverse: product_type -> the DataCite values that produce it),
  * so the two never drift apart.
  */
 public final class ResourceTypeMapping {
@@ -56,7 +56,7 @@ public final class ResourceTypeMapping {
     /**
      * The DataCite {@code resourceTypeGeneral} values that map to the given SKG-IF
      * product_type, alphabetically sorted so callers building a query clause from this (see
-     * {@code ProductFilters}) get deterministic output regardless of the backing map's
+     * {@code DataCiteProductFilters}) get deterministic output regardless of the backing map's
      * iteration order.
      */
     public static List<String> resourceTypesFor(Product.ProductTypeEnum productType) {

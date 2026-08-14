@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
  * Golden JSON-LD output regression tests live in {@link ProductsGoldenTest}.
  */
 @QuarkusTest
-class ProductsResourceTest {
+class DataCiteProductsResourceTest {
 
     private static final String BASE = "/skg-if/api";
 
@@ -65,7 +65,7 @@ class ProductsResourceTest {
      * Hand-constructed with a single slash (rather than relying on RestAssured/the test HTTP
      * client to reproduce the real collapsing of a literal "//" mid-request) precisely because
      * a single slash isn't touched by any further normalization - this deterministically
-     * exercises the full ProductsResource -> LocalIdentifiers.toDoi() -> DataCiteClient pipeline
+     * exercises the full DataCiteProductsResource -> LocalIdentifiers.toDoi() -> DataCiteClient pipeline
      * with the same string shape LocalIdentifiersTest pins at the unit level.
      */
     @Test

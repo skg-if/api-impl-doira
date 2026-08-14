@@ -27,12 +27,12 @@ import org.skgif.doi.util.LocalIdentifiers;
 
 /**
  * SKG-IF Products endpoint, backed live by mEDRA's ONIX-for-DOI metadata API (no local storage) -
- * the mEDRA-provider sibling of {@link ProductsResource}/{@link CrossrefProductsResource}, see
- * {@code ProductsResource}'s javadoc for why the JSON-LD envelope is hand-assembled via {@link
+ * the mEDRA-provider sibling of {@link DataCiteProductsResource}/{@link CrossrefProductsResource}, see
+ * {@code DataCiteProductsResource}'s javadoc for why the JSON-LD envelope is hand-assembled via {@link
  * JsonLdResponses}. Provider selection is by URL path, not auto-detected: this only ever serves
  * mEDRA-registered DOIs, at {@code /medra/products}.
  *
- * <p>Single-item lookup only - unlike {@code ProductsResource}/{@code CrossrefProductsResource},
+ * <p>Single-item lookup only - unlike {@code DataCiteProductsResource}/{@code CrossrefProductsResource},
  * there is no bare {@code GET /medra/products} list endpoint here. {@code
  * api.medra.org/metadata/{doi}} is a DOI-keyed metadata lookup, not a search/list API (no mEDRA
  * equivalent of Crossref's {@code filter=}/DataCite's list query was found), so there is no query

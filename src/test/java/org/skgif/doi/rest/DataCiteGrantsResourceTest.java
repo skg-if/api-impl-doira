@@ -26,7 +26,7 @@ import org.skgif.doi.datacite.dto.DataCiteDoiResponse;
  * Golden JSON-LD output regression tests live in {@link GrantsGoldenTest}.
  */
 @QuarkusTest
-class GrantsResourceTest {
+class DataCiteGrantsResourceTest {
 
     private static final String BASE = "/skg-if/api";
 
@@ -77,7 +77,7 @@ class GrantsResourceTest {
     /**
      * A non-Award DOI (a product) requested via {@code /datacite/grants} must 404, pointing the
      * caller at {@code /datacite/products} instead - the inverse of {@code
-     * ProductsResourceTest#getProductById_awardDoi_returns404PointingToGrants}.
+     * DataCiteProductsResourceTest#getProductById_awardDoi_returns404PointingToGrants}.
      */
     @Test
     void getGrantById_productDoi_returns404PointingToProducts() throws IOException {

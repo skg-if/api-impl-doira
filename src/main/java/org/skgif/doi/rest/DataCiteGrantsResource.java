@@ -39,12 +39,12 @@ import java.util.Optional;
 /**
  * SKG-IF Grants endpoint, backed live by the DataCite REST API (no local storage). Serves only
  * DataCite DOIs with {@code resourceTypeGeneral: "Award"} - every other DOI is a product, see
- * {@link ProductsResource}. See that class's javadoc for why the JSON-LD envelope is
+ * {@link DataCiteProductsResource}. See that class's javadoc for why the JSON-LD envelope is
  * hand-assembled (via {@link JsonLdResponses}) rather than implementing the generated {@code
  * GrantApi} interface directly.
  */
 @Path("/datacite/grants")
-public class GrantsResource {
+public class DataCiteGrantsResource {
 
     private static final String RESOURCE_PATH = "/datacite/grants";
 
@@ -131,7 +131,7 @@ public class GrantsResource {
 
         String query;
         try {
-            query = GrantFilters.toDataCiteQuery(filter);
+            query = DataCiteGrantFilters.toDataCiteQuery(filter);
         } catch (FilterQuerySyntax.UnsupportedFilterException e) {
             return JsonLdResponses.invalidFilter(uriInfo, e.getMessage());
         }

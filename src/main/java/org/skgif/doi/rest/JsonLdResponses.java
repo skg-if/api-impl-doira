@@ -14,9 +14,9 @@ import org.skgif.doi.generated.model.Link;
 
 /**
  * JSON-LD envelope, pagination-link and RFC 7807 error helpers shared by {@link
- * ProductsResource} and {@link GrantsResource} - both hand-assemble their {@code
+ * DataCiteProductsResource} and {@link DataCiteGrantsResource} - both hand-assemble their {@code
  * @context}/{@code meta}/{@code @graph} envelope with Jackson rather than the generated
- * {@code ProductApi}/{@code GrantApi} interfaces (see {@code ProductsResource}'s javadoc for
+ * {@code ProductApi}/{@code GrantApi} interfaces (see {@code DataCiteProductsResource}'s javadoc for
  * why), so the mechanics are identical across the two resources.
  */
 final class JsonLdResponses {

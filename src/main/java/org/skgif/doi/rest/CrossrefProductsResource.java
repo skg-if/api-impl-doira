@@ -41,7 +41,7 @@ import java.util.Optional;
 
 /**
  * SKG-IF Products endpoint, backed live by the Crossref REST API (no local storage) - the
- * Crossref-provider sibling of {@link ProductsResource}, see that class's javadoc for why the
+ * Crossref-provider sibling of {@link DataCiteProductsResource}, see that class's javadoc for why the
  * JSON-LD envelope is hand-assembled via {@link JsonLdResponses}. Provider selection is by URL
  * path rather than auto-detected: this only ever serves Crossref-registered DOIs, at {@code
  * /crossref/products} rather than {@code /datacite/products}.
