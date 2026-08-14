@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.skgif.doi.datacite.ResourceTypeMapping;
 import org.skgif.doi.generated.model.Product;
+import org.skgif.doi.util.ExternalIdentifierUrls;
 
 /**
  * Translates the SKG-IF {@code filter} query syntax into a DataCite REST API {@code query}
@@ -31,8 +32,6 @@ import org.skgif.doi.generated.model.Product;
 final class DataCiteProductFilters {
 
     private static final String NO_MATCH_CLAUSE = FilterQuerySyntax.NO_MATCH_CLAUSE;
-    private static final String ORCID_BASE_URL = "https://orcid.org/";
-    private static final String ROR_BASE_URL = "https://ror.org/";
 
     private static final Set<String> SUPPORTED = Set.of(
             "product_type",
@@ -86,7 +85,8 @@ final class DataCiteProductFilters {
                     FilterQuerySyntax.creatorOrContributorClause("nameIdentifiers.nameIdentifier", value);
             case "cf.contributions_orcid", "contributions.by.identifiers.id" -> orcidClause(value);
             // We only ever emit "orcid" as the scheme for by.identifiers.
-            case "contributions.by.identifiers.scheme" -> FilterQuerySyntax.schemeOnlyFilter(value, "orcid", NO_MATCH_CLAUSE);
+            case "contributions.by.identifiers.scheme" ->
+                    FilterQuerySyntax.schemeOnlyFilter(value, "orcid", NO_MATCH_CLAUSE);
             case "contributions.by.family_name" -> FilterQuerySyntax.creatorOrContributorClause("familyName", value);
             case "contributions.by.given_name" -> FilterQuerySyntax.creatorOrContributorClause("givenName", value);
             case "contributions.by.name" -> FilterQuerySyntax.creatorOrContributorClause("name", value);
@@ -99,8 +99,10 @@ final class DataCiteProductFilters {
                     FilterQuerySyntax.creatorOrContributorClause("affiliation.affiliationIdentifier", value);
             case "contributions.declared_affiliations.identifiers.id", "cf.contributions_aff_ror" -> rorClause(value);
             // We only ever emit "ror" as the scheme for declared_affiliations.identifiers.
-            case "contributions.declared_affiliations.identifiers.scheme" -> FilterQuerySyntax.schemeOnlyFilter(value, "ror", NO_MATCH_CLAUSE);
-            case "contributions.declared_affiliations.name" -> FilterQuerySyntax.creatorOrContributorClause("affiliation.name", value);
+            case "contributions.declared_affiliations.identifiers.scheme" ->
+                    FilterQuerySyntax.schemeOnlyFilter(value, "ror", NO_MATCH_CLAUSE);
+            case "contributions.declared_affiliations.name" ->
+                    FilterQuerySyntax.creatorOrContributorClause("affiliation.name", value);
 
             case "funding.grant_number" -> "fundingReferences.awardNumber:\"" + escape(value) + "\"";
 
@@ -148,7 +150,8 @@ final class DataCiteProductFilters {
      * @return a Lucene clause matching bareOrcid as a full ORCID URL, on either role
      */
     private static String orcidClause(String bareOrcid) {
-        return FilterQuerySyntax.creatorOrContributorClause("nameIdentifiers.nameIdentifier", ORCID_BASE_URL + bareOrcid);
+        return FilterQuerySyntax.creatorOrContributorClause("nameIdentifiers.nameIdentifier",
+                ExternalIdentifierUrls.ORCID_BASE_URL + bareOrcid);
     }
 
     /**
@@ -158,7 +161,8 @@ final class DataCiteProductFilters {
      * @return a Lucene clause matching bareRor as a full ROR URL, on either role's affiliation
      */
     private static String rorClause(String bareRor) {
-        return FilterQuerySyntax.creatorOrContributorClause("affiliation.affiliationIdentifier", ROR_BASE_URL + bareRor);
+        return FilterQuerySyntax.creatorOrContributorClause("affiliation.affiliationIdentifier",
+                ExternalIdentifierUrls.ROR_BASE_URL + bareRor);
     }
 
     private static String escape(String value) {

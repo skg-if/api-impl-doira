@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.skgif.doi.crossref.CrossrefTypeMapping;
 import org.skgif.doi.generated.model.Product;
+import org.skgif.doi.util.ExternalIdentifierUrls;
 
 /**
  * Translates the SKG-IF {@code filter} query syntax into a Crossref REST API {@code filter}
@@ -27,7 +28,6 @@ import org.skgif.doi.generated.model.Product;
 final class CrossrefFilters {
 
     private static final String NO_MATCH_CLAUSE = "doi:__no_match__";
-    private static final String ORCID_URL_PREFIX = "https://orcid.org/";
 
     private static final Set<String> PRODUCT_SUPPORTED = Set.of(
             "product_type",
@@ -81,7 +81,8 @@ final class CrossrefFilters {
             case "identifiers.id" -> "doi:" + FilterQuerySyntax.stripDoiUrl(value);
             case "identifiers.scheme" -> FilterQuerySyntax.schemeOnlyFilter(value, "doi", NO_MATCH_CLAUSE);
             case "contributions.by.identifiers.id", "cf.contributions_orcid" -> "orcid:" + stripOrcidUrl(value);
-            case "contributions.by.identifiers.scheme" -> FilterQuerySyntax.schemeOnlyFilter(value, "orcid", NO_MATCH_CLAUSE);
+            case "contributions.by.identifiers.scheme" ->
+                FilterQuerySyntax.schemeOnlyFilter(value, "orcid", NO_MATCH_CLAUSE);
             case "funding.grant_number" -> "award.number:" + value;
             case "cf.search.title" -> {
                 builder.queryTitle(value);
@@ -142,7 +143,9 @@ final class CrossrefFilters {
     }
 
     private static String stripOrcidUrl(String value) {
-        return value.startsWith(ORCID_URL_PREFIX) ? value.substring(ORCID_URL_PREFIX.length()) : value;
+        return value.startsWith(ExternalIdentifierUrls.ORCID_BASE_URL)
+                ? value.substring(ExternalIdentifierUrls.ORCID_BASE_URL.length())
+                : value;
     }
 
     /** The three independent query components Crossref's {@code /works} list endpoint accepts. */
@@ -162,16 +165,16 @@ final class CrossrefFilters {
             private String queryTitle;
             private String queryBibliographic;
 
-            void filter(String filter) {
-                this.filter = filter;
+            void filter(String value) {
+                this.filter = value;
             }
 
-            void queryTitle(String queryTitle) {
-                this.queryTitle = queryTitle;
+            void queryTitle(String value) {
+                this.queryTitle = value;
             }
 
-            void queryBibliographic(String queryBibliographic) {
-                this.queryBibliographic = queryBibliographic;
+            void queryBibliographic(String value) {
+                this.queryBibliographic = value;
             }
 
             ParsedFilter build() {

@@ -76,6 +76,11 @@ public class DataCiteGrantsResource {
     @ConfigProperty(name = "skgif.default-page-size")
     int defaultPageSize;
 
+    /**
+     * @param localIdentifierParam the DOI to look up (with or without the SKG base domain prefix)
+     * @param uriInfo the current request URI, used to build self/context links
+     * @return the JSON-LD grant envelope, or a 404 error response if not found
+     */
     @GET
     @Path("/{local_identifier: .+}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -91,7 +96,7 @@ public class DataCiteGrantsResource {
             DataCiteDoiResponse response = dataCiteClient.getDoi(doi);
             data = response != null ? response.data : null;
         } catch (WebApplicationException e) {
-            if (e.getResponse().getStatus() == 404) {
+            if (e.getResponse().getStatus() == Response.Status.NOT_FOUND.getStatusCode()) {
                 return notFound(localIdentifierParam);
             }
             throw e;
@@ -121,6 +126,14 @@ public class DataCiteGrantsResource {
         return Response.ok(root).build();
     }
 
+    /**
+     * @param filter the SKG-IF {@code filter} query string, translated to DataCite's own filter
+     *     syntax
+     * @param page the page cursor/number to fetch, or null for the first page
+     * @param pageSize results per page, or null to use defaultPageSize
+     * @param uriInfo the current request URI, used to build pagination/context links
+     * @return the JSON-LD grant list envelope
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getGrants(

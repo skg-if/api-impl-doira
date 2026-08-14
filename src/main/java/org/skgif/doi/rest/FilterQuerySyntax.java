@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiFunction;
+import org.skgif.doi.util.ExternalIdentifierUrls;
 
 /**
  * Shared mechanics for translating the SKG-IF {@code filter} query syntax (comma-separated
@@ -54,14 +55,14 @@ final class FilterQuerySyntax {
         }
     }
 
-    static final String DOI_URL_PREFIX = "https://doi.org/";
-
     static String escape(String value) {
         return value.replace("\"", "\\\"");
     }
 
     static String stripDoiUrl(String value) {
-        return value.startsWith(DOI_URL_PREFIX) ? value.substring(DOI_URL_PREFIX.length()) : value;
+        return value.startsWith(ExternalIdentifierUrls.DOI_BASE_URL)
+                ? value.substring(ExternalIdentifierUrls.DOI_BASE_URL.length())
+                : value;
     }
 
     /**
@@ -117,7 +118,8 @@ final class FilterQuerySyntax {
             String value = segment.substring(idx + 1).trim();
             if (!supportedKeys.contains(key)) {
                 throw new UnsupportedFilterException("The filter '" + key
-                        + "' is not supported by this implementation, valid filters are " + String.join(", ", supportedKeys));
+                        + "' is not supported by this implementation, valid filters are "
+                        + String.join(", ", supportedKeys));
             }
             String clause = clauseBuilder.apply(key, value);
             if (clause != null) {

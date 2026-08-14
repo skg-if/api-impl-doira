@@ -40,6 +40,10 @@ public final class MedraOnixXmlParser {
     private MedraOnixXmlParser() {
     }
 
+    /**
+     * @param xml the raw mEDRA ONIX-for-DOI XML document, or null
+     * @return the parsed work, or empty if xml is null/blank or no {@code ContentItem} is found
+     */
     public static Optional<MedraWork> parse(String xml) {
         if (xml == null || xml.isBlank()) {
             return Optional.empty();

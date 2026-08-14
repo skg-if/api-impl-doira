@@ -37,6 +37,10 @@ public class CrossrefJournalDoiResolver {
     private final String mailto;
     private final Map<String, String> cache = new ConcurrentHashMap<>();
 
+    /**
+     * @param crossrefClient the Crossref REST client used to look up journal-level DOIs
+     * @param crossrefMailto contact email for Crossref's polite-pool API access, if configured
+     */
     @Inject
     public CrossrefJournalDoiResolver(@RestClient CrossrefClient crossrefClient,
             @ConfigProperty(name = "crossref.mailto") Optional<String> crossrefMailto) {

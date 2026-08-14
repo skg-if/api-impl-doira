@@ -6,7 +6,6 @@ import org.skgif.doi.datacite.dto.DataCiteAttributes;
 import org.skgif.doi.datacite.dto.DataCiteContributor;
 import org.skgif.doi.datacite.dto.DataCiteCreator;
 import org.skgif.doi.datacite.dto.DataCiteDate;
-import org.skgif.doi.datacite.dto.DataCiteDescription;
 import org.skgif.doi.datacite.dto.DataCiteFundingReference;
 import org.skgif.doi.datacite.dto.DataCiteNameIdentifier;
 import org.skgif.doi.datacite.dto.DataCiteRelatedIdentifier;
@@ -43,6 +42,7 @@ import org.skgif.doi.generated.model.ProductsRelated;
 import org.skgif.doi.generated.model.ProductsRelatedCitesInner;
 import org.skgif.doi.generated.model.ProductsRelatedItem;
 import org.skgif.doi.generated.model.Topic;
+import org.skgif.doi.util.ExternalIdentifierUrls;
 import org.skgif.doi.util.LocalIdentifiers;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.ArrayList;
@@ -76,11 +76,11 @@ import java.util.regex.Pattern;
 @ApplicationScoped
 public class DataCiteToSkgIfMapper {
 
-    private static final String ORCID_BASE_URL = "https://orcid.org/";
-    private static final String ROR_BASE_URL = "https://ror.org/";
     private static final String DATACITE_RESOURCE_TYPE_SCHEMA_URL =
             "https://schema.datacite.org/meta/kernel-4.7/include/datacite-resourceType-v4.xsd";
     private static final Pattern DOI_SHAPE = Pattern.compile("10\\.\\d{4,9}/.+");
+    private static final int MAX_SLUG_LENGTH = 40;
+    private static final int DAY_LENGTH = 10;
 
     private static final Map<String, String> DATACITE_DATE_TYPE_TO_SKGIF = Map.of(
             "Accepted", "acceptance",
@@ -96,10 +96,17 @@ public class DataCiteToSkgIfMapper {
 
     private final LocalIdentifiers localIdentifiers;
 
+    /**
+     * @param localIdentifiers builds full/otf local_identifier values for mapped entities
+     */
     public DataCiteToSkgIfMapper(LocalIdentifiers localIdentifiers) {
         this.localIdentifiers = localIdentifiers;
     }
 
+    /**
+     * @param attributes the DataCite record's attributes to map
+     * @return the mapped Product
+     */
     public Product toProduct(DataCiteAttributes attributes) {
         Objects.requireNonNull(attributes.doi, "DataCite record has no DOI");
 
@@ -261,7 +268,7 @@ public class DataCiteToSkgIfMapper {
             List<DataCiteNameIdentifier> nameIdentifiers) {
         String orcid = firstOrcid(nameIdentifiers);
         PersonLite by = new PersonLite()
-                .localIdentifier(orcid != null ? ORCID_BASE_URL + orcid : otf(doi, name))
+                .localIdentifier(orcid != null ? ExternalIdentifierUrls.ORCID_BASE_URL + orcid : otf(doi, name))
                 .name(name)
                 .givenName(givenName)
                 .familyName(familyName)
@@ -295,8 +302,8 @@ public class DataCiteToSkgIfMapper {
         }
         return nameIdentifiers.stream()
                 .filter(ni -> "ORCID".equalsIgnoreCase(ni.nameIdentifierScheme) && ni.nameIdentifier != null)
-                .map(ni -> ni.nameIdentifier.startsWith(ORCID_BASE_URL)
-                        ? ni.nameIdentifier.substring(ORCID_BASE_URL.length())
+                .map(ni -> ni.nameIdentifier.startsWith(ExternalIdentifierUrls.ORCID_BASE_URL)
+                        ? ni.nameIdentifier.substring(ExternalIdentifierUrls.ORCID_BASE_URL.length())
                         : ni.nameIdentifier)
                 .findFirst()
                 .orElse(null);
@@ -313,8 +320,8 @@ public class DataCiteToSkgIfMapper {
                 continue;
             }
             String orcid = ni.nameIdentifier;
-            if (orcid != null && orcid.startsWith(ORCID_BASE_URL)) {
-                orcid = orcid.substring(ORCID_BASE_URL.length());
+            if (orcid != null && orcid.startsWith(ExternalIdentifierUrls.ORCID_BASE_URL)) {
+                orcid = orcid.substring(ExternalIdentifierUrls.ORCID_BASE_URL.length());
             }
             identifiers.add(new PersonLiteAllOfIdentifiers()
                     .scheme("orcid")
@@ -336,7 +343,7 @@ public class DataCiteToSkgIfMapper {
                     && "ROR".equalsIgnoreCase(affiliation.affiliationIdentifierScheme);
             Organisation org = new Organisation()
                     .localIdentifier(hasRor
-                            ? ROR_BASE_URL + stripRorUrl(affiliation.affiliationIdentifier)
+                            ? ExternalIdentifierUrls.ROR_BASE_URL + stripRorUrl(affiliation.affiliationIdentifier)
                             : otf(doi, affiliation.name))
                     .name(affiliation.name)
                     .entityType("organisation");
@@ -405,7 +412,9 @@ public class DataCiteToSkgIfMapper {
                     case "validity" -> dates.addValidityItem(date.date);
                     case "retraction" -> dates.addRetractionItem(date.date);
                     case "embargo" -> dates.addEmbargoItem(date.date);
-                    default -> any = false;
+                    default -> {
+                        any = false;
+                    }
                 }
             }
         }
@@ -474,7 +483,7 @@ public class DataCiteToSkgIfMapper {
      * @return the date truncated to its YYYY-MM-DD day, or unchanged if shorter than 10 chars
      */
     private String normalizeDay(String date) {
-        return date.length() >= 10 ? date.substring(0, 10) : date;
+        return date.length() >= DAY_LENGTH ? date.substring(0, DAY_LENGTH) : date;
     }
 
     private ProductManifestationAccessRights accessRights(DataCiteAttributes attributes) {
@@ -568,7 +577,7 @@ public class DataCiteToSkgIfMapper {
         String funderDoi = hasRor ? null : extractDoi(fundingReference.funderIdentifier);
         Organisation agency = new Organisation()
                 .localIdentifier(hasRor
-                        ? ROR_BASE_URL + stripRorUrl(fundingReference.funderIdentifier)
+                        ? ExternalIdentifierUrls.ROR_BASE_URL + stripRorUrl(fundingReference.funderIdentifier)
                         : funderDoi != null
                                 ? localIdentifiers.toFullLocalIdentifier(funderDoi)
                                 : otf(doi, fundingReference.funderName))
@@ -599,16 +608,18 @@ public class DataCiteToSkgIfMapper {
             return null;
         }
         String candidate = identifier;
-        if (candidate.startsWith("https://doi.org/")) {
-            candidate = candidate.substring("https://doi.org/".length());
-        } else if (candidate.startsWith("http://doi.org/")) {
-            candidate = candidate.substring("http://doi.org/".length());
+        if (candidate.startsWith(ExternalIdentifierUrls.DOI_BASE_URL)) {
+            candidate = candidate.substring(ExternalIdentifierUrls.DOI_BASE_URL.length());
+        } else if (candidate.startsWith(ExternalIdentifierUrls.DOI_HTTP_BASE_URL)) {
+            candidate = candidate.substring(ExternalIdentifierUrls.DOI_HTTP_BASE_URL.length());
         }
         return DOI_SHAPE.matcher(candidate).matches() ? candidate : null;
     }
 
     private String stripRorUrl(String ror) {
-        return ror.startsWith(ROR_BASE_URL) ? ror.substring(ROR_BASE_URL.length()) : ror;
+        return ror.startsWith(ExternalIdentifierUrls.ROR_BASE_URL)
+                ? ror.substring(ExternalIdentifierUrls.ROR_BASE_URL.length())
+                : ror;
     }
 
     private String firstRor(List<DataCiteNameIdentifier> nameIdentifiers) {
@@ -622,12 +633,13 @@ public class DataCiteToSkgIfMapper {
                 .orElse(null);
     }
 
-    private Organisation grantFundingAgency(String doi, Optional<DataCiteCreator> fundingAgencyCreator, String publisher) {
+    private Organisation grantFundingAgency(String doi, Optional<DataCiteCreator> fundingAgencyCreator,
+            String publisher) {
         if (fundingAgencyCreator.isPresent()) {
             DataCiteCreator creator = fundingAgencyCreator.get();
             String ror = firstRor(creator.nameIdentifiers);
             return new Organisation()
-                    .localIdentifier(ROR_BASE_URL + ror)
+                    .localIdentifier(ExternalIdentifierUrls.ROR_BASE_URL + ror)
                     .name(creator.name)
                     .entityType("organisation")
                     .identifiers(List.of(new AgentAllOfIdentifiers().scheme("ror").value(ror)));
@@ -671,7 +683,7 @@ public class DataCiteToSkgIfMapper {
         if (organizational) {
             String ror = firstRor(nameIdentifiers);
             Organisation by = new Organisation()
-                    .localIdentifier(ror != null ? ROR_BASE_URL + ror : otf(doi, name))
+                    .localIdentifier(ror != null ? ExternalIdentifierUrls.ROR_BASE_URL + ror : otf(doi, name))
                     .name(name)
                     .entityType("organisation");
             if (ror != null) {
@@ -681,7 +693,7 @@ public class DataCiteToSkgIfMapper {
         }
         String orcid = firstOrcid(nameIdentifiers);
         PersonLite by = new PersonLite()
-                .localIdentifier(orcid != null ? ORCID_BASE_URL + orcid : otf(doi, name))
+                .localIdentifier(orcid != null ? ExternalIdentifierUrls.ORCID_BASE_URL + orcid : otf(doi, name))
                 .name(name)
                 .givenName(givenName)
                 .familyName(familyName)
@@ -706,7 +718,7 @@ public class DataCiteToSkgIfMapper {
                     && "ROR".equalsIgnoreCase(affiliation.affiliationIdentifierScheme);
             Organisation org = new Organisation()
                     .localIdentifier(hasRor
-                            ? ROR_BASE_URL + stripRorUrl(affiliation.affiliationIdentifier)
+                            ? ExternalIdentifierUrls.ROR_BASE_URL + stripRorUrl(affiliation.affiliationIdentifier)
                             : otf(doi, affiliation.name))
                     .name(affiliation.name)
                     .entityType("organisation");
@@ -740,7 +752,7 @@ public class DataCiteToSkgIfMapper {
             asAffiliation.name = contributor.name;
             String ror = firstRor(contributor.nameIdentifiers);
             if (ror != null) {
-                asAffiliation.affiliationIdentifier = ROR_BASE_URL + ror;
+                asAffiliation.affiliationIdentifier = ExternalIdentifierUrls.ROR_BASE_URL + ror;
                 asAffiliation.affiliationIdentifierScheme = "ROR";
             }
             organizationalContributors.add(asAffiliation);
@@ -770,7 +782,7 @@ public class DataCiteToSkgIfMapper {
         if (slug.isEmpty()) {
             return "unknown";
         }
-        return slug.length() > 40 ? slug.substring(0, 40) : slug;
+        return slug.length() > MAX_SLUG_LENGTH ? slug.substring(0, MAX_SLUG_LENGTH) : slug;
     }
 
     private ProductsRelated relatedProducts(DataCiteAttributes attributes) {
@@ -834,7 +846,9 @@ public class DataCiteToSkgIfMapper {
             result.add(new ProductsRelatedItem()
                     .localIdentifier(localIdentifier)
                     .entityType("product")
-                    .identifiers(List.of(new EntityIdentifiersInner().scheme(scheme).value(related.relatedIdentifier))));
+                    .identifiers(List.of(new EntityIdentifiersInner()
+                            .scheme(scheme)
+                            .value(related.relatedIdentifier))));
         }
         return result;
     }

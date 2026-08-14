@@ -83,6 +83,11 @@ public class CrossrefProductsResource {
     @ConfigProperty(name = "skgif.default-page-size")
     int defaultPageSize;
 
+    /**
+     * @param localIdentifierParam the DOI to look up (with or without the SKG base domain prefix)
+     * @param uriInfo the current request URI, used to build self/context links
+     * @return the JSON-LD product envelope, or a 404 error response if not found
+     */
     @GET
     @Path("/{local_identifier: .+}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -108,7 +113,7 @@ public class CrossrefProductsResource {
             CrossrefWorkResponse response = crossrefClient.getWork(doi);
             work = response != null ? response.message : null;
         } catch (WebApplicationException e) {
-            if (e.getResponse().getStatus() == 404) {
+            if (e.getResponse().getStatus() == Response.Status.NOT_FOUND.getStatusCode()) {
                 return notFound(localIdentifierParam);
             }
             throw e;
@@ -132,7 +137,8 @@ public class CrossrefProductsResource {
                 .localIdentifier(selfHref)
                 .entityType(MetaSingleEntity.EntityTypeEnum.SINGLE_ENTITY);
 
-        String contextBase = JsonLdResponses.contextBaseFor(Optional.<String>empty(), sandboxBaseUrl, fallbackContextBase);
+        String contextBase = JsonLdResponses.contextBaseFor(Optional.<String>empty(), sandboxBaseUrl,
+                fallbackContextBase);
         ObjectNode root = JsonLdResponses.envelope(objectMapper, contextBase);
         root.set("meta", objectMapper.valueToTree(meta));
         ArrayNode graph = objectMapper.createArrayNode();
@@ -142,6 +148,14 @@ public class CrossrefProductsResource {
         return Response.ok(root).build();
     }
 
+    /**
+     * @param filter the SKG-IF {@code filter} query string, translated to Crossref's own filter
+     *     syntax
+     * @param page the page cursor/number to fetch, or null for the first page
+     * @param pageSize results per page, or null to use defaultPageSize
+     * @param uriInfo the current request URI, used to build pagination/context links
+     * @return the JSON-LD product list envelope
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getProducts(
@@ -206,7 +220,8 @@ public class CrossrefProductsResource {
                 .entityType(MetaSearchPartOf.EntityTypeEnum.SEARCH_RESULT)
                 .totalItems((int) totalResults));
 
-        String contextBase = JsonLdResponses.contextBaseFor(Optional.<String>empty(), sandboxBaseUrl, fallbackContextBase);
+        String contextBase = JsonLdResponses.contextBaseFor(Optional.<String>empty(), sandboxBaseUrl,
+                fallbackContextBase);
         ObjectNode root = JsonLdResponses.envelope(objectMapper, contextBase);
         root.set("meta", objectMapper.valueToTree(meta));
         ArrayNode graph = objectMapper.createArrayNode();

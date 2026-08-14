@@ -12,10 +12,27 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 @Path("/works")
 public interface CrossrefClient {
 
+    /**
+     * Fetches a single Crossref work record by DOI.
+     *
+     * @param doi the work's DOI
+     * @return the Crossref work response
+     */
     @GET
     @Path("/{doi}")
     CrossrefWorkResponse getWork(@PathParam("doi") String doi);
 
+    /**
+     * Lists/searches Crossref works matching the given query parameters.
+     *
+     * @param filter Crossref {@code filter} query parameter, comma-joined sub-clauses
+     * @param queryTitle Crossref {@code query.title} query parameter
+     * @param queryBibliographic Crossref {@code query.bibliographic} query parameter
+     * @param rows maximum number of results to return
+     * @param offset number of results to skip
+     * @param mailto contact email for Crossref's polite-pool API access
+     * @return the matching Crossref work list response
+     */
     @GET
     CrossrefWorkListResponse listWorks(
             @QueryParam("filter") String filter,

@@ -14,15 +14,19 @@ import org.skgif.doi.generated.model.Link;
 
 /**
  * JSON-LD envelope, pagination-link and RFC 7807 error helpers shared by {@link
- * DataCiteProductsResource} and {@link DataCiteGrantsResource} - both hand-assemble their {@code
- * @context}/{@code meta}/{@code @graph} envelope with Jackson rather than the generated
- * {@code ProductApi}/{@code GrantApi} interfaces (see {@code DataCiteProductsResource}'s javadoc for
- * why), so the mechanics are identical across the two resources.
+ * DataCiteProductsResource} and {@link DataCiteGrantsResource}.
+ *
+ * <p>Both hand-assemble their {@code @context}/{@code meta}/{@code @graph} envelope with Jackson
+ * rather than the generated {@code ProductApi}/{@code GrantApi} interfaces (see {@code
+ * DataCiteProductsResource}'s javadoc for why), so the mechanics are identical across the two
+ * resources.
  */
 final class JsonLdResponses {
 
     private static final String CTX_DATA_MODEL = "https://w3id.org/skg-if/context/1.1.0/skg-if.json";
     private static final String CTX_API = "https://w3id.org/skg-if/context/1.0.0/skg-if-api.json";
+    // 422 Unprocessable Entity has no jakarta.ws.rs.core.Response.Status constant.
+    private static final int UNPROCESSABLE_ENTITY_STATUS = 422;
 
     private JsonLdResponses() {
     }
@@ -147,7 +151,7 @@ final class JsonLdResponses {
         Error error = new Error()
                 .type("https://skg-if.github.io/api/errors#NOT_FOUND")
                 .title("NOT_FOUND")
-                .status("404")
+                .status(String.valueOf(Response.Status.NOT_FOUND.getStatusCode()))
                 .detail(detail);
         return Response.status(Response.Status.NOT_FOUND).entity(error).build();
     }
@@ -156,9 +160,9 @@ final class JsonLdResponses {
         Error error = new Error()
                 .type("https://skg-if.github.io/api/errors#INVALID_FILTER")
                 .title("INVALID_FILTER")
-                .status("422")
+                .status(String.valueOf(UNPROCESSABLE_ENTITY_STATUS))
                 .detail(detail)
                 .instance(uriInfo.getRequestUri().toString());
-        return Response.status(422).entity(error).build();
+        return Response.status(UNPROCESSABLE_ENTITY_STATUS).entity(error).build();
     }
 }

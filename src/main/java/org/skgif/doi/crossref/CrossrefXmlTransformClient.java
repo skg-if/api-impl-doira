@@ -22,6 +22,10 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 @Path("/works")
 public interface CrossrefXmlTransformClient {
 
+    /**
+     * @param doi the work's DOI
+     * @return the raw XML transform response
+     */
     @GET
     @Path("/{doi}/transform/application/vnd.crossref.unixsd+xml")
     Response getXmlTransform(@PathParam("doi") String doi);

@@ -14,6 +14,8 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 @ApplicationScoped
 public class LocalIdentifiers {
 
+    private static final String SCHEME_SEPARATOR = "://";
+
     private final String baseUrl;
 
     /**
@@ -31,18 +33,21 @@ public class LocalIdentifiers {
      */
     private final Pattern collapsedBaseUrlPrefix;
 
+    /**
+     * @param baseUrl the configured local_identifier base URL (e.g. {@code https://doi.org/})
+     */
     public LocalIdentifiers(@ConfigProperty(name = "skgif.local-identifier.base-url") String baseUrl) {
         this.baseUrl = baseUrl;
         this.collapsedBaseUrlPrefix = buildCollapsedBaseUrlPrefix(baseUrl);
     }
 
     private static Pattern buildCollapsedBaseUrlPrefix(String baseUrl) {
-        int schemeEnd = baseUrl.indexOf("://");
+        int schemeEnd = baseUrl.indexOf(SCHEME_SEPARATOR);
         if (schemeEnd == -1) {
             return null;
         }
         String scheme = baseUrl.substring(0, schemeEnd + 1); // e.g. "https:"
-        String afterAuthoritySlashes = baseUrl.substring(schemeEnd + 3); // e.g. "doi.org/"
+        String afterAuthoritySlashes = baseUrl.substring(schemeEnd + SCHEME_SEPARATOR.length()); // e.g. "doi.org/"
         return Pattern.compile(Pattern.quote(scheme) + "/{1,}" + Pattern.quote(afterAuthoritySlashes));
     }
 

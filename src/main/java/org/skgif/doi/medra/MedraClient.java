@@ -21,6 +21,10 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 @RegisterRestClient(configKey = "medra-api")
 public interface MedraClient {
 
+    /**
+     * @param doi the work's DOI
+     * @return the raw ONIX-for-DOI XML metadata response
+     */
     @GET
     @Path("/metadata/{doi}")
     Response getMetadata(@PathParam("doi") String doi);

@@ -47,13 +47,24 @@ public class MedraToSkgIfMapper {
 
     private static final String ONIX_SERIAL_ARTICLE_SPEC_URL =
             "https://www.medra.org/stdoc/ONIX_DOI_Serial_Article_2.0_v.2.pdf";
+    private static final int MAX_SLUG_LENGTH = 40;
+    private static final int YEAR_LENGTH = 4;
+    private static final int YEAR_MONTH_LENGTH = 6;
+    private static final int FULL_DATE_LENGTH = 8;
 
     private final LocalIdentifiers localIdentifiers;
 
+    /**
+     * @param localIdentifiers builds full/otf local_identifier values for mapped entities
+     */
     public MedraToSkgIfMapper(LocalIdentifiers localIdentifiers) {
         this.localIdentifiers = localIdentifiers;
     }
 
+    /**
+     * @param work the mEDRA record to map
+     * @return the mapped Product
+     */
     public Product toProduct(MedraWork work) {
         Objects.requireNonNull(work.doi(), "mEDRA record has no DOI");
 
@@ -228,9 +239,12 @@ public class MedraToSkgIfMapper {
             return null;
         }
         return switch (raw.length()) {
-            case 4 -> raw;
-            case 6 -> raw.substring(0, 4) + "-" + raw.substring(4, 6);
-            case 8 -> raw.substring(0, 4) + "-" + raw.substring(4, 6) + "-" + raw.substring(6, 8);
+            case YEAR_LENGTH -> raw;
+            case YEAR_MONTH_LENGTH ->
+                raw.substring(0, YEAR_LENGTH) + "-" + raw.substring(YEAR_LENGTH, YEAR_MONTH_LENGTH);
+            case FULL_DATE_LENGTH ->
+                raw.substring(0, YEAR_LENGTH) + "-" + raw.substring(YEAR_LENGTH, YEAR_MONTH_LENGTH)
+                        + "-" + raw.substring(YEAR_MONTH_LENGTH, FULL_DATE_LENGTH);
             default -> null;
         };
     }
@@ -305,6 +319,6 @@ public class MedraToSkgIfMapper {
         if (slug.isEmpty()) {
             return "unknown";
         }
-        return slug.length() > 40 ? slug.substring(0, 40) : slug;
+        return slug.length() > MAX_SLUG_LENGTH ? slug.substring(0, MAX_SLUG_LENGTH) : slug;
     }
 }

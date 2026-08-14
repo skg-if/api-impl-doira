@@ -54,8 +54,13 @@ public final class ResourceTypeMapping {
         return TO_PRODUCT_TYPE.getOrDefault(resourceTypeGeneral, Product.ProductTypeEnum.OTHER);
     }
 
+    /**
+     * @param attributes the DataCite record's attributes to check
+     * @return whether attributes' {@code resourceTypeGeneral} is {@code Award}
+     */
     public static boolean isAward(DataCiteAttributes attributes) {
-        return attributes != null && attributes.types != null && AWARD.equalsIgnoreCase(attributes.types.resourceTypeGeneral);
+        return attributes != null && attributes.types != null
+                && AWARD.equalsIgnoreCase(attributes.types.resourceTypeGeneral);
     }
 
     /**

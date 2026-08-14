@@ -2,6 +2,7 @@ package org.skgif.doi.rest;
 
 import io.vertx.ext.web.Router;
 import jakarta.enterprise.event.Observes;
+import jakarta.ws.rs.core.Response;
 
 /**
  * Redirects the true site root ("/") to Swagger UI, standing in for Quarkus's default landing
@@ -15,7 +16,7 @@ public class RootRoutes {
 
     void addRootRedirect(@Observes Router router) {
         router.get("/").handler(rc -> rc.response()
-                .setStatusCode(303)
+                .setStatusCode(Response.Status.SEE_OTHER.getStatusCode())
                 .putHeader("Location", "/q/swagger-ui")
                 .end());
     }

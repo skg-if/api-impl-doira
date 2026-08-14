@@ -24,7 +24,6 @@ import org.skgif.doi.generated.model.GrantAllOfBeneficiaries;
 import org.skgif.doi.generated.model.GrantAllOfContributions;
 import org.skgif.doi.generated.model.GrantAllOfDuration;
 import org.skgif.doi.generated.model.GrantContribution;
-import org.skgif.doi.generated.model.GrantContributionBy;
 import org.skgif.doi.generated.model.GrantLite;
 import org.skgif.doi.generated.model.GrantLiteAllOfIdentifiers;
 import org.skgif.doi.generated.model.Organisation;
@@ -52,6 +51,7 @@ import org.skgif.doi.generated.model.ProductsRelatedItem;
 import org.skgif.doi.generated.model.Topic;
 import org.skgif.doi.generated.model.VenueLite;
 import org.skgif.doi.generated.model.VenueLiteAllOfIdentifiers;
+import org.skgif.doi.util.ExternalIdentifierUrls;
 import org.skgif.doi.util.LocalIdentifiers;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.ArrayList;
@@ -76,15 +76,16 @@ import java.util.Objects;
 @ApplicationScoped
 public class CrossrefToSkgIfMapper {
 
-    private static final String ORCID_HTTPS_PREFIX = "https://orcid.org/";
-    private static final String ORCID_HTTP_PREFIX = "http://orcid.org/";
-    private static final String ORCID_BASE_URL = "https://orcid.org/";
-    private static final String ROR_BASE_URL = "https://ror.org/";
     private static final String CROSSREF_TYPES_BASE_URL = "https://api.crossref.org/types/";
+    private static final int MAX_SLUG_LENGTH = 40;
 
     private final LocalIdentifiers localIdentifiers;
     private final CrossrefJournalDoiResolver journalDoiResolver;
 
+    /**
+     * @param localIdentifiers builds full/otf local_identifier values for mapped entities
+     * @param journalDoiResolver looks up a real journal-level DOI for an article's ISSN(s)
+     */
     public CrossrefToSkgIfMapper(LocalIdentifiers localIdentifiers, CrossrefJournalDoiResolver journalDoiResolver) {
         this.localIdentifiers = localIdentifiers;
         this.journalDoiResolver = journalDoiResolver;
@@ -180,8 +181,9 @@ public class CrossrefToSkgIfMapper {
 
     /**
      * Crossref's {@code abstract} is a single JATS-XML-tagged string (e.g. {@code
-     * <jats:p>...</jats:p>}), not plain text like DataCite's - this strips the tags rather than
-     * attempting to preserve any structure, since SKG-IF's {@code abstracts} field is plain text.
+     * &lt;jats:p&gt;...&lt;/jats:p&gt;}), not plain text like DataCite's - this strips the tags
+     * rather than attempting to preserve any structure, since SKG-IF's {@code abstracts} field is
+     * plain text.
      *
      * @param work the Crossref work record to read the abstract from
      * @return the abstract, plain-text and tag-stripped, keyed by "en"; null if absent/empty
@@ -248,7 +250,7 @@ public class CrossrefToSkgIfMapper {
         String bareOrcid = bareOrcid(rawOrcid);
         String name = displayName(given, family);
         PersonLite by = new PersonLite()
-                .localIdentifier(bareOrcid != null ? ORCID_BASE_URL + bareOrcid : otf(doi, name))
+                .localIdentifier(bareOrcid != null ? ExternalIdentifierUrls.ORCID_BASE_URL + bareOrcid : otf(doi, name))
                 .name(name)
                 .givenName(given)
                 .familyName(family)
@@ -285,11 +287,11 @@ public class CrossrefToSkgIfMapper {
         if (orcidUrl == null) {
             return null;
         }
-        if (orcidUrl.startsWith(ORCID_HTTPS_PREFIX)) {
-            return orcidUrl.substring(ORCID_HTTPS_PREFIX.length());
+        if (orcidUrl.startsWith(ExternalIdentifierUrls.ORCID_BASE_URL)) {
+            return orcidUrl.substring(ExternalIdentifierUrls.ORCID_BASE_URL.length());
         }
-        if (orcidUrl.startsWith(ORCID_HTTP_PREFIX)) {
-            return orcidUrl.substring(ORCID_HTTP_PREFIX.length());
+        if (orcidUrl.startsWith(ExternalIdentifierUrls.ORCID_HTTP_BASE_URL)) {
+            return orcidUrl.substring(ExternalIdentifierUrls.ORCID_HTTP_BASE_URL.length());
         }
         return orcidUrl;
     }
@@ -324,7 +326,9 @@ public class CrossrefToSkgIfMapper {
             }
             String ror = firstRor(affiliation.id);
             Organisation org = new Organisation()
-                    .localIdentifier(ror != null ? ROR_BASE_URL + ror : otf(doi, affiliation.name))
+                    .localIdentifier(ror != null
+                            ? ExternalIdentifierUrls.ROR_BASE_URL + ror
+                            : otf(doi, affiliation.name))
                     .name(affiliation.name)
                     .entityType("organisation");
             if (ror != null) {
@@ -347,7 +351,9 @@ public class CrossrefToSkgIfMapper {
     }
 
     private String stripRorUrl(String ror) {
-        return ror.startsWith(ROR_BASE_URL) ? ror.substring(ROR_BASE_URL.length()) : ror;
+        return ror.startsWith(ExternalIdentifierUrls.ROR_BASE_URL)
+                ? ror.substring(ExternalIdentifierUrls.ROR_BASE_URL.length())
+                : ror;
     }
 
     private ProductManifestation manifestation(CrossrefWork work, CrossrefVenueMetadata venueMetadata) {
@@ -613,7 +619,9 @@ public class CrossrefToSkgIfMapper {
     private Organisation fundingAgencyOrg(String doi, CrossrefFunder funder) {
         String funderDoi = funderDoi(funder);
         Organisation agency = new Organisation()
-                .localIdentifier(funderDoi != null ? localIdentifiers.toFullLocalIdentifier(funderDoi) : otf(doi, funder.name))
+                .localIdentifier(funderDoi != null
+                        ? localIdentifiers.toFullLocalIdentifier(funderDoi)
+                        : otf(doi, funder.name))
                 .name(funder.name)
                 .entityType("organisation");
         if (funderDoi != null) {
@@ -665,7 +673,7 @@ public class CrossrefToSkgIfMapper {
         if (slug.isEmpty()) {
             return "unknown";
         }
-        return slug.length() > 40 ? slug.substring(0, 40) : slug;
+        return slug.length() > MAX_SLUG_LENGTH ? slug.substring(0, MAX_SLUG_LENGTH) : slug;
     }
 
     /**
@@ -680,9 +688,10 @@ public class CrossrefToSkgIfMapper {
      *
      * <p>{@code is-supplemented-by}, by contrast, is a distinct controlled-vocabulary
      * {@code relation} key that Crossref documents explicitly (see
-     * <a href="https://www.crossref.org/documentation/schema-library/markup-guide-metadata-segments/relationships/">Crossref's
-     * relationships markup guide</a>) and reliably populates when a publisher asserts it - so
-     * unlike citations, it's read directly from {@code relation} rather than {@code reference[]}.
+     * <a href="https://www.crossref.org/documentation/schema-library/markup-guide-metadata-segments/relationships/">
+     * Crossref's relationships markup guide</a>) and reliably populates when a publisher asserts
+     * it - so unlike citations, it's read directly from {@code relation} rather than {@code
+     * reference[]}.
      *
      * @param work the Crossref work record to derive related products from
      * @return the mapped related products (cites/isSupplementedBy), or null if there are none
@@ -784,7 +793,8 @@ public class CrossrefToSkgIfMapper {
         return values.isEmpty() ? null : Map.of("en", String.join("\n\n", values));
     }
 
-    private Organisation grantFundingAgency(String doi, CrossrefFunding primaryFunding, List<CrossrefFunder> topLevelFunders) {
+    private Organisation grantFundingAgency(String doi, CrossrefFunding primaryFunding,
+            List<CrossrefFunder> topLevelFunders) {
         CrossrefFunder funder = primaryFunding != null ? primaryFunding.funder : null;
         if (funder == null && topLevelFunders != null && !topLevelFunders.isEmpty()) {
             funder = topLevelFunders.get(0);
@@ -847,7 +857,7 @@ public class CrossrefToSkgIfMapper {
         String bareOrcid = bareOrcid(investigator.orcid);
         String name = displayName(investigator.given, investigator.family);
         PersonLite by = new PersonLite()
-                .localIdentifier(bareOrcid != null ? ORCID_BASE_URL + bareOrcid : otf(doi, name))
+                .localIdentifier(bareOrcid != null ? ExternalIdentifierUrls.ORCID_BASE_URL + bareOrcid : otf(doi, name))
                 .name(name)
                 .givenName(investigator.given)
                 .familyName(investigator.family)
@@ -872,7 +882,9 @@ public class CrossrefToSkgIfMapper {
             }
             String ror = firstRor(affiliation.id);
             Organisation org = new Organisation()
-                    .localIdentifier(ror != null ? ROR_BASE_URL + ror : otf(doi, affiliation.name))
+                    .localIdentifier(ror != null
+                            ? ExternalIdentifierUrls.ROR_BASE_URL + ror
+                            : otf(doi, affiliation.name))
                     .name(affiliation.name)
                     .entityType("organisation");
             if (ror != null) {
@@ -902,7 +914,8 @@ public class CrossrefToSkgIfMapper {
         return grantAffiliations(doi, new ArrayList<>(byName.values()));
     }
 
-    private void collectAffiliations(Map<String, CrossrefAffiliation> byName, List<CrossrefInvestigator> investigators) {
+    private void collectAffiliations(Map<String, CrossrefAffiliation> byName,
+            List<CrossrefInvestigator> investigators) {
         if (investigators == null) {
             return;
         }

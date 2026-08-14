@@ -44,6 +44,10 @@ public final class CrossrefVenueMetadataXmlParser {
     private CrossrefVenueMetadataXmlParser() {
     }
 
+    /**
+     * @param xml the raw Crossref XML transform document, or null
+     * @return the parsed venue metadata, or empty if xml is null/blank or unparseable
+     */
     public static Optional<CrossrefVenueMetadata> parse(String xml) {
         if (xml == null || xml.isBlank()) {
             return Optional.empty();

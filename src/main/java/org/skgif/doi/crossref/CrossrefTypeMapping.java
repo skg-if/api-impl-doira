@@ -70,6 +70,10 @@ public final class CrossrefTypeMapping {
         return TO_PRODUCT_TYPE.getOrDefault(type, Product.ProductTypeEnum.OTHER);
     }
 
+    /**
+     * @param work the Crossref work record to check
+     * @return whether work's raw {@code type} is {@code grant}
+     */
     public static boolean isGrant(CrossrefWork work) {
         return work != null && GRANT.equalsIgnoreCase(work.type);
     }

@@ -62,6 +62,11 @@ public class MedraProductsResource {
     @ConfigProperty(name = "skgif.context.base")
     String fallbackContextBase;
 
+    /**
+     * @param localIdentifierParam the DOI to look up (with or without the SKG base domain prefix)
+     * @param uriInfo the current request URI, used to build self/context links
+     * @return the JSON-LD product envelope, or a 404 error response if not found
+     */
     @GET
     @Path("/{local_identifier: .+}")
     @Produces(MediaType.APPLICATION_JSON)
