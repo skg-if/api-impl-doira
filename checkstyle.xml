@@ -195,6 +195,26 @@
       <property name="optional" value="true"/>
     </module>
 
+    <!-- ================================================================ -->
+    <!-- Checks beyond Sun's baseline - NOT part of the bundled            -->
+    <!-- sun_checks.xml above this line. Added and triaged individually,   -->
+    <!-- each with a real per-check violation count from this codebase.    -->
+    <!-- ================================================================ -->
+    <module name="CovariantEquals"/>
+    <module name="EqualsAvoidNull"/>
+    <module name="FallThrough"/>
+    <!--
+      IllegalCatch disabled: all 5 violations found were a deliberate degrade-gracefully
+      pattern around unpredictable external calls (REST client fetches, third-party XML
+      parsing) - catch (RuntimeException|Exception e) falling back to null/Optional.empty()/
+      notFound(...) rather than crashing the request. None catch bare Throwable.
+    -->
+    <!-- <module name="IllegalCatch"/> -->
+    <module name="OneStatementPerLine"/>
+    <module name="StringLiteralEquality"/>
+    <module name="UnnecessaryParentheses"/>
+    <module name="UnusedLocalVariable"/>
+
   </module>
 
 </module>
