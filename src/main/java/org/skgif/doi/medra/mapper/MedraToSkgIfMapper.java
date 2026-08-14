@@ -173,15 +173,24 @@ public class MedraToSkgIfMapper {
 
     private ProductManifestation manifestation(MedraWork work) {
         return new ProductManifestation()
-                .type(manifestationType())
+                .type(manifestationType(work))
                 .dates(dates(work))
                 .biblio(biblio(work));
     }
 
-    private ProductManifestationType manifestationType() {
+    /**
+     * The label is the record's own {@code workElementName} ({@code DOISerialArticleWork} or
+     * {@code DOISerialArticleVersion}, whichever ONIX-DOI message variant registered it) rather
+     * than a fixed string - read straight off the document instead of hardcoded, unlike {@code
+     * product_type} (always {@code literature}, since only this one schema family is handled).
+     */
+    private ProductManifestationType manifestationType(MedraWork work) {
+        if (work.workElementName() == null) {
+            return null;
+        }
         return new ProductManifestationType()
                 .definedIn(ONIX_SERIAL_ARTICLE_SPEC_URL)
-                .labels(Map.of("en", "journal-article"));
+                .labels(Map.of("en", work.workElementName()));
     }
 
     private ProductManifestationDates dates(MedraWork work) {

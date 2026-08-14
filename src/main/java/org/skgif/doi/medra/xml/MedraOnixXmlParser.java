@@ -52,6 +52,10 @@ public final class MedraOnixXmlParser {
             if (doi == null) {
                 return Optional.empty();
             }
+            // The element that directly wraps DOI (DOISerialArticleWork/...Version) - read via
+            // local-name() rather than hardcoding either variant's name, so an unfamiliar future
+            // one still produces a truthful label (see MedraWork#workElementName's javadoc).
+            String workElementName = text(xpath, document, "local-name(//*[local-name()='DOI']/parent::*)");
 
             Node contentItem =
                     (Node) xpath.evaluate("//*[local-name()='ContentItem']", document, XPathConstants.NODE);
@@ -76,7 +80,8 @@ public final class MedraOnixXmlParser {
                     .stream().distinct().toList();
 
             return Optional.of(new MedraWork(doi, titles(xpath, contentItem), contributors(xpath, contentItem),
-                    abstractText, publicationDate, journalTitle, issns, registrantName, publisherName));
+                    abstractText, publicationDate, journalTitle, issns, registrantName, publisherName,
+                    workElementName));
         } catch (Exception e) {
             return Optional.empty();
         }

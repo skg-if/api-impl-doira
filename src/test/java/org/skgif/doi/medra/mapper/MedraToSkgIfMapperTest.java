@@ -104,11 +104,48 @@ class MedraToSkgIfMapperTest {
     }
 
     @Test
+    void splitsMultiWordFamilyNameFromPersonNameInvertedOnAFirstCommaOnly() throws IOException {
+        Product product = mapFixture("medra-multiple-product-identifiers.xml");
+
+        List<ProductContribution> contributions = product.getContributions();
+        assertEquals(1, contributions.size());
+        PersonLite person = (PersonLite) contributions.get(0).getBy();
+        assertEquals("Maria Helena Camara Bastos", person.getName());
+        assertEquals("Maria Helena", person.getGivenName());
+        assertEquals("Camara Bastos", person.getFamilyName());
+
+        VenueLite venue = (VenueLite) product.getManifestations().get(0).getBiblio().getIn();
+        assertEquals(List.of("19711131"), venue.getIdentifiers().stream()
+                .map(org.skgif.doi.generated.model.VenueLiteAllOfIdentifiers::getValue).toList());
+
+        // No PublicationDate on this ContentItem at all - dates must be omitted, not fabricated
+        // from the JournalIssueDate.
+        assertNull(product.getManifestations().get(0).getDates());
+    }
+
+    @Test
     void mapsProductTypeAsLiteratureAndVenueFromJournalTitleAndIssn() throws IOException {
         Product product = mapFixture("medra-mixed-name-shapes.xml");
 
         assertEquals(Product.ProductTypeEnum.LITERATURE, product.getProductType());
         VenueLite venue = (VenueLite) product.getManifestations().get(0).getBiblio().getIn();
         assertEquals("Plinius", venue.getName());
+    }
+
+    @Test
+    void mapsManifestationTypeLabelFromTheRecordsOwnWrapperElementName() throws IOException {
+        // WorkRegistrationMessage variant - wrapped in DOISerialArticleWork.
+        Product workVariant = mapFixture("medra-mixed-name-shapes.xml");
+        assertEquals("DOISerialArticleWork", manifestationTypeLabel(workVariant));
+
+        // VersionRegistrationMessage variant - wrapped in DOISerialArticleVersion, not Work.
+        Product versionVariant = mapFixture("medra-version-message-book-series.xml");
+        assertEquals("DOISerialArticleVersion", manifestationTypeLabel(versionVariant));
+    }
+
+    @SuppressWarnings("unchecked")
+    private String manifestationTypeLabel(Product product) {
+        var labels = (java.util.Map<String, String>) product.getManifestations().get(0).getType().getLabels();
+        return labels.get("en");
     }
 }

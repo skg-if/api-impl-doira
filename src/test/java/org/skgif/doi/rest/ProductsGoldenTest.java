@@ -445,6 +445,22 @@ class ProductsGoldenTest {
                 "expected/medra-personname-inverted-only-out.json");
     }
 
+    /**
+     * DOI 10.1400/255846 - a mEDRA-registered journal article whose {@code SerialVersion} carries
+     * two {@code ProductIdentifier} siblings (a proprietary id, {@code ProductIDType 01}, and the
+     * ISSN, {@code ProductIDType 07}) rather than one-per-{@code SerialVersion} as in the other
+     * fixtures - proves the ISSN-only filter still picks the right one when both share a parent.
+     * Its {@code ContentItem} also has no {@code PublicationDate} at all (only a
+     * {@code JournalIssueDate}, deliberately unmapped), and its sole contributor's
+     * {@code PersonNameInverted} ("Camara Bastos, Maria Helena") has a two-word family name -
+     * proves the split-on-first-comma-only behaviour at the golden-output level.
+     */
+    @Test
+    void getProductById_matchesExpectedJsonLd_medraMultipleProductIdentifiers() throws IOException {
+        assertMatchesExpectedMedraJsonLd("10.1400/255846", "medra-multiple-product-identifiers.xml",
+                "expected/medra-multiple-product-identifiers-out.json");
+    }
+
     private void assertMatchesExpectedMedraJsonLd(String doi, String medraXmlFixture, String expectedJsonLdResource)
             throws IOException {
         Response xmlResponse = okXmlResponse(medraXmlFixture);

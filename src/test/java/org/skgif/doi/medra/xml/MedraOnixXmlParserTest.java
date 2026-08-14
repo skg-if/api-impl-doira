@@ -42,6 +42,7 @@ class MedraOnixXmlParserTest {
         assertEquals(java.util.List.of("1972-1366"), work.issns());
         assertNull(work.abstractText());
         assertEquals("2019", work.publicationDate());
+        assertEquals("DOISerialArticleWork", work.workElementName());
     }
 
     @Test
@@ -58,6 +59,9 @@ class MedraOnixXmlParserTest {
 
         assertTrue(work.abstractText() != null && work.abstractText().startsWith("Synchrotron radiation"));
         assertEquals(java.util.List.of("0074-784X"), work.issns());
+        // ...VersionRegistrationMessage variant - wraps its fields in DOISerialArticleVersion,
+        // not DOISerialArticleWork (see medra-mixed-name-shapes.xml's assertion above).
+        assertEquals("DOISerialArticleVersion", work.workElementName());
     }
 
     @Test
@@ -114,6 +118,27 @@ class MedraOnixXmlParserTest {
         // (ISSN) - the parser must not misread it as an ISSN.
         assertTrue(work.issns().isEmpty());
         assertEquals("Sapere 4/2018", work.journalTitle());
+    }
+
+    @Test
+    void picksOnlyTheIssnTypedIdentifierWhenAProprietaryIdSharesTheSameSerialVersion() throws IOException {
+        MedraWork work = parseFixture("medra-multiple-product-identifiers.xml");
+
+        assertEquals("10.1400/255846", work.doi());
+        // SerialVersion here carries two ProductIdentifier siblings - ProductIDType "01"
+        // (proprietary, "4242485") and "07" (ISSN, "19711131") - the parser must pick only the
+        // ISSN one, not the proprietary id alongside it.
+        assertEquals(java.util.List.of("19711131"), work.issns());
+        assertEquals("History of Education and Children's Literature", work.journalTitle());
+
+        // This ContentItem has no PublicationDate at all (only a JournalIssueDate, which is
+        // deliberately not mapped - see MedraToSkgIfMapper#isoDate).
+        assertNull(work.publicationDate());
+
+        assertEquals(1, work.contributors().size());
+        MedraContributor contributor = work.contributors().get(0);
+        assertEquals("Camara Bastos, Maria Helena", contributor.personNameInverted());
+        assertNull(contributor.personName());
     }
 
     @Test

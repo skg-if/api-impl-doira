@@ -102,7 +102,7 @@
       "type" : {
         "defined_in" : "https://www.medra.org/stdoc/ONIX_DOI_Serial_Article_2.0_v.2.pdf",
         "labels" : {
-          "en" : "journal-article"
+          "en" : "DOISerialArticleVersion"
         }
       },
       "dates" : {

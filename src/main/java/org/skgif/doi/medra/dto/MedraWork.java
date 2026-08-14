@@ -14,6 +14,13 @@ import java.util.List;
  * {@code issns} come from the journal/series level ({@code SerialWork}/{@code SerialVersion}),
  * never from the article itself - ONIX-for-DOI gives the article no identifier of its own besides
  * its DOI.
+ *
+ * <p>{@code workElementName} is the local name of the element that directly wraps {@code DOI},
+ * {@code SerialPublication}, {@code JournalIssue}, and {@code ContentItem} - {@code
+ * DOISerialArticleWork} or {@code DOISerialArticleVersion}, depending on which of mEDRA's two
+ * root-message variants registered the record (see {@code MedraOnixXmlParser}). Read straight
+ * off the document rather than hardcoded, so a schema variant this parser hasn't been taught
+ * about still produces a truthful (if unfamiliar) label instead of a guessed-at one.
  */
 public record MedraWork(
         String doi,
@@ -24,5 +31,6 @@ public record MedraWork(
         String journalTitle,
         List<String> issns,
         String registrantName,
-        String publisherName) {
+        String publisherName,
+        String workElementName) {
 }

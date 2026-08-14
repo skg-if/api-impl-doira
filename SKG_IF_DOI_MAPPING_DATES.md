@@ -73,6 +73,8 @@ of DataCite's `created`/`registered`/`updated` or Crossref's `deposited`/`indexe
 real ONIX field but is deliberately not mapped to any Product date - it describes the *issue*
 the article appeared in, not the article itself, and SKG-IF's `manifestations[].dates` has no
 "issue date" type distinct from `publication` that wouldn't misrepresent it as the article's own
-publication date (some records, e.g. the proceedings-chapter fixture, have no `PublicationDate`
-of their own at all, only a `JournalIssueDate` - conflating the two would fabricate a date the
-record doesn't actually assert for the article).
+publication date (some records, e.g.
+[`medra-version-message-book-series.xml`](src/test/resources/medra-version-message-book-series.xml)
+and [`medra-multiple-product-identifiers.xml`](src/test/resources/medra-multiple-product-identifiers.xml),
+have no `PublicationDate` of their own at all, only a `JournalIssueDate` - conflating the two
+would fabricate a date the record doesn't actually assert for the article).
