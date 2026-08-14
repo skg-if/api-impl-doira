@@ -94,11 +94,11 @@
   deserialized by `CrossrefWork` and never reaches the mapper directly. For chapter-in-a-book and
   paper-in-proceedings types it's no longer a real gap in practice - `venue.identifiers[]` now
   gets an `isbn` entry via the XML transform enrichment described in the venue row of
-  [Product entity mapping](SKG_IF_DOI_MAPPING_PRODUCT.md#product-entity) - but
+  [Product entity mapping (Crossref)](SKG_IF_DOI_MAPPING_PRODUCT.md#crossref) - but
   every other Crossref type, and any enrichable record whose XML fetch fails, still has no ISBN
   on its venue at all.
 - **Crossref's XML transform enrichment** (chapter-in-a-book and paper-in-proceedings venues, see
-  the venue row of [Product entity mapping](SKG_IF_DOI_MAPPING_PRODUCT.md#product-entity)) is
+  the venue row of [Product entity mapping (Crossref)](SKG_IF_DOI_MAPPING_PRODUCT.md#crossref)) is
   fetched only by the single-item `GET /crossref/products/{doi}` endpoint,
   never the list/search endpoint - list results still use the `container-title[0]` heuristic. The
   parser also discards the XML's `subtitle` and publisher name/place (`publisher_name`/
@@ -115,7 +115,7 @@
   `CrossrefVenueMetadataXmlParser`/`CrossrefToSkgIfMapper#venueFromXmlMetadata` treat this as
   optional and fall back to an otf id rather than guessing one.
 - **`CrossrefJournalDoiResolver`'s journal-DOI lookup** (`GET works?filter=type:journal,issn:<issn>`,
-  see the venue row of [Product entity mapping](SKG_IF_DOI_MAPPING_PRODUCT.md#product-entity)) is,
+  see the venue row of [Product entity mapping (Crossref)](SKG_IF_DOI_MAPPING_PRODUCT.md#crossref)) is,
   unlike the XML transform enrichment, deliberately issued on *every*
   request that reaches `CrossrefToSkgIfMapper#venue` with an ISSN present - both the single-item
   and list/search endpoints - accepting the extra per-article Crossref call as a tradeoff for a
@@ -176,7 +176,7 @@
 - **`JournalIssue/JournalIssueDate`, `manifestations[].biblio.issue/volume/pages`, and
   `topics[].term`** all have real ONIX source fields (`JournalVolumeNumber`,
   `JournalIssueNumber`, `TextItem/PageRun`) that aren't mapped - see the corresponding rows in
-  [Product entity mapping](SKG_IF_DOI_MAPPING_PRODUCT.md#product-entity) and
+  [Product entity mapping (mEDRA)](SKG_IF_DOI_MAPPING_PRODUCT.md#medra) and
   [Date-type mapping](SKG_IF_DOI_MAPPING_DATES.md#medra) for why each is left out rather than
   guessed at.
 - **mEDRA's HTML-named-entity quirk**: title/abstract/copyright text occasionally embeds HTML
