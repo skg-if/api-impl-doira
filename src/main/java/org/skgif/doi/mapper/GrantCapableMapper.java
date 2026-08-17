@@ -9,13 +9,13 @@ import org.skgif.doi.generated.model.Grant;
  * doesn't implement this interface, making the omission a compile-time fact rather than a
  * javadoc note.
  *
- * @param <TInput> the provider-specific DOI record type this mapper accepts
+ * @param <T> the provider-specific DOI record type this mapper accepts
  */
-public interface GrantCapableMapper<TInput> extends RegistrationAgencyMapper<TInput> {
+public interface GrantCapableMapper<T> extends RegistrationAgencyMapper<T> {
 
     /**
      * @param input the provider's DOI record to map
      * @return the mapped Grant
      */
-    Grant toGrant(TInput input);
+    Grant toGrant(T input);
 }

@@ -14,6 +14,17 @@
     approach in checkstyle.xml.
   </description>
 
+  <!--
+    Scopes this ruleset to src/main/java only. Test sources are covered separately by
+    pmd-ruleset-tests.xml (which re-includes everything below minus a handful of rules that only
+    fire because of test-specific idioms this codebase deliberately keeps - see that file's
+    rationale comments). Both rulesets are loaded together in one maven-pmd-plugin execution
+    (pom.xml); a genuine two-execution split was tried first and doesn't work because the check
+    goal's internal fork to the pmd goal ignores per-execution configuration overrides - see the
+    comment on that plugin's <configuration> in pom.xml.
+  -->
+  <exclude-pattern>.*[/\\]src[/\\]test[/\\]java[/\\].*</exclude-pattern>
+
   <rule ref="category/java/bestpractices.xml">
     <!--
       UnusedPrivateMethod disabled: only ever fired on methods whose sole call site is a method
@@ -170,6 +181,238 @@
   </rule>
 
   <rule ref="category/java/security.xml"/>
+
+  <!--
+    UnnecessaryLocalBeforeReturn mirrors SonarQube/SonarLint rule S1488 ("Local variables should
+    not be declared and then immediately returned or thrown") - common in mapper methods
+    (`Dto d = ...; return d;`). It lives in PMD's codestyle.xml category, which is otherwise
+    excluded wholesale above (overlaps with what checkstyle.xml already enforces) - referenced
+    individually here since this specific rule doesn't overlap with anything checkstyle checks.
+  -->
+  <rule ref="category/java/codestyle.xml/UnnecessaryLocalBeforeReturn"/>
+
+  <!--
+    ============================================================================================
+    Custom XPath rules mirroring additional SonarQube/SonarLint findings with no other build-time
+    equivalent, following the same pattern as NoNestedTernaryOperators/SeveralBreakOrContinuePerLoop
+    below. Each was validated against a real `mvn pmd:check` run on this codebase - see the
+    rationale in each rule's description for what that run found.
+    ============================================================================================
+  -->
+
+  <rule name="SelfAssignment"
+        language="java"
+        message="A variable/field should not be assigned to itself"
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>
+      Equivalent to SonarQube/SonarLint rule S1656 ("Variables should not be self-assigned"), which
+      has no build-time equivalent otherwise, since this repo runs no Sonar server - same rationale
+      as NoNestedTernaryOperators/SeveralBreakOrContinuePerLoop below. Matches `x = x` where both
+      sides are the exact same unqualified variable name - a copy-paste typo, not the legitimate
+      `this.x = x` constructor/setter idiom (different name on each side, already excluded from
+      HiddenField in checkstyle.xml) which this rule does not touch. Deliberately scoped to the
+      unqualified-name case only (not `this.x = this.x` / `a.b = a.b` field-access self-assignment)
+      to keep the XPath simple and avoid guessing at FieldAccess's exact qualifier-node shape.
+    </description>
+    <priority>3</priority>
+    <properties>
+      <property name="xpath">
+        <value>
+          <![CDATA[
+//AssignmentExpression[@Operator = '=']
+  [*[1][self::VariableAccess]]
+  [*[2][self::VariableAccess]]
+  [*[1]/@Name = *[2]/@Name]
+          ]]>
+        </value>
+      </property>
+    </properties>
+  </rule>
+
+  <rule name="ExceptionCreatedNotThrown"
+        language="java"
+        message="Exception/Error object created but never thrown"
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>
+      Equivalent to SonarQube/SonarLint rule S3984 ("Exception should not be created without being
+      thrown"), which has no build-time equivalent otherwise, since this repo runs no Sonar server.
+      Matches a bare `new SomeException(...);` statement (constructed and immediately discarded)
+      rather than `throw new SomeException(...);` - almost always a forgotten `throw` in a
+      validation/error path.
+    </description>
+    <priority>2</priority>
+    <properties>
+      <property name="xpath">
+        <value>
+          <![CDATA[
+//ExpressionStatement/ConstructorCall[
+  ends-with(ClassOrInterfaceType/@SimpleName, 'Exception')
+  or ends-with(ClassOrInterfaceType/@SimpleName, 'Error')
+]
+          ]]>
+        </value>
+      </property>
+    </properties>
+  </rule>
+
+  <rule name="PreferSequencedCollectionAccessors"
+        language="java"
+        message="Prefer getFirst()/getLast() over get(0)/get(size() - 1)"
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>
+      Equivalent to SonarQube/SonarLint rule S6902 ("Prefer sequence collection getFirst() and
+      getLast() over alternative approaches"), which has no build-time equivalent otherwise, since
+      this repo runs no Sonar server. Since Java 21 (JEP 431), java.util.List is a
+      SequencedCollection, so `list.get(0)` and `list.get(list.size() - 1)` should be
+      `list.getFirst()`/`list.getLast()` - clearer intent and O(1) regardless of the underlying
+      List implementation. Deliberately does not attempt full type resolution (PMD's symbol table
+      is unreliable on generated-source-heavy compile classpaths per this ruleset's
+      UnusedPrivateMethod exclusion above) - instead matches the syntactic `get(0)` /
+      `get(same-receiver.size() - 1)` shape directly. This means it can, in principle, also fire
+      on a non-List custom type with a `get(int)` method (e.g. a hand-rolled `Row`/`Tuple` class) -
+      no such type exists in this codebase today, but if one is introduced, exclude that call site
+      rather than removing the rule.
+    </description>
+    <priority>3</priority>
+    <properties>
+      <property name="xpath">
+        <value>
+          <![CDATA[
+//MethodCall[
+  @MethodName = 'get'
+  and ArgumentList[@Size = 1]
+  and (
+    ArgumentList/NumericLiteral[@ValueAsInt = 0]
+    or
+    ArgumentList/InfixExpression[@Operator = '-'][NumericLiteral[@ValueAsInt = 1]][
+      MethodCall[@MethodName = 'size' or @MethodName = 'length']
+    ]
+  )
+]
+          ]]>
+        </value>
+      </property>
+    </properties>
+  </rule>
+
+  <rule name="IgnoredMethodResult"
+        language="java"
+        message="Return value of a side-effect-free method call is ignored"
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>
+      Equivalent to SonarQube/SonarLint rule S2201 ("Return values from functions without side
+      effects should not be ignored"), which has no build-time equivalent otherwise, since this
+      repo runs no Sonar server. Matches a bare top-level call to a small allowlist of well-known
+      immutable-value-returning String methods (trim/strip/toUpperCase/toLowerCase/substring/
+      replace*/concat/intern) used as a standalone statement, where the only possible effect - the
+      returned value - is thrown away. Deliberately narrow (name-based, not type-resolved, per the
+      PreferSequencedCollectionAccessors rationale above) to avoid flagging genuinely
+      void/side-effecting methods that happen to share a name - Stream/Optional's map/filter/
+      sorted/distinct were tried here too but dropped after a real `mvn pmd:check` run flagged
+      CrossrefFilters#parse's `result.filter(...)`, a `ParsedFilter.Builder` setter with the same
+      name as `Stream.filter` but genuinely side-effecting - too collision-prone to keep without
+      real type resolution.
+    </description>
+    <priority>3</priority>
+    <properties>
+      <property name="xpath">
+        <value>
+          <![CDATA[
+//ExpressionStatement/MethodCall[
+  @MethodName = ('trim','strip','stripLeading','stripTrailing','toUpperCase','toLowerCase',
+                 'substring','replace','replaceAll','replaceFirst','concat','intern')
+]
+          ]]>
+        </value>
+      </property>
+    </properties>
+  </rule>
+
+  <rule name="NonShortCircuitBooleanOperator"
+        language="java"
+        message="Use short-circuit &amp;&amp;/|| instead of non-short-circuit &amp;/| in a boolean context"
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>
+      Equivalent to SonarQube/SonarLint rule S2178 ("Short-circuit logic should be used in boolean
+      contexts"), which has no build-time equivalent otherwise, since this repo runs no Sonar
+      server. Deliberately does not attempt full type resolution (see the
+      PreferSequencedCollectionAccessors rationale above) - instead matches `&amp;`/`|` where at
+      least one operand is syntactically boolean-shaped (a boolean literal, a `!` negation, an
+      `instanceof` test, or a relational/equality/another boolean `&amp;`/`|`/`&amp;&amp;`/`||`
+      expression), so it doesn't fire on ordinary int bitmasking (e.g. `flags &amp; MASK`).
+    </description>
+    <priority>3</priority>
+    <properties>
+      <property name="xpath">
+        <value>
+          <![CDATA[
+//InfixExpression[@Operator = '&' or @Operator = '|'][
+  *[1][self::BooleanLiteral or self::UnaryExpression[@Operator='!'] or self::InstanceOfExpression
+       or self::InfixExpression[@Operator = ('==','!=','<','>','<=','>=','&','|','&&','||')]]
+  or
+  *[2][self::BooleanLiteral or self::UnaryExpression[@Operator='!'] or self::InstanceOfExpression
+       or self::InfixExpression[@Operator = ('==','!=','<','>','<=','>=','&','|','&&','||')]]
+]
+          ]]>
+        </value>
+      </property>
+    </properties>
+  </rule>
+
+  <rule name="MethodReturnsConstant"
+        language="java"
+        message="Method always returns the same constant value"
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>
+      Equivalent to SonarQube/SonarLint rule S3400 ("Methods should not always return the same
+      value"), which has no build-time equivalent otherwise, since this repo runs no Sonar server.
+      Matches a method whose entire body is exactly one `return &lt;literal&gt;;` statement - a
+      method that can never do anything but return one hard-coded value. Deliberately scoped to a
+      single-statement body only (not "every return in a multi-branch method is the same
+      literal"), to avoid flagging methods with real, even if currently-identical-looking,
+      branches.
+    </description>
+    <priority>3</priority>
+    <properties>
+      <property name="xpath">
+        <value>
+          <![CDATA[
+//MethodDeclaration/Block[count(*) = 1]/ReturnStatement[
+  *[self::NumericLiteral or self::StringLiteral or self::BooleanLiteral or self::CharLiteral]
+]
+          ]]>
+        </value>
+      </property>
+    </properties>
+  </rule>
+
+  <rule name="RedundantTrailingJump"
+        language="java"
+        message="Redundant jump statement - already the natural control flow"
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>
+      Equivalent to SonarQube/SonarLint rule S3626 ("Jump statements should not be redundant"),
+      which has no build-time equivalent otherwise, since this repo runs no Sonar server. Matches a
+      bare `return;` (no expression) that is the last statement in a void method's block, and a
+      bare `continue;` that is the last statement in a loop body block - both redundant since
+      control would fall through to the same place regardless. Deliberately narrow to these two
+      shapes (not e.g. `break;` as the last statement of a `switch` case, which IS required there)
+      to avoid false positives on the many contexts where a trailing jump is not redundant.
+    </description>
+    <priority>4</priority>
+    <properties>
+      <property name="xpath">
+        <value>
+          <![CDATA[
+//Block[parent::MethodDeclaration][*[last()][self::ReturnStatement][not(*)]]
+|
+//Block[parent::ForStatement or parent::ForeachStatement or parent::WhileStatement or parent::DoStatement]
+  [*[last()][self::ContinueStatement]]
+          ]]>
+        </value>
+      </property>
+    </properties>
+  </rule>
 
   <rule name="NoNestedTernaryOperators"
         language="java"

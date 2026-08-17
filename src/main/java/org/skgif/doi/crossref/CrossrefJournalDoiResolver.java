@@ -84,7 +84,7 @@ public class CrossrefJournalDoiResolver {
                     || response.message().items().isEmpty()) {
                 return null;
             }
-            CrossrefWork journal = response.message().items().get(0);
+            CrossrefWork journal = response.message().items().getFirst();
             return journal.doi();
         } catch (RuntimeException e) {
             return null;

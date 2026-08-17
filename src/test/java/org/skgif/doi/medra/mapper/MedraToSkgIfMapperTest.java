@@ -41,11 +41,11 @@ class MedraToSkgIfMapperTest {
         assertEquals("https://doi.org/10.19276/plinius.2019.01004", product.getLocalIdentifier());
         List<ProductContribution> contributions = product.getContributions();
         assertEquals(1, contributions.size());
-        PersonLite person = (PersonLite) contributions.get(0).getBy();
+        PersonLite person = (PersonLite) contributions.getFirst().getBy();
         assertEquals("Daniela D'Alessio", person.getName());
         assertEquals("Daniela", person.getGivenName());
         assertEquals("D'Alessio", person.getFamilyName());
-        assertEquals(ProductContribution.RoleEnum.AUTHOR, contributions.get(0).getRole());
+        assertEquals(ProductContribution.RoleEnum.AUTHOR, contributions.getFirst().getRole());
     }
 
     @Test
@@ -54,7 +54,7 @@ class MedraToSkgIfMapperTest {
 
         List<ProductContribution> contributions = product.getContributions();
         assertEquals(2, contributions.size());
-        PersonLite first = (PersonLite) contributions.get(0).getBy();
+        PersonLite first = (PersonLite) contributions.getFirst().getBy();
         assertEquals("Cotte M.", first.getName());
         assertNull(first.getGivenName());
         assertNull(first.getFamilyName());
@@ -67,7 +67,7 @@ class MedraToSkgIfMapperTest {
 
         List<ProductContribution> contributions = product.getContributions();
         assertEquals(1, contributions.size());
-        PersonLite person = (PersonLite) contributions.get(0).getBy();
+        PersonLite person = (PersonLite) contributions.getFirst().getBy();
         assertEquals("Giovanna Fragneto", person.getName());
         assertEquals("Giovanna", person.getGivenName());
         assertEquals("Fragneto", person.getFamilyName());
@@ -95,13 +95,13 @@ class MedraToSkgIfMapperTest {
     void mapsPublicationDateOfVaryingPrecisionToIsoForm() throws IOException {
         // "medra-mixed-name-shapes.xml"'s PublicationDate is year-only ("2019").
         Product yearOnly = mapFixture("medra-mixed-name-shapes.xml");
-        assertEquals(List.of("2019"), yearOnly.getManifestations().get(0).getDates().getPublication());
+        assertEquals(List.of("2019"), yearOnly.getManifestations().getFirst().getDates().getPublication());
 
         // "medra-no-contributors.xml"'s PublicationDate is a full 8-digit date ("20210813").
         // "medra-version-message-book-series.xml" has no PublicationDate at all (only
         // JournalIssueDate, which is deliberately not mapped - see MedraManifestationMapper#isoDate).
         Product fullDate = mapFixture("medra-no-contributors.xml");
-        assertEquals(List.of("2021-08-13"), fullDate.getManifestations().get(0).getDates().getPublication());
+        assertEquals(List.of("2021-08-13"), fullDate.getManifestations().getFirst().getDates().getPublication());
     }
 
     @Test
@@ -110,18 +110,18 @@ class MedraToSkgIfMapperTest {
 
         List<ProductContribution> contributions = product.getContributions();
         assertEquals(1, contributions.size());
-        PersonLite person = (PersonLite) contributions.get(0).getBy();
+        PersonLite person = (PersonLite) contributions.getFirst().getBy();
         assertEquals("Maria Helena Camara Bastos", person.getName());
         assertEquals("Maria Helena", person.getGivenName());
         assertEquals("Camara Bastos", person.getFamilyName());
 
-        VenueLite venue = (VenueLite) product.getManifestations().get(0).getBiblio().getIn();
+        VenueLite venue = (VenueLite) product.getManifestations().getFirst().getBiblio().getIn();
         assertEquals(List.of("19711131"), venue.getIdentifiers().stream()
                 .map(org.skgif.doi.generated.model.VenueLiteAllOfIdentifiers::getValue).toList());
 
         // No PublicationDate on this ContentItem at all - dates must be omitted, not fabricated
         // from the JournalIssueDate.
-        assertNull(product.getManifestations().get(0).getDates());
+        assertNull(product.getManifestations().getFirst().getDates());
     }
 
     @Test
@@ -129,7 +129,7 @@ class MedraToSkgIfMapperTest {
         Product product = mapFixture("medra-mixed-name-shapes.xml");
 
         assertEquals(Product.ProductTypeEnum.LITERATURE, product.getProductType());
-        VenueLite venue = (VenueLite) product.getManifestations().get(0).getBiblio().getIn();
+        VenueLite venue = (VenueLite) product.getManifestations().getFirst().getBiblio().getIn();
         assertEquals("Plinius", venue.getName());
     }
 
@@ -146,7 +146,7 @@ class MedraToSkgIfMapperTest {
 
     @SuppressWarnings("unchecked")
     private String manifestationTypeLabel(Product product) {
-        var labels = (java.util.Map<String, String>) product.getManifestations().get(0).getType().getLabels();
+        var labels = (java.util.Map<String, String>) product.getManifestations().getFirst().getType().getLabels();
         return labels.get("en");
     }
 }

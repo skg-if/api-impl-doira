@@ -23,11 +23,11 @@ public record CrossrefDate(@JsonProperty("date-parts") List<List<Integer>> dateP
         if (dateParts == null || dateParts.isEmpty()) {
             return null;
         }
-        List<Integer> parts = dateParts.get(0);
-        if (parts == null || parts.isEmpty() || parts.get(0) == null) {
+        List<Integer> parts = dateParts.getFirst();
+        if (parts == null || parts.isEmpty() || parts.getFirst() == null) {
             return null;
         }
-        StringBuilder iso = new StringBuilder(String.format("%04d", parts.get(0)));
+        StringBuilder iso = new StringBuilder(String.format("%04d", parts.getFirst()));
         if (parts.size() > 1 && parts.get(1) != null) {
             iso.append('-').append(String.format("%02d", parts.get(1)));
             if (parts.size() > 2 && parts.get(2) != null) {

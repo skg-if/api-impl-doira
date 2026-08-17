@@ -28,7 +28,7 @@ class MedraOnixXmlParserTest {
 
         assertEquals("10.19276/plinius.2019.01004", work.doi());
         assertEquals(1, work.contributors().size());
-        MedraContributor contributor = work.contributors().get(0);
+        MedraContributor contributor = work.contributors().getFirst();
         assertEquals("A01", contributor.role());
         assertEquals("Daniela", contributor.namesBeforeKey());
         assertEquals("D'Alessio", contributor.keyNames());
@@ -37,7 +37,7 @@ class MedraOnixXmlParserTest {
 
         assertEquals(1, work.titles().size());
         assertEquals("Synthesis, phase transitions, degassing behaviour of melanophlogite (type I clathrate)",
-                work.titles().get(0).text());
+                work.titles().getFirst().text());
         assertEquals("Plinius", work.journalTitle());
         assertEquals(java.util.List.of("1972-1366"), work.issns());
         assertNull(work.abstractText());
@@ -51,7 +51,7 @@ class MedraOnixXmlParserTest {
 
         assertEquals("10.3254/978-1-61499-732-0-119", work.doi());
         assertEquals(2, work.contributors().size());
-        MedraContributor first = work.contributors().get(0);
+        MedraContributor first = work.contributors().getFirst();
         assertEquals("Cotte M.", first.personName());
         assertNull(first.personNameInverted());
         assertNull(first.namesBeforeKey());
@@ -70,7 +70,7 @@ class MedraOnixXmlParserTest {
 
         final int expectedContributorCount = 23;
         assertEquals(expectedContributorCount, work.contributors().size());
-        MedraContributor first = work.contributors().get(0);
+        MedraContributor first = work.contributors().getFirst();
         assertEquals("L.", first.namesBeforeKey());
         assertEquals("Baldesi", first.keyNames());
         assertNull(first.personName());
@@ -91,7 +91,7 @@ class MedraOnixXmlParserTest {
         MedraWork work = parseFixture("medra-multilang-titles.xml");
 
         assertEquals(1, work.titles().size());
-        MedraTitle articleTitle = work.titles().get(0);
+        MedraTitle articleTitle = work.titles().getFirst();
         assertEquals("Transverse THz dynamics of phospholipid membranes: A neutron scattering study",
                 articleTitle.text());
         assertNull(articleTitle.language());
@@ -110,7 +110,7 @@ class MedraOnixXmlParserTest {
         MedraWork work = parseFixture("medra-personname-inverted-only.xml");
 
         assertEquals(1, work.contributors().size());
-        MedraContributor contributor = work.contributors().get(0);
+        MedraContributor contributor = work.contributors().getFirst();
         assertEquals("Fragneto, Giovanna", contributor.personNameInverted());
         assertNull(contributor.personName());
         assertNull(contributor.namesBeforeKey());
@@ -138,7 +138,7 @@ class MedraOnixXmlParserTest {
         assertNull(work.publicationDate());
 
         assertEquals(1, work.contributors().size());
-        MedraContributor contributor = work.contributors().get(0);
+        MedraContributor contributor = work.contributors().getFirst();
         assertEquals("Camara Bastos, Maria Helena", contributor.personNameInverted());
         assertNull(contributor.personName());
     }

@@ -45,6 +45,6 @@ public final class LicenceMapper {
         if (licenceUrls == null || licenceUrls.isEmpty()) {
             return null;
         }
-        return licenceUrls.get(0);
+        return licenceUrls.getFirst();
     }
 }

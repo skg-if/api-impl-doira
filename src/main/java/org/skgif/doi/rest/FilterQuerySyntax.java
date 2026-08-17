@@ -3,7 +3,7 @@ package org.skgif.doi.rest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
 import org.skgif.doi.util.ExternalIdentifierUrls;
 
 /**
@@ -106,7 +106,7 @@ final class FilterQuerySyntax {
      * @throws UnsupportedFilterException if a segment is malformed, or its key isn't in supportedKeys
      */
     static List<String> parseClauses(String filter, Set<String> supportedKeys,
-            BiFunction<String, String, String> clauseBuilder) {
+            BinaryOperator<String> clauseBuilder) {
         List<String> clauses = new ArrayList<>();
         for (String segment : splitSegments(filter, supportedKeys)) {
             int idx = segment.indexOf(':');

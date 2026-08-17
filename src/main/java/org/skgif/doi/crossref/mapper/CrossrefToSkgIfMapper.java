@@ -120,9 +120,9 @@ public class CrossrefToSkgIfMapper implements GrantCapableMapper<CrossrefWork> {
         Objects.requireNonNull(work.doi(), "Crossref record has no DOI");
 
         List<CrossrefProject> projects = work.project() != null ? work.project() : List.of();
-        CrossrefProject primaryProject = projects.isEmpty() ? null : projects.get(0);
+        CrossrefProject primaryProject = projects.isEmpty() ? null : projects.getFirst();
         CrossrefFunding primaryFunding = primaryProject != null && primaryProject.funding() != null
-                && !primaryProject.funding().isEmpty() ? primaryProject.funding().get(0) : null;
+                && !primaryProject.funding().isEmpty() ? primaryProject.funding().getFirst() : null;
 
         return new Grant()
                 .localIdentifier(localIdentifiers.toFullLocalIdentifier(work.doi()))

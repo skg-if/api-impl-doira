@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<ruleset name="skg-if-api-tests"
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+
+  <description>
+    Runs pmd-ruleset.xml against src/test/java, minus rules that fire only because of
+    test-specific idioms this codebase deliberately keeps rather than real defects - each exclusion
+    below carries a real violation count from an `mvn pmd:check` trial run with test sources
+    included, not a guess. Everything else in pmd-ruleset.xml (including the custom
+    SonarQube/SonarLint-mirroring rules) still applies to tests as-is.
+  </description>
+
+  <!--
+    Scopes this ruleset to src/test/java only - the mirror image of pmd-ruleset.xml's own
+    exclude-pattern, which scopes it to src/main/java only. Without this, both rulesets loaded
+    together in the same maven-pmd-plugin execution (pom.xml) would each evaluate every source
+    file, double-reporting main-source violations under two different rule sets.
+  -->
+  <exclude-pattern>.*[/\\]src[/\\]main[/\\]java[/\\].*</exclude-pattern>
+
+  <rule ref="pmd-ruleset.xml">
+    <!--
+      448 hits: no test in this codebase passes a message string to assertEquals/assertTrue/etc -
+      this is a deliberate style choice (the assertion + surrounding test method name already say
+      what's being checked), not an omission worth flagging on every one of them.
+    -->
+    <exclude name="UnitTestAssertionsShouldIncludeMessage"/>
+    <!--
+      96 hits: this codebase's mapper tests intentionally verify many mapped fields per test
+      method (one fixture in, assert the whole shape out) rather than one assertion per test -
+      splitting every such method would multiply test-method count for no clarity gain.
+    -->
+    <exclude name="UnitTestContainsTooManyAsserts"/>
+    <!--
+      39 hits: same JUnit-style-convention family as the two rules above - conflicts with this
+      codebase's actual test structure rather than catching a real gap in coverage.
+    -->
+    <exclude name="UnitTestShouldIncludeAssert"/>
+    <!--
+      59 hits, every one a repeated fixture filename (e.g. "crossref-journal-article.json" x11) or
+      a JSON-path assertion string (e.g. "'@graph'[0].local_identifier") reused across independent
+      test methods in the same file - inherent to how these fixture-driven tests are organized, not
+      real duplication to extract into constants. (pmd-ruleset.xml's own maxDuplicateLiterals=3
+      tuning was calibrated for main-source mapper code, not this shape of test.)
+    -->
+    <exclude name="AvoidDuplicateLiterals"/>
+    <!--
+      21 hits, all on getClass().getClassLoader().getResourceAsStream(...) fixture-loading test
+      helpers (readFixture/loadFixture/parseFixture/loadRawResource, etc). The J2EE
+      classloader-ambiguity concern this rule warns about doesn't apply to plain JUnit tests
+      reading their own classpath resources.
+    -->
+    <exclude name="UseProperClassLoader"/>
+    <!--
+      8 hits, every one on a `Response xmlResponse = mock(Response.class); ...` local (verified in
+      e.g. MedraProductsResourceTest#okXmlResponse) - a Mockito test double with no real underlying
+      entity stream or connection, not an actual resource that needs closing.
+    -->
+    <exclude name="CloseResource"/>
+    <!--
+      1 hit, on the 709-line CrossrefToSkgIfMapperTest (value 26, threshold 20) - inherent to a
+      single test class comprehensively verifying a mapper that touches many SKG-IF DTO types, not
+      a design smell to split up.
+    -->
+    <exclude name="CouplingBetweenObjects"/>
+    <!--
+      2 hits, both `List.of(GrantContribution.RolesEnum.LEAD_APPLICANT)`/`List.of(...CO_APPLICANT)`
+      in CrossrefToSkgIfMapperTest - single-argument calls that bind unambiguously to List's
+      fixed-arity `of(E)` overload, not its varargs one, so there's no real ambiguity to flag. Same
+      class of false positive pmd-ruleset.xml's own UnusedPrivateMethod exclusion above already
+      documents: PMD's type resolution struggling with the openapi-generated RolesEnum type on the
+      compile classpath.
+    -->
+    <exclude name="ConfusingArgumentToVarargsMethod"/>
+  </rule>
+
+</ruleset>

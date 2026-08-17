@@ -3,6 +3,7 @@ package org.skgif.doi.rest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -111,7 +112,7 @@ class DataCiteGrantFiltersTest {
         // grant_number is deliberately NOT implemented - see DataCiteGrantFilters' class javadoc.
         var exception = assertThrows(FilterQuerySyntax.UnsupportedFilterException.class,
                 () -> DataCiteGrantFilters.toDataCiteQuery("grant_number:101095129"));
-        assertEquals(true, exception.getMessage().contains("grant_number"));
+        assertTrue(exception.getMessage().contains("grant_number"));
     }
 
     @Test

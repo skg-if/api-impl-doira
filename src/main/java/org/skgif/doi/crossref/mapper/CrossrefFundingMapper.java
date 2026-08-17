@@ -112,7 +112,7 @@ final class CrossrefFundingMapper {
     Organisation grantFundingAgency(String doi, CrossrefFunding primaryFunding, List<CrossrefFunder> topLevelFunders) {
         CrossrefFunder funder = primaryFunding != null ? primaryFunding.funder() : null;
         if (funder == null && topLevelFunders != null && !topLevelFunders.isEmpty()) {
-            funder = topLevelFunders.get(0);
+            funder = topLevelFunders.getFirst();
         }
         if (funder == null || funder.name() == null) {
             return null;

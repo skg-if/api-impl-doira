@@ -113,7 +113,7 @@ final class CrossrefBiblioMapper {
         if (hasNoContainerTitle(work)) {
             return null;
         }
-        String name = work.containerTitle().get(0);
+        String name = work.containerTitle().getFirst();
         List<String> issns = work.issn() != null
                 ? work.issn().stream().filter(Objects::nonNull).toList()
                 : List.of();
@@ -134,7 +134,7 @@ final class CrossrefBiblioMapper {
 
     private boolean hasNoContainerTitle(CrossrefWork work) {
         return work.containerTitle() == null || work.containerTitle().isEmpty()
-                || work.containerTitle().get(0) == null;
+                || work.containerTitle().getFirst() == null;
     }
 
     private String resolveJournalDoi(List<String> issns) {

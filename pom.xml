@@ -163,15 +163,42 @@
         <artifactId>maven-pmd-plugin</artifactId>
         <version>3.26.0</version>
         <configuration>
-          <sourceDirectories>
-            <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
-          </sourceDirectories>
+          <!--
+            compileSourceRoots (not sourceDirectories - that parameter doesn't exist on this
+            plugin's pmd/check goals and was silently ignored here for a long time; confirmed via
+            the official parameter list at
+            https://maven.apache.org/plugins-archives/maven-pmd-plugin-3.26.0/pmd-mojo.html) is the
+            real parameter for main-source scoping. It has always defaulted to
+            ${project.compileSourceRoots} anyway, so this override was a no-op even under the wrong
+            name - kept explicit here for clarity now that the name is correct.
+          -->
+          <compileSourceRoots>
+            <compileSourceRoot>${project.build.sourceDirectory}</compileSourceRoot>
+          </compileSourceRoots>
+          <testSourceRoots>
+            <testSourceRoot>${project.build.testSourceDirectory}</testSourceRoot>
+          </testSourceRoots>
           <excludeRoots>
             <excludeRoot>${project.build.directory}/generated-sources/openapi/src/gen/java</excludeRoot>
           </excludeRoots>
-          <includeTests>false</includeTests>
+          <!--
+            includeTests=true here does NOT mean test code gets the same rules as main: it just
+            makes both source roots available for PMD to scan in this one execution.
+            pmd-ruleset.xml and pmd-ruleset-tests.xml each carry their own <exclude-pattern> (main
+            excludes test files, tests excludes main files), so which rules apply to which source
+            root is governed by that file-pattern scoping, not by having two separate executions.
+            A genuine two-execution split (one config for main, another for test) was tried first
+            and doesn't work: the check goal forks its own analysis via the pmd goal, and that fork
+            always uses this plugin-level default <configuration>, ignoring per-<execution>
+            overrides entirely (confirmed with `mvn -X pmd:check@<id>` showing the forked pmd goal
+            still using this block's compileSourceRoots/rulesets no matter which execution
+            triggered it) - a real limitation of maven-pmd-plugin 3.26.0's check-forks-pmd
+            architecture, not a configuration mistake.
+          -->
+          <includeTests>true</includeTests>
           <rulesets>
             <ruleset>pmd-ruleset.xml</ruleset>
+            <ruleset>pmd-ruleset-tests.xml</ruleset>
           </rulesets>
           <skip>${skipTests}</skip>
           <failOnViolation>true</failOnViolation>

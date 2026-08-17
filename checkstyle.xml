@@ -84,6 +84,15 @@
 
     <!-- Checks for Naming Conventions.                  -->
     <!-- See https://checkstyle.org/config_naming.html -->
+    <!--
+      ClassTypeParameterName/InterfaceTypeParameterName/MethodTypeParameterName mirror SonarQube/
+      SonarLint rule S119 ("Type parameter names should comply with a naming convention"), which
+      IntelliJ's SonarLint flags locally but which had no build-time equivalent otherwise. Default
+      pattern (^[A-Z][0-9]?$) matches Sonar's own default, so no propertyExpansion is needed.
+    -->
+    <module name="ClassTypeParameterName"/>
+    <module name="InterfaceTypeParameterName"/>
+    <module name="MethodTypeParameterName"/>
     <module name="ConstantName"/>
     <module name="LocalFinalVariableName"/>
     <module name="LocalVariableName"/>

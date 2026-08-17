@@ -3,6 +3,7 @@ package org.skgif.doi.rest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -64,7 +65,7 @@ class DataCiteProductFiltersTest {
         // keys which are now supported.
         var exception = assertThrows(FilterQuerySyntax.UnsupportedFilterException.class,
                 () -> DataCiteProductFilters.toDataCiteQuery("funding.identifiers.id:10.3030/101095129"));
-        assertEquals(true, exception.getMessage().contains("funding.identifiers.id"));
+        assertTrue(exception.getMessage().contains("funding.identifiers.id"));
     }
 
     @Test
@@ -84,7 +85,7 @@ class DataCiteProductFiltersTest {
     @Test
     void toDataCiteQuery_productType_researchData_includesDataset() {
         String query = DataCiteProductFilters.toDataCiteQuery("product_type:research data");
-        assertEquals(true, query.contains("types.resourceTypeGeneral:\"Dataset\""));
+        assertTrue(query.contains("types.resourceTypeGeneral:\"Dataset\""));
     }
 
     @Test
