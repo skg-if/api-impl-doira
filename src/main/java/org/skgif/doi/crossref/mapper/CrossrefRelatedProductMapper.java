@@ -111,11 +111,11 @@ final class CrossrefRelatedProductMapper {
                         .localIdentifier(localIdentifiers.toFullLocalIdentifier(entry.id()))
                         .entityType(EntityTypes.PRODUCT)
                         .identifiers(List.of(new EntityIdentifiersInner().scheme(SCHEME_DOI).value(entry.id()))));
-                continue;
+            } else {
+                result.add(new ProductsRelatedItem()
+                        .localIdentifier(MapperTextUtils.otf(work.doi(), entry.id()))
+                        .entityType(EntityTypes.PRODUCT));
             }
-            result.add(new ProductsRelatedItem()
-                    .localIdentifier(MapperTextUtils.otf(work.doi(), entry.id()))
-                    .entityType(EntityTypes.PRODUCT));
         }
         return result;
     }

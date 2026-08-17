@@ -89,16 +89,16 @@ final class DataCiteManifestationMapper {
         boolean any = false;
         for (DataCiteDate date : attributes.dates()) {
             String skgIfDateType = DATACITE_DATE_TYPE_TO_SKGIF.get(date.dateType());
-            if (skgIfDateType == null || date.date() == null) {
-                continue;
-            }
+            boolean missingMapping = skgIfDateType == null || date.date() == null;
             // An `Available` date only signals a genuine embargo when it differs (at day
             // granularity) from every other date already known for this record - if it
             // coincides with e.g. `Issued` or the top-level `created` timestamp, that's just
             // "published and immediately available," not an embargo end date, so it's dropped
             // rather than emitted anywhere.
-            if (ManifestationDateSetters.EMBARGO.equals(skgIfDateType)
-                    && otherRecordDays(attributes, date).contains(normalizeDay(date.date()))) {
+            boolean redundantEmbargo = !missingMapping
+                    && ManifestationDateSetters.EMBARGO.equals(skgIfDateType)
+                    && otherRecordDays(attributes, date).contains(normalizeDay(date.date()));
+            if (missingMapping || redundantEmbargo) {
                 continue;
             }
             any |= ManifestationDateSetters.addDateItem(dates, skgIfDateType, date.date());

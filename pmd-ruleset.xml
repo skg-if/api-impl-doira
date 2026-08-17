@@ -193,4 +193,60 @@
     </properties>
   </rule>
 
+  <rule name="SeveralBreakOrContinuePerLoop"
+        language="java"
+        message="Loops should not contain more than a single break or continue statement"
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>
+      A loop with more than one break/continue is harder to follow than one with a single, clear
+      exit condition. Equivalent to SonarQube rule S135 ("Loops should not contain more than a
+      single break or continue statement"), which has no build-time equivalent otherwise, since
+      this repo runs no Sonar server - same rationale as the NoNestedTernaryOperators rule above.
+      Counts only break/continue statements that actually affect THIS loop: a break belonging to a
+      nested switch, or a break/continue belonging to a nested inner loop, is excluded. The
+      exclusion is implemented as "no other loop-or-switch node sits between this loop and the
+      break/continue" using the `>>` document-order operator, rather than an
+      `ancestor::*[...][1]` "nearest ancestor" idiom - the latter silently mis-ordered results
+      under PMD 7's XPath 3.1 (Saxon) engine in testing (breaks inside a nested switch were still
+      attributed to the outer loop), since reverse-axis "closest ancestor first" ordering isn't
+      guaranteed once the axis step is used as an operand rather than a bare path step. `>>` is
+      unambiguous: for two ancestors of the same node, document order exactly matches nesting depth
+      (the outer one always precedes the inner one), so "some blocking ancestor follows $loop"
+      reliably means "nested inside $loop, closer to the break/continue than $loop is". Known
+      limitation: a labelled break/continue that targets an outer loop from inside a nested loop is
+      attributed to the nearest loop instead of its label target - not worth the extra XPath
+      complexity since this codebase has no labelled loops.
+    </description>
+    <priority>3</priority>
+    <properties>
+      <property name="xpath">
+        <value>
+          <![CDATA[
+//(ForStatement | ForeachStatement | WhileStatement | DoStatement)[
+  let $loop := .
+  return (
+    count(.//BreakStatement[
+      empty(ancestor::*[
+        (self::ForStatement or self::ForeachStatement or self::WhileStatement or self::DoStatement
+         or self::SwitchStatement)
+        and not(. is $loop)
+        and . >> $loop
+      ])
+    ])
+    +
+    count(.//ContinueStatement[
+      empty(ancestor::*[
+        (self::ForStatement or self::ForeachStatement or self::WhileStatement or self::DoStatement)
+        and not(. is $loop)
+        and . >> $loop
+      ])
+    ])
+  ) > 1
+]
+          ]]>
+        </value>
+      </property>
+    </properties>
+  </rule>
+
 </ruleset>
