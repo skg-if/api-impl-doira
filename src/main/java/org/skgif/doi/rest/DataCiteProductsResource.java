@@ -55,18 +55,10 @@ public class DataCiteProductsResource {
     private static final String RESOURCE_PATH = "/datacite/products";
     private static final int FIRST_PAGE_NUMBER = 1;
 
-    @Inject
-    @RestClient
-    DataCiteClient dataCiteClient;
-
-    @Inject
-    DataCiteToSkgIfMapper mapper;
-
-    @Inject
-    LocalIdentifiers localIdentifiers;
-
-    @Inject
-    ObjectMapper objectMapper;
+    private final DataCiteClient dataCiteClient;
+    private final DataCiteToSkgIfMapper mapper;
+    private final LocalIdentifiers localIdentifiers;
+    private final ObjectMapper objectMapper;
 
     @ConfigProperty(name = "skgif.sandbox.base-url")
     String sandboxBaseUrl;
@@ -82,6 +74,21 @@ public class DataCiteProductsResource {
 
     @ConfigProperty(name = "skgif.default-page-size")
     int defaultPageSize;
+
+    /**
+     * @param dataCiteClient the DataCite REST client used to fetch DOI records
+     * @param mapper maps DataCite DOI records to SKG-IF Product records
+     * @param localIdentifiers resolves local identifiers to/from DOIs
+     * @param objectMapper used to assemble the JSON-LD response envelope
+     */
+    @Inject
+    public DataCiteProductsResource(@RestClient DataCiteClient dataCiteClient, DataCiteToSkgIfMapper mapper,
+            LocalIdentifiers localIdentifiers, ObjectMapper objectMapper) {
+        this.dataCiteClient = dataCiteClient;
+        this.mapper = mapper;
+        this.localIdentifiers = localIdentifiers;
+        this.objectMapper = objectMapper;
+    }
 
     /**
      * @param localIdentifierParam the DOI to look up (with or without the SKG base domain prefix)

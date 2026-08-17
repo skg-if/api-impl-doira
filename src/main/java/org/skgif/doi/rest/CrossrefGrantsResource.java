@@ -47,18 +47,10 @@ public class CrossrefGrantsResource {
     private static final String RESOURCE_PATH = "/crossref/grants";
     private static final int FIRST_PAGE_NUMBER = 1;
 
-    @Inject
-    @RestClient
-    CrossrefClient crossrefClient;
-
-    @Inject
-    CrossrefToSkgIfMapper mapper;
-
-    @Inject
-    LocalIdentifiers localIdentifiers;
-
-    @Inject
-    ObjectMapper objectMapper;
+    private final CrossrefClient crossrefClient;
+    private final CrossrefToSkgIfMapper mapper;
+    private final LocalIdentifiers localIdentifiers;
+    private final ObjectMapper objectMapper;
 
     @ConfigProperty(name = "skgif.sandbox.base-url")
     String sandboxBaseUrl;
@@ -74,6 +66,21 @@ public class CrossrefGrantsResource {
 
     @ConfigProperty(name = "skgif.default-page-size")
     int defaultPageSize;
+
+    /**
+     * @param crossrefClient the Crossref REST client used to fetch works by DOI
+     * @param mapper maps Crossref works to SKG-IF Grant records
+     * @param localIdentifiers resolves local identifiers to/from DOIs
+     * @param objectMapper used to assemble the JSON-LD response envelope
+     */
+    @Inject
+    public CrossrefGrantsResource(@RestClient CrossrefClient crossrefClient, CrossrefToSkgIfMapper mapper,
+            LocalIdentifiers localIdentifiers, ObjectMapper objectMapper) {
+        this.crossrefClient = crossrefClient;
+        this.mapper = mapper;
+        this.localIdentifiers = localIdentifiers;
+        this.objectMapper = objectMapper;
+    }
 
     /**
      * @param localIdentifierParam the DOI to look up (with or without the SKG base domain prefix)

@@ -43,24 +43,31 @@ public class MedraProductsResource {
 
     private static final String RESOURCE_PATH = "/medra/products";
 
-    @Inject
-    @RestClient
-    MedraClient medraClient;
-
-    @Inject
-    MedraToSkgIfMapper mapper;
-
-    @Inject
-    LocalIdentifiers localIdentifiers;
-
-    @Inject
-    ObjectMapper objectMapper;
+    private final MedraClient medraClient;
+    private final MedraToSkgIfMapper mapper;
+    private final LocalIdentifiers localIdentifiers;
+    private final ObjectMapper objectMapper;
 
     @ConfigProperty(name = "skgif.sandbox.base-url")
     String sandboxBaseUrl;
 
     @ConfigProperty(name = "skgif.context.base")
     String fallbackContextBase;
+
+    /**
+     * @param medraClient the mEDRA REST client used to fetch ONIX-for-DOI metadata
+     * @param mapper maps mEDRA works to SKG-IF Product records
+     * @param localIdentifiers resolves local identifiers to/from DOIs
+     * @param objectMapper used to assemble the JSON-LD response envelope
+     */
+    @Inject
+    public MedraProductsResource(@RestClient MedraClient medraClient, MedraToSkgIfMapper mapper,
+            LocalIdentifiers localIdentifiers, ObjectMapper objectMapper) {
+        this.medraClient = medraClient;
+        this.mapper = mapper;
+        this.localIdentifiers = localIdentifiers;
+        this.objectMapper = objectMapper;
+    }
 
     /**
      * @param localIdentifierParam the DOI to look up (with or without the SKG base domain prefix)
