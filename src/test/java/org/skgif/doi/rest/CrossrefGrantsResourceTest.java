@@ -3,7 +3,6 @@ package org.skgif.doi.rest;
 import static io.restassured.RestAssured.given;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -45,7 +44,7 @@ class CrossrefGrantsResourceTest {
 
     @Test
     void getGrantById_returnsSkgIfEnvelope() throws IOException {
-        when(crossrefClient.getWork(eq("10.35802/218300"))).thenReturn(loadFixture("crossref-grant.json"));
+        when(crossrefClient.getWork("10.35802/218300")).thenReturn(loadFixture("crossref-grant.json"));
 
         given()
                 .when().get(BASE + "/crossref/grants/10.35802/218300")
@@ -76,7 +75,7 @@ class CrossrefGrantsResourceTest {
      */
     @Test
     void getGrantById_productDoi_returns404PointingToProducts() throws IOException {
-        when(crossrefClient.getWork(eq("10.1038/nature12373")))
+        when(crossrefClient.getWork("10.1038/nature12373"))
                 .thenReturn(loadFixture("crossref-journal-article.json"));
 
         given()

@@ -47,7 +47,7 @@ class DataCiteProductsResourceTest {
 
     @Test
     void getProductById_returnsSkgIfEnvelope() throws IOException {
-        when(dataCiteClient.getDoi(eq("10.15151/esrf-dc-2493599001"))).thenReturn(loadFixture());
+        when(dataCiteClient.getDoi("10.15151/esrf-dc-2493599001")).thenReturn(loadFixture());
 
         given()
                 .when().get(BASE + "/datacite/products/10.15151/esrf-dc-2493599001")
@@ -70,7 +70,7 @@ class DataCiteProductsResourceTest {
      */
     @Test
     void getProductById_vertxCollapsedFullLocalIdentifier_returns200() throws IOException {
-        when(dataCiteClient.getDoi(eq("10.15151/esrf-dc-2493599001"))).thenReturn(loadFixture());
+        when(dataCiteClient.getDoi("10.15151/esrf-dc-2493599001")).thenReturn(loadFixture());
 
         given()
                 .when().get(BASE + "/datacite/products/https:/doi.org/10.15151/esrf-dc-2493599001")
@@ -98,7 +98,7 @@ class DataCiteProductsResourceTest {
      */
     @Test
     void getProductById_awardDoi_returns404PointingToGrants() throws IOException {
-        when(dataCiteClient.getDoi(eq("10.71707/r3sy-7371")))
+        when(dataCiteClient.getDoi("10.71707/r3sy-7371"))
                 .thenReturn(loadFixture("datacite-award-r3sy-7371.json"));
 
         given()

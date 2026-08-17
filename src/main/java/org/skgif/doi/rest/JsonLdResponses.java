@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import org.skgif.doi.datacite.dto.DataCiteDoiData;
 import org.skgif.doi.generated.model.ApiItem;
@@ -79,7 +80,7 @@ final class JsonLdResponses {
         }
         return items.stream()
                 .map(JsonLdResponses::clientId)
-                .filter(id -> id != null)
+                .filter(Objects::nonNull)
                 .findFirst()
                 .map(id -> sandboxBaseUrl + id + "/")
                 .orElse(fallbackContextBase);

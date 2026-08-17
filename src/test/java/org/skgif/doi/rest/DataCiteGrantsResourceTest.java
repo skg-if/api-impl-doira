@@ -5,7 +5,6 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -43,7 +42,7 @@ class DataCiteGrantsResourceTest {
 
     @Test
     void getGrantById_returnsSkgIfEnvelope() throws IOException {
-        when(dataCiteClient.getDoi(eq("10.71707/r3sy-7371")))
+        when(dataCiteClient.getDoi("10.71707/r3sy-7371"))
                 .thenReturn(loadFixture("datacite-award-r3sy-7371.json"));
 
         given()
@@ -81,7 +80,7 @@ class DataCiteGrantsResourceTest {
      */
     @Test
     void getGrantById_productDoi_returns404PointingToProducts() throws IOException {
-        when(dataCiteClient.getDoi(eq("10.15151/esrf-dc-2493599001")))
+        when(dataCiteClient.getDoi("10.15151/esrf-dc-2493599001"))
                 .thenReturn(loadFixture("datacite-esrf-dc-2493599001.json"));
 
         given()

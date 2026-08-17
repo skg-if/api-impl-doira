@@ -3,6 +3,7 @@ package org.skgif.doi.crossref.mapper;
 import java.util.List;
 import java.util.Map;
 import org.skgif.doi.crossref.dto.CrossrefDate;
+import org.skgif.doi.crossref.dto.CrossrefLicense;
 import org.skgif.doi.crossref.dto.CrossrefUpdateTo;
 import org.skgif.doi.crossref.dto.CrossrefWork;
 import org.skgif.doi.crossref.xml.CrossrefVenueMetadata;
@@ -90,6 +91,6 @@ final class CrossrefManifestationMapper {
     }
 
     private List<String> licenceUrls(CrossrefWork work) {
-        return work.license() == null ? List.of() : work.license().stream().map(licence -> licence.url()).toList();
+        return work.license() == null ? List.of() : work.license().stream().map(CrossrefLicense::url).toList();
     }
 }

@@ -80,7 +80,7 @@ class CrossrefProductsResourceTest {
 
     @Test
     void getProductById_returnsSkgIfEnvelope() throws IOException {
-        when(crossrefClient.getWork(eq("10.1038/nature12373")))
+        when(crossrefClient.getWork("10.1038/nature12373"))
                 .thenReturn(loadFixture("crossref-journal-article.json"));
 
         given()
@@ -102,7 +102,7 @@ class CrossrefProductsResourceTest {
      */
     @Test
     void getProductById_returnsSkgIfEnvelope_venueUsesRealJournalDoiWhenResolved() throws IOException {
-        when(crossrefClient.getWork(eq("10.1038/nature12373")))
+        when(crossrefClient.getWork("10.1038/nature12373"))
                 .thenReturn(loadFixture("crossref-journal-article.json"));
         when(crossrefClient.listWorks(eq("type:journal,issn:0028-0836"), any(), any(), eq(1), any(), any()))
                 .thenReturn(loadWorkListFixture("crossref-journal-doi-lookup-nature.json"));
@@ -124,7 +124,7 @@ class CrossrefProductsResourceTest {
      */
     @Test
     void getProductById_venueFallsBackToOtfIdWhenJournalDoiLookupFails() throws IOException {
-        when(crossrefClient.getWork(eq("10.1038/nature12373")))
+        when(crossrefClient.getWork("10.1038/nature12373"))
                 .thenReturn(loadFixture("crossref-journal-article.json"));
         when(crossrefClient.listWorks(eq("type:journal,issn:0028-0836"), any(), any(), eq(1), any(), any()))
                 .thenThrow(new RuntimeException("boom"));
@@ -142,7 +142,7 @@ class CrossrefProductsResourceTest {
      */
     @Test
     void getProductById_returnsSkgIfEnvelope_orcidArticle() throws IOException {
-        when(crossrefClient.getWork(eq("10.1038/s41467-022-33468-6")))
+        when(crossrefClient.getWork("10.1038/s41467-022-33468-6"))
                 .thenReturn(loadFixture("crossref-journal-article-with-orcid.json"));
 
         given()
@@ -162,7 +162,7 @@ class CrossrefProductsResourceTest {
      */
     @Test
     void getProductById_returnsSkgIfEnvelope_proceedingsArticle() throws IOException {
-        when(crossrefClient.getWork(eq("10.17537/icmbb18.42")))
+        when(crossrefClient.getWork("10.17537/icmbb18.42"))
                 .thenReturn(loadFixture("crossref-proceedings-article.json"));
 
         given()
@@ -180,7 +180,7 @@ class CrossrefProductsResourceTest {
      */
     @Test
     void getProductById_returnsSkgIfEnvelope_rorAffiliationArticle() throws IOException {
-        when(crossrefClient.getWork(eq("10.1103/physrevb.110.174515")))
+        when(crossrefClient.getWork("10.1103/physrevb.110.174515"))
                 .thenReturn(loadFixture("crossref-journal-article-with-ror-affiliation.json"));
 
         given()
@@ -205,12 +205,12 @@ class CrossrefProductsResourceTest {
      */
     @Test
     void getProductById_returnsSkgIfEnvelope_bookChapter() throws IOException {
-        when(crossrefClient.getWork(eq("10.1007/978-3-319-66787-4_9")))
+        when(crossrefClient.getWork("10.1007/978-3-319-66787-4_9"))
                 .thenReturn(loadFixture("crossref-book-chapter.json"));
         // Built as a separate statement - see okXmlResponse's javadoc for why this can't be
         // inlined as another when(...).thenReturn(...)'s argument.
         Response xmlResponse = okXmlResponse("crossref-book-chapter.xml");
-        when(crossrefXmlTransformClient.getXmlTransform(eq("10.1007/978-3-319-66787-4_9"))).thenReturn(xmlResponse);
+        when(crossrefXmlTransformClient.getXmlTransform("10.1007/978-3-319-66787-4_9")).thenReturn(xmlResponse);
 
         given()
                 .when().get(BASE + "/crossref/products/10.1007/978-3-319-66787-4_9")
@@ -235,9 +235,9 @@ class CrossrefProductsResourceTest {
      */
     @Test
     void getProductById_bookChapter_fallsBackToContainerTitleWhenXmlFetchFails() throws IOException {
-        when(crossrefClient.getWork(eq("10.1007/978-3-319-66787-4_9")))
+        when(crossrefClient.getWork("10.1007/978-3-319-66787-4_9"))
                 .thenReturn(loadFixture("crossref-book-chapter.json"));
-        when(crossrefXmlTransformClient.getXmlTransform(eq("10.1007/978-3-319-66787-4_9")))
+        when(crossrefXmlTransformClient.getXmlTransform("10.1007/978-3-319-66787-4_9"))
                 .thenThrow(new NotFoundException());
 
         given()
@@ -258,10 +258,10 @@ class CrossrefProductsResourceTest {
      */
     @Test
     void getProductById_returnsSkgIfEnvelope_proceedingsArticleWithSeries() throws IOException {
-        when(crossrefClient.getWork(eq("10.2991/assehr.k.211222.032")))
+        when(crossrefClient.getWork("10.2991/assehr.k.211222.032"))
                 .thenReturn(loadFixture("crossref-proceedings-article-with-series.json"));
         Response xmlResponse = okXmlResponse("crossref-proceedings-article-with-series.xml");
-        when(crossrefXmlTransformClient.getXmlTransform(eq("10.2991/assehr.k.211222.032"))).thenReturn(xmlResponse);
+        when(crossrefXmlTransformClient.getXmlTransform("10.2991/assehr.k.211222.032")).thenReturn(xmlResponse);
 
         given()
                 .when().get(BASE + "/crossref/products/10.2991/assehr.k.211222.032")
@@ -296,7 +296,7 @@ class CrossrefProductsResourceTest {
      */
     @Test
     void getProductById_grantDoi_returns404PointingToGrants() throws IOException {
-        when(crossrefClient.getWork(eq("10.35802/218300"))).thenReturn(loadFixture("crossref-grant.json"));
+        when(crossrefClient.getWork("10.35802/218300")).thenReturn(loadFixture("crossref-grant.json"));
 
         given()
                 .when().get(BASE + "/crossref/products/10.35802/218300")

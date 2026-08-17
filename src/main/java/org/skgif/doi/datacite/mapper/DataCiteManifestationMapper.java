@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
 import org.skgif.doi.datacite.dto.DataCiteDate;
+import org.skgif.doi.datacite.dto.DataCiteRights;
 import org.skgif.doi.generated.model.ProductManifestation;
 import org.skgif.doi.generated.model.ProductManifestationAccessRights;
 import org.skgif.doi.generated.model.ProductManifestationDates;
@@ -192,6 +193,6 @@ final class DataCiteManifestationMapper {
     private static List<String> licenceUrls(DataCiteAttributes attributes) {
         return attributes.rightsList() == null
                 ? List.of()
-                : attributes.rightsList().stream().map(rights -> rights.rightsUri()).toList();
+                : attributes.rightsList().stream().map(DataCiteRights::rightsUri).toList();
     }
 }

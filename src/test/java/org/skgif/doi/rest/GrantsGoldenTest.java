@@ -66,7 +66,7 @@ class GrantsGoldenTest {
      */
     @Test
     void getGrantById_matchesExpectedJsonLd_r3sy7371() throws IOException {
-        when(dataCiteClient.getDoi(eq("10.71707/r3sy-7371")))
+        when(dataCiteClient.getDoi("10.71707/r3sy-7371"))
                 .thenReturn(loadDataCiteFixture("datacite-award-r3sy-7371.json"));
 
         String actualBody = given()
@@ -80,7 +80,7 @@ class GrantsGoldenTest {
 
     @Test
     void getGrantById_matchesExpectedJsonLd_wellcomeGrant() throws IOException {
-        when(crossrefClient.getWork(eq("10.35802/218300"))).thenReturn(loadCrossrefFixture("crossref-grant.json"));
+        when(crossrefClient.getWork("10.35802/218300")).thenReturn(loadCrossrefFixture("crossref-grant.json"));
 
         String actualBody = given()
                 .when().get(BASE + "/crossref/grants/10.35802/218300")

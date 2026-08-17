@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.skgif.doi.crossref.dto.CrossrefFunder;
 import org.skgif.doi.crossref.dto.CrossrefFunding;
+import org.skgif.doi.crossref.dto.CrossrefIdEntry;
 import org.skgif.doi.crossref.dto.CrossrefWork;
 import org.skgif.doi.generated.model.GrantLite;
 import org.skgif.doi.generated.model.Organisation;
@@ -92,7 +93,7 @@ final class CrossrefFundingMapper {
         }
         return funder.id().stream()
                 .filter(entry -> "DOI".equalsIgnoreCase(entry.idType()) && entry.id() != null)
-                .map(entry -> entry.id())
+                .map(CrossrefIdEntry::id)
                 .findFirst()
                 .orElse(null);
     }

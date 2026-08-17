@@ -1,7 +1,6 @@
 package org.skgif.doi.rest;
 
 import static io.restassured.RestAssured.given;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -48,7 +47,7 @@ class MedraProductsResourceTest {
     @Test
     void getProductById_returnsSkgIfEnvelope() throws IOException {
         Response xmlResponse = okXmlResponse("medra-mixed-name-shapes.xml");
-        when(medraClient.getMetadata(eq("10.19276/plinius.2019.01004"))).thenReturn(xmlResponse);
+        when(medraClient.getMetadata("10.19276/plinius.2019.01004")).thenReturn(xmlResponse);
 
         given()
                 .when().get(BASE + "/medra/products/10.19276/plinius.2019.01004")
@@ -65,7 +64,7 @@ class MedraProductsResourceTest {
     @Test
     void getProductById_noContributors_returnsProductWithNoContributions() throws IOException {
         Response xmlResponse = okXmlResponse("medra-no-contributors.xml");
-        when(medraClient.getMetadata(eq("10.1393/ncc/i2021-21084-7"))).thenReturn(xmlResponse);
+        when(medraClient.getMetadata("10.1393/ncc/i2021-21084-7")).thenReturn(xmlResponse);
 
         given()
                 .when().get(BASE + "/medra/products/10.1393/ncc/i2021-21084-7")
@@ -80,7 +79,7 @@ class MedraProductsResourceTest {
     void getProductById_nonOkStatusFromMedra_returns404WithRfc7807Error() {
         Response response = mock(Response.class);
         when(response.getStatus()).thenReturn(404);
-        when(medraClient.getMetadata(eq("10.9999/does-not-exist"))).thenReturn(response);
+        when(medraClient.getMetadata("10.9999/does-not-exist")).thenReturn(response);
 
         given()
                 .when().get(BASE + "/medra/products/10.9999/does-not-exist")
@@ -95,7 +94,7 @@ class MedraProductsResourceTest {
         Response response = mock(Response.class);
         when(response.getStatus()).thenReturn(200);
         when(response.readEntity(String.class)).thenReturn("<not-well-formed-onix");
-        when(medraClient.getMetadata(eq("10.19276/plinius.2019.01004"))).thenReturn(response);
+        when(medraClient.getMetadata("10.19276/plinius.2019.01004")).thenReturn(response);
 
         given()
                 .when().get(BASE + "/medra/products/10.19276/plinius.2019.01004")
@@ -106,7 +105,7 @@ class MedraProductsResourceTest {
 
     @Test
     void getProductById_clientThrows_returns404WithRfc7807Error() {
-        when(medraClient.getMetadata(eq("10.9999/does-not-exist")))
+        when(medraClient.getMetadata("10.9999/does-not-exist"))
                 .thenThrow(new RuntimeException("connection refused"));
 
         given()

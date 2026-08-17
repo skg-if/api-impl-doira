@@ -254,7 +254,7 @@ class ProductsGoldenTest {
      */
     @Test
     void getProductById_matchesExpectedJsonLd_natureArticleWithJournalDoi() throws IOException {
-        when(crossrefClient.getWork(eq("10.1038/nature12373")))
+        when(crossrefClient.getWork("10.1038/nature12373"))
                 .thenReturn(loadCrossrefFixture("crossref-journal-article.json"));
         when(crossrefClient.listWorks(eq("type:journal,issn:0028-0836"), any(), any(), eq(1), any(), any()))
                 .thenReturn(loadCrossrefWorkListFixture("crossref-journal-doi-lookup-nature.json"));
@@ -473,7 +473,7 @@ class ProductsGoldenTest {
     private void assertMatchesExpectedMedraJsonLd(String doi, String medraXmlFixture, String expectedJsonLdResource)
             throws IOException {
         Response xmlResponse = okXmlResponse(medraXmlFixture);
-        when(medraClient.getMetadata(eq(doi))).thenReturn(xmlResponse);
+        when(medraClient.getMetadata(doi)).thenReturn(xmlResponse);
 
         String actualBody = given().when().get(BASE + "/medra/products/" + doi).then().statusCode(200).extract().asString();
         compareOrWriteGolden(new ObjectMapper().readTree(actualBody), expectedJsonLdResource);
@@ -481,7 +481,7 @@ class ProductsGoldenTest {
 
     private void assertMatchesExpectedDataCiteJsonLd(String doi, String dataCiteFixture, String expectedJsonLdResource)
             throws IOException {
-        when(dataCiteClient.getDoi(eq(doi))).thenReturn(loadDataCiteFixture(dataCiteFixture));
+        when(dataCiteClient.getDoi(doi)).thenReturn(loadDataCiteFixture(dataCiteFixture));
 
         String actualBody = given().when().get(BASE + "/datacite/products/" + doi).then().statusCode(200).extract().asString();
         compareOrWriteGolden(new ObjectMapper().readTree(actualBody), expectedJsonLdResource);
@@ -489,7 +489,7 @@ class ProductsGoldenTest {
 
     private void assertMatchesExpectedCrossrefJsonLd(String doi, String crossrefFixture, String expectedJsonLdResource)
             throws IOException {
-        when(crossrefClient.getWork(eq(doi))).thenReturn(loadCrossrefFixture(crossrefFixture));
+        when(crossrefClient.getWork(doi)).thenReturn(loadCrossrefFixture(crossrefFixture));
 
         String actualBody = given().when().get(BASE + "/crossref/products/" + doi).then().statusCode(200).extract().asString();
         compareOrWriteGolden(new ObjectMapper().readTree(actualBody), expectedJsonLdResource);
@@ -502,13 +502,13 @@ class ProductsGoldenTest {
      */
     private void assertMatchesExpectedCrossrefJsonLd(String doi, String crossrefFixture, String venueXmlFixture,
             String expectedJsonLdResource) throws IOException {
-        when(crossrefClient.getWork(eq(doi))).thenReturn(loadCrossrefFixture(crossrefFixture));
+        when(crossrefClient.getWork(doi)).thenReturn(loadCrossrefFixture(crossrefFixture));
         // Built as a separate statement, not inline as thenReturn(...)'s argument - okXmlResponse
         // itself opens Mockito when(...)/thenReturn(...) stubs, and evaluating it inside another
         // still-open when(...).thenReturn(...) call corrupts Mockito's single ongoing-stubbing
         // state (UnfinishedStubbingException).
         Response xmlResponse = okXmlResponse(venueXmlFixture);
-        when(crossrefXmlTransformClient.getXmlTransform(eq(doi))).thenReturn(xmlResponse);
+        when(crossrefXmlTransformClient.getXmlTransform(doi)).thenReturn(xmlResponse);
 
         String actualBody = given().when().get(BASE + "/crossref/products/" + doi).then().statusCode(200).extract().asString();
         compareOrWriteGolden(new ObjectMapper().readTree(actualBody), expectedJsonLdResource);

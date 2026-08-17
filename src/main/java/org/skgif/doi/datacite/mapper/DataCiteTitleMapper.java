@@ -55,7 +55,7 @@ final class DataCiteTitleMapper {
         if (attributes.titles() == null || attributes.titles().isEmpty()) {
             return List.of();
         }
-        return attributes.titles().stream().map(t -> t.title()).filter(Objects::nonNull).toList();
+        return attributes.titles().stream().map(DataCiteAttributes.Title::title).filter(Objects::nonNull).toList();
     }
 
     private static List<String> abstractValues(DataCiteAttributes attributes) {
