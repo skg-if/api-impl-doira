@@ -145,12 +145,10 @@
         } ]
       }, {
         "entity_type" : "product",
-        "local_identifier" : "otf___10-17537-icmbb18-42___ref3",
-        "identifiers" : [ ]
+        "local_identifier" : "otf___10-17537-icmbb18-42___ref3"
       }, {
         "entity_type" : "product",
-        "local_identifier" : "otf___10-17537-icmbb18-42___larsen-a-h-mortensen-j-j-blomqvist-j-cas",
-        "identifiers" : [ ]
+        "local_identifier" : "otf___10-17537-icmbb18-42___larsen-a-h-mortensen-j-j-blomqvist-j-cas"
       }, {
         "entity_type" : "product",
         "local_identifier" : "https://doi.org/10.1007/s11051-012-0982-6",

@@ -286,8 +286,7 @@
         } ]
       }, {
         "entity_type" : "product",
-        "local_identifier" : "otf___10-1103-physrevb-110-174515___physrevb-110-174515cc18r1",
-        "identifiers" : [ ]
+        "local_identifier" : "otf___10-1103-physrevb-110-174515___physrevb-110-174515cc18r1"
       }, {
         "entity_type" : "product",
         "local_identifier" : "https://doi.org/10.1017/CBO9780511810763",

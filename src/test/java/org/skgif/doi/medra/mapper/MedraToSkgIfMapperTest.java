@@ -3,6 +3,7 @@ package org.skgif.doi.medra.mapper;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -73,10 +74,10 @@ class MedraToSkgIfMapperTest {
     }
 
     @Test
-    void mapsEmptyContributionsToNullWhenNoContributorExists() throws IOException {
+    void mapsEmptyContributionsToEmptyListWhenNoContributorExists() throws IOException {
         Product product = mapFixture("medra-no-contributors.xml");
 
-        assertNull(product.getContributions());
+        assertTrue(product.getContributions().isEmpty());
     }
 
     @Test

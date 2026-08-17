@@ -99,8 +99,7 @@
     "related_products" : {
       "cites" : [ {
         "entity_type" : "product",
-        "local_identifier" : "otf___10-1155-2016-1353212___1",
-        "identifiers" : [ ]
+        "local_identifier" : "otf___10-1155-2016-1353212___1"
       }, {
         "entity_type" : "product",
         "local_identifier" : "https://doi.org/10.1109/jmems.2013.2295470",

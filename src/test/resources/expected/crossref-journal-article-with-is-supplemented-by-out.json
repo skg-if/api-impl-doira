@@ -137,16 +137,13 @@
     "related_products" : {
       "cites" : [ {
         "entity_type" : "product",
-        "local_identifier" : "otf___10-1107-s2414314618016334___brandenburg-k-putz-h-2012-diamond-crysta",
-        "identifiers" : [ ]
+        "local_identifier" : "otf___10-1107-s2414314618016334___brandenburg-k-putz-h-2012-diamond-crysta"
       }, {
         "entity_type" : "product",
-        "local_identifier" : "otf___10-1107-s2414314618016334___bruker-2016-apex3-sadabs-and-saint-bruke",
-        "identifiers" : [ ]
+        "local_identifier" : "otf___10-1107-s2414314618016334___bruker-2016-apex3-sadabs-and-saint-bruke"
       }, {
         "entity_type" : "product",
-        "local_identifier" : "otf___10-1107-s2414314618016334___lh4040-bb3",
-        "identifiers" : [ ]
+        "local_identifier" : "otf___10-1107-s2414314618016334___lh4040-bb3"
       }, {
         "entity_type" : "product",
         "local_identifier" : "https://doi.org/10.1107/S1600576714022985",
@@ -163,12 +160,10 @@
         } ]
       }, {
         "entity_type" : "product",
-        "local_identifier" : "otf___10-1107-s2414314618016334___lh4040-bb6",
-        "identifiers" : [ ]
+        "local_identifier" : "otf___10-1107-s2414314618016334___lh4040-bb6"
       }, {
         "entity_type" : "product",
-        "local_identifier" : "otf___10-1107-s2414314618016334___lh4040-bb7",
-        "identifiers" : [ ]
+        "local_identifier" : "otf___10-1107-s2414314618016334___lh4040-bb7"
       }, {
         "entity_type" : "product",
         "local_identifier" : "https://doi.org/10.1107/S1600536813020035",
