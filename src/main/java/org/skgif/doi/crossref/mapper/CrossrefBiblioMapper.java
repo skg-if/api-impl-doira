@@ -41,12 +41,7 @@ final class CrossrefBiblioMapper {
         if (hasNoBiblioData(work, venueMetadata)) {
             return null;
         }
-        // The REST JSON's `volume` is the product's own volume/issue number (e.g. a journal
-        // volume); a book chapter's or proceedings paper's REST JSON commonly has neither that
-        // nor a series volume, but the XML transform's `.../volume` (e.g. an LNCS series volume
-        // number, or a recurring proceedings series volume) fills that gap when present.
-        String volume = work.volume() != null ? work.volume()
-                : venueMetadata != null ? venueMetadata.volume() : null;
+        String volume = resolveVolume(work, venueMetadata);
         ProductManifestationBiblio biblio = new ProductManifestationBiblio()
                 .issue(work.issue())
                 .volume(volume)
@@ -61,6 +56,17 @@ final class CrossrefBiblioMapper {
     private boolean hasNoBiblioData(CrossrefWork work, CrossrefVenueMetadata venueMetadata) {
         return work.publisher() == null && work.containerTitle() == null && work.issue() == null
                 && work.volume() == null && work.page() == null && venueMetadata == null;
+    }
+
+    // The REST JSON's `volume` is the product's own volume/issue number (e.g. a journal
+    // volume); a book chapter's or proceedings paper's REST JSON commonly has neither that
+    // nor a series volume, but the XML transform's `.../volume` (e.g. an LNCS series volume
+    // number, or a recurring proceedings series volume) fills that gap when present.
+    private String resolveVolume(CrossrefWork work, CrossrefVenueMetadata venueMetadata) {
+        if (work.volume() != null) {
+            return work.volume();
+        }
+        return venueMetadata != null ? venueMetadata.volume() : null;
     }
 
     private ProductManifestationBiblioPages pages(String page) {

@@ -171,4 +171,26 @@
 
   <rule ref="category/java/security.xml"/>
 
+  <rule name="NoNestedTernaryOperators"
+        language="java"
+        message="Ternary operators should not be nested inside another ternary's condition or branches"
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>
+      A ternary operator (`?:`) used directly as the condition, true-branch, or false-branch of
+      another ternary is hard to scan at a glance. Equivalent to SonarQube/SonarLint rule S3358
+      ("Ternary operators should not be nested"), which IntelliJ's SonarLint flags locally
+      (.idea/workspace.xml) but which has no build-time equivalent otherwise, since this repo runs
+      no Sonar server. Prefer an extracted private helper method or an if/else block assigning to
+      a local variable instead.
+    </description>
+    <priority>3</priority>
+    <properties>
+      <property name="xpath">
+        <value>
+          <![CDATA[//ConditionalExpression[ConditionalExpression]]]>
+        </value>
+      </property>
+    </properties>
+  </rule>
+
 </ruleset>
