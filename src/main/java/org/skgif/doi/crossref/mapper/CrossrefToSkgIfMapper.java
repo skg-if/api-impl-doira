@@ -13,6 +13,7 @@ import org.skgif.doi.generated.model.Grant;
 import org.skgif.doi.generated.model.GrantLiteAllOfIdentifiers;
 import org.skgif.doi.generated.model.Product;
 import org.skgif.doi.generated.model.ProductAllOfIdentifiers;
+import org.skgif.doi.mapper.GrantCapableMapper;
 import org.skgif.doi.util.LocalIdentifiers;
 
 /**
@@ -34,7 +35,7 @@ import org.skgif.doi.util.LocalIdentifiers;
  * field found in Crossref's grant schema).
  */
 @ApplicationScoped
-public class CrossrefToSkgIfMapper {
+public class CrossrefToSkgIfMapper implements GrantCapableMapper<CrossrefWork> {
 
     private static final String SCHEME_DOI = "doi";
 
@@ -64,6 +65,7 @@ public class CrossrefToSkgIfMapper {
      * @param work the Crossref work record to map
      * @return the mapped Product
      */
+    @Override
     public Product toProduct(CrossrefWork work) {
         return toProduct(work, null);
     }
@@ -113,6 +115,7 @@ public class CrossrefToSkgIfMapper {
      * @param work the Crossref {@code type: "grant"} work record to map
      * @return the mapped Grant
      */
+    @Override
     public Grant toGrant(CrossrefWork work) {
         Objects.requireNonNull(work.doi(), "Crossref record has no DOI");
 

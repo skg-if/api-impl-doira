@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import org.skgif.doi.generated.model.Product;
 import org.skgif.doi.generated.model.ProductAllOfIdentifiers;
+import org.skgif.doi.mapper.RegistrationAgencyMapper;
 import org.skgif.doi.medra.dto.MedraWork;
 import org.skgif.doi.util.LocalIdentifiers;
 
@@ -28,7 +29,7 @@ import org.skgif.doi.util.LocalIdentifiers;
  * ConferenceProceeding, Dissertation) aren't parsed and degrade to not-found upstream.
  */
 @ApplicationScoped
-public class MedraToSkgIfMapper {
+public class MedraToSkgIfMapper implements RegistrationAgencyMapper<MedraWork> {
 
     private final LocalIdentifiers localIdentifiers;
 
@@ -43,6 +44,7 @@ public class MedraToSkgIfMapper {
      * @param work the mEDRA record to map
      * @return the mapped Product
      */
+    @Override
     public Product toProduct(MedraWork work) {
         Objects.requireNonNull(work.doi(), "mEDRA record has no DOI");
 

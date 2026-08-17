@@ -12,6 +12,7 @@ import org.skgif.doi.generated.model.Grant;
 import org.skgif.doi.generated.model.GrantLiteAllOfIdentifiers;
 import org.skgif.doi.generated.model.Product;
 import org.skgif.doi.generated.model.ProductAllOfIdentifiers;
+import org.skgif.doi.mapper.GrantCapableMapper;
 import org.skgif.doi.util.LocalIdentifiers;
 
 /**
@@ -38,7 +39,7 @@ import org.skgif.doi.util.LocalIdentifiers;
  * guessed at.
  */
 @ApplicationScoped
-public class DataCiteToSkgIfMapper {
+public class DataCiteToSkgIfMapper implements GrantCapableMapper<DataCiteAttributes> {
 
     private static final String SCHEME_DOI = "doi";
 
@@ -59,6 +60,7 @@ public class DataCiteToSkgIfMapper {
      * @param attributes the DataCite record's attributes to map
      * @return the mapped Product
      */
+    @Override
     public Product toProduct(DataCiteAttributes attributes) {
         Objects.requireNonNull(attributes.doi(), "DataCite record has no DOI");
 
@@ -90,6 +92,7 @@ public class DataCiteToSkgIfMapper {
      * @param attributes the DataCite Award record to map
      * @return the mapped Grant
      */
+    @Override
     public Grant toGrant(DataCiteAttributes attributes) {
         Objects.requireNonNull(attributes.doi(), "DataCite record has no DOI");
 

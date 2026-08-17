@@ -15,7 +15,7 @@ the same generated `Product`/`Grant` SKG-IF entities. Provider selection is by U
 ## No system Maven/JDK 21
 
 This machine has no system-wide JDK/Maven, and none should be installed via `winget`/`choco`.
-Use the **`build-toolchain`** skill for any `mvn`/`java` invocation - it sets up a portable
+Use the **`skg-if-build-toolchain`** skill for any `mvn`/`java` invocation - it sets up a portable
 toolchain cached under `.tools/` (gitignored, survives across conversations, downloaded once per
 checkout).
 
