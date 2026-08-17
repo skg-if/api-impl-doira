@@ -31,7 +31,7 @@ final class DataCiteRelatedProductMapper {
     }
 
     ProductsRelated relatedProducts(DataCiteAttributes attributes) {
-        if (attributes.relatedIdentifiers == null || attributes.relatedIdentifiers.isEmpty()) {
+        if (attributes.relatedIdentifiers() == null || attributes.relatedIdentifiers().isEmpty()) {
             return null;
         }
         return buildRelated(attributes);
@@ -85,25 +85,25 @@ final class DataCiteRelatedProductMapper {
 
     private List<ProductsRelatedCitesInner> relatedByType(DataCiteAttributes attributes, String relationType) {
         List<ProductsRelatedCitesInner> result = new ArrayList<>();
-        for (DataCiteRelatedIdentifier related : attributes.relatedIdentifiers) {
-            if (!relationType.equals(related.relationType) || related.relatedIdentifier == null) {
+        for (DataCiteRelatedIdentifier related : attributes.relatedIdentifiers()) {
+            if (!relationType.equals(related.relationType()) || related.relatedIdentifier() == null) {
                 continue;
             }
-            String scheme = related.relatedIdentifierType != null
-                    ? related.relatedIdentifierType.toLowerCase(Locale.ROOT)
+            String scheme = related.relatedIdentifierType() != null
+                    ? related.relatedIdentifierType().toLowerCase(Locale.ROOT)
                     : "url";
             // A related product with a DOI is identified by the full https://doi.org/... URL,
             // consistent with how this API identifies its own products; anything else falls
             // back to otf.
             String localIdentifier = SCHEME_DOI.equals(scheme)
-                    ? localIdentifiers.toFullLocalIdentifier(related.relatedIdentifier)
-                    : MapperTextUtils.otf(attributes.doi, related.relatedIdentifier);
+                    ? localIdentifiers.toFullLocalIdentifier(related.relatedIdentifier())
+                    : MapperTextUtils.otf(attributes.doi(), related.relatedIdentifier());
             result.add(new ProductsRelatedItem()
                     .localIdentifier(localIdentifier)
                     .entityType(EntityTypes.PRODUCT)
                     .identifiers(List.of(new EntityIdentifiersInner()
                             .scheme(scheme)
-                            .value(related.relatedIdentifier))));
+                            .value(related.relatedIdentifier()))));
         }
         return result;
     }

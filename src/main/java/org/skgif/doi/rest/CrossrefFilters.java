@@ -153,17 +153,14 @@ final class CrossrefFilters {
                 : value;
     }
 
-    /** The three independent query components Crossref's {@code /works} list endpoint accepts. */
-    static final class ParsedFilter {
-        final String filter;
-        final String queryTitle;
-        final String queryBibliographic;
-
-        private ParsedFilter(String filter, String queryTitle, String queryBibliographic) {
-            this.filter = filter;
-            this.queryTitle = queryTitle;
-            this.queryBibliographic = queryBibliographic;
-        }
+    /**
+     * The three independent query components Crossref's {@code /works} list endpoint accepts.
+     *
+     * @param filter the {@code filter=} clause
+     * @param queryTitle the {@code query.title} free-text search value
+     * @param queryBibliographic the {@code query.bibliographic} free-text search value
+     */
+    record ParsedFilter(String filter, String queryTitle, String queryBibliographic) {
 
         // Fields intentionally share their names with their fluent setters below, same
         // builder idiom checkstyle.xml's HiddenField already special-cases for this codebase.

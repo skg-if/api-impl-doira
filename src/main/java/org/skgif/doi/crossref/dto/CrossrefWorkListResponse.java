@@ -5,15 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CrossrefWorkListResponse {
-
-    public String status;
-    public Message message;
+public record CrossrefWorkListResponse(String status, Message message) {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class Message {
-        @JsonProperty("total-results")
-        public long totalResults;
-        public List<CrossrefWork> items;
+    public record Message(@JsonProperty("total-results") long totalResults, List<CrossrefWork> items) {
     }
 }

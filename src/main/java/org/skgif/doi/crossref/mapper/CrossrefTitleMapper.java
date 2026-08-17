@@ -21,10 +21,10 @@ final class CrossrefTitleMapper {
     }
 
     static Map<String, List<String>> titles(CrossrefWork work) {
-        if (work.title == null || work.title.isEmpty()) {
+        if (work.title() == null || work.title().isEmpty()) {
             return null;
         }
-        List<String> values = work.title.stream().filter(Objects::nonNull).toList();
+        List<String> values = work.title().stream().filter(Objects::nonNull).toList();
         return values.isEmpty() ? null : Map.of("en", values);
     }
 
@@ -38,26 +38,26 @@ final class CrossrefTitleMapper {
      * @return the abstract, plain-text and tag-stripped, keyed by "en"; null if absent/empty
      */
     static Map<String, List<String>> abstracts(CrossrefWork work) {
-        if (work.abstractText == null) {
+        if (work.abstractText() == null) {
             return null;
         }
-        String stripped = work.abstractText.replaceAll("<[^>]+>", "").trim();
+        String stripped = work.abstractText().replaceAll("<[^>]+>", "").trim();
         return stripped.isEmpty() ? null : Map.of("en", List.of(stripped));
     }
 
     static List<ProductAllOfTopics> topics(CrossrefWork work) {
-        if (work.subject == null || work.subject.isEmpty()) {
+        if (work.subject() == null || work.subject().isEmpty()) {
             return null;
         }
         List<ProductAllOfTopics> topics = new ArrayList<>();
-        for (String subject : work.subject) {
+        for (String subject : work.subject()) {
             if (subject == null) {
                 continue;
             }
             // Crossref subjects (Sci-Val controlled vocabulary) have no external identifier
             // system behind them, so this is always an otf id - same as DataCite subjects.
             ProductAllOfTerm term = new Topic()
-                    .localIdentifier(MapperTextUtils.otf(work.doi, subject))
+                    .localIdentifier(MapperTextUtils.otf(work.doi(), subject))
                     .entityType(Topic.EntityTypeEnum.TOPIC)
                     .labels(Map.of("en", subject));
             topics.add(new ProductAllOfTopics().term(term));

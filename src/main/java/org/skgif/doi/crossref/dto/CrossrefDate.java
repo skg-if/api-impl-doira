@@ -9,12 +9,11 @@ import java.util.List;
  * plain ISO date strings - {@link #toIsoDate()} renders one down to the string form SKG-IF's
  * {@code ProductManifestationDates} lists expect. A partial date (year only, or year+month) is
  * valid Crossref input, so each part beyond the year is optional.
+ *
+ * @param dateParts the {@code [[year, month, day]]} parts, with month/day optional
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CrossrefDate {
-
-    @JsonProperty("date-parts")
-    public List<List<Integer>> dateParts;
+public record CrossrefDate(@JsonProperty("date-parts") List<List<Integer>> dateParts) {
 
     /**
      * @return this date's {@code date-parts} rendered as an ISO date string (year, year-month,

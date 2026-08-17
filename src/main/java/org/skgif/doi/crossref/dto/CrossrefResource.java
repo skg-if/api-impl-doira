@@ -4,13 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CrossrefResource {
-
-    public Primary primary;
+public record CrossrefResource(Primary primary) {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class Primary {
-        @JsonProperty("URL")
-        public String url;
+    public record Primary(@JsonProperty("URL") String url) {
     }
 }

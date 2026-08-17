@@ -32,29 +32,29 @@ final class DataCiteContributionMapper {
     static List<ProductContribution> contributions(DataCiteAttributes attributes) {
         List<ProductContribution> contributions = new ArrayList<>();
         int rank = 1;
-        if (attributes.creators != null) {
-            for (DataCiteCreator creator : attributes.creators) {
+        if (attributes.creators() != null) {
+            for (DataCiteCreator creator : attributes.creators()) {
                 contributions.add(new ProductContribution()
-                        .by(personRef(attributes.doi, creator.name, creator.givenName, creator.familyName,
-                                creator.nameIdentifiers))
-                        .declaredAffiliations(affiliations(attributes.doi, creator.affiliation))
+                        .by(personRef(attributes.doi(), creator.name(), creator.givenName(), creator.familyName(),
+                                creator.nameIdentifiers()))
+                        .declaredAffiliations(affiliations(attributes.doi(), creator.affiliation()))
                         .rank(rank++)
                         .role(ProductContribution.RoleEnum.AUTHOR));
             }
         }
-        if (attributes.contributors != null) {
-            for (DataCiteContributor contributor : attributes.contributors) {
+        if (attributes.contributors() != null) {
+            for (DataCiteContributor contributor : attributes.contributors()) {
                 contributions.add(new ProductContribution()
-                        .by(personRef(attributes.doi, contributor.name, contributor.givenName, contributor.familyName,
-                                contributor.nameIdentifiers))
-                        .declaredAffiliations(affiliations(attributes.doi, contributor.affiliation))
+                        .by(personRef(attributes.doi(), contributor.name(), contributor.givenName(),
+                                contributor.familyName(), contributor.nameIdentifiers()))
+                        .declaredAffiliations(affiliations(attributes.doi(), contributor.affiliation()))
                         .rank(rank++)
-                        .role(contributorRole(contributor.contributorType)));
+                        .role(contributorRole(contributor.contributorType())));
             }
         }
-        if (attributes.publisher != null) {
+        if (attributes.publisher() != null) {
             contributions.add(new ProductContribution()
-                    .by(organisationRef(attributes.doi, attributes.publisher))
+                    .by(organisationRef(attributes.doi(), attributes.publisher()))
                     .rank(rank)
                     .role(ProductContribution.RoleEnum.PUBLISHER));
         }
@@ -92,10 +92,10 @@ final class DataCiteContributionMapper {
             return null;
         }
         return nameIdentifiers.stream()
-                .filter(ni -> "ORCID".equalsIgnoreCase(ni.nameIdentifierScheme) && ni.nameIdentifier != null)
-                .map(ni -> ni.nameIdentifier.startsWith(ExternalIdentifierUrls.ORCID_BASE_URL)
-                        ? ni.nameIdentifier.substring(ExternalIdentifierUrls.ORCID_BASE_URL.length())
-                        : ni.nameIdentifier)
+                .filter(ni -> "ORCID".equalsIgnoreCase(ni.nameIdentifierScheme()) && ni.nameIdentifier() != null)
+                .map(ni -> ni.nameIdentifier().startsWith(ExternalIdentifierUrls.ORCID_BASE_URL)
+                        ? ni.nameIdentifier().substring(ExternalIdentifierUrls.ORCID_BASE_URL.length())
+                        : ni.nameIdentifier())
                 .findFirst()
                 .orElse(null);
     }
@@ -106,10 +106,10 @@ final class DataCiteContributionMapper {
         }
         List<PersonLiteAllOfIdentifiers> identifiers = new ArrayList<>();
         for (DataCiteNameIdentifier ni : nameIdentifiers) {
-            if (!"ORCID".equalsIgnoreCase(ni.nameIdentifierScheme)) {
+            if (!"ORCID".equalsIgnoreCase(ni.nameIdentifierScheme())) {
                 continue;
             }
-            String orcid = ni.nameIdentifier;
+            String orcid = ni.nameIdentifier();
             if (orcid != null && orcid.startsWith(ExternalIdentifierUrls.ORCID_BASE_URL)) {
                 orcid = orcid.substring(ExternalIdentifierUrls.ORCID_BASE_URL.length());
             }
@@ -126,13 +126,13 @@ final class DataCiteContributionMapper {
         }
         List<ProductAllOfRelevantOrganisations> result = new ArrayList<>();
         for (DataCiteAffiliation affiliation : affiliations) {
-            if (affiliation.name == null) {
+            if (affiliation.name() == null) {
                 continue;
             }
-            boolean hasRor = affiliation.affiliationIdentifier != null
-                    && SCHEME_ROR_UPPER.equalsIgnoreCase(affiliation.affiliationIdentifierScheme);
-            String bareRor = hasRor ? MapperTextUtils.stripRorUrl(affiliation.affiliationIdentifier) : null;
-            result.add(EntityRefs.organisationRef(doi, affiliation.name, bareRor));
+            boolean hasRor = affiliation.affiliationIdentifier() != null
+                    && SCHEME_ROR_UPPER.equalsIgnoreCase(affiliation.affiliationIdentifierScheme());
+            String bareRor = hasRor ? MapperTextUtils.stripRorUrl(affiliation.affiliationIdentifier()) : null;
+            result.add(EntityRefs.organisationRef(doi, affiliation.name(), bareRor));
         }
         return result.isEmpty() ? null : result;
     }
@@ -142,8 +142,9 @@ final class DataCiteContributionMapper {
             return null;
         }
         return nameIdentifiers.stream()
-                .filter(ni -> SCHEME_ROR_UPPER.equalsIgnoreCase(ni.nameIdentifierScheme) && ni.nameIdentifier != null)
-                .map(ni -> MapperTextUtils.stripRorUrl(ni.nameIdentifier))
+                .filter(ni -> SCHEME_ROR_UPPER.equalsIgnoreCase(ni.nameIdentifierScheme())
+                        && ni.nameIdentifier() != null)
+                .map(ni -> MapperTextUtils.stripRorUrl(ni.nameIdentifier()))
                 .findFirst()
                 .orElse(null);
     }

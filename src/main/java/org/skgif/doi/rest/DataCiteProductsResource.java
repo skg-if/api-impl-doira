@@ -110,22 +110,22 @@ public class DataCiteProductsResource {
         DataCiteDoiData data;
         try {
             DataCiteDoiResponse response = dataCiteClient.getDoi(doi);
-            data = response != null ? response.data : null;
+            data = response != null ? response.data() : null;
         } catch (WebApplicationException e) {
             if (e.getResponse().getStatus() == Response.Status.NOT_FOUND.getStatusCode()) {
                 return notFound(localIdentifierParam);
             }
             throw e;
         }
-        if (data == null || data.attributes == null) {
+        if (data == null || data.attributes() == null) {
             return notFound(localIdentifierParam);
         }
-        if (ResourceTypeMapping.isAward(data.attributes)) {
+        if (ResourceTypeMapping.isAward(data.attributes())) {
             return JsonLdResponses.notFound("No product found for local_identifier '" + localIdentifierParam
                     + "' - this DOI is a grant award, see /datacite/grants/" + localIdentifierParam);
         }
 
-        Product product = mapper.toProduct(data.attributes);
+        Product product = mapper.toProduct(data.attributes());
         String selfHref = JsonLdResponses.selfLink(uriInfo, RESOURCE_PATH, doi);
 
         MetaSingleEntity meta = new MetaSingleEntity()
@@ -176,18 +176,18 @@ public class DataCiteProductsResource {
 
         List<Product> products = new ArrayList<>();
         List<ApiItem> apiItems = new ArrayList<>();
-        if (response.data != null) {
-            for (DataCiteDoiData item : response.data) {
-                if (item.attributes == null) {
+        if (response.data() != null) {
+            for (DataCiteDoiData item : response.data()) {
+                if (item.attributes() == null) {
                     continue;
                 }
-                products.add(mapper.toProduct(item.attributes));
-                apiItems.add(JsonLdResponses.apiItem(localIdentifiers.toFullLocalIdentifier(item.attributes.doi),
-                        JsonLdResponses.selfLink(uriInfo, RESOURCE_PATH, item.attributes.doi)));
+                products.add(mapper.toProduct(item.attributes()));
+                apiItems.add(JsonLdResponses.apiItem(localIdentifiers.toFullLocalIdentifier(item.attributes().doi()),
+                        JsonLdResponses.selfLink(uriInfo, RESOURCE_PATH, item.attributes().doi())));
             }
         }
 
-        long total = response.meta != null ? response.meta.total : products.size();
+        long total = response.meta() != null ? response.meta().total() : products.size();
         String selfPageHref = JsonLdResponses.pageLink(uriInfo, RESOURCE_PATH, filter, pageNumber, size);
 
         MetaSearch meta = new MetaSearch()
@@ -209,7 +209,7 @@ public class DataCiteProductsResource {
                 .entityType(MetaSearchPartOf.EntityTypeEnum.SEARCH_RESULT)
                 .totalItems((int) total));
 
-        String contextBase = JsonLdResponses.contextBaseFor(response.data, sandboxBaseUrl, fallbackContextBase);
+        String contextBase = JsonLdResponses.contextBaseFor(response.data(), sandboxBaseUrl, fallbackContextBase);
         ObjectNode root = JsonLdResponses.envelope(objectMapper, contextBase);
         root.set("meta", objectMapper.valueToTree(meta));
         ArrayNode graph = objectMapper.createArrayNode();
@@ -220,7 +220,7 @@ public class DataCiteProductsResource {
     }
 
     private boolean hasMorePages(DataCiteDoiListResponse response, int currentPage) {
-        return response.meta != null && currentPage < response.meta.totalPages;
+        return response.meta() != null && currentPage < response.meta().totalPages();
     }
 
     private int parsePage(String page) {

@@ -59,8 +59,8 @@ public final class ResourceTypeMapping {
      * @return whether attributes' {@code resourceTypeGeneral} is {@code Award}
      */
     public static boolean isAward(DataCiteAttributes attributes) {
-        return attributes != null && attributes.types != null
-                && AWARD.equalsIgnoreCase(attributes.types.resourceTypeGeneral);
+        return attributes != null && attributes.types() != null
+                && AWARD.equalsIgnoreCase(attributes.types().resourceTypeGeneral());
     }
 
     /**

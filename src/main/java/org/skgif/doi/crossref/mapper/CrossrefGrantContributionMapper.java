@@ -30,13 +30,13 @@ final class CrossrefGrantContributionMapper {
     static List<GrantAllOfContributions> grantContributions(String doi, List<CrossrefProject> projects) {
         List<GrantAllOfContributions> result = new ArrayList<>();
         for (CrossrefProject project : projects) {
-            if (project.leadInvestigator != null) {
-                for (CrossrefInvestigator investigator : project.leadInvestigator) {
+            if (project.leadInvestigator() != null) {
+                for (CrossrefInvestigator investigator : project.leadInvestigator()) {
                     result.add(investigatorContribution(doi, investigator, GrantContribution.RolesEnum.LEAD_APPLICANT));
                 }
             }
-            if (project.investigator != null) {
-                for (CrossrefInvestigator investigator : project.investigator) {
+            if (project.investigator() != null) {
+                for (CrossrefInvestigator investigator : project.investigator()) {
                     result.add(investigatorContribution(doi, investigator, GrantContribution.RolesEnum.CO_APPLICANT));
                 }
             }
@@ -46,16 +46,16 @@ final class CrossrefGrantContributionMapper {
 
     private static GrantAllOfContributions investigatorContribution(String doi, CrossrefInvestigator investigator,
             GrantContribution.RolesEnum role) {
-        String bareOrcid = CrossrefContributionMapper.bareOrcid(investigator.orcid);
-        String name = CrossrefContributionMapper.displayName(investigator.given, investigator.family);
+        String bareOrcid = CrossrefContributionMapper.bareOrcid(investigator.orcid());
+        String name = CrossrefContributionMapper.displayName(investigator.given(), investigator.family());
         List<PersonLiteAllOfIdentifiers> orcidIdentifiers = bareOrcid != null
                 ? List.of(new PersonLiteAllOfIdentifiers().scheme("orcid").value(bareOrcid))
                 : null;
-        PersonLite by = EntityRefs.personRef(doi, name, investigator.given, investigator.family, bareOrcid,
+        PersonLite by = EntityRefs.personRef(doi, name, investigator.given(), investigator.family(), bareOrcid,
                 orcidIdentifiers);
         return new GrantContribution()
                 .by(by)
-                .declaredAffiliations(grantAffiliations(doi, investigator.affiliation))
+                .declaredAffiliations(grantAffiliations(doi, investigator.affiliation()))
                 .roles(List.of(role));
     }
 
@@ -65,11 +65,11 @@ final class CrossrefGrantContributionMapper {
         }
         List<GrantAllOfBeneficiaries> result = new ArrayList<>();
         for (CrossrefAffiliation affiliation : affiliations) {
-            if (affiliation.name == null) {
+            if (affiliation.name() == null) {
                 continue;
             }
-            String ror = CrossrefContributionMapper.firstRor(affiliation.id);
-            result.add(EntityRefs.organisationRef(doi, affiliation.name, ror));
+            String ror = CrossrefContributionMapper.firstRor(affiliation.id());
+            result.add(EntityRefs.organisationRef(doi, affiliation.name(), ror));
         }
         return result.isEmpty() ? null : result;
     }
@@ -87,8 +87,8 @@ final class CrossrefGrantContributionMapper {
     static List<GrantAllOfBeneficiaries> grantBeneficiaries(String doi, List<CrossrefProject> projects) {
         Map<String, CrossrefAffiliation> byName = new LinkedHashMap<>();
         for (CrossrefProject project : projects) {
-            collectAffiliations(byName, project.leadInvestigator);
-            collectAffiliations(byName, project.investigator);
+            collectAffiliations(byName, project.leadInvestigator());
+            collectAffiliations(byName, project.investigator());
         }
         return grantAffiliations(doi, new ArrayList<>(byName.values()));
     }
@@ -99,12 +99,12 @@ final class CrossrefGrantContributionMapper {
             return;
         }
         for (CrossrefInvestigator investigator : investigators) {
-            if (investigator.affiliation == null) {
+            if (investigator.affiliation() == null) {
                 continue;
             }
-            for (CrossrefAffiliation affiliation : investigator.affiliation) {
-                if (affiliation.name != null) {
-                    byName.putIfAbsent(affiliation.name, affiliation);
+            for (CrossrefAffiliation affiliation : investigator.affiliation()) {
+                if (affiliation.name() != null) {
+                    byName.putIfAbsent(affiliation.name(), affiliation);
                 }
             }
         }

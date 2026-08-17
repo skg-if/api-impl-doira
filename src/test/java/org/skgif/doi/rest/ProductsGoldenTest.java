@@ -209,15 +209,11 @@ class ProductsGoldenTest {
      */
     @Test
     void getProducts_matchesExpectedJsonLd_multipleItemsPage2Of3() throws IOException {
-        DataCiteDoiListResponse listResponse = new DataCiteDoiListResponse();
-        listResponse.data = java.util.List.of(
-                loadDataCiteFixture("datacite-esrf-dc-2493599001.json").data,
-                loadDataCiteFixture("datacite-esrf-es-2210534378.json").data);
-        DataCiteDoiListResponse.Meta meta = new DataCiteDoiListResponse.Meta();
-        meta.total = 5;
-        meta.totalPages = 3;
-        meta.page = 2;
-        listResponse.meta = meta;
+        DataCiteDoiListResponse listResponse = new DataCiteDoiListResponse(
+                java.util.List.of(
+                        loadDataCiteFixture("datacite-esrf-dc-2493599001.json").data(),
+                        loadDataCiteFixture("datacite-esrf-es-2210534378.json").data()),
+                new DataCiteDoiListResponse.Meta(5, 3, 2), null);
 
         when(dataCiteClient.listDois(any(), any(), anyInt(), anyInt())).thenReturn(listResponse);
 

@@ -37,9 +37,9 @@ final class CrossrefGrantMapper {
      */
     Map<String, String> grantTitles(List<CrossrefProject> projects) {
         List<String> values = projects.stream()
-                .filter(p -> p.projectTitle != null)
-                .flatMap(p -> p.projectTitle.stream())
-                .map(t -> t.title)
+                .filter(p -> p.projectTitle() != null)
+                .flatMap(p -> p.projectTitle().stream())
+                .map(t -> t.title())
                 .filter(Objects::nonNull)
                 .toList();
         return values.isEmpty() ? null : Map.of("en", String.join(" ", values));
@@ -47,9 +47,9 @@ final class CrossrefGrantMapper {
 
     Map<String, String> grantAbstracts(List<CrossrefProject> projects) {
         List<String> values = projects.stream()
-                .filter(p -> p.projectDescription != null)
-                .flatMap(p -> p.projectDescription.stream())
-                .map(d -> d.description)
+                .filter(p -> p.projectDescription() != null)
+                .flatMap(p -> p.projectDescription().stream())
+                .map(d -> d.description())
                 .filter(Objects::nonNull)
                 .toList();
         return values.isEmpty() ? null : Map.of("en", String.join("\n\n", values));
@@ -61,31 +61,31 @@ final class CrossrefGrantMapper {
 
     Integer fundedAmount(CrossrefProject project, CrossrefFunding funding) {
         CrossrefAmount amount = awardAmount(project, funding);
-        return amount != null && amount.amount != null ? amount.amount.intValue() : null;
+        return amount != null && amount.amount() != null ? amount.amount().intValue() : null;
     }
 
     String currency(CrossrefProject project, CrossrefFunding funding) {
         CrossrefAmount amount = awardAmount(project, funding);
-        return amount != null ? amount.currency : null;
+        return amount != null ? amount.currency() : null;
     }
 
     private CrossrefAmount awardAmount(CrossrefProject project, CrossrefFunding funding) {
-        if (funding != null && funding.awardAmount != null) {
-            return funding.awardAmount;
+        if (funding != null && funding.awardAmount() != null) {
+            return funding.awardAmount();
         }
-        return project != null ? project.awardAmount : null;
+        return project != null ? project.awardAmount() : null;
     }
 
     GrantAllOfDuration duration(CrossrefProject project) {
         if (project == null) {
             return null;
         }
-        String start = project.awardStart != null ? project.awardStart.toIsoDate() : null;
-        String end = project.awardEnd != null ? project.awardEnd.toIsoDate() : null;
+        String start = project.awardStart() != null ? project.awardStart().toIsoDate() : null;
+        String end = project.awardEnd() != null ? project.awardEnd().toIsoDate() : null;
         return start == null && end == null ? null : new GrantAllOfDuration().start(start).end(end);
     }
 
     String website(CrossrefWork work) {
-        return work.resource != null && work.resource.primary != null ? work.resource.primary.url : null;
+        return work.resource() != null && work.resource().primary() != null ? work.resource().primary().url() : null;
     }
 }

@@ -45,22 +45,22 @@ final class CrossrefBiblioMapper {
         // volume); a book chapter's or proceedings paper's REST JSON commonly has neither that
         // nor a series volume, but the XML transform's `.../volume` (e.g. an LNCS series volume
         // number, or a recurring proceedings series volume) fills that gap when present.
-        String volume = work.volume != null ? work.volume
+        String volume = work.volume() != null ? work.volume()
                 : venueMetadata != null ? venueMetadata.volume() : null;
         ProductManifestationBiblio biblio = new ProductManifestationBiblio()
-                .issue(work.issue)
+                .issue(work.issue())
                 .volume(volume)
-                .pages(pages(work.page))
+                .pages(pages(work.page()))
                 .in(venue(work, venueMetadata));
-        if (work.publisher != null) {
+        if (work.publisher() != null) {
             biblio.hostingDataSource(hostingDataSource(work));
         }
         return biblio;
     }
 
     private boolean hasNoBiblioData(CrossrefWork work, CrossrefVenueMetadata venueMetadata) {
-        return work.publisher == null && work.containerTitle == null && work.issue == null
-                && work.volume == null && work.page == null && venueMetadata == null;
+        return work.publisher() == null && work.containerTitle() == null && work.issue() == null
+                && work.volume() == null && work.page() == null && venueMetadata == null;
     }
 
     private ProductManifestationBiblioPages pages(String page) {
@@ -102,20 +102,20 @@ final class CrossrefBiblioMapper {
      */
     private ProductManifestationBiblioIn venue(CrossrefWork work, CrossrefVenueMetadata venueMetadata) {
         if (venueMetadata != null && venueMetadata.containerTitle() != null) {
-            return venueFromXmlMetadata(work.doi, venueMetadata);
+            return venueFromXmlMetadata(work.doi(), venueMetadata);
         }
         if (hasNoContainerTitle(work)) {
             return null;
         }
-        String name = work.containerTitle.get(0);
-        List<String> issns = work.issn != null
-                ? work.issn.stream().filter(Objects::nonNull).toList()
+        String name = work.containerTitle().get(0);
+        List<String> issns = work.issn() != null
+                ? work.issn().stream().filter(Objects::nonNull).toList()
                 : List.of();
         String journalDoi = resolveJournalDoi(issns);
 
         VenueLite venue = new VenueLite()
                 .localIdentifier(journalDoi != null ? localIdentifiers.toFullLocalIdentifier(journalDoi)
-                        : MapperTextUtils.otf(work.doi, name))
+                        : MapperTextUtils.otf(work.doi(), name))
                 .entityType(EntityTypes.VENUE)
                 .name(name);
 
@@ -127,7 +127,8 @@ final class CrossrefBiblioMapper {
     }
 
     private boolean hasNoContainerTitle(CrossrefWork work) {
-        return work.containerTitle == null || work.containerTitle.isEmpty() || work.containerTitle.get(0) == null;
+        return work.containerTitle() == null || work.containerTitle().isEmpty()
+                || work.containerTitle().get(0) == null;
     }
 
     private String resolveJournalDoi(List<String> issns) {
@@ -180,6 +181,6 @@ final class CrossrefBiblioMapper {
      * @return a DataSourceLite for work.publisher, with an otf local_identifier
      */
     private ProductManifestationBiblioHostingDataSource hostingDataSource(CrossrefWork work) {
-        return EntityRefs.hostingDataSource(work.doi, work.publisher);
+        return EntityRefs.hostingDataSource(work.doi(), work.publisher());
     }
 }

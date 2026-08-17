@@ -52,21 +52,21 @@ final class CrossrefRelatedProductMapper {
      */
     ProductsRelated relatedProducts(CrossrefWork work) {
         List<ProductsRelatedCitesInner> cites = new ArrayList<>();
-        if (work.reference != null) {
-            for (CrossrefReference reference : work.reference) {
-                if (reference.doi != null) {
+        if (work.reference() != null) {
+            for (CrossrefReference reference : work.reference()) {
+                if (reference.doi() != null) {
                     // Full https://doi.org/... URL, consistent with how this API identifies its
                     // own products and every other DOI-identified entity.
                     cites.add(new ProductsRelatedItem()
-                            .localIdentifier(localIdentifiers.toFullLocalIdentifier(reference.doi))
+                            .localIdentifier(localIdentifiers.toFullLocalIdentifier(reference.doi()))
                             .entityType(EntityTypes.PRODUCT)
                             .identifiers(
-                                    List.of(new EntityIdentifiersInner().scheme(SCHEME_DOI).value(reference.doi))));
+                                    List.of(new EntityIdentifiersInner().scheme(SCHEME_DOI).value(reference.doi()))));
                     continue;
                 }
-                String label = reference.unstructured != null ? reference.unstructured : reference.key;
+                String label = reference.unstructured() != null ? reference.unstructured() : reference.key();
                 cites.add(new ProductsRelatedItem()
-                        .localIdentifier(MapperTextUtils.otf(work.doi, label))
+                        .localIdentifier(MapperTextUtils.otf(work.doi(), label))
                         .entityType(EntityTypes.PRODUCT));
             }
         }
@@ -95,26 +95,26 @@ final class CrossrefRelatedProductMapper {
      */
     private List<ProductsRelatedCitesInner> relatedByRelationType(CrossrefWork work, String relationType) {
         List<ProductsRelatedCitesInner> result = new ArrayList<>();
-        if (work.relation == null) {
+        if (work.relation() == null) {
             return result;
         }
-        List<CrossrefIdEntry> entries = work.relation.get(relationType);
+        List<CrossrefIdEntry> entries = work.relation().get(relationType);
         if (entries == null) {
             return result;
         }
         for (CrossrefIdEntry entry : entries) {
-            if (entry.id == null) {
+            if (entry.id() == null) {
                 continue;
             }
-            if (SCHEME_DOI.equalsIgnoreCase(entry.idType)) {
+            if (SCHEME_DOI.equalsIgnoreCase(entry.idType())) {
                 result.add(new ProductsRelatedItem()
-                        .localIdentifier(localIdentifiers.toFullLocalIdentifier(entry.id))
+                        .localIdentifier(localIdentifiers.toFullLocalIdentifier(entry.id()))
                         .entityType(EntityTypes.PRODUCT)
-                        .identifiers(List.of(new EntityIdentifiersInner().scheme(SCHEME_DOI).value(entry.id))));
+                        .identifiers(List.of(new EntityIdentifiersInner().scheme(SCHEME_DOI).value(entry.id()))));
                 continue;
             }
             result.add(new ProductsRelatedItem()
-                    .localIdentifier(MapperTextUtils.otf(work.doi, entry.id))
+                    .localIdentifier(MapperTextUtils.otf(work.doi(), entry.id()))
                     .entityType(EntityTypes.PRODUCT));
         }
         return result;

@@ -5,16 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class DataCiteDoiListResponse {
-
-    public List<DataCiteDoiData> data;
-    public Meta meta;
-    public Map<String, String> links;
+public record DataCiteDoiListResponse(List<DataCiteDoiData> data, Meta meta, Map<String, String> links) {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class Meta {
-        public long total;
-        public int totalPages;
-        public int page;
+    public record Meta(long total, int totalPages, int page) {
     }
 }

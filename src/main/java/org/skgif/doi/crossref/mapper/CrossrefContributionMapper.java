@@ -28,27 +28,27 @@ final class CrossrefContributionMapper {
     static List<ProductContribution> contributions(CrossrefWork work) {
         List<ProductContribution> contributions = new ArrayList<>();
         int rank = 1;
-        if (work.author != null) {
-            for (CrossrefContributor author : work.author) {
+        if (work.author() != null) {
+            for (CrossrefContributor author : work.author()) {
                 contributions.add(new ProductContribution()
-                        .by(personRef(work.doi, author.given, author.family, author.orcid))
-                        .declaredAffiliations(affiliations(work.doi, author.affiliation))
+                        .by(personRef(work.doi(), author.given(), author.family(), author.orcid()))
+                        .declaredAffiliations(affiliations(work.doi(), author.affiliation()))
                         .rank(rank++)
                         .role(ProductContribution.RoleEnum.AUTHOR));
             }
         }
-        if (work.editor != null) {
-            for (CrossrefContributor editor : work.editor) {
+        if (work.editor() != null) {
+            for (CrossrefContributor editor : work.editor()) {
                 contributions.add(new ProductContribution()
-                        .by(personRef(work.doi, editor.given, editor.family, editor.orcid))
-                        .declaredAffiliations(affiliations(work.doi, editor.affiliation))
+                        .by(personRef(work.doi(), editor.given(), editor.family(), editor.orcid()))
+                        .declaredAffiliations(affiliations(work.doi(), editor.affiliation()))
                         .rank(rank++)
                         .role(ProductContribution.RoleEnum.EDITOR));
             }
         }
-        if (work.publisher != null) {
+        if (work.publisher() != null) {
             contributions.add(new ProductContribution()
-                    .by(organisationRef(work.doi, work.publisher))
+                    .by(organisationRef(work.doi(), work.publisher()))
                     .rank(rank)
                     .role(ProductContribution.RoleEnum.PUBLISHER));
         }
@@ -121,10 +121,10 @@ final class CrossrefContributionMapper {
         }
         List<ProductAllOfRelevantOrganisations> result = new ArrayList<>();
         for (CrossrefAffiliation affiliation : affiliations) {
-            if (affiliation.name == null) {
+            if (affiliation.name() == null) {
                 continue;
             }
-            result.add(EntityRefs.organisationRef(doi, affiliation.name, firstRor(affiliation.id)));
+            result.add(EntityRefs.organisationRef(doi, affiliation.name(), firstRor(affiliation.id())));
         }
         return result.isEmpty() ? null : result;
     }
@@ -134,8 +134,8 @@ final class CrossrefContributionMapper {
             return null;
         }
         return ids.stream()
-                .filter(entry -> "ROR".equalsIgnoreCase(entry.idType) && entry.id != null)
-                .map(entry -> MapperTextUtils.stripRorUrl(entry.id))
+                .filter(entry -> "ROR".equalsIgnoreCase(entry.idType()) && entry.id() != null)
+                .map(entry -> MapperTextUtils.stripRorUrl(entry.id()))
                 .findFirst()
                 .orElse(null);
     }

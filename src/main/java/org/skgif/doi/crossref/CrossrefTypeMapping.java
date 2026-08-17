@@ -75,7 +75,7 @@ public final class CrossrefTypeMapping {
      * @return whether work's raw {@code type} is {@code grant}
      */
     public static boolean isGrant(CrossrefWork work) {
-        return work != null && GRANT.equalsIgnoreCase(work.type);
+        return work != null && GRANT.equalsIgnoreCase(work.type());
     }
 
     /**
@@ -88,7 +88,7 @@ public final class CrossrefTypeMapping {
      * @return true if work is a chapter-in-a-book or paper-in-proceedings type
      */
     public static boolean isXmlVenueEnrichable(CrossrefWork work) {
-        return work != null && XML_VENUE_ENRICHABLE_TYPES.contains(work.type);
+        return work != null && XML_VENUE_ENRICHABLE_TYPES.contains(work.type());
     }
 
     /**

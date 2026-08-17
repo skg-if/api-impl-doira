@@ -83,12 +83,12 @@ public class CrossrefToSkgIfMapper {
      * @return the mapped Product
      */
     public Product toProduct(CrossrefWork work, CrossrefVenueMetadata venueMetadata) {
-        Objects.requireNonNull(work.doi, "Crossref record has no DOI");
+        Objects.requireNonNull(work.doi(), "Crossref record has no DOI");
 
         return new Product()
-                .localIdentifier(localIdentifiers.toFullLocalIdentifier(work.doi))
-                .productType(CrossrefTypeMapping.productType(work.type))
-                .identifiers(List.of(new ProductAllOfIdentifiers().scheme(SCHEME_DOI).value(work.doi)))
+                .localIdentifier(localIdentifiers.toFullLocalIdentifier(work.doi()))
+                .productType(CrossrefTypeMapping.productType(work.type()))
+                .identifiers(List.of(new ProductAllOfIdentifiers().scheme(SCHEME_DOI).value(work.doi())))
                 .titles(CrossrefTitleMapper.titles(work))
                 .abstracts(CrossrefTitleMapper.abstracts(work))
                 .topics(CrossrefTitleMapper.topics(work))
@@ -114,27 +114,27 @@ public class CrossrefToSkgIfMapper {
      * @return the mapped Grant
      */
     public Grant toGrant(CrossrefWork work) {
-        Objects.requireNonNull(work.doi, "Crossref record has no DOI");
+        Objects.requireNonNull(work.doi(), "Crossref record has no DOI");
 
-        List<CrossrefProject> projects = work.project != null ? work.project : List.of();
+        List<CrossrefProject> projects = work.project() != null ? work.project() : List.of();
         CrossrefProject primaryProject = projects.isEmpty() ? null : projects.get(0);
-        CrossrefFunding primaryFunding = primaryProject != null && primaryProject.funding != null
-                && !primaryProject.funding.isEmpty() ? primaryProject.funding.get(0) : null;
+        CrossrefFunding primaryFunding = primaryProject != null && primaryProject.funding() != null
+                && !primaryProject.funding().isEmpty() ? primaryProject.funding().get(0) : null;
 
         return new Grant()
-                .localIdentifier(localIdentifiers.toFullLocalIdentifier(work.doi))
+                .localIdentifier(localIdentifiers.toFullLocalIdentifier(work.doi()))
                 .entityType(Grant.EntityTypeEnum.GRANT)
-                .identifiers(List.of(new GrantLiteAllOfIdentifiers().scheme(SCHEME_DOI).value(work.doi)))
+                .identifiers(List.of(new GrantLiteAllOfIdentifiers().scheme(SCHEME_DOI).value(work.doi())))
                 .titles(grantMapper.grantTitles(projects))
                 .abstracts(grantMapper.grantAbstracts(projects))
-                .grantNumber(work.award)
-                .fundingAgency(grantMapper.grantFundingAgency(work.doi, primaryFunding, work.funder))
-                .fundingStream(primaryFunding != null ? primaryFunding.scheme : null)
+                .grantNumber(work.award())
+                .fundingAgency(grantMapper.grantFundingAgency(work.doi(), primaryFunding, work.funder()))
+                .fundingStream(primaryFunding != null ? primaryFunding.scheme() : null)
                 .fundedAmount(grantMapper.fundedAmount(primaryProject, primaryFunding))
                 .currency(grantMapper.currency(primaryProject, primaryFunding))
                 .duration(grantMapper.duration(primaryProject))
                 .website(grantMapper.website(work))
-                .contributions(CrossrefGrantContributionMapper.grantContributions(work.doi, projects))
-                .beneficiaries(CrossrefGrantContributionMapper.grantBeneficiaries(work.doi, projects));
+                .contributions(CrossrefGrantContributionMapper.grantContributions(work.doi(), projects))
+                .beneficiaries(CrossrefGrantContributionMapper.grantBeneficiaries(work.doi(), projects));
     }
 }

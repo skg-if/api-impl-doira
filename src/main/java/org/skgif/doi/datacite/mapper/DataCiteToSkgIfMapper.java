@@ -60,16 +60,16 @@ public class DataCiteToSkgIfMapper {
      * @return the mapped Product
      */
     public Product toProduct(DataCiteAttributes attributes) {
-        Objects.requireNonNull(attributes.doi, "DataCite record has no DOI");
+        Objects.requireNonNull(attributes.doi(), "DataCite record has no DOI");
 
         return new Product()
                 // Full https://doi.org/... form, consistent with every other entity in this
                 // output (Person -> ORCID URL, Organisation -> ROR URL): use the full external
                 // identifier URL as local_identifier whenever we have a real one.
-                .localIdentifier(localIdentifiers.toFullLocalIdentifier(attributes.doi))
+                .localIdentifier(localIdentifiers.toFullLocalIdentifier(attributes.doi()))
                 .productType(ResourceTypeMapping.productType(
                         DataCiteManifestationMapper.resourceTypeGeneral(attributes)))
-                .identifiers(List.of(new ProductAllOfIdentifiers().scheme(SCHEME_DOI).value(attributes.doi)))
+                .identifiers(List.of(new ProductAllOfIdentifiers().scheme(SCHEME_DOI).value(attributes.doi())))
                 .titles(DataCiteTitleMapper.titles(attributes))
                 .abstracts(DataCiteTitleMapper.abstracts(attributes))
                 .topics(DataCiteTitleMapper.topics(attributes))
@@ -91,24 +91,26 @@ public class DataCiteToSkgIfMapper {
      * @return the mapped Grant
      */
     public Grant toGrant(DataCiteAttributes attributes) {
-        Objects.requireNonNull(attributes.doi, "DataCite record has no DOI");
+        Objects.requireNonNull(attributes.doi(), "DataCite record has no DOI");
 
-        List<DataCiteCreator> creators = attributes.creators != null ? attributes.creators : List.of();
-        List<DataCiteContributor> contributors = attributes.contributors != null ? attributes.contributors : List.of();
+        List<DataCiteCreator> creators = attributes.creators() != null ? attributes.creators() : List.of();
+        List<DataCiteContributor> contributors = attributes.contributors() != null
+                ? attributes.contributors()
+                : List.of();
         Optional<DataCiteCreator> fundingAgencyCreator = creators.stream()
-                .filter(c -> DataCiteContributionMapper.firstRor(c.nameIdentifiers) != null)
+                .filter(c -> DataCiteContributionMapper.firstRor(c.nameIdentifiers()) != null)
                 .findFirst();
 
         return new Grant()
-                .localIdentifier(localIdentifiers.toFullLocalIdentifier(attributes.doi))
+                .localIdentifier(localIdentifiers.toFullLocalIdentifier(attributes.doi()))
                 .entityType(Grant.EntityTypeEnum.GRANT)
-                .identifiers(List.of(new GrantLiteAllOfIdentifiers().scheme(SCHEME_DOI).value(attributes.doi)))
+                .identifiers(List.of(new GrantLiteAllOfIdentifiers().scheme(SCHEME_DOI).value(attributes.doi())))
                 .titles(DataCiteTitleMapper.grantTitles(attributes))
                 .abstracts(DataCiteTitleMapper.grantAbstracts(attributes))
                 .fundingAgency(DataCiteGrantMapper.grantFundingAgency(
-                        attributes.doi, fundingAgencyCreator, attributes.publisher))
+                        attributes.doi(), fundingAgencyCreator, attributes.publisher()))
                 .contributions(DataCiteGrantMapper.grantContributions(
-                        attributes.doi, creators, contributors, fundingAgencyCreator))
-                .beneficiaries(DataCiteGrantMapper.grantBeneficiaries(attributes.doi, contributors));
+                        attributes.doi(), creators, contributors, fundingAgencyCreator))
+                .beneficiaries(DataCiteGrantMapper.grantBeneficiaries(attributes.doi(), contributors));
     }
 }

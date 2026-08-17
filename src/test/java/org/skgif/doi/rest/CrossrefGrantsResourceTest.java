@@ -99,10 +99,8 @@ class CrossrefGrantsResourceTest {
 
     @Test
     void getGrants_onlyIncludesGrantTypeInCrossrefFilter() {
-        CrossrefWorkListResponse listResponse = new CrossrefWorkListResponse();
-        listResponse.message = new CrossrefWorkListResponse.Message();
-        listResponse.message.totalResults = 0;
-        listResponse.message.items = List.of();
+        CrossrefWorkListResponse listResponse =
+                new CrossrefWorkListResponse(null, new CrossrefWorkListResponse.Message(0, List.of()));
         when(crossrefClient.listWorks(any(), any(), any(), anyInt(), anyInt(), any())).thenReturn(listResponse);
 
         given().when().get(BASE + "/crossref/grants").then().statusCode(200);
@@ -114,10 +112,8 @@ class CrossrefGrantsResourceTest {
 
     @Test
     void getGrants_returnsSearchEnvelope() throws IOException {
-        CrossrefWorkListResponse listResponse = new CrossrefWorkListResponse();
-        listResponse.message = new CrossrefWorkListResponse.Message();
-        listResponse.message.totalResults = 1;
-        listResponse.message.items = List.of(loadFixture("crossref-grant.json").message);
+        CrossrefWorkListResponse listResponse = new CrossrefWorkListResponse(null,
+                new CrossrefWorkListResponse.Message(1, List.of(loadFixture("crossref-grant.json").message())));
         when(crossrefClient.listWorks(any(), any(), any(), anyInt(), anyInt(), any())).thenReturn(listResponse);
 
         given()

@@ -47,31 +47,31 @@ final class CrossrefManifestationMapper {
     }
 
     private ProductManifestationType manifestationType(CrossrefWork work) {
-        return work.type != null
+        return work.type() != null
                 ? new ProductManifestationType()
-                        .propertyClass(CROSSREF_TYPES_BASE_URL + work.type)
+                        .propertyClass(CROSSREF_TYPES_BASE_URL + work.type())
                         .definedIn(CROSSREF_TYPES_BASE_URL)
-                        .labels(Map.of("en", work.type))
+                        .labels(Map.of("en", work.type()))
                 : null;
     }
 
     private ProductManifestationDates dates(CrossrefWork work) {
         ProductManifestationDates dates = new ProductManifestationDates();
         boolean any = false;
-        any |= addDateItem(dates, ManifestationDateSetters.CREATION, work.created);
-        any |= addDateItem(dates, ManifestationDateSetters.DEPOSIT, work.deposited);
+        any |= addDateItem(dates, ManifestationDateSetters.CREATION, work.created());
+        any |= addDateItem(dates, ManifestationDateSetters.DEPOSIT, work.deposited());
         // Crossref documents `deposited` as "date on which the work metadata was most recently
         // updated" - that's SKG-IF's `modified`, not just `deposit`, and Crossref has no other
         // candidate for `modified` (`indexed` is deliberately excluded - see the mapping doc).
-        any |= addDateItem(dates, ManifestationDateSetters.MODIFIED, work.deposited);
-        any |= addDateItem(dates, ManifestationDateSetters.ACCEPTANCE, work.accepted);
-        any |= addDateItem(dates, ManifestationDateSetters.PUBLICATION, work.publishedPrint);
-        any |= addDateItem(dates, ManifestationDateSetters.PUBLICATION, work.publishedOnline);
-        any |= addDateItem(dates, ManifestationDateSetters.PUBLICATION, work.issued);
-        if (work.updateTo != null) {
-            for (CrossrefUpdateTo update : work.updateTo) {
-                String skgIfType = CROSSREF_UPDATE_TYPE_TO_SKGIF.get(update.type);
-                any |= addDateItem(dates, skgIfType, update.updated);
+        any |= addDateItem(dates, ManifestationDateSetters.MODIFIED, work.deposited());
+        any |= addDateItem(dates, ManifestationDateSetters.ACCEPTANCE, work.accepted());
+        any |= addDateItem(dates, ManifestationDateSetters.PUBLICATION, work.publishedPrint());
+        any |= addDateItem(dates, ManifestationDateSetters.PUBLICATION, work.publishedOnline());
+        any |= addDateItem(dates, ManifestationDateSetters.PUBLICATION, work.issued());
+        if (work.updateTo() != null) {
+            for (CrossrefUpdateTo update : work.updateTo()) {
+                String skgIfType = CROSSREF_UPDATE_TYPE_TO_SKGIF.get(update.type());
+                any |= addDateItem(dates, skgIfType, update.updated());
             }
         }
         return any ? dates : null;
@@ -90,6 +90,6 @@ final class CrossrefManifestationMapper {
     }
 
     private List<String> licenceUrls(CrossrefWork work) {
-        return work.license == null ? null : work.license.stream().map(licence -> licence.url).toList();
+        return work.license() == null ? null : work.license().stream().map(licence -> licence.url()).toList();
     }
 }

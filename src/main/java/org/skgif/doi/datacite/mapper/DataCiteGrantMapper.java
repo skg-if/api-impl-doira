@@ -38,10 +38,10 @@ final class DataCiteGrantMapper {
             String publisher) {
         if (fundingAgencyCreator.isPresent()) {
             DataCiteCreator creator = fundingAgencyCreator.get();
-            String ror = DataCiteContributionMapper.firstRor(creator.nameIdentifiers);
+            String ror = DataCiteContributionMapper.firstRor(creator.nameIdentifiers());
             return new Organisation()
                     .localIdentifier(ExternalIdentifierUrls.ROR_BASE_URL + ror)
-                    .name(creator.name)
+                    .name(creator.name())
                     .entityType(EntityTypes.ORGANISATION)
                     .identifiers(List.of(new AgentAllOfIdentifiers().scheme(SCHEME_ROR).value(ror)));
         }
@@ -63,18 +63,18 @@ final class DataCiteGrantMapper {
             if (fundingAgencyCreator.isPresent() && fundingAgencyCreator.get() == creator) {
                 continue;
             }
-            boolean organizational = "Organizational".equals(creator.nameType);
+            boolean organizational = "Organizational".equals(creator.nameType());
             result.add(new GrantContribution()
-                    .by(grantContributionBy(doi, creator.name, creator.givenName, creator.familyName,
-                            creator.nameIdentifiers, organizational))
-                    .declaredAffiliations(grantAffiliations(doi, creator.affiliation)));
+                    .by(grantContributionBy(doi, creator.name(), creator.givenName(), creator.familyName(),
+                            creator.nameIdentifiers(), organizational))
+                    .declaredAffiliations(grantAffiliations(doi, creator.affiliation())));
         }
         for (DataCiteContributor contributor : contributors) {
-            boolean organizational = "Organizational".equals(contributor.nameType);
+            boolean organizational = "Organizational".equals(contributor.nameType());
             result.add(new GrantContribution()
-                    .by(grantContributionBy(doi, contributor.name, contributor.givenName, contributor.familyName,
-                            contributor.nameIdentifiers, organizational))
-                    .declaredAffiliations(grantAffiliations(doi, contributor.affiliation)));
+                    .by(grantContributionBy(doi, contributor.name(), contributor.givenName(), contributor.familyName(),
+                            contributor.nameIdentifiers(), organizational))
+                    .declaredAffiliations(grantAffiliations(doi, contributor.affiliation())));
         }
         return result.isEmpty() ? null : result;
     }
@@ -105,13 +105,13 @@ final class DataCiteGrantMapper {
         }
         List<GrantAllOfBeneficiaries> result = new ArrayList<>();
         for (DataCiteAffiliation affiliation : affiliations) {
-            if (affiliation.name == null) {
+            if (affiliation.name() == null) {
                 continue;
             }
-            boolean hasRor = affiliation.affiliationIdentifier != null
-                    && SCHEME_ROR_UPPER.equalsIgnoreCase(affiliation.affiliationIdentifierScheme);
-            String bareRor = hasRor ? MapperTextUtils.stripRorUrl(affiliation.affiliationIdentifier) : null;
-            result.add(EntityRefs.organisationRef(doi, affiliation.name, bareRor));
+            boolean hasRor = affiliation.affiliationIdentifier() != null
+                    && SCHEME_ROR_UPPER.equalsIgnoreCase(affiliation.affiliationIdentifierScheme());
+            String bareRor = hasRor ? MapperTextUtils.stripRorUrl(affiliation.affiliationIdentifier()) : null;
+            result.add(EntityRefs.organisationRef(doi, affiliation.name(), bareRor));
         }
         return result.isEmpty() ? null : result;
     }
@@ -129,16 +129,14 @@ final class DataCiteGrantMapper {
     static List<GrantAllOfBeneficiaries> grantBeneficiaries(String doi, List<DataCiteContributor> contributors) {
         List<DataCiteAffiliation> organizationalContributors = new ArrayList<>();
         for (DataCiteContributor contributor : contributors) {
-            if (!"Organizational".equals(contributor.nameType) || contributor.name == null) {
+            if (!"Organizational".equals(contributor.nameType()) || contributor.name() == null) {
                 continue;
             }
-            DataCiteAffiliation asAffiliation = new DataCiteAffiliation();
-            asAffiliation.name = contributor.name;
-            String ror = DataCiteContributionMapper.firstRor(contributor.nameIdentifiers);
-            if (ror != null) {
-                asAffiliation.affiliationIdentifier = ExternalIdentifierUrls.ROR_BASE_URL + ror;
-                asAffiliation.affiliationIdentifierScheme = SCHEME_ROR_UPPER;
-            }
+            String ror = DataCiteContributionMapper.firstRor(contributor.nameIdentifiers());
+            DataCiteAffiliation asAffiliation = ror != null
+                    ? new DataCiteAffiliation(contributor.name(), ExternalIdentifierUrls.ROR_BASE_URL + ror,
+                            SCHEME_ROR_UPPER)
+                    : new DataCiteAffiliation(contributor.name(), null, null);
             organizationalContributors.add(asAffiliation);
         }
         return grantAffiliations(doi, organizationalContributors);

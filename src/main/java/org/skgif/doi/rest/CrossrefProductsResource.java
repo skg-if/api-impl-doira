@@ -112,14 +112,14 @@ public class CrossrefProductsResource {
         CrossrefWork work;
         try {
             CrossrefWorkResponse response = crossrefClient.getWork(doi);
-            work = response != null ? response.message : null;
+            work = response != null ? response.message() : null;
         } catch (WebApplicationException e) {
             if (e.getResponse().getStatus() == Response.Status.NOT_FOUND.getStatusCode()) {
                 return notFound(localIdentifierParam);
             }
             throw e;
         }
-        if (work == null || work.doi == null) {
+        if (work == null || work.doi() == null) {
             return notFound(localIdentifierParam);
         }
         if (CrossrefTypeMapping.isGrant(work)) {
@@ -177,24 +177,24 @@ public class CrossrefProductsResource {
         int offset = (pageNumber - 1) * size;
         String mailto = crossrefMailto.filter(m -> !m.isBlank()).orElse(null);
 
-        CrossrefWorkListResponse response = crossrefClient.listWorks(withPrefix(parsed.filter), parsed.queryTitle,
-                parsed.queryBibliographic, size, offset, mailto);
+        CrossrefWorkListResponse response = crossrefClient.listWorks(withPrefix(parsed.filter()), parsed.queryTitle(),
+                parsed.queryBibliographic(), size, offset, mailto);
 
         List<Product> products = new ArrayList<>();
         List<ApiItem> apiItems = new ArrayList<>();
         long totalResults = 0;
-        if (response.message != null) {
-            totalResults = response.message.totalResults;
-            for (CrossrefWork work : Optional.ofNullable(response.message.items).orElse(List.of())) {
+        if (response.message() != null) {
+            totalResults = response.message().totalResults();
+            for (CrossrefWork work : Optional.ofNullable(response.message().items()).orElse(List.of())) {
                 // Crossref's filter= has no negation operator (see CrossrefFilters), so
                 // grant-type records are excluded here rather than in the query itself -
                 // unlike DataCite's "NOT resourceTypeGeneral:Award" query clause.
-                if (work.doi == null || CrossrefTypeMapping.isGrant(work)) {
+                if (work.doi() == null || CrossrefTypeMapping.isGrant(work)) {
                     continue;
                 }
                 products.add(mapper.toProduct(work));
-                apiItems.add(JsonLdResponses.apiItem(localIdentifiers.toFullLocalIdentifier(work.doi),
-                        JsonLdResponses.selfLink(uriInfo, RESOURCE_PATH, work.doi)));
+                apiItems.add(JsonLdResponses.apiItem(localIdentifiers.toFullLocalIdentifier(work.doi()),
+                        JsonLdResponses.selfLink(uriInfo, RESOURCE_PATH, work.doi())));
             }
         }
 

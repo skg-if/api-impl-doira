@@ -30,20 +30,20 @@ final class CrossrefFundingMapper {
     }
 
     List<ProductAllOfFunding> funding(CrossrefWork work) {
-        if (work.funder == null || work.funder.isEmpty()) {
+        if (work.funder() == null || work.funder().isEmpty()) {
             return null;
         }
         List<ProductAllOfFunding> result = new ArrayList<>();
-        for (CrossrefFunder funder : work.funder) {
-            if (funder.name == null) {
+        for (CrossrefFunder funder : work.funder()) {
+            if (funder.name() == null) {
                 continue;
             }
-            List<String> awards = funder.award != null ? funder.award : List.of();
+            List<String> awards = funder.award() != null ? funder.award() : List.of();
             if (awards.isEmpty()) {
-                result.add(fundingEntry(work.doi, funder, null));
+                result.add(fundingEntry(work.doi(), funder, null));
             } else {
                 for (String award : awards) {
-                    result.add(fundingEntry(work.doi, funder, award));
+                    result.add(fundingEntry(work.doi(), funder, award));
                 }
             }
         }
@@ -51,7 +51,7 @@ final class CrossrefFundingMapper {
     }
 
     private ProductAllOfFunding fundingEntry(String doi, CrossrefFunder funder, String awardNumber) {
-        String label = awardNumber != null ? awardNumber : funder.name;
+        String label = awardNumber != null ? awardNumber : funder.name();
         return new GrantLite()
                 .localIdentifier(MapperTextUtils.otf(doi, label))
                 .entityType(GrantLite.EntityTypeEnum.GRANT)
@@ -72,7 +72,7 @@ final class CrossrefFundingMapper {
     Organisation fundingAgencyOrg(String doi, CrossrefFunder funder) {
         String funderDoi = funderDoi(funder);
         String doiLocalIdentifier = funderDoi != null ? localIdentifiers.toFullLocalIdentifier(funderDoi) : null;
-        return EntityRefs.organisationRef(doi, funder.name, null, doiLocalIdentifier, funderDoi);
+        return EntityRefs.organisationRef(doi, funder.name(), null, doiLocalIdentifier, funderDoi);
     }
 
     /**
@@ -84,15 +84,15 @@ final class CrossrefFundingMapper {
      * @return the funder's Funder Registry DOI, or null if it has none
      */
     private String funderDoi(CrossrefFunder funder) {
-        if (funder.doi != null) {
-            return funder.doi;
+        if (funder.doi() != null) {
+            return funder.doi();
         }
-        if (funder.id == null) {
+        if (funder.id() == null) {
             return null;
         }
-        return funder.id.stream()
-                .filter(entry -> "DOI".equalsIgnoreCase(entry.idType) && entry.id != null)
-                .map(entry -> entry.id)
+        return funder.id().stream()
+                .filter(entry -> "DOI".equalsIgnoreCase(entry.idType()) && entry.id() != null)
+                .map(entry -> entry.id())
                 .findFirst()
                 .orElse(null);
     }
@@ -109,11 +109,11 @@ final class CrossrefFundingMapper {
      * @return the mapped Organisation, or null if no funder name is available
      */
     Organisation grantFundingAgency(String doi, CrossrefFunding primaryFunding, List<CrossrefFunder> topLevelFunders) {
-        CrossrefFunder funder = primaryFunding != null ? primaryFunding.funder : null;
+        CrossrefFunder funder = primaryFunding != null ? primaryFunding.funder() : null;
         if (funder == null && topLevelFunders != null && !topLevelFunders.isEmpty()) {
             funder = topLevelFunders.get(0);
         }
-        if (funder == null || funder.name == null) {
+        if (funder == null || funder.name() == null) {
             return null;
         }
         return fundingAgencyOrg(doi, funder);

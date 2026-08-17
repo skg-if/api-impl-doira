@@ -56,7 +56,7 @@ final class DataCiteManifestationMapper {
                 .dates(dates(attributes))
                 .accessRights(accessRights(attributes))
                 .licence(licence(attributes))
-                .version(attributes.version)
+                .version(attributes.version())
                 .biblio(DataCiteBiblioMapper.biblio(attributes));
     }
 
@@ -71,7 +71,7 @@ final class DataCiteManifestationMapper {
     }
 
     static String resourceTypeGeneral(DataCiteAttributes attributes) {
-        return attributes.types != null ? attributes.types.resourceTypeGeneral : null;
+        return attributes.types() != null ? attributes.types().resourceTypeGeneral() : null;
     }
 
     private static ProductManifestationDates dates(DataCiteAttributes attributes) {
@@ -82,13 +82,13 @@ final class DataCiteManifestationMapper {
     }
 
     private static boolean applyDatesArray(ProductManifestationDates dates, DataCiteAttributes attributes) {
-        if (attributes.dates == null) {
+        if (attributes.dates() == null) {
             return false;
         }
         boolean any = false;
-        for (DataCiteDate date : attributes.dates) {
-            String skgIfDateType = DATACITE_DATE_TYPE_TO_SKGIF.get(date.dateType);
-            if (skgIfDateType == null || date.date == null) {
+        for (DataCiteDate date : attributes.dates()) {
+            String skgIfDateType = DATACITE_DATE_TYPE_TO_SKGIF.get(date.dateType());
+            if (skgIfDateType == null || date.date() == null) {
                 continue;
             }
             // An `Available` date only signals a genuine embargo when it differs (at day
@@ -97,10 +97,10 @@ final class DataCiteManifestationMapper {
             // "published and immediately available," not an embargo end date, so it's dropped
             // rather than emitted anywhere.
             if (ManifestationDateSetters.EMBARGO.equals(skgIfDateType)
-                    && otherRecordDays(attributes, date).contains(normalizeDay(date.date))) {
+                    && otherRecordDays(attributes, date).contains(normalizeDay(date.date()))) {
                 continue;
             }
-            any |= ManifestationDateSetters.addDateItem(dates, skgIfDateType, date.date);
+            any |= ManifestationDateSetters.addDateItem(dates, skgIfDateType, date.date());
         }
         return any;
     }
@@ -118,20 +118,20 @@ final class DataCiteManifestationMapper {
      */
     private static boolean applyFallbackDates(ProductManifestationDates dates, DataCiteAttributes attributes) {
         boolean any = false;
-        if (dates.getCreation() == null && attributes.created != null) {
-            dates.addCreationItem(attributes.created);
+        if (dates.getCreation() == null && attributes.created() != null) {
+            dates.addCreationItem(attributes.created());
             any = true;
         }
-        if (dates.getDeposit() == null && attributes.registered != null) {
-            dates.addDepositItem(attributes.registered);
+        if (dates.getDeposit() == null && attributes.registered() != null) {
+            dates.addDepositItem(attributes.registered());
             any = true;
         }
-        if (dates.getModified() == null && attributes.updated != null) {
-            dates.addModifiedItem(attributes.updated);
+        if (dates.getModified() == null && attributes.updated() != null) {
+            dates.addModifiedItem(attributes.updated());
             any = true;
         }
-        if (dates.getPublication() == null && attributes.published != null) {
-            dates.addPublicationItem(attributes.published);
+        if (dates.getPublication() == null && attributes.published() != null) {
+            dates.addPublicationItem(attributes.published());
             any = true;
         }
         return any;
@@ -149,22 +149,22 @@ final class DataCiteManifestationMapper {
      */
     private static Set<String> otherRecordDays(DataCiteAttributes attributes, DataCiteDate excluding) {
         Set<String> days = new HashSet<>();
-        for (DataCiteDate date : attributes.dates) {
-            if (date != excluding && date.date != null) {
-                days.add(normalizeDay(date.date));
+        for (DataCiteDate date : attributes.dates()) {
+            if (date != excluding && date.date() != null) {
+                days.add(normalizeDay(date.date()));
             }
         }
-        if (attributes.created != null) {
-            days.add(normalizeDay(attributes.created));
+        if (attributes.created() != null) {
+            days.add(normalizeDay(attributes.created()));
         }
-        if (attributes.registered != null) {
-            days.add(normalizeDay(attributes.registered));
+        if (attributes.registered() != null) {
+            days.add(normalizeDay(attributes.registered()));
         }
-        if (attributes.updated != null) {
-            days.add(normalizeDay(attributes.updated));
+        if (attributes.updated() != null) {
+            days.add(normalizeDay(attributes.updated()));
         }
-        if (attributes.published != null) {
-            days.add(normalizeDay(attributes.published));
+        if (attributes.published() != null) {
+            days.add(normalizeDay(attributes.published()));
         }
         return days;
     }
@@ -190,8 +190,8 @@ final class DataCiteManifestationMapper {
     }
 
     private static List<String> licenceUrls(DataCiteAttributes attributes) {
-        return attributes.rightsList == null
+        return attributes.rightsList() == null
                 ? null
-                : attributes.rightsList.stream().map(rights -> rights.rightsUri).toList();
+                : attributes.rightsList().stream().map(rights -> rights.rightsUri()).toList();
     }
 }

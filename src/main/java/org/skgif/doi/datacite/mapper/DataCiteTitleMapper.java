@@ -52,39 +52,39 @@ final class DataCiteTitleMapper {
     }
 
     private static List<String> titleValues(DataCiteAttributes attributes) {
-        if (attributes.titles == null || attributes.titles.isEmpty()) {
+        if (attributes.titles() == null || attributes.titles().isEmpty()) {
             return List.of();
         }
-        return attributes.titles.stream().map(t -> t.title).filter(Objects::nonNull).toList();
+        return attributes.titles().stream().map(t -> t.title()).filter(Objects::nonNull).toList();
     }
 
     private static List<String> abstractValues(DataCiteAttributes attributes) {
-        if (attributes.descriptions == null) {
+        if (attributes.descriptions() == null) {
             return List.of();
         }
-        return attributes.descriptions.stream()
-                .filter(d -> "Abstract".equals(d.descriptionType))
-                .map(d -> d.description)
+        return attributes.descriptions().stream()
+                .filter(d -> "Abstract".equals(d.descriptionType()))
+                .map(d -> d.description())
                 .filter(Objects::nonNull)
                 .toList();
     }
 
     static List<ProductAllOfTopics> topics(DataCiteAttributes attributes) {
-        if (attributes.subjects == null || attributes.subjects.isEmpty()) {
+        if (attributes.subjects() == null || attributes.subjects().isEmpty()) {
             return null;
         }
         List<ProductAllOfTopics> topics = new ArrayList<>();
-        for (DataCiteSubject subject : attributes.subjects) {
-            if (subject.subject == null) {
+        for (DataCiteSubject subject : attributes.subjects()) {
+            if (subject.subject() == null) {
                 continue;
             }
-            String lang = subject.lang != null ? subject.lang : "none";
+            String lang = subject.lang() != null ? subject.lang() : "none";
             // DataCite subjects have no external identifier system behind them, so this is
             // always an otf id - there's nothing more stable to hang it off.
             ProductAllOfTerm term = new Topic()
-                    .localIdentifier(MapperTextUtils.otf(attributes.doi, subject.subject))
+                    .localIdentifier(MapperTextUtils.otf(attributes.doi(), subject.subject()))
                     .entityType(Topic.EntityTypeEnum.TOPIC)
-                    .labels(Map.of(lang, subject.subject));
+                    .labels(Map.of(lang, subject.subject()));
             topics.add(new ProductAllOfTopics().term(term));
         }
         return topics.isEmpty() ? null : topics;

@@ -17,7 +17,7 @@ final class DataCiteBiblioMapper {
     }
 
     static ProductManifestationBiblio biblio(DataCiteAttributes attributes) {
-        if (attributes.publisher == null) {
+        if (attributes.publisher() == null) {
             return null;
         }
         return new ProductManifestationBiblio().hostingDataSource(hostingDataSource(attributes));
@@ -32,6 +32,6 @@ final class DataCiteBiblioMapper {
      * @return a DataSourceLite for attributes.publisher, with an otf local_identifier
      */
     private static ProductManifestationBiblioHostingDataSource hostingDataSource(DataCiteAttributes attributes) {
-        return EntityRefs.hostingDataSource(attributes.doi, attributes.publisher);
+        return EntityRefs.hostingDataSource(attributes.doi(), attributes.publisher());
     }
 }

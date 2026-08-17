@@ -14,48 +14,67 @@ import java.util.Map;
  * <p>{@code award} and {@code project} are only present on grant-type records ({@code
  * type: "grant"} - see {@code CrossrefTypeMapping#isGrant}); every other field is a regular
  * work (article, dataset, book, etc).
+ *
+ * @param doi the work's DOI
+ * @param url the work's resolvable URL
+ * @param type the Crossref work type (e.g. {@code "journal-article"}, {@code "grant"})
+ * @param publisher the publisher name
+ * @param title the work's title(s)
+ * @param subtitle the work's subtitle(s)
+ * @param containerTitle the container (e.g. journal, book series) title(s)
+ * @param page the page range
+ * @param volume the volume
+ * @param issue the issue
+ * @param abstractText the abstract
+ * @param subject the subject terms
+ * @param issn the container's ISSN(s)
+ * @param author the work's authors
+ * @param editor the work's editors
+ * @param funder the work's funders
+ * @param license the work's license(s)
+ * @param reference the work's structured citation list
+ * @param relation related-work identifiers, keyed by relation type (e.g.
+ *     {@code "is-supplemented-by"})
+ * @param issued the issue date
+ * @param created the record creation date
+ * @param deposited the last deposit date
+ * @param publishedPrint the print publication date
+ * @param publishedOnline the online publication date
+ * @param accepted the acceptance date
+ * @param updateTo corrections/retractions/etc. applied to this work
+ * @param award the grant number, for grant-type records only
+ * @param project the grant's project(s), for grant-type records only
+ * @param resource the work's primary resource, for grant-type records only
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CrossrefWork {
-
-    @JsonProperty("DOI")
-    public String doi;
-    @JsonProperty("URL")
-    public String url;
-    public String type;
-    public String publisher;
-    public List<String> title;
-    public List<String> subtitle;
-    @JsonProperty("container-title")
-    public List<String> containerTitle;
-    public String page;
-    public String volume;
-    public String issue;
-    @JsonProperty("abstract")
-    public String abstractText;
-    public List<String> subject;
-    @JsonProperty("ISSN")
-    public List<String> issn;
-    public List<CrossrefContributor> author;
-    public List<CrossrefContributor> editor;
-    public List<CrossrefFunder> funder;
-    public List<CrossrefLicense> license;
-    public List<CrossrefReference> reference;
-    public Map<String, List<CrossrefIdEntry>> relation;
-
-    public CrossrefDate issued;
-    public CrossrefDate created;
-    public CrossrefDate deposited;
-    @JsonProperty("published-print")
-    public CrossrefDate publishedPrint;
-    @JsonProperty("published-online")
-    public CrossrefDate publishedOnline;
-    public CrossrefDate accepted;
-    @JsonProperty("update-to")
-    public List<CrossrefUpdateTo> updateTo;
-
-    // Grant-type records only.
-    public String award;
-    public List<CrossrefProject> project;
-    public CrossrefResource resource;
+public record CrossrefWork(
+        @JsonProperty("DOI") String doi,
+        @JsonProperty("URL") String url,
+        String type,
+        String publisher,
+        List<String> title,
+        List<String> subtitle,
+        @JsonProperty("container-title") List<String> containerTitle,
+        String page,
+        String volume,
+        String issue,
+        @JsonProperty("abstract") String abstractText,
+        List<String> subject,
+        @JsonProperty("ISSN") List<String> issn,
+        List<CrossrefContributor> author,
+        List<CrossrefContributor> editor,
+        List<CrossrefFunder> funder,
+        List<CrossrefLicense> license,
+        List<CrossrefReference> reference,
+        Map<String, List<CrossrefIdEntry>> relation,
+        CrossrefDate issued,
+        CrossrefDate created,
+        CrossrefDate deposited,
+        @JsonProperty("published-print") CrossrefDate publishedPrint,
+        @JsonProperty("published-online") CrossrefDate publishedOnline,
+        CrossrefDate accepted,
+        @JsonProperty("update-to") List<CrossrefUpdateTo> updateTo,
+        String award,
+        List<CrossrefProject> project,
+        CrossrefResource resource) {
 }

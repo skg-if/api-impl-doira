@@ -80,12 +80,12 @@ public class CrossrefJournalDoiResolver {
         try {
             CrossrefWorkListResponse response = crossrefClient.listWorks(
                     "type:journal,issn:" + issn, null, null, 1, null, mailto);
-            if (response == null || response.message == null || response.message.items == null
-                    || response.message.items.isEmpty()) {
+            if (response == null || response.message() == null || response.message().items() == null
+                    || response.message().items().isEmpty()) {
                 return null;
             }
-            CrossrefWork journal = response.message.items.get(0);
-            return journal.doi;
+            CrossrefWork journal = response.message().items().get(0);
+            return journal.doi();
         } catch (RuntimeException e) {
             return null;
         }

@@ -33,23 +33,23 @@ final class DataCiteFundingMapper {
     }
 
     List<ProductAllOfFunding> funding(DataCiteAttributes attributes) {
-        if (attributes.fundingReferences == null || attributes.fundingReferences.isEmpty()) {
+        if (attributes.fundingReferences() == null || attributes.fundingReferences().isEmpty()) {
             return null;
         }
         List<ProductAllOfFunding> result = new ArrayList<>();
-        for (DataCiteFundingReference fundingReference : attributes.fundingReferences) {
+        for (DataCiteFundingReference fundingReference : attributes.fundingReferences()) {
             // DataCite funding references carry no stable identifier for the grant itself
             // (unlike the funder, which often has a ROR) - the award number/title is the
             // closest thing to a natural key, so that's what the otf id is built from.
-            String label = fundingReference.awardNumber != null
-                    ? fundingReference.awardNumber
-                    : fundingReference.awardTitle;
+            String label = fundingReference.awardNumber() != null
+                    ? fundingReference.awardNumber()
+                    : fundingReference.awardTitle();
             GrantLite grant = new GrantLite()
-                    .localIdentifier(MapperTextUtils.otf(attributes.doi, label))
+                    .localIdentifier(MapperTextUtils.otf(attributes.doi(), label))
                     .entityType(GrantLite.EntityTypeEnum.GRANT)
-                    .grantNumber(fundingReference.awardNumber)
-                    .titles(fundingReference.awardTitle != null ? Map.of("en", fundingReference.awardTitle) : null)
-                    .fundingAgency(fundingAgency(attributes.doi, fundingReference));
+                    .grantNumber(fundingReference.awardNumber())
+                    .titles(fundingReference.awardTitle() != null ? Map.of("en", fundingReference.awardTitle()) : null)
+                    .fundingAgency(fundingAgency(attributes.doi(), fundingReference));
             result.add(grant);
         }
         return result.isEmpty() ? null : result;
@@ -72,15 +72,15 @@ final class DataCiteFundingMapper {
      * @return the mapped Organisation, or null if fundingReference has no funder name
      */
     private Organisation fundingAgency(String doi, DataCiteFundingReference fundingReference) {
-        if (fundingReference.funderName == null) {
+        if (fundingReference.funderName() == null) {
             return null;
         }
-        boolean hasRor = fundingReference.funderIdentifier != null
-                && SCHEME_ROR_UPPER.equalsIgnoreCase(fundingReference.funderIdentifierType);
-        String bareRor = hasRor ? MapperTextUtils.stripRorUrl(fundingReference.funderIdentifier) : null;
-        String funderDoi = hasRor ? null : extractDoi(fundingReference.funderIdentifier);
+        boolean hasRor = fundingReference.funderIdentifier() != null
+                && SCHEME_ROR_UPPER.equalsIgnoreCase(fundingReference.funderIdentifierType());
+        String bareRor = hasRor ? MapperTextUtils.stripRorUrl(fundingReference.funderIdentifier()) : null;
+        String funderDoi = hasRor ? null : extractDoi(fundingReference.funderIdentifier());
         String doiLocalIdentifier = funderDoi != null ? localIdentifiers.toFullLocalIdentifier(funderDoi) : null;
-        return EntityRefs.organisationRef(doi, fundingReference.funderName, bareRor, doiLocalIdentifier, funderDoi);
+        return EntityRefs.organisationRef(doi, fundingReference.funderName(), bareRor, doiLocalIdentifier, funderDoi);
     }
 
     /**

@@ -7,8 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.skgif.doi.datacite.dto.DataCiteAttributes;
 import org.skgif.doi.datacite.dto.DataCiteDate;
 import org.skgif.doi.datacite.dto.DataCiteDoiResponse;
+import org.skgif.doi.datacite.dto.DataCiteFundingReference;
 import org.skgif.doi.generated.model.DataSourceLite;
 import org.skgif.doi.generated.model.Grant;
 import org.skgif.doi.generated.model.GrantContribution;
@@ -41,11 +43,22 @@ class DataCiteToSkgIfMapperTest {
         return mapper.toGrant(readFixture(resourceName));
     }
 
-    private org.skgif.doi.datacite.dto.DataCiteAttributes readFixture(String resourceName) throws IOException {
+    private DataCiteAttributes readFixture(String resourceName) throws IOException {
         try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
             DataCiteDoiResponse response = objectMapper.readValue(in, DataCiteDoiResponse.class);
-            return response.data.attributes;
+            return response.data().attributes();
         }
+    }
+
+    private static DataCiteAttributes withLifecycleDates(DataCiteAttributes attributes, String created,
+            String registered, String updated, String published) {
+        return new DataCiteAttributes(
+                attributes.doi(), attributes.titles(), attributes.creators(), attributes.contributors(),
+                attributes.publisher(), attributes.publicationYear(), attributes.subjects(), attributes.dates(),
+                created, registered, updated, published,
+                attributes.language(), attributes.types(), attributes.rightsList(), attributes.descriptions(),
+                attributes.relatedIdentifiers(), attributes.fundingReferences(), attributes.version(),
+                attributes.url());
     }
 
     @Test
@@ -209,8 +222,10 @@ class DataCiteToSkgIfMapperTest {
         // A funderIdentifier that isn't ROR and isn't DOI-shaped (e.g. a bare GRID id) must still
         // fall back to an otf id rather than being mis-parsed.
         var attributes = readFixture("datacite-thesis-crossref-funder-id-4342.json");
-        attributes.fundingReferences.get(0).funderIdentifierType = "GRID";
-        attributes.fundingReferences.get(0).funderIdentifier = "grid.451003.6";
+        DataCiteFundingReference original = attributes.fundingReferences().get(0);
+        attributes.fundingReferences().set(0, new DataCiteFundingReference(
+                original.funderName(), "grid.451003.6", "GRID",
+                original.awardNumber(), original.awardTitle(), original.awardUri()));
 
         Product product = mapper.toProduct(attributes);
 
@@ -231,19 +246,16 @@ class DataCiteToSkgIfMapperTest {
         Product product = mapper.toProduct(attributes);
 
         var dates = product.getManifestations().get(0).getDates();
-        assertEquals(List.of(attributes.created), dates.getCreation());
-        assertEquals(List.of(attributes.registered), dates.getDeposit());
-        assertEquals(List.of(attributes.updated), dates.getModified());
-        assertEquals(List.of(attributes.published), dates.getPublication());
+        assertEquals(List.of(attributes.created()), dates.getCreation());
+        assertEquals(List.of(attributes.registered()), dates.getDeposit());
+        assertEquals(List.of(attributes.updated()), dates.getModified());
+        assertEquals(List.of(attributes.published()), dates.getPublication());
     }
 
     @Test
     void doesNotFabricateManifestationDatesWhenNoDateSourceExistsAtAll() throws IOException {
-        var attributes = readFixture("datacite-thesis-crossref-funder-id-4342.json");
-        attributes.created = null;
-        attributes.registered = null;
-        attributes.updated = null;
-        attributes.published = null;
+        var attributes = withLifecycleDates(
+                readFixture("datacite-thesis-crossref-funder-id-4342.json"), null, null, null, null);
 
         Product product = mapper.toProduct(attributes);
 
@@ -253,15 +265,13 @@ class DataCiteToSkgIfMapperTest {
     @Test
     void explicitDatesEntryWinsOverTopLevelAttributeFallback() throws IOException {
         var attributes = readFixture("datacite-esrf-dc-2493599001.json");
-        var created = new DataCiteDate();
-        created.dateType = "Created";
-        created.date = "2020-01-01";
-        attributes.dates.add(created);
-        assertNotEquals(created.date, attributes.created);
+        var created = new DataCiteDate("2020-01-01", "Created");
+        attributes.dates().add(created);
+        assertNotEquals(created.date(), attributes.created());
 
         Product product = mapper.toProduct(attributes);
 
-        assertEquals(List.of(created.date), product.getManifestations().get(0).getDates().getCreation());
+        assertEquals(List.of(created.date()), product.getManifestations().get(0).getDates().getCreation());
     }
 
     @Test
@@ -270,15 +280,10 @@ class DataCiteToSkgIfMapperTest {
         // covers, not an event in the resource's own lifecycle) with no SKG-IF equivalent - it
         // must be silently dropped, same as "Other", and must not by itself trigger a non-null
         // dates object.
-        var attributes = readFixture("datacite-thesis-crossref-funder-id-4342.json");
-        attributes.created = null;
-        attributes.registered = null;
-        attributes.updated = null;
-        attributes.published = null;
-        var coverage = new DataCiteDate();
-        coverage.dateType = "Coverage";
-        coverage.date = "1990/2000";
-        attributes.dates.add(coverage);
+        var attributes = withLifecycleDates(
+                readFixture("datacite-thesis-crossref-funder-id-4342.json"), null, null, null, null);
+        var coverage = new DataCiteDate("1990/2000", "Coverage");
+        attributes.dates().add(coverage);
 
         Product product = mapper.toProduct(attributes);
 

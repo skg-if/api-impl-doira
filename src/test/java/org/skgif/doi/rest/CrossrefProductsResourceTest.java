@@ -323,12 +323,10 @@ class CrossrefProductsResourceTest {
      */
     @Test
     void getProducts_excludesGrantTypeRecordsFromResults() throws IOException {
-        CrossrefWorkListResponse listResponse = new CrossrefWorkListResponse();
-        listResponse.message = new CrossrefWorkListResponse.Message();
-        listResponse.message.totalResults = 2;
-        listResponse.message.items = List.of(
-                loadFixture("crossref-journal-article.json").message,
-                loadFixture("crossref-grant.json").message);
+        CrossrefWorkListResponse listResponse = new CrossrefWorkListResponse(null,
+                new CrossrefWorkListResponse.Message(2, List.of(
+                        loadFixture("crossref-journal-article.json").message(),
+                        loadFixture("crossref-grant.json").message())));
         when(crossrefClient.listWorks(any(), any(), any(), anyInt(), anyInt(), any())).thenReturn(listResponse);
 
         given()
@@ -341,10 +339,9 @@ class CrossrefProductsResourceTest {
 
     @Test
     void getProducts_returnsSearchEnvelope() throws IOException {
-        CrossrefWorkListResponse listResponse = new CrossrefWorkListResponse();
-        listResponse.message = new CrossrefWorkListResponse.Message();
-        listResponse.message.totalResults = 1;
-        listResponse.message.items = List.of(loadFixture("crossref-journal-article.json").message);
+        CrossrefWorkListResponse listResponse = new CrossrefWorkListResponse(null,
+                new CrossrefWorkListResponse.Message(1,
+                        List.of(loadFixture("crossref-journal-article.json").message())));
         when(crossrefClient.listWorks(any(), any(), any(), anyInt(), anyInt(), any())).thenReturn(listResponse);
 
         given()

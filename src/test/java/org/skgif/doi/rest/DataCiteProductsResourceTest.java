@@ -111,13 +111,8 @@ class DataCiteProductsResourceTest {
 
     @Test
     void getProducts_excludesAwardsFromDataCiteQuery() {
-        DataCiteDoiListResponse listResponse = new DataCiteDoiListResponse();
-        listResponse.data = java.util.List.of();
-        DataCiteDoiListResponse.Meta meta = new DataCiteDoiListResponse.Meta();
-        meta.total = 0;
-        meta.totalPages = 0;
-        meta.page = 1;
-        listResponse.meta = meta;
+        DataCiteDoiListResponse listResponse = new DataCiteDoiListResponse(
+                java.util.List.of(), new DataCiteDoiListResponse.Meta(0, 0, 1), null);
         when(dataCiteClient.listDois(any(), any(), anyInt(), anyInt())).thenReturn(listResponse);
 
         given().when().get(BASE + "/datacite/products").then().statusCode(200);
@@ -140,13 +135,8 @@ class DataCiteProductsResourceTest {
 
     @Test
     void getProducts_returnsSearchEnvelope() throws IOException {
-        DataCiteDoiListResponse listResponse = new DataCiteDoiListResponse();
-        listResponse.data = java.util.List.of(loadFixture().data);
-        DataCiteDoiListResponse.Meta meta = new DataCiteDoiListResponse.Meta();
-        meta.total = 1;
-        meta.totalPages = 1;
-        meta.page = 1;
-        listResponse.meta = meta;
+        DataCiteDoiListResponse listResponse = new DataCiteDoiListResponse(
+                java.util.List.of(loadFixture().data()), new DataCiteDoiListResponse.Meta(1, 1, 1), null);
 
         when(dataCiteClient.listDois(any(), any(), anyInt(), anyInt())).thenReturn(listResponse);
 

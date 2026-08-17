@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.skgif.doi.crossref.CrossrefClient;
 import org.skgif.doi.crossref.CrossrefJournalDoiResolver;
+import org.skgif.doi.crossref.dto.CrossrefIdEntry;
 import org.skgif.doi.crossref.dto.CrossrefWork;
 import org.skgif.doi.crossref.dto.CrossrefWorkListResponse;
 import org.skgif.doi.crossref.dto.CrossrefWorkResponse;
@@ -69,7 +70,7 @@ class CrossrefToSkgIfMapperTest {
     private CrossrefWork readFixture(String resourceName) throws IOException {
         try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
             CrossrefWorkResponse response = objectMapper.readValue(in, CrossrefWorkResponse.class);
-            return response.message;
+            return response.message();
         }
     }
 
@@ -230,7 +231,9 @@ class CrossrefToSkgIfMapperTest {
         // No real fixture is expected to carry a non-DOI is-supplemented-by entry - mutated in
         // Java from the real fixture's own DOI-shaped entry to prove the otf fallback still works.
         CrossrefWork work = readFixture("crossref-journal-article-with-is-supplemented-by.json");
-        work.relation.get("is-supplemented-by").get(0).idType = "handle";
+        List<CrossrefIdEntry> supplements = work.relation().get("is-supplemented-by");
+        CrossrefIdEntry original = supplements.get(0);
+        supplements.set(0, new CrossrefIdEntry(original.id(), "handle", original.assertedBy()));
 
         Product product = mapper.toProduct(work);
 

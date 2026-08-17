@@ -17,14 +17,14 @@ class DataCiteAffiliationDeserializer extends JsonDeserializer<DataCiteAffiliati
     @Override
     public DataCiteAffiliation deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
         JsonNode node = p.readValueAsTree();
-        DataCiteAffiliation affiliation = new DataCiteAffiliation();
         if (node.isTextual()) {
-            affiliation.name = node.asText();
+            return new DataCiteAffiliation(node.asText(), null, null);
         } else if (node.isObject()) {
-            affiliation.name = node.path("name").asText(null);
-            affiliation.affiliationIdentifier = node.path("affiliationIdentifier").asText(null);
-            affiliation.affiliationIdentifierScheme = node.path("affiliationIdentifierScheme").asText(null);
+            return new DataCiteAffiliation(
+                    node.path("name").asText(null),
+                    node.path("affiliationIdentifier").asText(null),
+                    node.path("affiliationIdentifierScheme").asText(null));
         }
-        return affiliation;
+        return null;
     }
 }

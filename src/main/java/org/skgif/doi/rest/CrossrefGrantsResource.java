@@ -93,14 +93,14 @@ public class CrossrefGrantsResource {
         CrossrefWork work;
         try {
             CrossrefWorkResponse response = crossrefClient.getWork(doi);
-            work = response != null ? response.message : null;
+            work = response != null ? response.message() : null;
         } catch (WebApplicationException e) {
             if (e.getResponse().getStatus() == Response.Status.NOT_FOUND.getStatusCode()) {
                 return notFound(localIdentifierParam);
             }
             throw e;
         }
-        if (work == null || work.doi == null) {
+        if (work == null || work.doi() == null) {
             return notFound(localIdentifierParam);
         }
         if (!CrossrefTypeMapping.isGrant(work)) {
@@ -156,23 +156,23 @@ public class CrossrefGrantsResource {
 
         // /crossref/grants only ever serves type:grant records - Crossref's own filter=, unlike
         // DataCite's Lucene query, has no negation operator, but a positive AND is trivial.
-        String crossrefFilter = withPrefix(withGrantType(parsed.filter));
+        String crossrefFilter = withPrefix(withGrantType(parsed.filter()));
 
-        CrossrefWorkListResponse response = crossrefClient.listWorks(crossrefFilter, parsed.queryTitle,
-                parsed.queryBibliographic, size, offset, mailto);
+        CrossrefWorkListResponse response = crossrefClient.listWorks(crossrefFilter, parsed.queryTitle(),
+                parsed.queryBibliographic(), size, offset, mailto);
 
         List<Grant> grants = new ArrayList<>();
         List<ApiItem> apiItems = new ArrayList<>();
         long totalResults = 0;
-        if (response.message != null) {
-            totalResults = response.message.totalResults;
-            for (CrossrefWork work : Optional.ofNullable(response.message.items).orElse(List.of())) {
-                if (work.doi == null || !CrossrefTypeMapping.isGrant(work)) {
+        if (response.message() != null) {
+            totalResults = response.message().totalResults();
+            for (CrossrefWork work : Optional.ofNullable(response.message().items()).orElse(List.of())) {
+                if (work.doi() == null || !CrossrefTypeMapping.isGrant(work)) {
                     continue;
                 }
                 grants.add(mapper.toGrant(work));
-                apiItems.add(JsonLdResponses.apiItem(localIdentifiers.toFullLocalIdentifier(work.doi),
-                        JsonLdResponses.selfLink(uriInfo, RESOURCE_PATH, work.doi)));
+                apiItems.add(JsonLdResponses.apiItem(localIdentifiers.toFullLocalIdentifier(work.doi()),
+                        JsonLdResponses.selfLink(uriInfo, RESOURCE_PATH, work.doi())));
             }
         }
 
