@@ -191,7 +191,7 @@ final class DataCiteManifestationMapper {
 
     private static List<String> licenceUrls(DataCiteAttributes attributes) {
         return attributes.rightsList() == null
-                ? null
+                ? List.of()
                 : attributes.rightsList().stream().map(rights -> rights.rightsUri()).toList();
     }
 }

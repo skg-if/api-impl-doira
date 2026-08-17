@@ -41,7 +41,7 @@ final class CrossrefGrantContributionMapper {
                 }
             }
         }
-        return result.isEmpty() ? null : result;
+        return result;
     }
 
     private static GrantAllOfContributions investigatorContribution(String doi, CrossrefInvestigator investigator,
@@ -61,7 +61,7 @@ final class CrossrefGrantContributionMapper {
 
     static List<GrantAllOfBeneficiaries> grantAffiliations(String doi, List<CrossrefAffiliation> affiliations) {
         if (affiliations == null || affiliations.isEmpty()) {
-            return null;
+            return List.of();
         }
         List<GrantAllOfBeneficiaries> result = new ArrayList<>();
         for (CrossrefAffiliation affiliation : affiliations) {
@@ -71,7 +71,7 @@ final class CrossrefGrantContributionMapper {
             String ror = CrossrefContributionMapper.firstRor(affiliation.id());
             result.add(EntityRefs.organisationRef(doi, affiliation.name(), ror));
         }
-        return result.isEmpty() ? null : result;
+        return result;
     }
 
     /**
@@ -82,7 +82,8 @@ final class CrossrefGrantContributionMapper {
      *
      * @param doi the owning grant DOI, used to build a deterministic otf id
      * @param projects the grant DOI's project entries
-     * @return the deduped beneficiary organisations, or null if none have a declared affiliation
+     * @return the deduped beneficiary organisations, or an empty list if none have a declared
+     *     affiliation
      */
     static List<GrantAllOfBeneficiaries> grantBeneficiaries(String doi, List<CrossrefProject> projects) {
         Map<String, CrossrefAffiliation> byName = new LinkedHashMap<>();

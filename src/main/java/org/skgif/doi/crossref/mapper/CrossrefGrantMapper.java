@@ -33,7 +33,7 @@ final class CrossrefGrantMapper {
      * descriptions from multiple {@code project[]} entries are concatenated into one string.
      *
      * @param projects the grant DOI's project entries
-     * @return the concatenated titles keyed by "en", or null if none carry a title
+     * @return the concatenated titles keyed by "en", or an empty map if none carry a title
      */
     Map<String, String> grantTitles(List<CrossrefProject> projects) {
         List<String> values = projects.stream()
@@ -42,7 +42,7 @@ final class CrossrefGrantMapper {
                 .map(t -> t.title())
                 .filter(Objects::nonNull)
                 .toList();
-        return values.isEmpty() ? null : Map.of("en", String.join(" ", values));
+        return values.isEmpty() ? Map.of() : Map.of("en", String.join(" ", values));
     }
 
     Map<String, String> grantAbstracts(List<CrossrefProject> projects) {
@@ -52,7 +52,7 @@ final class CrossrefGrantMapper {
                 .map(d -> d.description())
                 .filter(Objects::nonNull)
                 .toList();
-        return values.isEmpty() ? null : Map.of("en", String.join("\n\n", values));
+        return values.isEmpty() ? Map.of() : Map.of("en", String.join("\n\n", values));
     }
 
     Organisation grantFundingAgency(String doi, CrossrefFunding primaryFunding, List<CrossrefFunder> topLevelFunders) {

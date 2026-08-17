@@ -58,7 +58,7 @@ final class DataCiteContributionMapper {
                     .rank(rank)
                     .role(ProductContribution.RoleEnum.PUBLISHER));
         }
-        return contributions.isEmpty() ? null : contributions;
+        return contributions;
     }
 
     private static ProductContribution.RoleEnum contributorRole(String dataCiteContributorType) {
@@ -102,7 +102,7 @@ final class DataCiteContributionMapper {
 
     static List<PersonLiteAllOfIdentifiers> orcidIdentifiers(List<DataCiteNameIdentifier> nameIdentifiers) {
         if (nameIdentifiers == null || nameIdentifiers.isEmpty()) {
-            return null;
+            return List.of();
         }
         List<PersonLiteAllOfIdentifiers> identifiers = new ArrayList<>();
         for (DataCiteNameIdentifier ni : nameIdentifiers) {
@@ -117,12 +117,12 @@ final class DataCiteContributionMapper {
                     .scheme("orcid")
                     .value(orcid));
         }
-        return identifiers.isEmpty() ? null : identifiers;
+        return identifiers;
     }
 
     static List<ProductAllOfRelevantOrganisations> affiliations(String doi, List<DataCiteAffiliation> affiliations) {
         if (affiliations == null || affiliations.isEmpty()) {
-            return null;
+            return List.of();
         }
         List<ProductAllOfRelevantOrganisations> result = new ArrayList<>();
         for (DataCiteAffiliation affiliation : affiliations) {
@@ -134,7 +134,7 @@ final class DataCiteContributionMapper {
             String bareRor = hasRor ? MapperTextUtils.stripRorUrl(affiliation.affiliationIdentifier()) : null;
             result.add(EntityRefs.organisationRef(doi, affiliation.name(), bareRor));
         }
-        return result.isEmpty() ? null : result;
+        return result;
     }
 
     static String firstRor(List<DataCiteNameIdentifier> nameIdentifiers) {

@@ -24,12 +24,12 @@ final class DataCiteTitleMapper {
 
     static Map<String, List<String>> titles(DataCiteAttributes attributes) {
         List<String> values = titleValues(attributes);
-        return values.isEmpty() ? null : Map.of("en", values);
+        return values.isEmpty() ? Map.of() : Map.of("en", values);
     }
 
     static Map<String, List<String>> abstracts(DataCiteAttributes attributes) {
         List<String> values = abstractValues(attributes);
-        return values.isEmpty() ? null : Map.of("en", values);
+        return values.isEmpty() ? Map.of() : Map.of("en", values);
     }
 
     /**
@@ -39,16 +39,16 @@ final class DataCiteTitleMapper {
      * descriptions[type=Abstract]} entries are concatenated into one string.
      *
      * @param attributes the DataCite record to read titles from
-     * @return the concatenated titles keyed by "en", or null if none carry a title
+     * @return the concatenated titles keyed by "en", or an empty map if none carry a title
      */
     static Map<String, String> grantTitles(DataCiteAttributes attributes) {
         List<String> values = titleValues(attributes);
-        return values.isEmpty() ? null : Map.of("en", String.join(" ", values));
+        return values.isEmpty() ? Map.of() : Map.of("en", String.join(" ", values));
     }
 
     static Map<String, String> grantAbstracts(DataCiteAttributes attributes) {
         List<String> values = abstractValues(attributes);
-        return values.isEmpty() ? null : Map.of("en", String.join("\n\n", values));
+        return values.isEmpty() ? Map.of() : Map.of("en", String.join("\n\n", values));
     }
 
     private static List<String> titleValues(DataCiteAttributes attributes) {
@@ -71,7 +71,7 @@ final class DataCiteTitleMapper {
 
     static List<ProductAllOfTopics> topics(DataCiteAttributes attributes) {
         if (attributes.subjects() == null || attributes.subjects().isEmpty()) {
-            return null;
+            return List.of();
         }
         List<ProductAllOfTopics> topics = new ArrayList<>();
         for (DataCiteSubject subject : attributes.subjects()) {
@@ -87,6 +87,6 @@ final class DataCiteTitleMapper {
                     .labels(Map.of(lang, subject.subject()));
             topics.add(new ProductAllOfTopics().term(term));
         }
-        return topics.isEmpty() ? null : topics;
+        return topics;
     }
 }

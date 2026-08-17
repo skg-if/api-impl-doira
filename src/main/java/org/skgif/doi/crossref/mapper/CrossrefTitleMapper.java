@@ -22,10 +22,10 @@ final class CrossrefTitleMapper {
 
     static Map<String, List<String>> titles(CrossrefWork work) {
         if (work.title() == null || work.title().isEmpty()) {
-            return null;
+            return Map.of();
         }
         List<String> values = work.title().stream().filter(Objects::nonNull).toList();
-        return values.isEmpty() ? null : Map.of("en", values);
+        return values.isEmpty() ? Map.of() : Map.of("en", values);
     }
 
     /**
@@ -35,19 +35,19 @@ final class CrossrefTitleMapper {
      * plain text.
      *
      * @param work the Crossref work record to read the abstract from
-     * @return the abstract, plain-text and tag-stripped, keyed by "en"; null if absent/empty
+     * @return the abstract, plain-text and tag-stripped, keyed by "en"; empty map if absent/empty
      */
     static Map<String, List<String>> abstracts(CrossrefWork work) {
         if (work.abstractText() == null) {
-            return null;
+            return Map.of();
         }
         String stripped = work.abstractText().replaceAll("<[^>]+>", "").trim();
-        return stripped.isEmpty() ? null : Map.of("en", List.of(stripped));
+        return stripped.isEmpty() ? Map.of() : Map.of("en", List.of(stripped));
     }
 
     static List<ProductAllOfTopics> topics(CrossrefWork work) {
         if (work.subject() == null || work.subject().isEmpty()) {
-            return null;
+            return List.of();
         }
         List<ProductAllOfTopics> topics = new ArrayList<>();
         for (String subject : work.subject()) {
@@ -62,6 +62,6 @@ final class CrossrefTitleMapper {
                     .labels(Map.of("en", subject));
             topics.add(new ProductAllOfTopics().term(term));
         }
-        return topics.isEmpty() ? null : topics;
+        return topics;
     }
 }

@@ -31,7 +31,7 @@ final class CrossrefFundingMapper {
 
     List<ProductAllOfFunding> funding(CrossrefWork work) {
         if (work.funder() == null || work.funder().isEmpty()) {
-            return null;
+            return List.of();
         }
         List<ProductAllOfFunding> result = new ArrayList<>();
         for (CrossrefFunder funder : work.funder()) {
@@ -47,7 +47,7 @@ final class CrossrefFundingMapper {
                 }
             }
         }
-        return result.isEmpty() ? null : result;
+        return result;
     }
 
     private ProductAllOfFunding fundingEntry(String doi, CrossrefFunder funder, String awardNumber) {

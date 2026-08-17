@@ -36,15 +36,6 @@
     -->
     <exclude name="NullAssignment"/>
     <!--
-      ReturnEmptyCollectionRatherThanNull disabled: this codebase runs with
-      quarkus.jackson.serialization-inclusion=non-null (see application.properties), so a mapper
-      method returning null vs. an empty List/Map is not a style choice - null omits the field
-      from the JSON-LD output entirely, while an empty collection would serialize as [] or {}.
-      "Fixing" this would silently change the API's output contract (e.g.
-      CrossrefToSkgIfMapper#titles/#abstracts/#topics, DataCiteToSkgIfMapper#topics/#funding).
-    -->
-    <exclude name="ReturnEmptyCollectionRatherThanNull"/>
-    <!--
       CompareObjectsWithEquals disabled: both violations found (DataCiteToSkgIfMapper#otherRecordDays,
       #grantContributions) are intentional reference-identity checks - excluding one specific
       object instance while iterating the same list it came from (e.g. `date != excluding`) -

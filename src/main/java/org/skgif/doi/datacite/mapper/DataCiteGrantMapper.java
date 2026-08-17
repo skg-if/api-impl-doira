@@ -76,7 +76,7 @@ final class DataCiteGrantMapper {
                             contributor.nameIdentifiers(), organizational))
                     .declaredAffiliations(grantAffiliations(doi, contributor.affiliation())));
         }
-        return result.isEmpty() ? null : result;
+        return result;
     }
 
     private static GrantContributionBy grantContributionBy(String doi, String name, String givenName,
@@ -101,7 +101,7 @@ final class DataCiteGrantMapper {
 
     static List<GrantAllOfBeneficiaries> grantAffiliations(String doi, List<DataCiteAffiliation> affiliations) {
         if (affiliations == null || affiliations.isEmpty()) {
-            return null;
+            return List.of();
         }
         List<GrantAllOfBeneficiaries> result = new ArrayList<>();
         for (DataCiteAffiliation affiliation : affiliations) {
@@ -113,7 +113,7 @@ final class DataCiteGrantMapper {
             String bareRor = hasRor ? MapperTextUtils.stripRorUrl(affiliation.affiliationIdentifier()) : null;
             result.add(EntityRefs.organisationRef(doi, affiliation.name(), bareRor));
         }
-        return result.isEmpty() ? null : result;
+        return result;
     }
 
     /**
@@ -124,7 +124,8 @@ final class DataCiteGrantMapper {
      *
      * @param doi the owning record's DOI, used to build a deterministic otf id
      * @param contributors the record's contributors
-     * @return the organisational contributors mapped as beneficiaries, or null if there are none
+     * @return the organisational contributors mapped as beneficiaries, or an empty list if there
+     *     are none
      */
     static List<GrantAllOfBeneficiaries> grantBeneficiaries(String doi, List<DataCiteContributor> contributors) {
         List<DataCiteAffiliation> organizationalContributors = new ArrayList<>();

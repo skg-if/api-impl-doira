@@ -19,7 +19,7 @@ final class MedraContributionMapper {
 
     static List<ProductContribution> contributions(MedraWork work) {
         if (work.contributors() == null || work.contributors().isEmpty()) {
-            return null;
+            return List.of();
         }
         List<ProductContribution> contributions = new ArrayList<>();
         int rank = 1;
@@ -33,7 +33,7 @@ final class MedraContributionMapper {
                     .rank(rank++)
                     .role("A01".equals(contributor.role()) ? ProductContribution.RoleEnum.AUTHOR : null));
         }
-        return contributions.isEmpty() ? null : contributions;
+        return contributions;
     }
 
     /**
@@ -65,8 +65,8 @@ final class MedraContributionMapper {
         } else if (contributor.personName() != null) {
             name = contributor.personName();
             String[] split = splitInverted(contributor.personNameInverted());
-            familyName = split != null ? split[0] : null;
-            givenName = split != null ? split[1] : null;
+            familyName = split.length == 2 ? split[0] : null;
+            givenName = split.length == 2 ? split[1] : null;
         } else if (contributor.personNameInverted() != null) {
             String[] split = splitInverted(contributor.personNameInverted());
             familyName = split[0];
@@ -92,11 +92,11 @@ final class MedraContributionMapper {
      * Splits an ONIX {@code PersonNameInverted} string (e.g. "Fragneto, Giovanna") into {family, given}.
      *
      * @param inverted an inverted-order name string ("Family, Given"), or null
-     * @return an array of {family, given}, or null if inverted is null
+     * @return an array of {family, given}, or an empty array if inverted is null
      */
     private static String[] splitInverted(String inverted) {
         if (inverted == null) {
-            return null;
+            return new String[0];
         }
         String[] parts = inverted.split(",\\s*", 2);
         return parts.length == 2 ? new String[] {parts[0].trim(), parts[1].trim()}

@@ -34,7 +34,7 @@ final class DataCiteFundingMapper {
 
     List<ProductAllOfFunding> funding(DataCiteAttributes attributes) {
         if (attributes.fundingReferences() == null || attributes.fundingReferences().isEmpty()) {
-            return null;
+            return List.of();
         }
         List<ProductAllOfFunding> result = new ArrayList<>();
         for (DataCiteFundingReference fundingReference : attributes.fundingReferences()) {
@@ -52,7 +52,7 @@ final class DataCiteFundingMapper {
                     .fundingAgency(fundingAgency(attributes.doi(), fundingReference));
             result.add(grant);
         }
-        return result.isEmpty() ? null : result;
+        return result;
     }
 
     /**

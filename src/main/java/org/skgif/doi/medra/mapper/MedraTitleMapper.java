@@ -23,21 +23,21 @@ final class MedraTitleMapper {
      * distinguish "full" vs. "abbreviated" title once inside {@code Product.titles} anyway.
      *
      * @param work the mEDRA record to read ContentItem-level titles from
-     * @return the titles grouped by language, or null if work has none
+     * @return the titles grouped by language, or an empty map if work has none
      */
     static Map<String, List<String>> titles(MedraWork work) {
         if (work.titles() == null || work.titles().isEmpty()) {
-            return null;
+            return Map.of();
         }
         Map<String, List<String>> titles = new LinkedHashMap<>();
         for (MedraTitle title : work.titles()) {
             String language = title.language() != null ? title.language() : "en";
             titles.computeIfAbsent(language, key -> new ArrayList<>()).add(title.text());
         }
-        return titles.isEmpty() ? null : titles;
+        return titles;
     }
 
     static Map<String, List<String>> abstracts(MedraWork work) {
-        return work.abstractText() == null ? null : Map.of("en", List.of(work.abstractText()));
+        return work.abstractText() == null ? Map.of() : Map.of("en", List.of(work.abstractText()));
     }
 }

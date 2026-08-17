@@ -52,7 +52,7 @@ final class CrossrefContributionMapper {
                     .rank(rank)
                     .role(ProductContribution.RoleEnum.PUBLISHER));
         }
-        return contributions.isEmpty() ? null : contributions;
+        return contributions;
     }
 
     static ProductContributionBy personRef(String doi, String given, String family, String rawOrcid) {
@@ -113,11 +113,11 @@ final class CrossrefContributionMapper {
      *
      * @param doi the owning record's DOI, used to build a deterministic otf id
      * @param affiliations the author/editor's declared affiliations
-     * @return the mapped affiliations, or null if affiliations is null/empty
+     * @return the mapped affiliations, or an empty list if affiliations is null/empty
      */
     static List<ProductAllOfRelevantOrganisations> affiliations(String doi, List<CrossrefAffiliation> affiliations) {
         if (affiliations == null || affiliations.isEmpty()) {
-            return null;
+            return List.of();
         }
         List<ProductAllOfRelevantOrganisations> result = new ArrayList<>();
         for (CrossrefAffiliation affiliation : affiliations) {
@@ -126,7 +126,7 @@ final class CrossrefContributionMapper {
             }
             result.add(EntityRefs.organisationRef(doi, affiliation.name(), firstRor(affiliation.id())));
         }
-        return result.isEmpty() ? null : result;
+        return result;
     }
 
     static String firstRor(List<CrossrefIdEntry> ids) {
