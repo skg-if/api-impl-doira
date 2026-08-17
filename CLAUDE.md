@@ -3,7 +3,7 @@
 ## No system Maven/JDK 21 on your machine
 
 There is no system-wide JDK/Maven on this machine. For building, testing, or running
-`mvn`/`java` in any form, use the `build-toolchain` skill.
+`mvn`/`java` in any form, use the `skg-if-build-toolchain` skill.
 
 ## "notest"/"skiptest" commit messages skip CI tests/validation
 
@@ -25,7 +25,7 @@ around it - reserve a full read for tasks that genuinely need whole-document con
 auditing every row of a table).
 
 For test failures, read `target/surefire-reports/*.txt` (plain-text summary) instead of the
-matching `TEST-*.xml` report - see the `build-toolchain` skill for the measured size gap
+matching `TEST-*.xml` report - see the `skg-if-build-toolchain` skill for the measured size gap
 (~180x smaller for the same pass/fail information), and for the `-q`/`-B`/`-Dtest=` flags that
 keep `mvn` output itself from being noisy.
 

@@ -1,5 +1,5 @@
 ---
-name: build-toolchain
+name: skg-if-build-toolchain
 description: Set up and use the portable JDK 21 / Maven 3.9 toolchain needed to build or test this project (mvn clean test, regenerating golden JSON-LD fixtures, etc). Use whenever a task requires running mvn or java in this repo.
 ---
 

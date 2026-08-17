@@ -7,7 +7,7 @@ description: Set up and use a portable, self-contained Python 3.12 interpreter (
 
 There is no system-wide Python meant to be relied on for this project, and one should
 not be installed globally (`winget`/`choco`/the Windows Store) — same reasoning as the
-JDK/Maven toolchain in [build-toolchain](../build-toolchain/SKILL.md) and the jq binary
+JDK/Maven toolchain in [skg-if-build-toolchain](../skg-if-build-toolchain/SKILL.md) and the jq binary
 in [jq-json](../jq-json/SKILL.md): keep tooling scoped to this project, not the user's
 machine. Use a **portable, self-contained** interpreter cached in `.tools/python/` at
 the repo root (gitignored) — never system-wide, never persisted to user/machine

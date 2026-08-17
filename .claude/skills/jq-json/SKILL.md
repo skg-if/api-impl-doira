@@ -11,7 +11,7 @@ jq is a filter language for JSON: input JSON in, transformed JSON (or text) out.
 
 There is no jq installed on this machine, and one should not be installed globally
 (`winget`/`choco`) — same reasoning as the JDK/Maven toolchain in
-[build-toolchain](../build-toolchain/SKILL.md): keep tooling scoped to this project,
+[skg-if-build-toolchain](../skg-if-build-toolchain/SKILL.md): keep tooling scoped to this project,
 not the user's machine. Use a **portable, self-contained** binary cached in `.tools/jq/`
 at the repo root (gitignored) — never system-wide, never persisted to user/machine
 environment variables.

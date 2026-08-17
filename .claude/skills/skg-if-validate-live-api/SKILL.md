@@ -1,5 +1,5 @@
 ---
-name: validate-live-api
+name: skg-if-validate-live-api
 description: Run scripts/ci/validate-live-endpoints.sh locally to reproduce the GitHub/GitLab "validate-live-api" job — validates the live DataCite/Crossref products/grants endpoints against the OpenAPI spec via a Stoplight Prism proxy in front of the built app. Use when a mapper/OpenAPI-spec change needs sanity-checking against real DataCite/Crossref responses, or to reproduce a CI failure from that job before pushing.
 ---
 
@@ -8,7 +8,7 @@ description: Run scripts/ci/validate-live-endpoints.sh locally to reproduce the 
 ## Windows only
 
 This skill only works on Windows. Every setup step below assumes a Windows checkout: the
-portable Node.js download is the `win-x64` build, the build-toolchain skill it depends on
+portable Node.js download is the `win-x64` build, the skg-if-build-toolchain skill it depends on
 provisions a Windows JDK/Maven layout, and the port check uses `netstat` (not `lsof`/`ss`). On
 macOS/Linux, adapt the download URL, drop the Windows-specific `PATH`/`$env:` snippets, and use
 the platform's own port-check command — or just run `scripts/ci/validate-live-endpoints.sh`
@@ -32,7 +32,7 @@ invocation.
 
 There is no system-wide Node.js on this machine, and one should not be installed globally
 (`winget`/`choco`) — same reasoning as the JDK/Maven toolchain in
-[build-toolchain](../build-toolchain/SKILL.md) and the jq binary in
+[skg-if-build-toolchain](../skg-if-build-toolchain/SKILL.md) and the jq binary in
 [jq-json](../jq-json/SKILL.md): keep tooling scoped to this project, not the user's machine. Use
 a **portable, self-contained** Node.js build cached in `.tools/node/` at the repo root
 (gitignored) — never system-wide, never persisted to user/machine environment variables.
@@ -55,7 +55,7 @@ Any current Node LTS build works — only `npx`'s bundled `npm` is needed to fet
 ## Prerequisite: build the app
 
 The script starts `target/quarkus-app/quarkus-run.jar` itself — it must already exist. Use
-[build-toolchain](../build-toolchain/SKILL.md) to build it (tests aren't needed for this script,
+[skg-if-build-toolchain](../skg-if-build-toolchain/SKILL.md) to build it (tests aren't needed for this script,
 just the artifact, so `-DskipTests` is fine here):
 
 ```bash
