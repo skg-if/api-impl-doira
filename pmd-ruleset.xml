@@ -42,6 +42,18 @@
       not accidental == vs .equals() confusion.
     -->
     <exclude name="CompareObjectsWithEquals"/>
+    <!--
+      AvoidDuplicateLiterals disabled here so its maxDuplicateLiterals property can be overridden
+      below: the default of 4 occurrences missed a real 3x-duplicated literal ("Organizational" in
+      DataCiteGrantMapper) - lowered to 3 to actually catch that class of duplication.
+    -->
+    <exclude name="AvoidDuplicateLiterals"/>
+  </rule>
+
+  <rule ref="category/java/errorprone.xml/AvoidDuplicateLiterals">
+    <properties>
+      <property name="maxDuplicateLiterals" value="3"/>
+    </properties>
   </rule>
 
   <rule ref="category/java/design.xml">

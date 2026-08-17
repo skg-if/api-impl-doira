@@ -30,6 +30,7 @@ final class DataCiteGrantMapper {
 
     private static final String SCHEME_ROR_UPPER = "ROR";
     private static final String SCHEME_ROR = "ror";
+    private static final String NAME_TYPE_ORGANIZATIONAL = "Organizational";
 
     private DataCiteGrantMapper() {
     }
@@ -63,14 +64,14 @@ final class DataCiteGrantMapper {
             if (fundingAgencyCreator.isPresent() && fundingAgencyCreator.get() == creator) {
                 continue;
             }
-            boolean organizational = "Organizational".equals(creator.nameType());
+            boolean organizational = NAME_TYPE_ORGANIZATIONAL.equals(creator.nameType());
             result.add(new GrantContribution()
                     .by(grantContributionBy(doi, creator.name(), creator.givenName(), creator.familyName(),
                             creator.nameIdentifiers(), organizational))
                     .declaredAffiliations(grantAffiliations(doi, creator.affiliation())));
         }
         for (DataCiteContributor contributor : contributors) {
-            boolean organizational = "Organizational".equals(contributor.nameType());
+            boolean organizational = NAME_TYPE_ORGANIZATIONAL.equals(contributor.nameType());
             result.add(new GrantContribution()
                     .by(grantContributionBy(doi, contributor.name(), contributor.givenName(), contributor.familyName(),
                             contributor.nameIdentifiers(), organizational))
@@ -130,7 +131,7 @@ final class DataCiteGrantMapper {
     static List<GrantAllOfBeneficiaries> grantBeneficiaries(String doi, List<DataCiteContributor> contributors) {
         List<DataCiteAffiliation> organizationalContributors = new ArrayList<>();
         for (DataCiteContributor contributor : contributors) {
-            if (!"Organizational".equals(contributor.nameType()) || contributor.name() == null) {
+            if (!NAME_TYPE_ORGANIZATIONAL.equals(contributor.nameType()) || contributor.name() == null) {
                 continue;
             }
             String ror = DataCiteContributionMapper.firstRor(contributor.nameIdentifiers());
