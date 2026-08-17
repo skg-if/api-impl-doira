@@ -1,7 +1,6 @@
 package org.skgif.doi.crossref.mapper;
 
 import java.util.Map;
-import java.util.function.BiConsumer;
 import org.skgif.doi.crossref.dto.CrossrefDate;
 import org.skgif.doi.crossref.dto.CrossrefLicense;
 import org.skgif.doi.crossref.dto.CrossrefUpdateTo;
@@ -11,6 +10,7 @@ import org.skgif.doi.generated.model.ProductManifestation;
 import org.skgif.doi.generated.model.ProductManifestationAccessRights;
 import org.skgif.doi.generated.model.ProductManifestationDates;
 import org.skgif.doi.generated.model.ProductManifestationType;
+import org.skgif.doi.util.ManifestationDateSetters;
 
 /**
  * Maps a Crossref work record's type/date/access-rights/licence fields onto {@code
@@ -20,18 +20,15 @@ import org.skgif.doi.generated.model.ProductManifestationType;
 final class CrossrefManifestationMapper {
 
     private static final String CROSSREF_TYPES_BASE_URL = "https://api.crossref.org/types/";
-    private static final String DATE_TYPE_PUBLICATION = "publication";
-    private static final String DATE_TYPE_CORRECTION = "correction";
-    private static final String DATE_TYPE_RETRACTION = "retraction";
 
-    private static final Map<String, BiConsumer<ProductManifestationDates, String>> DATE_SETTERS = Map.of(
-            "creation", ProductManifestationDates::addCreationItem,
-            "deposit", ProductManifestationDates::addDepositItem,
-            "modified", ProductManifestationDates::addModifiedItem,
-            "acceptance", ProductManifestationDates::addAcceptanceItem,
-            DATE_TYPE_PUBLICATION, ProductManifestationDates::addPublicationItem,
-            DATE_TYPE_CORRECTION, ProductManifestationDates::addCorrectionItem,
-            DATE_TYPE_RETRACTION, ProductManifestationDates::addRetractionItem);
+    private static final String CROSSREF_UPDATE_TYPE_CORRECTION = "correction";
+    private static final String CROSSREF_UPDATE_TYPE_RETRACTION = "retraction";
+
+    // "correction"/"retraction" are the only type values Crossref's own docs give as examples
+    // (no exhaustive enum is published) - any other value is ignored.
+    private static final Map<String, String> CROSSREF_UPDATE_TYPE_TO_SKGIF = Map.of(
+            CROSSREF_UPDATE_TYPE_CORRECTION, ManifestationDateSetters.CORRECTION,
+            CROSSREF_UPDATE_TYPE_RETRACTION, ManifestationDateSetters.RETRACTION);
 
     private final CrossrefBiblioMapper biblioMapper;
 
@@ -60,44 +57,27 @@ final class CrossrefManifestationMapper {
     private ProductManifestationDates dates(CrossrefWork work) {
         ProductManifestationDates dates = new ProductManifestationDates();
         boolean any = false;
-        any |= addDateItem(dates, "creation", work.created);
-        any |= addDateItem(dates, "deposit", work.deposited);
+        any |= addDateItem(dates, ManifestationDateSetters.CREATION, work.created);
+        any |= addDateItem(dates, ManifestationDateSetters.DEPOSIT, work.deposited);
         // Crossref documents `deposited` as "date on which the work metadata was most recently
         // updated" - that's SKG-IF's `modified`, not just `deposit`, and Crossref has no other
         // candidate for `modified` (`indexed` is deliberately excluded - see the mapping doc).
-        any |= addDateItem(dates, "modified", work.deposited);
-        any |= addDateItem(dates, "acceptance", work.accepted);
-        any |= addDateItem(dates, DATE_TYPE_PUBLICATION, work.publishedPrint);
-        any |= addDateItem(dates, DATE_TYPE_PUBLICATION, work.publishedOnline);
-        any |= addDateItem(dates, DATE_TYPE_PUBLICATION, work.issued);
+        any |= addDateItem(dates, ManifestationDateSetters.MODIFIED, work.deposited);
+        any |= addDateItem(dates, ManifestationDateSetters.ACCEPTANCE, work.accepted);
+        any |= addDateItem(dates, ManifestationDateSetters.PUBLICATION, work.publishedPrint);
+        any |= addDateItem(dates, ManifestationDateSetters.PUBLICATION, work.publishedOnline);
+        any |= addDateItem(dates, ManifestationDateSetters.PUBLICATION, work.issued);
         if (work.updateTo != null) {
             for (CrossrefUpdateTo update : work.updateTo) {
-                // "correction"/"retraction" are the only type values Crossref's own docs give
-                // as examples (no exhaustive enum is published) - any other value is ignored.
-                if (DATE_TYPE_CORRECTION.equals(update.type)) {
-                    any |= addDateItem(dates, DATE_TYPE_CORRECTION, update.updated);
-                } else if (DATE_TYPE_RETRACTION.equals(update.type)) {
-                    any |= addDateItem(dates, DATE_TYPE_RETRACTION, update.updated);
-                }
+                String skgIfType = CROSSREF_UPDATE_TYPE_TO_SKGIF.get(update.type);
+                any |= addDateItem(dates, skgIfType, update.updated);
             }
         }
         return any ? dates : null;
     }
 
     private boolean addDateItem(ProductManifestationDates dates, String type, CrossrefDate date) {
-        if (date == null) {
-            return false;
-        }
-        String iso = date.toIsoDate();
-        if (iso == null) {
-            return false;
-        }
-        BiConsumer<ProductManifestationDates, String> setter = DATE_SETTERS.get(type);
-        if (setter == null) {
-            return false;
-        }
-        setter.accept(dates, iso);
-        return true;
+        return date != null && ManifestationDateSetters.addDateItem(dates, type, date.toIsoDate());
     }
 
     private ProductManifestationAccessRights accessRights(CrossrefWork work) {
