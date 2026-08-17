@@ -5,11 +5,10 @@ import java.util.List;
 import org.skgif.doi.crossref.dto.CrossrefFunder;
 import org.skgif.doi.crossref.dto.CrossrefFunding;
 import org.skgif.doi.crossref.dto.CrossrefWork;
-import org.skgif.doi.generated.model.AgentAllOfIdentifiers;
 import org.skgif.doi.generated.model.GrantLite;
 import org.skgif.doi.generated.model.Organisation;
 import org.skgif.doi.generated.model.ProductAllOfFunding;
-import org.skgif.doi.spec.EntityTypes;
+import org.skgif.doi.util.EntityRefs;
 import org.skgif.doi.util.LocalIdentifiers;
 import org.skgif.doi.util.MapperTextUtils;
 
@@ -23,8 +22,6 @@ import org.skgif.doi.util.MapperTextUtils;
  * constructed once by the facade.
  */
 final class CrossrefFundingMapper {
-
-    private static final String SCHEME_DOI = "doi";
 
     private final LocalIdentifiers localIdentifiers;
 
@@ -74,16 +71,8 @@ final class CrossrefFundingMapper {
      */
     Organisation fundingAgencyOrg(String doi, CrossrefFunder funder) {
         String funderDoi = funderDoi(funder);
-        Organisation agency = new Organisation()
-                .localIdentifier(funderDoi != null
-                        ? localIdentifiers.toFullLocalIdentifier(funderDoi)
-                        : MapperTextUtils.otf(doi, funder.name))
-                .name(funder.name)
-                .entityType(EntityTypes.ORGANISATION);
-        if (funderDoi != null) {
-            agency.identifiers(List.of(new AgentAllOfIdentifiers().scheme(SCHEME_DOI).value(funderDoi)));
-        }
-        return agency;
+        String doiLocalIdentifier = funderDoi != null ? localIdentifiers.toFullLocalIdentifier(funderDoi) : null;
+        return EntityRefs.organisationRef(doi, funder.name, null, doiLocalIdentifier, funderDoi);
     }
 
     /**

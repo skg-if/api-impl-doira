@@ -1,13 +1,12 @@
 package org.skgif.doi.medra.mapper;
 
-import org.skgif.doi.generated.model.DataSourceLite;
 import org.skgif.doi.generated.model.ProductManifestationBiblio;
-import org.skgif.doi.generated.model.ProductManifestationBiblioHostingDataSource;
 import org.skgif.doi.generated.model.ProductManifestationBiblioIn;
 import org.skgif.doi.generated.model.VenueLite;
 import org.skgif.doi.generated.model.VenueLiteAllOfIdentifiers;
 import org.skgif.doi.medra.dto.MedraWork;
 import org.skgif.doi.spec.EntityTypes;
+import org.skgif.doi.util.EntityRefs;
 import org.skgif.doi.util.MapperTextUtils;
 
 /**
@@ -27,7 +26,7 @@ final class MedraBiblioMapper {
         }
         ProductManifestationBiblio biblio = new ProductManifestationBiblio().in(venue(work));
         if (hostingName != null) {
-            biblio.hostingDataSource(hostingDataSource(work.doi(), hostingName));
+            biblio.hostingDataSource(EntityRefs.hostingDataSource(work.doi(), hostingName));
         }
         return biblio;
     }
@@ -54,19 +53,5 @@ final class MedraBiblioMapper {
                     .toList());
         }
         return venue;
-    }
-
-    /**
-     * mEDRA's {@code PublisherName} (falling back to {@code RegistrantName}) has no external ID system.
-     *
-     * @param doi the owning record's DOI, used to build a deterministic otf id
-     * @param name the publisher or registrant name
-     * @return a DataSourceLite for name, with an otf local_identifier
-     */
-    private static ProductManifestationBiblioHostingDataSource hostingDataSource(String doi, String name) {
-        return new DataSourceLite()
-                .localIdentifier(MapperTextUtils.otf(doi, name))
-                .entityType(DataSourceLite.EntityTypeEnum.DATASOURCE)
-                .name(name);
     }
 }

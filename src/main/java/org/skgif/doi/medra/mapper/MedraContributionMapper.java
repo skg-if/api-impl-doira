@@ -2,13 +2,11 @@ package org.skgif.doi.medra.mapper;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.skgif.doi.generated.model.PersonLite;
 import org.skgif.doi.generated.model.ProductContribution;
 import org.skgif.doi.generated.model.ProductContributionBy;
 import org.skgif.doi.medra.dto.MedraContributor;
 import org.skgif.doi.medra.dto.MedraWork;
-import org.skgif.doi.spec.EntityTypes;
-import org.skgif.doi.util.MapperTextUtils;
+import org.skgif.doi.util.EntityRefs;
 
 /**
  * Maps a mEDRA ONIX-for-DOI record's contributors onto {@code Product.contributions}. Split out
@@ -77,12 +75,7 @@ final class MedraContributionMapper {
         } else {
             return null;
         }
-        return new PersonLite()
-                .localIdentifier(MapperTextUtils.otf(doi, name))
-                .name(name)
-                .givenName(givenName)
-                .familyName(familyName)
-                .entityType(EntityTypes.PERSON);
+        return EntityRefs.personRef(doi, name, givenName, familyName, null, null);
     }
 
     private static String displayName(String given, String family) {

@@ -1,8 +1,8 @@
 package org.skgif.doi.crossref.mapper;
 
+import java.util.List;
 import java.util.Map;
 import org.skgif.doi.crossref.dto.CrossrefDate;
-import org.skgif.doi.crossref.dto.CrossrefLicense;
 import org.skgif.doi.crossref.dto.CrossrefUpdateTo;
 import org.skgif.doi.crossref.dto.CrossrefWork;
 import org.skgif.doi.crossref.xml.CrossrefVenueMetadata;
@@ -10,6 +10,7 @@ import org.skgif.doi.generated.model.ProductManifestation;
 import org.skgif.doi.generated.model.ProductManifestationAccessRights;
 import org.skgif.doi.generated.model.ProductManifestationDates;
 import org.skgif.doi.generated.model.ProductManifestationType;
+import org.skgif.doi.util.LicenceMapper;
 import org.skgif.doi.util.ManifestationDateSetters;
 
 /**
@@ -81,22 +82,14 @@ final class CrossrefManifestationMapper {
     }
 
     private ProductManifestationAccessRights accessRights(CrossrefWork work) {
-        if (work.license == null || work.license.isEmpty()) {
-            return null;
-        }
-        boolean open = work.license.stream().anyMatch(this::isOpenLicence);
-        return new ProductManifestationAccessRights()
-                .status(open ? ProductManifestationAccessRights.StatusEnum.OPEN : null);
-    }
-
-    private boolean isOpenLicence(CrossrefLicense licence) {
-        return licence.url != null && licence.url.contains("creativecommons.org");
+        return LicenceMapper.accessRights(licenceUrls(work));
     }
 
     private String licence(CrossrefWork work) {
-        if (work.license == null || work.license.isEmpty()) {
-            return null;
-        }
-        return work.license.get(0).url;
+        return LicenceMapper.licence(licenceUrls(work));
+    }
+
+    private List<String> licenceUrls(CrossrefWork work) {
+        return work.license == null ? null : work.license.stream().map(licence -> licence.url).toList();
     }
 }

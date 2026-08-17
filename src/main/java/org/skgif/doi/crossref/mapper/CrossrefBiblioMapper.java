@@ -6,7 +6,6 @@ import java.util.Objects;
 import org.skgif.doi.crossref.CrossrefJournalDoiResolver;
 import org.skgif.doi.crossref.dto.CrossrefWork;
 import org.skgif.doi.crossref.xml.CrossrefVenueMetadata;
-import org.skgif.doi.generated.model.DataSourceLite;
 import org.skgif.doi.generated.model.ProductManifestationBiblio;
 import org.skgif.doi.generated.model.ProductManifestationBiblioHostingDataSource;
 import org.skgif.doi.generated.model.ProductManifestationBiblioIn;
@@ -14,6 +13,7 @@ import org.skgif.doi.generated.model.ProductManifestationBiblioPages;
 import org.skgif.doi.generated.model.VenueLite;
 import org.skgif.doi.generated.model.VenueLiteAllOfIdentifiers;
 import org.skgif.doi.spec.EntityTypes;
+import org.skgif.doi.util.EntityRefs;
 import org.skgif.doi.util.LocalIdentifiers;
 import org.skgif.doi.util.MapperTextUtils;
 
@@ -180,9 +180,6 @@ final class CrossrefBiblioMapper {
      * @return a DataSourceLite for work.publisher, with an otf local_identifier
      */
     private ProductManifestationBiblioHostingDataSource hostingDataSource(CrossrefWork work) {
-        return new DataSourceLite()
-                .localIdentifier(MapperTextUtils.otf(work.doi, work.publisher))
-                .entityType(DataSourceLite.EntityTypeEnum.DATASOURCE)
-                .name(work.publisher);
+        return EntityRefs.hostingDataSource(work.doi, work.publisher);
     }
 }

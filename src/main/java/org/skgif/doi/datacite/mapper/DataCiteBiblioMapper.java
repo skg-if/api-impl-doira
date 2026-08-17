@@ -1,10 +1,9 @@
 package org.skgif.doi.datacite.mapper;
 
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
-import org.skgif.doi.generated.model.DataSourceLite;
 import org.skgif.doi.generated.model.ProductManifestationBiblio;
 import org.skgif.doi.generated.model.ProductManifestationBiblioHostingDataSource;
-import org.skgif.doi.util.MapperTextUtils;
+import org.skgif.doi.util.EntityRefs;
 
 /**
  * Maps a DataCite record's publisher field onto {@code Product.manifestations[].biblio}. Split
@@ -33,9 +32,6 @@ final class DataCiteBiblioMapper {
      * @return a DataSourceLite for attributes.publisher, with an otf local_identifier
      */
     private static ProductManifestationBiblioHostingDataSource hostingDataSource(DataCiteAttributes attributes) {
-        return new DataSourceLite()
-                .localIdentifier(MapperTextUtils.otf(attributes.doi, attributes.publisher))
-                .entityType(DataSourceLite.EntityTypeEnum.DATASOURCE)
-                .name(attributes.publisher);
+        return EntityRefs.hostingDataSource(attributes.doi, attributes.publisher);
     }
 }

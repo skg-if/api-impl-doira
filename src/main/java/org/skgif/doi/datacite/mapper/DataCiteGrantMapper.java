@@ -13,9 +13,9 @@ import org.skgif.doi.generated.model.GrantAllOfContributions;
 import org.skgif.doi.generated.model.GrantContribution;
 import org.skgif.doi.generated.model.GrantContributionBy;
 import org.skgif.doi.generated.model.Organisation;
-import org.skgif.doi.generated.model.PersonLite;
 import org.skgif.doi.generated.model.PersonLiteAllOfIdentifiers;
 import org.skgif.doi.spec.EntityTypes;
+import org.skgif.doi.util.EntityRefs;
 import org.skgif.doi.util.ExternalIdentifierUrls;
 import org.skgif.doi.util.MapperTextUtils;
 
@@ -95,19 +95,8 @@ final class DataCiteGrantMapper {
             return by;
         }
         String orcid = DataCiteContributionMapper.firstOrcid(nameIdentifiers);
-        PersonLite by = new PersonLite()
-                .localIdentifier(orcid != null
-                        ? ExternalIdentifierUrls.ORCID_BASE_URL + orcid
-                        : MapperTextUtils.otf(doi, name))
-                .name(name)
-                .givenName(givenName)
-                .familyName(familyName)
-                .entityType(EntityTypes.PERSON);
         List<PersonLiteAllOfIdentifiers> identifiers = DataCiteContributionMapper.orcidIdentifiers(nameIdentifiers);
-        if (identifiers != null) {
-            by.identifiers(identifiers);
-        }
-        return by;
+        return EntityRefs.personRef(doi, name, givenName, familyName, orcid, identifiers);
     }
 
     static List<GrantAllOfBeneficiaries> grantAffiliations(String doi, List<DataCiteAffiliation> affiliations) {
@@ -122,16 +111,7 @@ final class DataCiteGrantMapper {
             boolean hasRor = affiliation.affiliationIdentifier != null
                     && SCHEME_ROR_UPPER.equalsIgnoreCase(affiliation.affiliationIdentifierScheme);
             String bareRor = hasRor ? MapperTextUtils.stripRorUrl(affiliation.affiliationIdentifier) : null;
-            Organisation org = new Organisation()
-                    .localIdentifier(hasRor
-                            ? ExternalIdentifierUrls.ROR_BASE_URL + bareRor
-                            : MapperTextUtils.otf(doi, affiliation.name))
-                    .name(affiliation.name)
-                    .entityType(EntityTypes.ORGANISATION);
-            if (hasRor) {
-                org.identifiers(List.of(new AgentAllOfIdentifiers().scheme(SCHEME_ROR).value(bareRor)));
-            }
-            result.add(org);
+            result.add(EntityRefs.organisationRef(doi, affiliation.name, bareRor));
         }
         return result.isEmpty() ? null : result;
     }

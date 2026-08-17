@@ -7,16 +7,12 @@ import java.util.Map;
 import org.skgif.doi.crossref.dto.CrossrefAffiliation;
 import org.skgif.doi.crossref.dto.CrossrefInvestigator;
 import org.skgif.doi.crossref.dto.CrossrefProject;
-import org.skgif.doi.generated.model.AgentAllOfIdentifiers;
 import org.skgif.doi.generated.model.GrantAllOfBeneficiaries;
 import org.skgif.doi.generated.model.GrantAllOfContributions;
 import org.skgif.doi.generated.model.GrantContribution;
-import org.skgif.doi.generated.model.Organisation;
 import org.skgif.doi.generated.model.PersonLite;
 import org.skgif.doi.generated.model.PersonLiteAllOfIdentifiers;
-import org.skgif.doi.spec.EntityTypes;
-import org.skgif.doi.util.ExternalIdentifierUrls;
-import org.skgif.doi.util.MapperTextUtils;
+import org.skgif.doi.util.EntityRefs;
 
 /**
  * Maps a Crossref {@code type: "grant"} work record's {@code project[].leadInvestigator}/{@code
@@ -52,17 +48,11 @@ final class CrossrefGrantContributionMapper {
             GrantContribution.RolesEnum role) {
         String bareOrcid = CrossrefContributionMapper.bareOrcid(investigator.orcid);
         String name = CrossrefContributionMapper.displayName(investigator.given, investigator.family);
-        PersonLite by = new PersonLite()
-                .localIdentifier(bareOrcid != null
-                        ? ExternalIdentifierUrls.ORCID_BASE_URL + bareOrcid
-                        : MapperTextUtils.otf(doi, name))
-                .name(name)
-                .givenName(investigator.given)
-                .familyName(investigator.family)
-                .entityType(EntityTypes.PERSON);
-        if (bareOrcid != null) {
-            by.identifiers(List.of(new PersonLiteAllOfIdentifiers().scheme("orcid").value(bareOrcid)));
-        }
+        List<PersonLiteAllOfIdentifiers> orcidIdentifiers = bareOrcid != null
+                ? List.of(new PersonLiteAllOfIdentifiers().scheme("orcid").value(bareOrcid))
+                : null;
+        PersonLite by = EntityRefs.personRef(doi, name, investigator.given, investigator.family, bareOrcid,
+                orcidIdentifiers);
         return new GrantContribution()
                 .by(by)
                 .declaredAffiliations(grantAffiliations(doi, investigator.affiliation))
@@ -79,16 +69,7 @@ final class CrossrefGrantContributionMapper {
                 continue;
             }
             String ror = CrossrefContributionMapper.firstRor(affiliation.id);
-            Organisation org = new Organisation()
-                    .localIdentifier(ror != null
-                            ? ExternalIdentifierUrls.ROR_BASE_URL + ror
-                            : MapperTextUtils.otf(doi, affiliation.name))
-                    .name(affiliation.name)
-                    .entityType(EntityTypes.ORGANISATION);
-            if (ror != null) {
-                org.identifiers(List.of(new AgentAllOfIdentifiers().scheme("ror").value(ror)));
-            }
-            result.add(org);
+            result.add(EntityRefs.organisationRef(doi, affiliation.name, ror));
         }
         return result.isEmpty() ? null : result;
     }

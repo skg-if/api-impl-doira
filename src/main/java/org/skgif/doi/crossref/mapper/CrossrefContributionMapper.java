@@ -6,14 +6,11 @@ import org.skgif.doi.crossref.dto.CrossrefAffiliation;
 import org.skgif.doi.crossref.dto.CrossrefContributor;
 import org.skgif.doi.crossref.dto.CrossrefIdEntry;
 import org.skgif.doi.crossref.dto.CrossrefWork;
-import org.skgif.doi.generated.model.AgentAllOfIdentifiers;
-import org.skgif.doi.generated.model.Organisation;
-import org.skgif.doi.generated.model.PersonLite;
 import org.skgif.doi.generated.model.PersonLiteAllOfIdentifiers;
 import org.skgif.doi.generated.model.ProductAllOfRelevantOrganisations;
 import org.skgif.doi.generated.model.ProductContribution;
 import org.skgif.doi.generated.model.ProductContributionBy;
-import org.skgif.doi.spec.EntityTypes;
+import org.skgif.doi.util.EntityRefs;
 import org.skgif.doi.util.ExternalIdentifierUrls;
 import org.skgif.doi.util.MapperTextUtils;
 
@@ -61,18 +58,10 @@ final class CrossrefContributionMapper {
     static ProductContributionBy personRef(String doi, String given, String family, String rawOrcid) {
         String bareOrcid = bareOrcid(rawOrcid);
         String name = displayName(given, family);
-        PersonLite by = new PersonLite()
-                .localIdentifier(bareOrcid != null
-                        ? ExternalIdentifierUrls.ORCID_BASE_URL + bareOrcid
-                        : MapperTextUtils.otf(doi, name))
-                .name(name)
-                .givenName(given)
-                .familyName(family)
-                .entityType(EntityTypes.PERSON);
-        if (bareOrcid != null) {
-            by.identifiers(List.of(new PersonLiteAllOfIdentifiers().scheme("orcid").value(bareOrcid)));
-        }
-        return by;
+        List<PersonLiteAllOfIdentifiers> orcidIdentifiers = bareOrcid != null
+                ? List.of(new PersonLiteAllOfIdentifiers().scheme("orcid").value(bareOrcid))
+                : null;
+        return EntityRefs.personRef(doi, name, given, family, bareOrcid, orcidIdentifiers);
     }
 
     /**
@@ -85,10 +74,7 @@ final class CrossrefContributionMapper {
      * @return an Organisation reference with an otf local_identifier
      */
     private static ProductContributionBy organisationRef(String doi, String name) {
-        return new Organisation()
-                .localIdentifier(MapperTextUtils.otf(doi, name))
-                .name(name)
-                .entityType(EntityTypes.ORGANISATION);
+        return EntityRefs.organisationRef(doi, name, null);
     }
 
     /**
@@ -138,17 +124,7 @@ final class CrossrefContributionMapper {
             if (affiliation.name == null) {
                 continue;
             }
-            String ror = firstRor(affiliation.id);
-            Organisation org = new Organisation()
-                    .localIdentifier(ror != null
-                            ? ExternalIdentifierUrls.ROR_BASE_URL + ror
-                            : MapperTextUtils.otf(doi, affiliation.name))
-                    .name(affiliation.name)
-                    .entityType(EntityTypes.ORGANISATION);
-            if (ror != null) {
-                org.identifiers(List.of(new AgentAllOfIdentifiers().scheme("ror").value(ror)));
-            }
-            result.add(org);
+            result.add(EntityRefs.organisationRef(doi, affiliation.name, firstRor(affiliation.id)));
         }
         return result.isEmpty() ? null : result;
     }

@@ -6,11 +6,10 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
 import org.skgif.doi.datacite.dto.DataCiteFundingReference;
-import org.skgif.doi.generated.model.AgentAllOfIdentifiers;
 import org.skgif.doi.generated.model.GrantLite;
 import org.skgif.doi.generated.model.Organisation;
 import org.skgif.doi.generated.model.ProductAllOfFunding;
-import org.skgif.doi.spec.EntityTypes;
+import org.skgif.doi.util.EntityRefs;
 import org.skgif.doi.util.ExternalIdentifierUrls;
 import org.skgif.doi.util.LocalIdentifiers;
 import org.skgif.doi.util.MapperTextUtils;
@@ -25,9 +24,7 @@ import org.skgif.doi.util.MapperTextUtils;
 final class DataCiteFundingMapper {
 
     private static final Pattern DOI_SHAPE = Pattern.compile("10\\.\\d{4,9}/.+");
-    private static final String SCHEME_DOI = "doi";
     private static final String SCHEME_ROR_UPPER = "ROR";
-    private static final String SCHEME_ROR = "ror";
 
     private final LocalIdentifiers localIdentifiers;
 
@@ -82,22 +79,8 @@ final class DataCiteFundingMapper {
                 && SCHEME_ROR_UPPER.equalsIgnoreCase(fundingReference.funderIdentifierType);
         String bareRor = hasRor ? MapperTextUtils.stripRorUrl(fundingReference.funderIdentifier) : null;
         String funderDoi = hasRor ? null : extractDoi(fundingReference.funderIdentifier);
-        Organisation agency = new Organisation()
-                .localIdentifier(hasRor
-                        ? ExternalIdentifierUrls.ROR_BASE_URL + bareRor
-                        : funderDoi != null
-                                ? localIdentifiers.toFullLocalIdentifier(funderDoi)
-                                : MapperTextUtils.otf(doi, fundingReference.funderName))
-                .name(fundingReference.funderName)
-                .entityType(EntityTypes.ORGANISATION);
-        if (hasRor) {
-            agency.identifiers(List.of(new AgentAllOfIdentifiers().scheme(SCHEME_ROR).value(bareRor)));
-        } else if (funderDoi != null) {
-            agency.identifiers(List.of(new AgentAllOfIdentifiers()
-                    .scheme(SCHEME_DOI)
-                    .value(funderDoi)));
-        }
-        return agency;
+        String doiLocalIdentifier = funderDoi != null ? localIdentifiers.toFullLocalIdentifier(funderDoi) : null;
+        return EntityRefs.organisationRef(doi, fundingReference.funderName, bareRor, doiLocalIdentifier, funderDoi);
     }
 
     /**

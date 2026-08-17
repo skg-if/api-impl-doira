@@ -1,15 +1,16 @@
 package org.skgif.doi.datacite.mapper;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
 import org.skgif.doi.datacite.dto.DataCiteDate;
-import org.skgif.doi.datacite.dto.DataCiteRights;
 import org.skgif.doi.generated.model.ProductManifestation;
 import org.skgif.doi.generated.model.ProductManifestationAccessRights;
 import org.skgif.doi.generated.model.ProductManifestationDates;
 import org.skgif.doi.generated.model.ProductManifestationType;
+import org.skgif.doi.util.LicenceMapper;
 import org.skgif.doi.util.ManifestationDateSetters;
 
 /**
@@ -181,22 +182,16 @@ final class DataCiteManifestationMapper {
     }
 
     private static ProductManifestationAccessRights accessRights(DataCiteAttributes attributes) {
-        if (attributes.rightsList == null || attributes.rightsList.isEmpty()) {
-            return null;
-        }
-        boolean open = attributes.rightsList.stream().anyMatch(DataCiteManifestationMapper::isOpenLicence);
-        return new ProductManifestationAccessRights()
-                .status(open ? ProductManifestationAccessRights.StatusEnum.OPEN : null);
-    }
-
-    private static boolean isOpenLicence(DataCiteRights rights) {
-        return rights.rightsUri != null && rights.rightsUri.contains("creativecommons.org");
+        return LicenceMapper.accessRights(licenceUrls(attributes));
     }
 
     private static String licence(DataCiteAttributes attributes) {
-        if (attributes.rightsList == null || attributes.rightsList.isEmpty()) {
-            return null;
-        }
-        return attributes.rightsList.get(0).rightsUri;
+        return LicenceMapper.licence(licenceUrls(attributes));
+    }
+
+    private static List<String> licenceUrls(DataCiteAttributes attributes) {
+        return attributes.rightsList == null
+                ? null
+                : attributes.rightsList.stream().map(rights -> rights.rightsUri).toList();
     }
 }

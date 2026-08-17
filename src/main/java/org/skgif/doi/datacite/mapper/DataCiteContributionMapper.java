@@ -7,14 +7,11 @@ import org.skgif.doi.datacite.dto.DataCiteAttributes;
 import org.skgif.doi.datacite.dto.DataCiteContributor;
 import org.skgif.doi.datacite.dto.DataCiteCreator;
 import org.skgif.doi.datacite.dto.DataCiteNameIdentifier;
-import org.skgif.doi.generated.model.AgentAllOfIdentifiers;
-import org.skgif.doi.generated.model.Organisation;
-import org.skgif.doi.generated.model.PersonLite;
 import org.skgif.doi.generated.model.PersonLiteAllOfIdentifiers;
 import org.skgif.doi.generated.model.ProductAllOfRelevantOrganisations;
 import org.skgif.doi.generated.model.ProductContribution;
 import org.skgif.doi.generated.model.ProductContributionBy;
-import org.skgif.doi.spec.EntityTypes;
+import org.skgif.doi.util.EntityRefs;
 import org.skgif.doi.util.ExternalIdentifierUrls;
 import org.skgif.doi.util.MapperTextUtils;
 
@@ -73,20 +70,8 @@ final class DataCiteContributionMapper {
 
     static ProductContributionBy personRef(String doi, String name, String givenName, String familyName,
             List<DataCiteNameIdentifier> nameIdentifiers) {
-        String orcid = firstOrcid(nameIdentifiers);
-        PersonLite by = new PersonLite()
-                .localIdentifier(orcid != null
-                        ? ExternalIdentifierUrls.ORCID_BASE_URL + orcid
-                        : MapperTextUtils.otf(doi, name))
-                .name(name)
-                .givenName(givenName)
-                .familyName(familyName)
-                .entityType(EntityTypes.PERSON);
-        List<PersonLiteAllOfIdentifiers> identifiers = orcidIdentifiers(nameIdentifiers);
-        if (identifiers != null) {
-            by.identifiers(identifiers);
-        }
-        return by;
+        return EntityRefs.personRef(doi, name, givenName, familyName, firstOrcid(nameIdentifiers),
+                orcidIdentifiers(nameIdentifiers));
     }
 
     /**
@@ -99,10 +84,7 @@ final class DataCiteContributionMapper {
      * @return an Organisation reference with an otf local_identifier
      */
     private static ProductContributionBy organisationRef(String doi, String name) {
-        return new Organisation()
-                .localIdentifier(MapperTextUtils.otf(doi, name))
-                .name(name)
-                .entityType(EntityTypes.ORGANISATION);
+        return EntityRefs.organisationRef(doi, name, null);
     }
 
     static String firstOrcid(List<DataCiteNameIdentifier> nameIdentifiers) {
@@ -150,16 +132,7 @@ final class DataCiteContributionMapper {
             boolean hasRor = affiliation.affiliationIdentifier != null
                     && SCHEME_ROR_UPPER.equalsIgnoreCase(affiliation.affiliationIdentifierScheme);
             String bareRor = hasRor ? MapperTextUtils.stripRorUrl(affiliation.affiliationIdentifier) : null;
-            Organisation org = new Organisation()
-                    .localIdentifier(hasRor
-                            ? ExternalIdentifierUrls.ROR_BASE_URL + bareRor
-                            : MapperTextUtils.otf(doi, affiliation.name))
-                    .name(affiliation.name)
-                    .entityType(EntityTypes.ORGANISATION);
-            if (hasRor) {
-                org.identifiers(List.of(new AgentAllOfIdentifiers().scheme("ror").value(bareRor)));
-            }
-            result.add(org);
+            result.add(EntityRefs.organisationRef(doi, affiliation.name, bareRor));
         }
         return result.isEmpty() ? null : result;
     }
