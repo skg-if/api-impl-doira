@@ -258,7 +258,7 @@ public class CrossrefProductsResource {
     /**
      * Fetches and parses Crossref's XML transform for a chapter-in-a-book or paper-in-proceedings
      * record (see {@code CrossrefTypeMapping#isXmlVenueEnrichable}), used to build an accurate
-     * Venue - see {@code CrossrefToSkgIfMapper#venue}. Only called from the single-item {@code
+     * Venue - see {@code CrossrefBiblioMapper#venue}. Only called from the single-item {@code
      * getProductById} endpoint, not the list endpoint below (which would otherwise mean N extra
      * Crossref HTTP calls per page). Any failure - non-200 response, network/timeout error, or a
      * shape the parser doesn't recognize - degrades to {@code null}, so the caller falls back to

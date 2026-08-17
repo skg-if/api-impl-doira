@@ -23,7 +23,7 @@ import org.xml.sax.SAXException;
  * of a chapter-in-a-book or paper-in-proceedings record, extracting the containing book/
  * proceedings' title/DOI/ISBN/publisher and, when it's part of a series, the series' own
  * title/ISSN/volume number - all considerably less ambiguous here than in the REST JSON's {@code
- * container-title[]} array (see {@code CrossrefToSkgIfMapper#venue}, which prefers this over
+ * container-title[]} array (see {@code CrossrefBiblioMapper#venue}, which prefers this over
  * {@code container-title[0]} when present).
  *
  * <p>Crossref's schema puts this metadata under one of four mutually exclusive elements, two

@@ -317,7 +317,7 @@ class ProductsGoldenTest {
      * field wasn't present on any live-captured fixture available when this was added) proving
      * {@code correction}/{@code retraction} dates map from {@code update-to[].updated} at the
      * golden-output level, and that an unrecognized {@code type} (here {@code "erratum"}) is
-     * ignored rather than guessed at (see {@code CrossrefToSkgIfMapper#dates}).
+     * ignored rather than guessed at (see {@code CrossrefManifestationMapper#dates}).
      */
     @Test
     void getProductById_matchesExpectedJsonLd_journalArticleWithUpdateTo() throws IOException {
@@ -393,7 +393,7 @@ class ProductsGoldenTest {
      * DOI 10.19276/plinius.2019.01004 - a mEDRA-registered journal article whose single
      * contributor carries all four ONIX name fields together ({@code NamesBeforeKey}/{@code
      * KeyNames} and {@code PersonName}/{@code PersonNameInverted}) - proves the structured-pair
-     * precedence at the golden-output level (see {@code MedraToSkgIfMapper#personRef}).
+     * precedence at the golden-output level (see {@code MedraContributionMapper#personRef}).
      */
     @Test
     void getProductById_matchesExpectedJsonLd_medraMixedNameShapes() throws IOException {

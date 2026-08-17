@@ -16,7 +16,7 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
  * GET works?filter=type:journal,issn:<issn>} - Crossref does register {@code type: "journal"}
  * works for many journals themselves (verified live: ISSN 0028-0836/1476-4687 -&gt; DOI
  * {@code 10.1038/41586.1476-4687} for Nature), the same "prefer a real container DOI over an
- * otf id" idea {@code CrossrefToSkgIfMapper#venueFromXmlMetadata} already applies to
+ * otf id" idea {@code CrossrefBiblioMapper#venueFromXmlMetadata} already applies to
  * book/proceedings venues via the XML transform endpoint - this is the equivalent for plain
  * journal articles, via the REST API instead.
  *

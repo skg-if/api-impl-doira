@@ -80,21 +80,69 @@
     -->
     <exclude name="AvoidCatchingGenericException"/>
     <!--
-      The following are real findings on CrossrefToSkgIfMapper/DataCiteToSkgIfMapper/
-      MedraToSkgIfMapper (900+ line, one-class-per-source-format converters) and JsonLdResponses,
-      but they're also self-contradictory to fix here: extracting methods to reduce
-      CyclomaticComplexity directly worsens TooManyMethods/GodClass on the same class. A real fix
-      means splitting these mapper classes apart - a large, independent refactor of code covered
-      by the golden-fixture tests, not a lint cleanup. Left disabled pending that decision.
+      CyclomaticComplexity/NPathComplexity/CognitiveComplexity/GodClass/TooManyMethods/
+      TooManyFields/CouplingBetweenObjects/ExcessiveImports/LoosePackageCoupling were all
+      previously disabled here as one block: CrossrefToSkgIfMapper/DataCiteToSkgIfMapper/
+      MedraToSkgIfMapper were 900+ line, one-class-per-source-format converters where extracting a
+      method to fix CyclomaticComplexity directly worsened TooManyMethods/GodClass on the same
+      class. Fixed by splitting each mapper into a thin facade (kept public toProduct/toGrant
+      only) plus several package-private per-concern helper classes (e.g. CrossrefTitleMapper,
+      CrossrefContributionMapper, CrossrefManifestationMapper, CrossrefBiblioMapper,
+      CrossrefFundingMapper, CrossrefRelatedProductMapper, CrossrefGrantMapper,
+      CrossrefGrantContributionMapper, and the DataCite/Medra equivalents), plus a shared
+      MapperTextUtils for the otf/slug/stripRorUrl logic duplicated across all three. Helpers stay
+      in the same package as their facade (not a new subpackage) specifically to avoid trading
+      this exclusion for a LoosePackageCoupling one. CouplingBetweenObjects and CognitiveComplexity
+      are fully clean now and no longer excluded below - the mapper split alone was enough for
+      those two. The other six rules still have real, but now entirely different and unrelated,
+      offenders - none of them mapper classes - so each stays excluded individually with its own
+      current rationale instead of one blanket comment:
+    -->
+    <!--
+      GodClass: only JsonLdResponses (a REST-layer response-builder, not a format mapper) - out of
+      scope for the mapper-splitting refactor above.
+    -->
+    <exclude name="GodClass"/>
+    <!--
+      TooManyMethods: only JsonLdResponses, same reason as GodClass above.
+    -->
+    <exclude name="TooManyMethods"/>
+    <!--
+      TooManyFields: only CrossrefWork/DataCiteAttributes - the top-level Jackson DTOs for an
+      entire work/DOI record, which necessarily has many independent optional fields. Same
+      rationale as the DataClass exclusion above; a field-only holder isn't fixed by splitting it,
+      since Jackson needs one class matching the source JSON's shape.
+    -->
+    <exclude name="TooManyFields"/>
+    <!--
+      CyclomaticComplexity/NPathComplexity: the remaining offenders are the REST resource classes'
+      getProducts/getGrants (CrossrefProductsResource, DataCiteProductsResource,
+      CrossrefGrantsResource, DataCiteGrantsResource - each a single method dispatching on which
+      optional query filters were supplied) and the *Filters#toClause/toProductClause/
+      toGrantClause methods (CrossrefFilters, DataCiteProductFilters, DataCiteGrantFilters - each
+      a single method mapping every supported filter key to its query clause). Both are a
+      different shape of problem from the mapper classes above: one already-cohesive method
+      with many independent optional branches, not a class doing too many unrelated things - so
+      splitting into more classes doesn't apply the way it did to the mappers. Left disabled
+      pending a decision on whether/how to restructure that dispatch (e.g. a filter-key-to-clause
+      lookup table).
     -->
     <exclude name="CyclomaticComplexity"/>
     <exclude name="NPathComplexity"/>
-    <exclude name="CognitiveComplexity"/>
-    <exclude name="GodClass"/>
-    <exclude name="TooManyMethods"/>
-    <exclude name="TooManyFields"/>
-    <exclude name="CouplingBetweenObjects"/>
+    <!--
+      ExcessiveImports: only the four REST resource classes above, driven by importing every DTO/
+      generated-model type their getProducts/getGrants touch - a symptom of the same
+      already-cohesive-but-branchy methods CyclomaticComplexity/NPathComplexity flag on the same
+      classes, not a separate problem.
+    -->
     <exclude name="ExcessiveImports"/>
+    <!--
+      LoosePackageCoupling errors out (not a violation - a PMD configerror, "No packages or
+      classes specified") because it requires an explicit allow-list of packages/classes in its
+      own rule properties, which this ruleset has never set. Excluded because it's unusable as
+      configured, not because it produces unwanted findings - revisit if a real justification for
+      package-coupling limits ever comes up.
+    -->
     <exclude name="LoosePackageCoupling"/>
   </rule>
 

@@ -98,7 +98,7 @@ class MedraToSkgIfMapperTest {
 
         // "medra-no-contributors.xml"'s PublicationDate is a full 8-digit date ("20210813").
         // "medra-version-message-book-series.xml" has no PublicationDate at all (only
-        // JournalIssueDate, which is deliberately not mapped - see MedraToSkgIfMapper#isoDate).
+        // JournalIssueDate, which is deliberately not mapped - see MedraManifestationMapper#isoDate).
         Product fullDate = mapFixture("medra-no-contributors.xml");
         assertEquals(List.of("2021-08-13"), fullDate.getManifestations().get(0).getDates().getPublication());
     }

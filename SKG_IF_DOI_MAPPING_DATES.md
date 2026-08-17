@@ -6,7 +6,7 @@ row of the Product entity mapping.
 Both DataCite and Crossref distinguish two categories of date: **metadata management dates**
 (when the DOI record itself was registered, updated, or re-indexed) and **resource publication
 dates** (when the actual paper, dataset, or media object was created or issued). Verified against
-`DataCiteAttributes`/`DataCiteToSkgIfMapper#dates` and `CrossrefWork`/`CrossrefToSkgIfMapper#dates`:
+`DataCiteAttributes`/`DataCiteManifestationMapper#dates` and `CrossrefWork`/`CrossrefManifestationMapper#dates`:
 
 | Date type | DataCite REST API (`/dois/{doi}`) | Crossref REST API (`/works/{doi}`) |
 |---|---|---|

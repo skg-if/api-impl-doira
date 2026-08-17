@@ -47,7 +47,7 @@ final class JsonLdResponses {
      * Namespaces the JSON-LD {@code @base} to the DataCite client that registered the DOI (e.g.
      * {@code relationships.client.data.id == "inist.esrf"} becomes {@code
      * <sandboxBaseUrl>inist.esrf/}), so on-the-fly identifiers minted for entities without a
-     * stable id of their own (see {@code DataCiteToSkgIfMapper#otf}) resolve into that client's
+     * stable id of their own (see {@code MapperTextUtils#otf}) resolve into that client's
      * own namespace rather than always the deployment's default. Falls back to {@code
      * fallbackContextBase} when the DOI carries no client relationship (e.g. malformed/partial
      * DataCite data).

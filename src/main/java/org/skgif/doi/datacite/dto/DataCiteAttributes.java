@@ -16,7 +16,7 @@ public class DataCiteAttributes {
     public List<DataCiteDate> dates;
     // System-generated record-lifecycle timestamps, distinct from the researcher-asserted
     // dates[] array above - used by the mapper only as a fallback when dates[] has no
-    // Created/Submitted/Updated/Issued entry (see DataCiteToSkgIfMapper#dates).
+    // Created/Submitted/Updated/Issued entry (see DataCiteManifestationMapper#dates).
     public String created;
     public String registered;
     public String published;

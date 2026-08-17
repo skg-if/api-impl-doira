@@ -6,7 +6,7 @@
   `funded_amount`, `duration`, `website`, `funding_stream`, or `acronym` - left unset rather than
   guessed at.
 - **DataCite's `Other` and `Coverage` `dateType` values** have no SKG-IF equivalent - both are
-  absent from `DataCiteToSkgIfMapper#DATACITE_DATE_TYPE_TO_SKGIF` and silently dropped, same as
+  absent from `DataCiteManifestationMapper#DATACITE_DATE_TYPE_TO_SKGIF` and silently dropped, same as
   any other unrecognized `dateType` (see `DataCiteToSkgIfMapperTest.dropsUnrecognizedDateTypesLikeCoverage`).
   `Coverage` describes the temporal span covered by the resource's *content* (e.g. a historical
   dataset spanning 1900-1950), not an event in the resource's own lifecycle - conceptually closest
@@ -50,7 +50,7 @@
   exhaustive, 12-value enum (`addendum`, `clarification`, `correction`, `corrigendum`, `erratum`,
   `expression_of_concern`, `new_edition`, `new_version`, `partial_retraction`, `removal`,
   `retraction`, `withdrawal`) - only `"correction"` and `"retraction"` map to an SKG-IF date type
-  today, so `CrossrefToSkgIfMapper#dates` recognizes just those two; the other 10 are ignored
+  today, so `CrossrefManifestationMapper#dates` recognizes just those two; the other 10 are ignored
   rather than guessed at (see
   [`crossref-journal-article-with-update-to.json`](src/test/resources/crossref-journal-article-with-update-to.json),
   a hand-built fixture since no live-captured record with `update-to[]` was available).
@@ -112,12 +112,12 @@
   every book fixture tested so far, but absent from both real proceedings-article fixtures tested
   ([`crossref-proceedings-article-with-series.xml`](src/test/resources/crossref-proceedings-article-with-series.xml),
   [`crossref-proceedings-article-standalone.xml`](src/test/resources/crossref-proceedings-article-standalone.xml)).
-  `CrossrefVenueMetadataXmlParser`/`CrossrefToSkgIfMapper#venueFromXmlMetadata` treat this as
+  `CrossrefVenueMetadataXmlParser`/`CrossrefBiblioMapper#venueFromXmlMetadata` treat this as
   optional and fall back to an otf id rather than guessing one.
 - **`CrossrefJournalDoiResolver`'s journal-DOI lookup** (`GET works?filter=type:journal,issn:<issn>`,
   see the venue row of [Product entity mapping (Crossref)](SKG_IF_DOI_MAPPING_PRODUCT.md#crossref)) is,
   unlike the XML transform enrichment, deliberately issued on *every*
-  request that reaches `CrossrefToSkgIfMapper#venue` with an ISSN present - both the single-item
+  request that reaches `CrossrefBiblioMapper#venue` with an ISSN present - both the single-item
   and list/search endpoints - accepting the extra per-article Crossref call as a tradeoff for a
   real, resolvable venue identifier. The resolver is `@RequestScoped`: a *found* DOI is cached per
   ISSN only for the current request (covering the main practical case - many articles from the
@@ -137,7 +137,7 @@
   query was found). `MedraProductsResource` therefore exposes only `GET
   /medra/products/{local_identifier}`, never a bare `GET /medra/products`.
 - **No ORCID (or any other person identifier) was observed on any contributor** in the 6+1
-  ONIX-for-DOI records examined - `MedraToSkgIfMapper#personRef` always mints an otf id for
+  ONIX-for-DOI records examined - `MedraContributionMapper#personRef` always mints an otf id for
   contributors, unlike DataCite/Crossref's ORCID-when-present path.
 - **A bare `PersonName` with no `PersonNameInverted` sibling** (e.g. `"Cotte M."`, seen on
   [`medra-version-message-book-series.xml`](src/test/resources/medra-version-message-book-series.xml))

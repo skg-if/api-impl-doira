@@ -6,7 +6,7 @@ package org.skgif.doi.medra.dto;
  * fields are mutually exclusive in practice but all nullable here - a record carries exactly one
  * of {@code namesBeforeKey}+{@code keyNames}, {@code personName} (alone or with {@code
  * personNameInverted}), or {@code personNameInverted} alone - see {@code
- * MedraToSkgIfMapper#personRef} for the precedence used to resolve them into a display name.
+ * MedraContributionMapper#personRef} for the precedence used to resolve them into a display name.
  *
  * @param role the raw ContributorRole code (e.g. "A01" for author)
  * @param namesBeforeKey given-name part when paired with keyNames (mutually exclusive with the

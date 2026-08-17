@@ -132,7 +132,7 @@ class MedraOnixXmlParserTest {
         assertEquals("History of Education and Children's Literature", work.journalTitle());
 
         // This ContentItem has no PublicationDate at all (only a JournalIssueDate, which is
-        // deliberately not mapped - see MedraToSkgIfMapper#isoDate).
+        // deliberately not mapped - see MedraManifestationMapper#isoDate).
         assertNull(work.publicationDate());
 
         assertEquals(1, work.contributors().size());

@@ -8,7 +8,7 @@ import java.util.List;
  * A top-level {@code work.funder[]} entry carries the Funder Registry DOI directly as {@code
  * DOI}; a grant record's {@code project[].funding[].funder} carries the same DOI only inside
  * {@code id[]} (verified live against a real Wellcome Trust grant record) - both shapes are
- * modeled here, see {@code CrossrefToSkgIfMapper#funderDoi}.
+ * modeled here, see {@code CrossrefFundingMapper#funderDoi}.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CrossrefFunder {
