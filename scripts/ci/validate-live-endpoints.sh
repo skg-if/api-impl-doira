@@ -8,13 +8,6 @@
 # api.datacite.org / api.crossref.org APIs (no local DB - see application.properties), so this
 # script makes real outbound network calls. A DataCite/Crossref outage can therefore fail this
 # job without there being an actual contract bug in this repo.
-#
-# Known finding as of 2026-08-13, not yet fixed: the "grants" list checks (both providers) are
-# EXPECTED to report fail today - Grant.titles/Grant.abstracts declare each
-# language as a plain string in the spec, but the mapper emits an array per language (the same
-# shape Product.titles/Product.abstracts actually declare and use). This is a real, pre-existing
-# spec/implementation mismatch this script surfaces, not a false positive - left as a documented
-# follow-up rather than fixed here.
 set -uo pipefail
 
 APP_PORT=8080
