@@ -156,7 +156,9 @@ class DataCiteToSkgIfMapperTest {
         assertEquals("Pojer", ((PersonLite) first.getBy()).getFamilyName());
         assertFalse(first.getDeclaredAffiliations().isEmpty());
         Organisation affiliation = (Organisation) first.getDeclaredAffiliations().get(0);
-        assertEquals("EPFL - PTPSP, Protein Production and Structure Core Facilit, EPFL SV PTECH PTPSP, Station 19, Ch-1015 Lausanne, Switzerland",
+        assertEquals(
+                "EPFL - PTPSP, Protein Production and Structure Core Facilit, EPFL SV PTECH PTPSP, "
+                        + "Station 19, Ch-1015 Lausanne, Switzerland",
                 affiliation.getName());
         // DataCite gave a plain string, not a structured affiliation object, so there's no
         // external identifier to carry over.
@@ -168,7 +170,8 @@ class DataCiteToSkgIfMapperTest {
         Product product = mapFixture("datacite-esrf-es-2210534378.json");
 
         // 1 creator + 2 contributors (DataCollector, ProjectManager) + 1 publisher
-        assertEquals(4, product.getContributions().size());
+        final int expectedContributionCount = 4;
+        assertEquals(expectedContributionCount, product.getContributions().size());
 
         ProductContribution dataCollector = product.getContributions().stream()
                 .filter(c -> "De Sanctis".equals(((PersonLite) c.getBy()).getFamilyName()))
@@ -326,7 +329,8 @@ class DataCiteToSkgIfMapperTest {
     void mapsFundingAgencyToOtfWhenFunderIdentifierIsEntirelyAbsent() throws IOException {
         Product product = mapFixture("datacite-dataset-funder-no-identifier-e449e75a.json");
 
-        assertEquals(3, product.getFunding().size());
+        final int expectedFundingCount = 3;
+        assertEquals(expectedFundingCount, product.getFunding().size());
         var epsrc1 = ((GrantLite) product.getFunding().get(0)).getFundingAgency();
         var epsrc2 = ((GrantLite) product.getFunding().get(1)).getFundingAgency();
         var ukri = ((GrantLite) product.getFunding().get(2)).getFundingAgency();
@@ -351,7 +355,8 @@ class DataCiteToSkgIfMapperTest {
         Product product = mapFixture("datacite-zenodo-editor-21232199.json");
 
         // 1 creator (author) + 1 contributor (editor) + 1 publisher.
-        assertEquals(3, product.getContributions().size());
+        final int expectedContributionCount = 3;
+        assertEquals(expectedContributionCount, product.getContributions().size());
         ProductContribution editor = product.getContributions().stream()
                 .filter(c -> c.getRole() == ProductContribution.RoleEnum.EDITOR)
                 .findFirst()
@@ -388,9 +393,11 @@ class DataCiteToSkgIfMapperTest {
         // 2 "Cites" entries + 1 "References" entry = 3 cites; "IsDerivedFrom"/"HasVersion"
         // (still unmodeled) must not add any more, and "IsPartOf"/"IsDocumentedBy" land in
         // their own fields rather than here.
-        assertEquals(3, product.getRelatedProducts().getCites().size());
+        final int expectedCitesCount = 3;
+        assertEquals(expectedCitesCount, product.getRelatedProducts().getCites().size());
         boolean hasReferencesEntry = product.getRelatedProducts().getCites().stream()
-                .anyMatch(c -> "https://doi.org/10.5281/zenodo.21913675".equals(((ProductsRelatedItem) c).getLocalIdentifier()));
+                .anyMatch(c -> "https://doi.org/10.5281/zenodo.21913675"
+                        .equals(((ProductsRelatedItem) c).getLocalIdentifier()));
         assertTrue(hasReferencesEntry);
     }
 
@@ -426,11 +433,13 @@ class DataCiteToSkgIfMapperTest {
         assertEquals("https://github.com/vicgos/MICRO", isSupplementedBy.getIdentifiers().get(0).getValue());
 
         assertEquals(1, related.getIsDocumentedBy().size());
-        assertEquals("handle", ((ProductsRelatedItem) related.getIsDocumentedBy().get(0)).getIdentifiers().get(0).getScheme());
+        assertEquals("handle",
+                ((ProductsRelatedItem) related.getIsDocumentedBy().get(0)).getIdentifiers().get(0).getScheme());
 
         assertEquals(2, related.getIsNewVersionOf().size());
         boolean hasNsdVersion = related.getIsNewVersionOf().stream()
-                .anyMatch(r -> "10.18712/NSD-NSD2457-V3".equals(((ProductsRelatedItem) r).getIdentifiers().get(0).getValue()));
+                .anyMatch(r -> "10.18712/NSD-NSD2457-V3"
+                        .equals(((ProductsRelatedItem) r).getIdentifiers().get(0).getValue()));
         assertTrue(hasNsdVersion);
     }
 
@@ -441,7 +450,8 @@ class DataCiteToSkgIfMapperTest {
 
         assertEquals(2, related.getIsPartOf().size());
         boolean hasKnownPart = related.getIsPartOf().stream()
-                .anyMatch(r -> "https://doi.org/10.5281/zenodo.21827101".equals(((ProductsRelatedItem) r).getLocalIdentifier()));
+                .anyMatch(r -> "https://doi.org/10.5281/zenodo.21827101"
+                        .equals(((ProductsRelatedItem) r).getLocalIdentifier()));
         assertTrue(hasKnownPart);
     }
 

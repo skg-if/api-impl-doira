@@ -59,7 +59,8 @@ class CrossrefToSkgIfMapperTest {
 
     private Product mapFixtureWithVenueMetadata(String jsonResourceName, String xmlResourceName) throws IOException {
         CrossrefVenueMetadata venueMetadata = CrossrefVenueMetadataXmlParser.parse(readXmlResource(xmlResourceName))
-                .orElseThrow(() -> new AssertionError("Fixture XML did not parse to venue metadata: " + xmlResourceName));
+                .orElseThrow(() -> new AssertionError(
+                        "Fixture XML did not parse to venue metadata: " + xmlResourceName));
         return mapper.toProduct(readFixture(jsonResourceName), venueMetadata);
     }
 
@@ -154,11 +155,14 @@ class CrossrefToSkgIfMapperTest {
         assertEquals("https://doi.org/10.1038/41586.1476-4687", venue.getLocalIdentifier());
 
         List<VenueLiteAllOfIdentifiers> identifiers = venue.getIdentifiers();
-        assertEquals(3, identifiers.size());
+        final int expectedIdentifierCount = 3;
+        assertEquals(expectedIdentifierCount, identifiers.size());
         assertEquals("doi", identifiers.get(0).getScheme());
         assertEquals("10.1038/41586.1476-4687", identifiers.get(0).getValue());
-        assertTrue(identifiers.stream().anyMatch(i -> "issn".equals(i.getScheme()) && "0028-0836".equals(i.getValue())));
-        assertTrue(identifiers.stream().anyMatch(i -> "issn".equals(i.getScheme()) && "1476-4687".equals(i.getValue())));
+        assertTrue(identifiers.stream()
+                .anyMatch(i -> "issn".equals(i.getScheme()) && "0028-0836".equals(i.getValue())));
+        assertTrue(identifiers.stream()
+                .anyMatch(i -> "issn".equals(i.getScheme()) && "1476-4687".equals(i.getValue())));
     }
 
     @Test
@@ -189,7 +193,8 @@ class CrossrefToSkgIfMapperTest {
 
         assertFalse(product.getRelatedProducts().getCites().isEmpty());
         boolean hasKnownReference = product.getRelatedProducts().getCites().stream()
-                .anyMatch(c -> "https://doi.org/10.1038/nature03509".equals(((ProductsRelatedItem) c).getLocalIdentifier()));
+                .anyMatch(c -> "https://doi.org/10.1038/nature03509"
+                        .equals(((ProductsRelatedItem) c).getLocalIdentifier()));
         assertTrue(hasKnownReference);
     }
 
@@ -199,7 +204,8 @@ class CrossrefToSkgIfMapperTest {
 
         // This fixture's reference[] has 30 entries, one of which (key BFnature12373_CR17)
         // carries no DOI - it must still surface as a cites entry, via an otf id, not be dropped.
-        assertEquals(30, product.getRelatedProducts().getCites().size());
+        final int expectedReferenceCount = 30;
+        assertEquals(expectedReferenceCount, product.getRelatedProducts().getCites().size());
         boolean hasOtfReference = product.getRelatedProducts().getCites().stream()
                 .anyMatch(c -> ((ProductsRelatedItem) c).getLocalIdentifier().startsWith("otf___"));
         assertTrue(hasOtfReference);
@@ -215,7 +221,8 @@ class CrossrefToSkgIfMapperTest {
         Product product = mapFixture("crossref-journal-article-with-is-supplemented-by.json");
 
         List<ProductsRelatedCitesInner> isSupplementedBy = product.getRelatedProducts().getIsSupplementedBy();
-        assertEquals(4, isSupplementedBy.size());
+        final int expectedIsSupplementedByCount = 4;
+        assertEquals(expectedIsSupplementedByCount, isSupplementedBy.size());
         ProductsRelatedItem first = (ProductsRelatedItem) isSupplementedBy.get(0);
         assertEquals("https://doi.org/10.1107/S2414314618016334/lh4040sup1.cif", first.getLocalIdentifier());
         assertEquals("doi", first.getIdentifiers().get(0).getScheme());
@@ -316,9 +323,11 @@ class CrossrefToSkgIfMapperTest {
 
         // reference key "ref3" carries no DOI and no unstructured text - the otf id must
         // fall back to the reference key itself rather than being dropped.
-        assertEquals(5, product.getRelatedProducts().getCites().size());
+        final int expectedCitesCount = 5;
+        assertEquals(expectedCitesCount, product.getRelatedProducts().getCites().size());
         assertTrue(product.getRelatedProducts().getCites().stream()
-                .anyMatch(c -> ((ProductsRelatedItem) c).getLocalIdentifier().equals("otf___10-17537-icmbb18-42___ref3")));
+                .anyMatch(c -> ((ProductsRelatedItem) c).getLocalIdentifier()
+                        .equals("otf___10-17537-icmbb18-42___ref3")));
     }
 
     @Test
@@ -359,7 +368,8 @@ class CrossrefToSkgIfMapperTest {
 
         // 4 funder entries in the fixture, two of which are the same "Horizon 2020" funder with
         // two different award numbers - each award must surface as its own funding entry.
-        assertEquals(4, product.getFunding().size());
+        final int expectedFundingCount = 4;
+        assertEquals(expectedFundingCount, product.getFunding().size());
         List<GrantLite> horizon2020Entries = product.getFunding().stream()
                 .map(f -> (GrantLite) f)
                 .filter(f -> "Horizon 2020".equals(f.getFundingAgency().getName()))
@@ -416,13 +426,18 @@ class CrossrefToSkgIfMapperTest {
         assertEquals("https://doi.org/10.1007/978-3-319-66787-4", venue.getLocalIdentifier());
 
         List<VenueLiteAllOfIdentifiers> identifiers = venue.getIdentifiers();
-        assertEquals(5, identifiers.size());
+        final int expectedIdentifierCount = 5;
+        assertEquals(expectedIdentifierCount, identifiers.size());
         assertEquals("doi", identifiers.get(0).getScheme());
         assertEquals("10.1007/978-3-319-66787-4", identifiers.get(0).getValue());
-        assertTrue(identifiers.stream().anyMatch(i -> "issn".equals(i.getScheme()) && "0302-9743".equals(i.getValue())));
-        assertTrue(identifiers.stream().anyMatch(i -> "issn".equals(i.getScheme()) && "1611-3349".equals(i.getValue())));
-        assertTrue(identifiers.stream().anyMatch(i -> "isbn".equals(i.getScheme()) && "978-3-319-66786-7".equals(i.getValue())));
-        assertTrue(identifiers.stream().anyMatch(i -> "isbn".equals(i.getScheme()) && "978-3-319-66787-4".equals(i.getValue())));
+        assertTrue(identifiers.stream()
+                .anyMatch(i -> "issn".equals(i.getScheme()) && "0302-9743".equals(i.getValue())));
+        assertTrue(identifiers.stream()
+                .anyMatch(i -> "issn".equals(i.getScheme()) && "1611-3349".equals(i.getValue())));
+        assertTrue(identifiers.stream()
+                .anyMatch(i -> "isbn".equals(i.getScheme()) && "978-3-319-66786-7".equals(i.getValue())));
+        assertTrue(identifiers.stream()
+                .anyMatch(i -> "isbn".equals(i.getScheme()) && "978-3-319-66787-4".equals(i.getValue())));
 
         assertEquals("10529", product.getManifestations().get(0).getBiblio().getVolume());
     }
@@ -441,12 +456,15 @@ class CrossrefToSkgIfMapperTest {
         assertEquals("https://doi.org/10.1007/978-1-4842-7310-4", venue.getLocalIdentifier());
 
         List<VenueLiteAllOfIdentifiers> identifiers = venue.getIdentifiers();
-        assertEquals(3, identifiers.size());
+        final int expectedIdentifierCount = 3;
+        assertEquals(expectedIdentifierCount, identifiers.size());
         assertEquals("doi", identifiers.get(0).getScheme());
         assertEquals("10.1007/978-1-4842-7310-4", identifiers.get(0).getValue());
         assertTrue(identifiers.stream().noneMatch(i -> "issn".equals(i.getScheme())));
-        assertTrue(identifiers.stream().anyMatch(i -> "isbn".equals(i.getScheme()) && "978-1-4842-7309-8".equals(i.getValue())));
-        assertTrue(identifiers.stream().anyMatch(i -> "isbn".equals(i.getScheme()) && "978-1-4842-7310-4".equals(i.getValue())));
+        assertTrue(identifiers.stream()
+                .anyMatch(i -> "isbn".equals(i.getScheme()) && "978-1-4842-7309-8".equals(i.getValue())));
+        assertTrue(identifiers.stream()
+                .anyMatch(i -> "isbn".equals(i.getScheme()) && "978-1-4842-7310-4".equals(i.getValue())));
 
         assertNull(product.getManifestations().get(0).getBiblio().getVolume());
     }
@@ -464,15 +482,19 @@ class CrossrefToSkgIfMapperTest {
                 "crossref-proceedings-article-with-series.xml");
 
         VenueLite venue = (VenueLite) product.getManifestations().get(0).getBiblio().getIn();
-        assertEquals("Proceedings of the 4th International Conference on Innovative Research Across Disciplines (ICIRAD 2021)",
+        assertEquals(
+                "Proceedings of the 4th International Conference on Innovative Research Across Disciplines "
+                        + "(ICIRAD 2021)",
                 venue.getName());
         assertTrue(venue.getLocalIdentifier().startsWith("otf___"));
 
         List<VenueLiteAllOfIdentifiers> identifiers = venue.getIdentifiers();
         assertEquals(2, identifiers.size());
         assertTrue(identifiers.stream().noneMatch(i -> "doi".equals(i.getScheme())));
-        assertTrue(identifiers.stream().anyMatch(i -> "issn".equals(i.getScheme()) && "2352-5398".equals(i.getValue())));
-        assertTrue(identifiers.stream().anyMatch(i -> "isbn".equals(i.getScheme()) && "978-94-6239-490-2".equals(i.getValue())));
+        assertTrue(identifiers.stream()
+                .anyMatch(i -> "issn".equals(i.getScheme()) && "2352-5398".equals(i.getValue())));
+        assertTrue(identifiers.stream()
+                .anyMatch(i -> "isbn".equals(i.getScheme()) && "978-94-6239-490-2".equals(i.getValue())));
 
         assertEquals("613", product.getManifestations().get(0).getBiblio().getVolume());
     }
@@ -506,11 +528,12 @@ class CrossrefToSkgIfMapperTest {
 
         // 6 authors, so the publisher contribution the mapper now appends must be the 7th,
         // ranked after every author.
+        final int authorCount = 6;
         List<ProductContribution> contributions = product.getContributions();
-        assertEquals(7, contributions.size());
-        ProductContribution publisherContribution = contributions.get(6);
+        assertEquals(authorCount + 1, contributions.size());
+        ProductContribution publisherContribution = contributions.get(authorCount);
         assertEquals(ProductContribution.RoleEnum.PUBLISHER, publisherContribution.getRole());
-        assertEquals(7, publisherContribution.getRank());
+        assertEquals(authorCount + 1, publisherContribution.getRank());
         Organisation publisherBy = (Organisation) publisherContribution.getBy();
         assertEquals("Springer International Publishing", publisherBy.getName());
         assertTrue(publisherBy.getLocalIdentifier().startsWith("otf___"));
@@ -600,7 +623,8 @@ class CrossrefToSkgIfMapperTest {
         assertEquals("Wellcome Trust", grant.getFundingAgency().getName());
         assertEquals("doi", grant.getFundingAgency().getIdentifiers().get(0).getScheme());
         assertEquals("10.13039/100010269", grant.getFundingAgency().getIdentifiers().get(0).getValue());
-        assertEquals(479450, grant.getFundedAmount());
+        final int expectedFundedAmount = 479450;
+        assertEquals(expectedFundedAmount, grant.getFundedAmount());
         assertEquals("GBP", grant.getCurrency());
         assertEquals("2019-11-01", grant.getDuration().getStart());
         assertEquals("2024-10-31", grant.getDuration().getEnd());
@@ -610,7 +634,8 @@ class CrossrefToSkgIfMapperTest {
     void toGrant_mapsLeadAndCoInvestigatorsAsContributionsWithRoles() throws IOException {
         Grant grant = mapGrantFixture("crossref-grant.json");
 
-        assertEquals(9, grant.getContributions().size());
+        final int expectedInvestigatorCount = 9;
+        assertEquals(expectedInvestigatorCount, grant.getContributions().size());
         GrantContribution lead = (GrantContribution) grant.getContributions().stream()
                 .filter(c -> "Halim".equals(((PersonLite) ((GrantContribution) c).getBy()).getFamilyName()))
                 .findFirst()
@@ -636,8 +661,10 @@ class CrossrefToSkgIfMapperTest {
 
         // 3 distinct institutions appear across 9 investigators (University of Cambridge
         // repeats 6 times) - beneficiaries must be deduped by name.
-        assertEquals(3, grant.getBeneficiaries().size());
-        assertTrue(grant.getBeneficiaries().stream().anyMatch(b -> "University of Cambridge".equals(((Organisation) b).getName())));
+        final int expectedDistinctInstitutionCount = 3;
+        assertEquals(expectedDistinctInstitutionCount, grant.getBeneficiaries().size());
+        assertTrue(grant.getBeneficiaries().stream()
+                .anyMatch(b -> "University of Cambridge".equals(((Organisation) b).getName())));
     }
 
     @Test

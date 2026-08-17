@@ -7,6 +7,8 @@ import org.skgif.doi.crossref.dto.CrossrefAmount;
 import org.skgif.doi.crossref.dto.CrossrefFunder;
 import org.skgif.doi.crossref.dto.CrossrefFunding;
 import org.skgif.doi.crossref.dto.CrossrefProject;
+import org.skgif.doi.crossref.dto.CrossrefProjectDescription;
+import org.skgif.doi.crossref.dto.CrossrefProjectTitle;
 import org.skgif.doi.crossref.dto.CrossrefWork;
 import org.skgif.doi.generated.model.GrantAllOfDuration;
 import org.skgif.doi.generated.model.Organisation;
@@ -39,7 +41,7 @@ final class CrossrefGrantMapper {
         List<String> values = projects.stream()
                 .filter(p -> p.projectTitle() != null)
                 .flatMap(p -> p.projectTitle().stream())
-                .map(t -> t.title())
+                .map(CrossrefProjectTitle::title)
                 .filter(Objects::nonNull)
                 .toList();
         return values.isEmpty() ? Map.of() : Map.of("en", String.join(" ", values));
@@ -49,7 +51,7 @@ final class CrossrefGrantMapper {
         List<String> values = projects.stream()
                 .filter(p -> p.projectDescription() != null)
                 .flatMap(p -> p.projectDescription().stream())
-                .map(d -> d.description())
+                .map(CrossrefProjectDescription::description)
                 .filter(Objects::nonNull)
                 .toList();
         return values.isEmpty() ? Map.of() : Map.of("en", String.join("\n\n", values));

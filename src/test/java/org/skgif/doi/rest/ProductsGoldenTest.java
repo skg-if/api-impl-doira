@@ -46,6 +46,11 @@ class ProductsGoldenTest {
 
     private static final boolean REGENERATE_GOLDEN = Boolean.getBoolean("golden.regenerate");
 
+    private static final int HTTP_OK = 200;
+    private static final long PAGE_2_OF_3_TOTAL_ITEMS = 5;
+    private static final int PAGE_2_OF_3_TOTAL_PAGES = 3;
+    private static final int PAGE_2_OF_3_PAGE_NUMBER = 2;
+
     @InjectMock
     @RestClient
     DataCiteClient dataCiteClient;
@@ -94,10 +99,14 @@ class ProductsGoldenTest {
      * its own statement, assigned to a local variable, before being passed to {@code
      * when(...).thenReturn(...)} elsewhere - see {@code CrossrefProductsResourceTest}'s copy of
      * this helper for why inlining it corrupts Mockito's stubbing state.
+     *
+     * @param xmlResourceName classpath resource name of the XML fixture to load
+     * @return a mocked 200 {@code Response} whose body is the fixture's raw XML
+     * @throws IOException if the fixture resource cannot be read
      */
     private Response okXmlResponse(String xmlResourceName) throws IOException {
         Response response = mock(Response.class);
-        when(response.getStatus()).thenReturn(200);
+        when(response.getStatus()).thenReturn(HTTP_OK);
         when(response.readEntity(String.class)).thenReturn(loadRawResource(xmlResourceName));
         return response;
     }
@@ -118,6 +127,8 @@ class ProductsGoldenTest {
      * DOI 10.5281/zenodo.21826016 - a real Zenodo software deposit ({@code
      * resourceTypeGeneral: "Software"}), proving the {@code research software} product-type
      * mapping at the golden-output level.
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_matchesExpectedJsonLd_zenodoSoftware21826016() throws IOException {
@@ -129,6 +140,8 @@ class ProductsGoldenTest {
      * DOI 10.5281/zenodo.20750072 - a real Zenodo text deposit ({@code
      * resourceTypeGeneral: "Text"}), proving the {@code literature} product-type mapping via
      * DataCite at the golden-output level.
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_matchesExpectedJsonLd_zenodoText20750072() throws IOException {
@@ -140,6 +153,8 @@ class ProductsGoldenTest {
      * DOI 10.5281/zenodo.21232199 - a real Zenodo deposit whose contributor carries
      * contributorType "Editor", proving the editor-role contribution mapping at the
      * golden-output level (see {@code DataCiteToSkgIfMapperTest.mapsEditorContributorTypeToEditorRole}).
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_matchesExpectedJsonLd_zenodoEditor21232199() throws IOException {
@@ -152,6 +167,8 @@ class ProductsGoldenTest {
      * DataCite citation-like relation types ("Cites" and "References"), proving both feed
      * related_products.cites at the golden-output level (see {@code
      * DataCiteToSkgIfMapperTest.mapsBothCitesAndReferencesRelationTypesIntoTheSameCitesArray}).
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_matchesExpectedJsonLd_zenodoCitesReferences21914195() throws IOException {
@@ -165,6 +182,8 @@ class ProductsGoldenTest {
      * its own related_products field - alongside a decoy "IsSupplementTo" and an unmodeled
      * "HasVersion" (see {@code DataCiteToSkgIfMapperTest.mapsIsSupplementedByIsDocumentedByAndIsNewVersionOf}
      * et al.).
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_matchesExpectedJsonLd_zenodoRelations21827103() throws IOException {
@@ -177,11 +196,14 @@ class ProductsGoldenTest {
      * funding reference identifies the funder via "Crossref Funder ID" rather than "ROR",
      * proving the otf fallback for `funding[].funding_agency` at the golden-output level (see
      * {@code DataCiteToSkgIfMapperTest.mapsFundingAgencyToOtfWhenFunderIdentifierTypeIsNotRor}).
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_matchesExpectedJsonLd_uwtsdThesis4342() throws IOException {
         assertMatchesExpectedDataCiteJsonLd("10.82227/repository.uwtsd.ac.uk.00004342",
-                "datacite-thesis-crossref-funder-id-4342.json", "expected/datacite-thesis-crossref-funder-id-4342-out.json");
+                "datacite-thesis-crossref-funder-id-4342.json",
+                "expected/datacite-thesis-crossref-funder-id-4342-out.json");
     }
 
     /**
@@ -190,6 +212,8 @@ class ProductsGoldenTest {
      * otf fallback for `funding[].funding_agency` at the golden-output level when the identifier
      * is entirely absent (rather than merely non-ROR/non-DOI-shaped - see
      * {@code DataCiteToSkgIfMapperTest.mapsFundingAgencyToOtfWhenFunderIdentifierIsEntirelyAbsent}).
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_matchesExpectedJsonLd_standrewsDatasetFunderNoIdentifier() throws IOException {
@@ -206,6 +230,8 @@ class ProductsGoldenTest {
      * known-good and no new DataCite network capture is needed. Page 2 of 3 is the deliberate
      * choice: it's the one scenario where both prev_page and next_page are emitted
      * simultaneously.
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProducts_matchesExpectedJsonLd_multipleItemsPage2Of3() throws IOException {
@@ -213,17 +239,20 @@ class ProductsGoldenTest {
                 java.util.List.of(
                         loadDataCiteFixture("datacite-esrf-dc-2493599001.json").data(),
                         loadDataCiteFixture("datacite-esrf-es-2210534378.json").data()),
-                new DataCiteDoiListResponse.Meta(5, 3, 2), null);
+                new DataCiteDoiListResponse.Meta(
+                        PAGE_2_OF_3_TOTAL_ITEMS, PAGE_2_OF_3_TOTAL_PAGES, PAGE_2_OF_3_PAGE_NUMBER),
+                null);
 
         when(dataCiteClient.listDois(any(), any(), anyInt(), anyInt())).thenReturn(listResponse);
 
         String actualBody = given()
                 .when().get(BASE + "/datacite/products?page=2&page_size=2")
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .extract().asString();
 
-        compareOrWriteGolden(new ObjectMapper().readTree(actualBody), "expected/datacite-products-search-multiple-out.json");
+        compareOrWriteGolden(new ObjectMapper().readTree(actualBody),
+                "expected/datacite-products-search-multiple-out.json");
     }
 
     @Test
@@ -237,6 +266,8 @@ class ProductsGoldenTest {
      * (4 DOI-shaped supplement-file entries) alongside a normal {@code reference[]} - proves
      * {@code related_products.is_supplemented_by} at the golden-output level and that adding it
      * doesn't disturb {@code cites}.
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_matchesExpectedJsonLd_journalArticleWithIsSupplementedBy() throws IOException {
@@ -251,6 +282,8 @@ class ProductsGoldenTest {
      * crossref-journal-doi-lookup-nature.json}, captured from the real API) via {@code
      * CrossrefJournalDoiResolver} - proves the venue's real-DOI {@code local_identifier} (instead
      * of an otf id) and combined doi/issn identifiers at the golden-output level.
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_matchesExpectedJsonLd_natureArticleWithJournalDoi() throws IOException {
@@ -262,15 +295,18 @@ class ProductsGoldenTest {
         String actualBody = given()
                 .when().get(BASE + "/crossref/products/10.1038/nature12373")
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .extract().asString();
 
-        compareOrWriteGolden(new ObjectMapper().readTree(actualBody), "expected/crossref-journal-article-with-journal-doi-out.json");
+        compareOrWriteGolden(new ObjectMapper().readTree(actualBody),
+                "expected/crossref-journal-article-with-journal-doi-out.json");
     }
 
     /**
      * Same golden-regression pattern as above, for DOI 10.1038/s41467-022-33468-6 (ORCID-bearing
      * authors, no "page" field).
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_matchesExpectedJsonLd_orcidArticle() throws IOException {
@@ -281,6 +317,8 @@ class ProductsGoldenTest {
     /**
      * Same golden-regression pattern as above, for DOI 10.17537/icmbb18.42 (a
      * "proceedings-article" with no license/funder).
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_matchesExpectedJsonLd_proceedingsArticle() throws IOException {
@@ -291,16 +329,21 @@ class ProductsGoldenTest {
     /**
      * Same golden-regression pattern as above, for DOI 10.1103/physrevb.110.174515 (ROR-tagged
      * author affiliations, a funder with its own Funder Registry DOI).
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_matchesExpectedJsonLd_rorAffiliationArticle() throws IOException {
-        assertMatchesExpectedCrossrefJsonLd("10.1103/physrevb.110.174515", "crossref-journal-article-with-ror-affiliation.json",
+        assertMatchesExpectedCrossrefJsonLd("10.1103/physrevb.110.174515",
+                "crossref-journal-article-with-ror-affiliation.json",
                 "expected/crossref-journal-article-with-ror-affiliation-out.json");
     }
 
     /**
      * DOI 10.17989/encsr154xia - a real Crossref {@code type: "dataset"} record, proving the
      * {@code research data} product-type mapping via Crossref at the golden-output level.
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_matchesExpectedJsonLd_datasetArticle() throws IOException {
@@ -314,6 +357,8 @@ class ProductsGoldenTest {
      * {@code correction}/{@code retraction} dates map from {@code update-to[].updated} at the
      * golden-output level, and that an unrecognized {@code type} (here {@code "erratum"}) is
      * ignored rather than guessed at (see {@code CrossrefManifestationMapper#dates}).
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_matchesExpectedJsonLd_journalArticleWithUpdateTo() throws IOException {
@@ -325,6 +370,8 @@ class ProductsGoldenTest {
      * DOI 10.1155/2016/1353212 - a real Hindawi journal article with a funder that has neither
      * an award number nor a Funder Registry DOI, and a JATS-XML abstract - proving the otf
      * funder/abstract-stripping paths at the golden-output level.
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_matchesExpectedJsonLd_journalArticleWithFunder() throws IOException {
@@ -339,6 +386,8 @@ class ProductsGoldenTest {
      * {@code container-title[]} array - proves the corrected book-title venue, the book's own
      * DOI as a real {@code local_identifier}, combined doi/issn/isbn identifiers, and the series
      * volume number at the golden-output level.
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_matchesExpectedJsonLd_bookChapter() throws IOException {
@@ -351,6 +400,8 @@ class ProductsGoldenTest {
      * of any series (Crossref's XML uses {@code book_metadata} rather than {@code
      * book_series_metadata} here) - proves the no-series path at the golden-output level: book
      * title/DOI/ISBN still enrich the venue, but there's no series ISSN and no volume number.
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_matchesExpectedJsonLd_bookChapterStandalone() throws IOException {
@@ -365,11 +416,15 @@ class ProductsGoldenTest {
      * {@code doi_data} - proves the corrected proceedings-title venue, the otf-id
      * {@code local_identifier} fallback (no container DOI recorded here), combined issn/isbn
      * identifiers, and the series volume number at the golden-output level.
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_matchesExpectedJsonLd_proceedingsArticleWithSeries() throws IOException {
-        assertMatchesExpectedCrossrefJsonLd("10.2991/assehr.k.211222.032", "crossref-proceedings-article-with-series.json",
-                "crossref-proceedings-article-with-series.xml", "expected/crossref-proceedings-article-with-series-out.json");
+        assertMatchesExpectedCrossrefJsonLd("10.2991/assehr.k.211222.032",
+                "crossref-proceedings-article-with-series.json",
+                "crossref-proceedings-article-with-series.xml",
+                "expected/crossref-proceedings-article-with-series-out.json");
     }
 
     /**
@@ -378,11 +433,15 @@ class ProductsGoldenTest {
      * proceedings_series_metadata}). Its REST JSON {@code container-title[0]} already happens to
      * match the XML's {@code proceedings_title}, but its ISBN is entirely absent from the REST
      * JSON - proves the XML-only ISBN enrichment path for proceedings at the golden-output level.
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_matchesExpectedJsonLd_proceedingsArticleStandalone() throws IOException {
-        assertMatchesExpectedCrossrefJsonLd("10.1109/freq.1998.717994", "crossref-proceedings-article-standalone.json",
-                "crossref-proceedings-article-standalone.xml", "expected/crossref-proceedings-article-standalone-out.json");
+        assertMatchesExpectedCrossrefJsonLd("10.1109/freq.1998.717994",
+                "crossref-proceedings-article-standalone.json",
+                "crossref-proceedings-article-standalone.xml",
+                "expected/crossref-proceedings-article-standalone-out.json");
     }
 
     /**
@@ -390,6 +449,8 @@ class ProductsGoldenTest {
      * contributor carries all four ONIX name fields together ({@code NamesBeforeKey}/{@code
      * KeyNames} and {@code PersonName}/{@code PersonNameInverted}) - proves the structured-pair
      * precedence at the golden-output level (see {@code MedraContributionMapper#personRef}).
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_matchesExpectedJsonLd_medraMixedNameShapes() throws IOException {
@@ -403,6 +464,8 @@ class ProductsGoldenTest {
      * modeled as a journal) whose contributors carry only a bare {@code PersonName}, and whose
      * record has an abstract - proves the no-inverted-form fallback and abstract mapping at the
      * golden-output level.
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_matchesExpectedJsonLd_medraVersionMessageBookSeries() throws IOException {
@@ -413,6 +476,8 @@ class ProductsGoldenTest {
     /**
      * DOI 10.1393/ncc/i2025-25069-2 - a mEDRA-registered journal article with 23 authors, all
      * using the {@code NamesBeforeKey}/{@code KeyNames} name shape.
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_matchesExpectedJsonLd_medraManyAuthors() throws IOException {
@@ -424,6 +489,8 @@ class ProductsGoldenTest {
      * DOI 10.1393/ncc/i2021-21084-7 - a mEDRA-registered journal article with zero
      * {@code Contributor} elements at all - proves {@code contributions} is omitted rather than
      * an empty list at the golden-output level.
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_matchesExpectedJsonLd_medraNoContributors() throws IOException {
@@ -436,6 +503,8 @@ class ProductsGoldenTest {
      * {@code Title} entries (2 languages x 2 title types) - proves the article-vs-journal title
      * disambiguation and the first-full-title-in-document-order venue-name heuristic at the
      * golden-output level (see {@code MedraOnixXmlParser#journalTitle}).
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_matchesExpectedJsonLd_medraMultilangTitles() throws IOException {
@@ -447,6 +516,8 @@ class ProductsGoldenTest {
      * DOI 10.12919/sapere.2018.04.3 - a mEDRA-registered journal article whose single contributor
      * carries only {@code PersonNameInverted}, with no {@code PersonName} sibling at all - proves
      * the invert-and-recompose fallback at the golden-output level.
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_matchesExpectedJsonLd_medraPersonNameInvertedOnly() throws IOException {
@@ -463,6 +534,8 @@ class ProductsGoldenTest {
      * {@code JournalIssueDate}, deliberately unmapped), and its sole contributor's
      * {@code PersonNameInverted} ("Camara Bastos, Maria Helena") has a two-word family name -
      * proves the split-on-first-comma-only behaviour at the golden-output level.
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_matchesExpectedJsonLd_medraMultipleProductIdentifiers() throws IOException {
@@ -475,7 +548,8 @@ class ProductsGoldenTest {
         Response xmlResponse = okXmlResponse(medraXmlFixture);
         when(medraClient.getMetadata(doi)).thenReturn(xmlResponse);
 
-        String actualBody = given().when().get(BASE + "/medra/products/" + doi).then().statusCode(200).extract().asString();
+        String actualBody = given().when().get(BASE + "/medra/products/" + doi)
+                .then().statusCode(HTTP_OK).extract().asString();
         compareOrWriteGolden(new ObjectMapper().readTree(actualBody), expectedJsonLdResource);
     }
 
@@ -483,7 +557,8 @@ class ProductsGoldenTest {
             throws IOException {
         when(dataCiteClient.getDoi(doi)).thenReturn(loadDataCiteFixture(dataCiteFixture));
 
-        String actualBody = given().when().get(BASE + "/datacite/products/" + doi).then().statusCode(200).extract().asString();
+        String actualBody = given().when().get(BASE + "/datacite/products/" + doi)
+                .then().statusCode(HTTP_OK).extract().asString();
         compareOrWriteGolden(new ObjectMapper().readTree(actualBody), expectedJsonLdResource);
     }
 
@@ -491,7 +566,8 @@ class ProductsGoldenTest {
             throws IOException {
         when(crossrefClient.getWork(doi)).thenReturn(loadCrossrefFixture(crossrefFixture));
 
-        String actualBody = given().when().get(BASE + "/crossref/products/" + doi).then().statusCode(200).extract().asString();
+        String actualBody = given().when().get(BASE + "/crossref/products/" + doi)
+                .then().statusCode(HTTP_OK).extract().asString();
         compareOrWriteGolden(new ObjectMapper().readTree(actualBody), expectedJsonLdResource);
     }
 
@@ -499,6 +575,12 @@ class ProductsGoldenTest {
      * Overload for chapter-in-a-book or paper-in-proceedings DOIs, additionally mocking the XML
      * transform fetch (see {@code CrossrefTypeMapping#isXmlVenueEnrichable}) that the plain
      * overload above never triggers.
+     *
+     * @param doi doi of the fixture under test
+     * @param crossrefFixture classpath resource name of the Crossref JSON fixture
+     * @param venueXmlFixture classpath resource name of the venue XML transform fixture
+     * @param expectedJsonLdResource classpath resource name of the expected golden JSON-LD
+     * @throws IOException if a fixture resource cannot be read
      */
     private void assertMatchesExpectedCrossrefJsonLd(String doi, String crossrefFixture, String venueXmlFixture,
             String expectedJsonLdResource) throws IOException {
@@ -510,7 +592,8 @@ class ProductsGoldenTest {
         Response xmlResponse = okXmlResponse(venueXmlFixture);
         when(crossrefXmlTransformClient.getXmlTransform(doi)).thenReturn(xmlResponse);
 
-        String actualBody = given().when().get(BASE + "/crossref/products/" + doi).then().statusCode(200).extract().asString();
+        String actualBody = given().when().get(BASE + "/crossref/products/" + doi)
+                .then().statusCode(HTTP_OK).extract().asString();
         compareOrWriteGolden(new ObjectMapper().readTree(actualBody), expectedJsonLdResource);
     }
 

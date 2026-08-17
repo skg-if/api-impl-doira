@@ -29,6 +29,11 @@ class DataCiteGrantsResourceTest {
 
     private static final String BASE = "/skg-if/api";
 
+    private static final int HTTP_OK = 200;
+    private static final int HTTP_NOT_FOUND = 404;
+    private static final int HTTP_UNPROCESSABLE_ENTITY = 422;
+    private static final int EXPECTED_CONTEXT_SIZE = 3;
+
     @InjectMock
     @RestClient
     DataCiteClient dataCiteClient;
@@ -48,8 +53,8 @@ class DataCiteGrantsResourceTest {
         given()
                 .when().get(BASE + "/datacite/grants/10.71707/r3sy-7371")
                 .then()
-                .statusCode(200)
-                .body("@context", org.hamcrest.Matchers.hasSize(3))
+                .statusCode(HTTP_OK)
+                .body("@context", org.hamcrest.Matchers.hasSize(EXPECTED_CONTEXT_SIZE))
                 .body("'@graph'[0].local_identifier", equalTo("https://doi.org/10.71707/r3sy-7371"))
                 .body("'@graph'[0].entity_type", equalTo("grant"))
                 .body("'@graph'[0].identifiers[0].scheme", equalTo("doi"))
@@ -68,7 +73,7 @@ class DataCiteGrantsResourceTest {
         given()
                 .when().get(BASE + "/datacite/grants/10.9999/does-not-exist")
                 .then()
-                .statusCode(404)
+                .statusCode(HTTP_NOT_FOUND)
                 .body("status", equalTo("404"))
                 .body("title", equalTo("NOT_FOUND"));
     }
@@ -77,6 +82,8 @@ class DataCiteGrantsResourceTest {
      * A non-Award DOI (a product) requested via {@code /datacite/grants} must 404, pointing the
      * caller at {@code /datacite/products} instead - the inverse of {@code
      * DataCiteProductsResourceTest#getProductById_awardDoi_returns404PointingToGrants}.
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getGrantById_productDoi_returns404PointingToProducts() throws IOException {
@@ -86,7 +93,7 @@ class DataCiteGrantsResourceTest {
         given()
                 .when().get(BASE + "/datacite/grants/10.15151/esrf-dc-2493599001")
                 .then()
-                .statusCode(404)
+                .statusCode(HTTP_NOT_FOUND)
                 .body("status", equalTo("404"))
                 .body("detail", containsString("/datacite/products/10.15151/esrf-dc-2493599001"));
     }
@@ -96,7 +103,7 @@ class DataCiteGrantsResourceTest {
         given()
                 .when().get(BASE + "/datacite/grants?filter=bogus_filter:xyz")
                 .then()
-                .statusCode(422)
+                .statusCode(HTTP_UNPROCESSABLE_ENTITY)
                 .body("status", equalTo("422"))
                 .body("title", equalTo("INVALID_FILTER"));
     }
@@ -107,7 +114,7 @@ class DataCiteGrantsResourceTest {
                 java.util.List.of(), new DataCiteDoiListResponse.Meta(0, 0, 1), null);
         when(dataCiteClient.listDois(any(), any(), anyInt(), anyInt())).thenReturn(listResponse);
 
-        given().when().get(BASE + "/datacite/grants").then().statusCode(200);
+        given().when().get(BASE + "/datacite/grants").then().statusCode(HTTP_OK);
 
         ArgumentCaptor<String> queryCaptor = ArgumentCaptor.forClass(String.class);
         verify(dataCiteClient).listDois(any(), queryCaptor.capture(), anyInt(), anyInt());
@@ -126,7 +133,7 @@ class DataCiteGrantsResourceTest {
         given()
                 .when().get(BASE + "/datacite/grants?page_size=5")
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .body("meta.entity_type", equalTo("search_result_page"))
                 .body("meta.part_of.total_items", equalTo(1))
                 .body("'@graph'[0].local_identifier", equalTo("https://doi.org/10.71707/r3sy-7371"))

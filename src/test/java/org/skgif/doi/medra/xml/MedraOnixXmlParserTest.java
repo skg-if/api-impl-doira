@@ -68,7 +68,8 @@ class MedraOnixXmlParserTest {
     void parsesNamesBeforeKeyAndKeyNamesForManyAuthors() throws IOException {
         MedraWork work = parseFixture("medra-many-authors.xml");
 
-        assertEquals(23, work.contributors().size());
+        final int expectedContributorCount = 23;
+        assertEquals(expectedContributorCount, work.contributors().size());
         MedraContributor first = work.contributors().get(0);
         assertEquals("L.", first.namesBeforeKey());
         assertEquals("Baldesi", first.keyNames());
@@ -100,7 +101,8 @@ class MedraOnixXmlParserTest {
         assertEquals("Atti della Accademia Perloritana dei Pericolanti. Classe di Scienze Fisiche, Matematiche"
                 + " e Naturali", work.journalTitle());
         assertEquals(java.util.List.of("18251242"), work.issns());
-        assertEquals(8, work.contributors().size());
+        final int expectedContributorCount = 8;
+        assertEquals(expectedContributorCount, work.contributors().size());
     }
 
     @Test

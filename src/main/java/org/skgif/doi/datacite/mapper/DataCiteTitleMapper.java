@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
+import org.skgif.doi.datacite.dto.DataCiteDescription;
 import org.skgif.doi.datacite.dto.DataCiteSubject;
 import org.skgif.doi.generated.model.ProductAllOfTerm;
 import org.skgif.doi.generated.model.ProductAllOfTopics;
@@ -64,7 +65,7 @@ final class DataCiteTitleMapper {
         }
         return attributes.descriptions().stream()
                 .filter(d -> "Abstract".equals(d.descriptionType()))
-                .map(d -> d.description())
+                .map(DataCiteDescription::description)
                 .filter(Objects::nonNull)
                 .toList();
     }

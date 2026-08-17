@@ -58,7 +58,8 @@ class LicenceMapperTest {
     @Test
     void licence_returnsFirstEntryVerbatim() {
         assertEquals("https://creativecommons.org/licenses/by/4.0/",
-                LicenceMapper.licence(List.of("https://creativecommons.org/licenses/by/4.0/", "https://example.org/other")));
+                LicenceMapper.licence(
+                        List.of("https://creativecommons.org/licenses/by/4.0/", "https://example.org/other")));
     }
 
     /**

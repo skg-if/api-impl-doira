@@ -40,11 +40,12 @@ class DataCiteProductFiltersTest {
         // Real DataCite data frequently has commas inside values (addresses, "Family,Given"
         // name strings, subject lists like "LS-3436,LS-3437") - a naive split(",") would
         // misparse these as bogus additional filter segments.
+        String esrfAddress = "ESRF, 71 avenue des Martyrs, CS 40220, 38043 Grenoble Cedex 9, France";
         assertEquals(
-                "(creators.affiliation.name:\"ESRF, 71 avenue des Martyrs, CS 40220, 38043 Grenoble Cedex 9, France\""
-                        + " OR contributors.affiliation.name:\"ESRF, 71 avenue des Martyrs, CS 40220, 38043 Grenoble Cedex 9, France\")",
+                "(creators.affiliation.name:\"" + esrfAddress
+                        + "\" OR contributors.affiliation.name:\"" + esrfAddress + "\")",
                 DataCiteProductFilters.toDataCiteQuery(
-                        "contributions.declared_affiliations.name:ESRF, 71 avenue des Martyrs, CS 40220, 38043 Grenoble Cedex 9, France"));
+                        "contributions.declared_affiliations.name:" + esrfAddress));
     }
 
     @Test
@@ -141,7 +142,8 @@ class DataCiteProductFiltersTest {
 
     @Test
     void toDataCiteQuery_byIdentifiersScheme_zeroMatchForOtherScheme() {
-        assertEquals("doi:\"__no_match__\"", DataCiteProductFilters.toDataCiteQuery("contributions.by.identifiers.scheme:isni"));
+        assertEquals("doi:\"__no_match__\"",
+                DataCiteProductFilters.toDataCiteQuery("contributions.by.identifiers.scheme:isni"));
     }
 
     @Test
@@ -165,7 +167,8 @@ class DataCiteProductFiltersTest {
         String rorUrl = "https://ror.org/02550n020";
         assertEquals("(creators.affiliation.affiliationIdentifier:\"" + rorUrl
                         + "\" OR contributors.affiliation.affiliationIdentifier:\"" + rorUrl + "\")",
-                DataCiteProductFilters.toDataCiteQuery("contributions.declared_affiliations.local_identifier:" + rorUrl));
+                DataCiteProductFilters.toDataCiteQuery(
+                        "contributions.declared_affiliations.local_identifier:" + rorUrl));
     }
 
     @Test
@@ -185,7 +188,8 @@ class DataCiteProductFiltersTest {
 
     @Test
     void toDataCiteQuery_declaredAffiliationsIdentifiersScheme_noOpForRor() {
-        assertNull(DataCiteProductFilters.toDataCiteQuery("contributions.declared_affiliations.identifiers.scheme:ror"));
+        assertNull(DataCiteProductFilters.toDataCiteQuery(
+                "contributions.declared_affiliations.identifiers.scheme:ror"));
     }
 
     @Test

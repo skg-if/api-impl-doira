@@ -35,6 +35,11 @@ class CrossrefProductsResourceTest {
 
     private static final String BASE = "/skg-if/api";
 
+    private static final int HTTP_OK = 200;
+    private static final int HTTP_NOT_FOUND = 404;
+    private static final int HTTP_UNPROCESSABLE_ENTITY = 422;
+    private static final int EXPECTED_CONTEXT_SIZE = 3;
+
     @InjectMock
     @RestClient
     CrossrefClient crossrefClient;
@@ -70,10 +75,14 @@ class CrossrefProductsResourceTest {
      * internally, and evaluating it inline as another still-open when(...).thenReturn(...)'s
      * argument corrupts Mockito's single ongoing-stubbing state
      * ({@code UnfinishedStubbingException}).
+     *
+     * @param xmlResourceName classpath resource name of the XML fixture to load
+     * @return a mocked 200 {@code Response} whose body is the fixture's raw XML
+     * @throws IOException if the fixture resource cannot be read
      */
     private Response okXmlResponse(String xmlResourceName) throws IOException {
         Response response = mock(Response.class);
-        when(response.getStatus()).thenReturn(200);
+        when(response.getStatus()).thenReturn(HTTP_OK);
         when(response.readEntity(String.class)).thenReturn(loadRawResource(xmlResourceName));
         return response;
     }
@@ -86,8 +95,8 @@ class CrossrefProductsResourceTest {
         given()
                 .when().get(BASE + "/crossref/products/10.1038/nature12373")
                 .then()
-                .statusCode(200)
-                .body("@context", Matchers.hasSize(3))
+                .statusCode(HTTP_OK)
+                .body("@context", Matchers.hasSize(EXPECTED_CONTEXT_SIZE))
                 .body("'@graph'[0].local_identifier", Matchers.equalTo("https://doi.org/10.1038/nature12373"))
                 .body("'@graph'[0].product_type", Matchers.equalTo("literature"))
                 .body("'@graph'[0].identifiers[0].scheme", Matchers.equalTo("doi"));
@@ -99,6 +108,8 @@ class CrossrefProductsResourceTest {
      * captured from the real API) - see {@code CrossrefJournalDoiResolver}. Once found, the
      * venue's {@code local_identifier} becomes that real DOI URL instead of an otf id, with a
      * {@code doi} identifier alongside the existing {@code issn} ones.
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_returnsSkgIfEnvelope_venueUsesRealJournalDoiWhenResolved() throws IOException {
@@ -110,7 +121,7 @@ class CrossrefProductsResourceTest {
         given()
                 .when().get(BASE + "/crossref/products/10.1038/nature12373")
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .body("'@graph'[0].manifestations[0].biblio.in.local_identifier",
                         Matchers.equalTo("https://doi.org/10.1038/41586.1476-4687"))
                 .body("'@graph'[0].manifestations[0].biblio.in.identifiers.scheme",
@@ -121,6 +132,8 @@ class CrossrefProductsResourceTest {
      * When the journal-DOI lookup itself fails (network error, timeout, etc.), the product
      * response must still succeed, falling back to the existing otf-id venue rather than the
      * whole request failing - same degrade-gracefully contract as the XML transform fetch below.
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_venueFallsBackToOtfIdWhenJournalDoiLookupFails() throws IOException {
@@ -132,13 +145,15 @@ class CrossrefProductsResourceTest {
         given()
                 .when().get(BASE + "/crossref/products/10.1038/nature12373")
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .body("'@graph'[0].manifestations[0].biblio.in.local_identifier", Matchers.startsWith("otf___"));
     }
 
     /**
      * DOI 10.1038/s41467-022-33468-6 - a real Nature Communications article whose authors carry
      * ORCIDs and which has no "page" field, unlike the {@code nature12373} fixture above.
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_returnsSkgIfEnvelope_orcidArticle() throws IOException {
@@ -148,7 +163,7 @@ class CrossrefProductsResourceTest {
         given()
                 .when().get(BASE + "/crossref/products/10.1038/s41467-022-33468-6")
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .body("'@graph'[0].local_identifier", Matchers.equalTo("https://doi.org/10.1038/s41467-022-33468-6"))
                 .body("'@graph'[0].product_type", Matchers.equalTo("literature"))
                 .body("'@graph'[0].identifiers[0].scheme", Matchers.equalTo("doi"))
@@ -159,6 +174,8 @@ class CrossrefProductsResourceTest {
     /**
      * DOI 10.17537/icmbb18.42 - a real conference-proceedings record (type:
      * "proceedings-article"), unlike the journal-article fixtures above.
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_returnsSkgIfEnvelope_proceedingsArticle() throws IOException {
@@ -168,7 +185,7 @@ class CrossrefProductsResourceTest {
         given()
                 .when().get(BASE + "/crossref/products/10.17537/icmbb18.42")
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .body("'@graph'[0].local_identifier", Matchers.equalTo("https://doi.org/10.17537/icmbb18.42"))
                 .body("'@graph'[0].product_type", Matchers.equalTo("literature"))
                 .body("'@graph'[0].identifiers[0].scheme", Matchers.equalTo("doi"));
@@ -177,6 +194,8 @@ class CrossrefProductsResourceTest {
     /**
      * DOI 10.1103/physrevb.110.174515 - a real Physical Review B article whose author
      * affiliations carry a ROR directly, unlike the other journal-article fixtures above.
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_returnsSkgIfEnvelope_rorAffiliationArticle() throws IOException {
@@ -186,7 +205,7 @@ class CrossrefProductsResourceTest {
         given()
                 .when().get(BASE + "/crossref/products/10.1103/physrevb.110.174515")
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .body("'@graph'[0].local_identifier", Matchers.equalTo("https://doi.org/10.1103/physrevb.110.174515"))
                 .body("'@graph'[0].product_type", Matchers.equalTo("literature"))
                 .body("'@graph'[0].contributions[0].declared_affiliations[0].identifiers[0].scheme",
@@ -202,6 +221,8 @@ class CrossrefProductsResourceTest {
      * for this type (see {@code CrossrefTypeMapping#isXmlVenueEnrichable}) and takes precedence:
      * the venue is named after the actual book, not the series, with a real DOI-based
      * local_identifier and doi/issn/isbn identifiers together.
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_returnsSkgIfEnvelope_bookChapter() throws IOException {
@@ -215,7 +236,7 @@ class CrossrefProductsResourceTest {
         given()
                 .when().get(BASE + "/crossref/products/10.1007/978-3-319-66787-4_9")
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .body("'@graph'[0].local_identifier", Matchers.equalTo("https://doi.org/10.1007/978-3-319-66787-4_9"))
                 .body("'@graph'[0].product_type", Matchers.equalTo("literature"))
                 .body("'@graph'[0].manifestations[0].biblio.in.name",
@@ -232,6 +253,8 @@ class CrossrefProductsResourceTest {
      * the product response must still succeed, falling back to the existing
      * {@code container-title[0]} venue rather than the XML-enriched one - see
      * {@code CrossrefProductsResource#fetchVenueMetadata}.
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_bookChapter_fallsBackToContainerTitleWhenXmlFetchFails() throws IOException {
@@ -243,7 +266,7 @@ class CrossrefProductsResourceTest {
         given()
                 .when().get(BASE + "/crossref/products/10.1007/978-3-319-66787-4_9")
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .body("'@graph'[0].manifestations[0].biblio.in.name",
                         Matchers.equalTo("Lecture Notes in Computer Science"));
     }
@@ -255,6 +278,8 @@ class CrossrefProductsResourceTest {
      * CrossrefTypeMapping#isXmlVenueEnrichable}) and corrects the venue name; this record's
      * {@code proceedings_series_metadata} has no {@code doi_data}, so the venue's
      * local_identifier falls back to an otf id rather than a real DOI URL.
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_returnsSkgIfEnvelope_proceedingsArticleWithSeries() throws IOException {
@@ -266,11 +291,12 @@ class CrossrefProductsResourceTest {
         given()
                 .when().get(BASE + "/crossref/products/10.2991/assehr.k.211222.032")
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .body("'@graph'[0].local_identifier", Matchers.equalTo("https://doi.org/10.2991/assehr.k.211222.032"))
                 .body("'@graph'[0].product_type", Matchers.equalTo("literature"))
                 .body("'@graph'[0].manifestations[0].biblio.in.name", Matchers.equalTo(
-                        "Proceedings of the 4th International Conference on Innovative Research Across Disciplines (ICIRAD 2021)"))
+                        "Proceedings of the 4th International Conference on Innovative Research Across Disciplines "
+                                + "(ICIRAD 2021)"))
                 .body("'@graph'[0].manifestations[0].biblio.in.local_identifier", Matchers.startsWith("otf___"))
                 .body("'@graph'[0].manifestations[0].biblio.in.identifiers.scheme",
                         Matchers.hasItems("issn", "isbn"))
@@ -284,7 +310,7 @@ class CrossrefProductsResourceTest {
         given()
                 .when().get(BASE + "/crossref/products/10.9999/does-not-exist")
                 .then()
-                .statusCode(404)
+                .statusCode(HTTP_NOT_FOUND)
                 .body("status", Matchers.equalTo("404"))
                 .body("title", Matchers.equalTo("NOT_FOUND"));
     }
@@ -293,6 +319,8 @@ class CrossrefProductsResourceTest {
      * A Crossref {@code type: "grant"} DOI requested via {@code /crossref/products} must 404,
      * pointing the caller at {@code /crossref/grants} instead - mirrors {@code
      * DataCiteProductsResourceTest#getProductById_awardDoi_returns404PointingToGrants}.
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_grantDoi_returns404PointingToGrants() throws IOException {
@@ -301,7 +329,7 @@ class CrossrefProductsResourceTest {
         given()
                 .when().get(BASE + "/crossref/products/10.35802/218300")
                 .then()
-                .statusCode(404)
+                .statusCode(HTTP_NOT_FOUND)
                 .body("status", Matchers.equalTo("404"))
                 .body("detail", Matchers.containsString("/crossref/grants/10.35802/218300"));
     }
@@ -311,7 +339,7 @@ class CrossrefProductsResourceTest {
         given()
                 .when().get(BASE + "/crossref/products?filter=bogus_filter:xyz")
                 .then()
-                .statusCode(422)
+                .statusCode(HTTP_UNPROCESSABLE_ENTITY)
                 .body("status", Matchers.equalTo("422"))
                 .body("title", Matchers.equalTo("INVALID_FILTER"));
     }
@@ -320,6 +348,8 @@ class CrossrefProductsResourceTest {
      * Crossref's {@code filter=} has no negation operator (see {@code CrossrefFilters}), so
      * grant-type records are excluded from {@code /crossref/products} list results client-side
      * rather than via the query itself - this pins that exclusion.
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProducts_excludesGrantTypeRecordsFromResults() throws IOException {
@@ -332,7 +362,7 @@ class CrossrefProductsResourceTest {
         given()
                 .when().get(BASE + "/crossref/products?page_size=5")
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .body("'@graph'", Matchers.hasSize(1))
                 .body("'@graph'[0].local_identifier", Matchers.equalTo("https://doi.org/10.1038/nature12373"));
     }
@@ -347,7 +377,7 @@ class CrossrefProductsResourceTest {
         given()
                 .when().get(BASE + "/crossref/products?page_size=5")
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .body("meta.entity_type", Matchers.equalTo("search_result_page"))
                 .body("meta.part_of.total_items", Matchers.equalTo(1))
                 .body("'@graph'[0].local_identifier", Matchers.equalTo("https://doi.org/10.1038/nature12373"))

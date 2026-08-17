@@ -88,7 +88,16 @@
     <module name="LocalFinalVariableName"/>
     <module name="LocalVariableName"/>
     <module name="MemberName"/>
-    <module name="MethodName"/>
+    <module name="MethodName">
+      <!--
+        Parameterized (rather than a plain default) so the src/test/java checkstyle execution
+        in pom.xml can loosen this to allow the project's methodUnderTest_scenario_expectedResult
+        test-naming convention via propertyExpansion, while src/main/java keeps the strict
+        default pattern - see the two "checkstyle.methodname.format" propertyExpansion entries
+        in the maven-checkstyle-plugin config.
+      -->
+      <property name="format" value="${checkstyle.methodname.format}"/>
+    </module>
     <module name="PackageName"/>
     <module name="ParameterName"/>
     <module name="StaticVariableName"/>

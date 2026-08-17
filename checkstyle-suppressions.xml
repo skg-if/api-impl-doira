@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+          "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+          "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+
+<!--
+
+  Test packages are exempt from JavadocPackage - requiring a package-info.java purely to
+  document a test package (as opposed to main source, where it documents the package's actual
+  API surface) doesn't carry its weight the way the rest of checkstyle.xml's test-side ruleset
+  does (see the "test-checkstyle-check" execution's comment in pom.xml).
+
+-->
+
+<suppressions>
+  <suppress checks="JavadocPackage" files="[\\/]src[\\/]test[\\/]"/>
+</suppressions>

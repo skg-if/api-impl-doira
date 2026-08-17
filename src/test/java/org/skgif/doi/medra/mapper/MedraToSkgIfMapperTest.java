@@ -1,8 +1,8 @@
 package org.skgif.doi.medra.mapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,7 +57,7 @@ class MedraToSkgIfMapperTest {
         assertEquals("Cotte M.", first.getName());
         assertNull(first.getGivenName());
         assertNull(first.getFamilyName());
-        assertTrue(product.getAbstracts() != null);
+        assertNotNull(product.getAbstracts());
     }
 
     @Test

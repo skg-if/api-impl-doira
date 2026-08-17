@@ -16,7 +16,8 @@ class DataCiteGrantFiltersTest {
 
     @Test
     void toDataCiteQuery_identifiersValue_mapsToDoiClause() {
-        assertEquals("doi:\"10.71707/r3sy-7371\"", DataCiteGrantFilters.toDataCiteQuery("identifiers.value:10.71707/r3sy-7371"));
+        assertEquals("doi:\"10.71707/r3sy-7371\"",
+                DataCiteGrantFilters.toDataCiteQuery("identifiers.value:10.71707/r3sy-7371"));
     }
 
     @Test
@@ -43,7 +44,8 @@ class DataCiteGrantFiltersTest {
 
     @Test
     void toDataCiteQuery_byIdentifiersScheme_zeroMatchForOtherScheme() {
-        assertEquals("doi:\"__no_match__\"", DataCiteGrantFilters.toDataCiteQuery("contributions.by.identifiers.scheme:isni"));
+        assertEquals("doi:\"__no_match__\"",
+                DataCiteGrantFilters.toDataCiteQuery("contributions.by.identifiers.scheme:isni"));
     }
 
     @Test
@@ -59,7 +61,8 @@ class DataCiteGrantFiltersTest {
     @Test
     void toDataCiteQuery_declaredAffiliationsName_searchesBothRoles() {
         assertEquals(
-                "(creators.affiliation.name:\"Brown University\" OR contributors.affiliation.name:\"Brown University\")",
+                "(creators.affiliation.name:\"Brown University\" "
+                        + "OR contributors.affiliation.name:\"Brown University\")",
                 DataCiteGrantFilters.toDataCiteQuery("contributions.declared_affiliations.name:Brown University"));
     }
 
@@ -94,7 +97,8 @@ class DataCiteGrantFiltersTest {
 
     @Test
     void toDataCiteQuery_fundingAgencyIdentifiersScheme_zeroMatchForOtherScheme() {
-        assertEquals("doi:\"__no_match__\"", DataCiteGrantFilters.toDataCiteQuery("funding_agency.identifiers.scheme:isni"));
+        assertEquals("doi:\"__no_match__\"",
+                DataCiteGrantFilters.toDataCiteQuery("funding_agency.identifiers.scheme:isni"));
     }
 
     @Test

@@ -5,7 +5,6 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -30,6 +29,11 @@ class DataCiteProductsResourceTest {
 
     private static final String BASE = "/skg-if/api";
 
+    private static final int HTTP_OK = 200;
+    private static final int HTTP_NOT_FOUND = 404;
+    private static final int HTTP_UNPROCESSABLE_ENTITY = 422;
+    private static final int EXPECTED_CONTEXT_SIZE = 3;
+
     @InjectMock
     @RestClient
     DataCiteClient dataCiteClient;
@@ -52,8 +56,8 @@ class DataCiteProductsResourceTest {
         given()
                 .when().get(BASE + "/datacite/products/10.15151/esrf-dc-2493599001")
                 .then()
-                .statusCode(200)
-                .body("@context", org.hamcrest.Matchers.hasSize(3))
+                .statusCode(HTTP_OK)
+                .body("@context", org.hamcrest.Matchers.hasSize(EXPECTED_CONTEXT_SIZE))
                 .body("'@graph'[0].local_identifier", equalTo("https://doi.org/10.15151/esrf-dc-2493599001"))
                 .body("'@graph'[0].product_type", equalTo("research data"))
                 .body("'@graph'[0].identifiers[0].scheme", equalTo("doi"));
@@ -67,6 +71,8 @@ class DataCiteProductsResourceTest {
      * a single slash isn't touched by any further normalization - this deterministically
      * exercises the full DataCiteProductsResource -> LocalIdentifiers.toDoi() -> DataCiteClient pipeline
      * with the same string shape LocalIdentifiersTest pins at the unit level.
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_vertxCollapsedFullLocalIdentifier_returns200() throws IOException {
@@ -75,7 +81,7 @@ class DataCiteProductsResourceTest {
         given()
                 .when().get(BASE + "/datacite/products/https:/doi.org/10.15151/esrf-dc-2493599001")
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .body("'@graph'[0].local_identifier", equalTo("https://doi.org/10.15151/esrf-dc-2493599001"));
     }
 
@@ -86,7 +92,7 @@ class DataCiteProductsResourceTest {
         given()
                 .when().get(BASE + "/datacite/products/10.9999/does-not-exist")
                 .then()
-                .statusCode(404)
+                .statusCode(HTTP_NOT_FOUND)
                 .body("status", equalTo("404"))
                 .body("title", equalTo("NOT_FOUND"));
     }
@@ -95,6 +101,8 @@ class DataCiteProductsResourceTest {
      * Award-type DOIs are grants, not products - {@code /datacite/products/{id}} must 404
      * rather than exposing them, and the error should point the caller at
      * {@code /datacite/grants} instead.
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getProductById_awardDoi_returns404PointingToGrants() throws IOException {
@@ -104,7 +112,7 @@ class DataCiteProductsResourceTest {
         given()
                 .when().get(BASE + "/datacite/products/10.71707/r3sy-7371")
                 .then()
-                .statusCode(404)
+                .statusCode(HTTP_NOT_FOUND)
                 .body("status", equalTo("404"))
                 .body("detail", containsString("/datacite/grants/10.71707/r3sy-7371"));
     }
@@ -115,7 +123,7 @@ class DataCiteProductsResourceTest {
                 java.util.List.of(), new DataCiteDoiListResponse.Meta(0, 0, 1), null);
         when(dataCiteClient.listDois(any(), any(), anyInt(), anyInt())).thenReturn(listResponse);
 
-        given().when().get(BASE + "/datacite/products").then().statusCode(200);
+        given().when().get(BASE + "/datacite/products").then().statusCode(HTTP_OK);
 
         ArgumentCaptor<String> queryCaptor = ArgumentCaptor.forClass(String.class);
         verify(dataCiteClient).listDois(any(), queryCaptor.capture(), anyInt(), anyInt());
@@ -128,7 +136,7 @@ class DataCiteProductsResourceTest {
         given()
                 .when().get(BASE + "/datacite/products?filter=bogus_filter:xyz")
                 .then()
-                .statusCode(422)
+                .statusCode(HTTP_UNPROCESSABLE_ENTITY)
                 .body("status", equalTo("422"))
                 .body("title", equalTo("INVALID_FILTER"));
     }
@@ -143,7 +151,7 @@ class DataCiteProductsResourceTest {
         given()
                 .when().get(BASE + "/datacite/products?page_size=5")
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .body("meta.entity_type", equalTo("search_result_page"))
                 .body("meta.part_of.total_items", equalTo(1))
                 .body("'@graph'[0].local_identifier", equalTo("https://doi.org/10.15151/esrf-dc-2493599001"))

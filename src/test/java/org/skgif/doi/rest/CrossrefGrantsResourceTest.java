@@ -31,6 +31,11 @@ class CrossrefGrantsResourceTest {
 
     private static final String BASE = "/skg-if/api";
 
+    private static final int HTTP_OK = 200;
+    private static final int HTTP_NOT_FOUND = 404;
+    private static final int HTTP_UNPROCESSABLE_ENTITY = 422;
+    private static final int EXPECTED_CONTEXT_SIZE = 3;
+
     @InjectMock
     @RestClient
     CrossrefClient crossrefClient;
@@ -49,8 +54,8 @@ class CrossrefGrantsResourceTest {
         given()
                 .when().get(BASE + "/crossref/grants/10.35802/218300")
                 .then()
-                .statusCode(200)
-                .body("@context", Matchers.hasSize(3))
+                .statusCode(HTTP_OK)
+                .body("@context", Matchers.hasSize(EXPECTED_CONTEXT_SIZE))
                 .body("'@graph'[0].local_identifier", Matchers.equalTo("https://doi.org/10.35802/218300"))
                 .body("'@graph'[0].entity_type", Matchers.equalTo("grant"))
                 .body("'@graph'[0].identifiers[0].scheme", Matchers.equalTo("doi"))
@@ -64,7 +69,7 @@ class CrossrefGrantsResourceTest {
         given()
                 .when().get(BASE + "/crossref/grants/10.9999/does-not-exist")
                 .then()
-                .statusCode(404)
+                .statusCode(HTTP_NOT_FOUND)
                 .body("status", Matchers.equalTo("404"))
                 .body("title", Matchers.equalTo("NOT_FOUND"));
     }
@@ -72,6 +77,8 @@ class CrossrefGrantsResourceTest {
     /**
      * A non-grant-type Crossref DOI (a product) requested via {@code /crossref/grants} must
      * 404, pointing the caller at {@code /crossref/products} instead.
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getGrantById_productDoi_returns404PointingToProducts() throws IOException {
@@ -81,7 +88,7 @@ class CrossrefGrantsResourceTest {
         given()
                 .when().get(BASE + "/crossref/grants/10.1038/nature12373")
                 .then()
-                .statusCode(404)
+                .statusCode(HTTP_NOT_FOUND)
                 .body("status", Matchers.equalTo("404"))
                 .body("detail", Matchers.containsString("/crossref/products/10.1038/nature12373"));
     }
@@ -91,7 +98,7 @@ class CrossrefGrantsResourceTest {
         given()
                 .when().get(BASE + "/crossref/grants?filter=bogus_filter:xyz")
                 .then()
-                .statusCode(422)
+                .statusCode(HTTP_UNPROCESSABLE_ENTITY)
                 .body("status", Matchers.equalTo("422"))
                 .body("title", Matchers.equalTo("INVALID_FILTER"));
     }
@@ -102,7 +109,7 @@ class CrossrefGrantsResourceTest {
                 new CrossrefWorkListResponse(null, new CrossrefWorkListResponse.Message(0, List.of()));
         when(crossrefClient.listWorks(any(), any(), any(), anyInt(), anyInt(), any())).thenReturn(listResponse);
 
-        given().when().get(BASE + "/crossref/grants").then().statusCode(200);
+        given().when().get(BASE + "/crossref/grants").then().statusCode(HTTP_OK);
 
         ArgumentCaptor<String> filterCaptor = ArgumentCaptor.forClass(String.class);
         verify(crossrefClient).listWorks(filterCaptor.capture(), any(), any(), anyInt(), anyInt(), any());
@@ -118,7 +125,7 @@ class CrossrefGrantsResourceTest {
         given()
                 .when().get(BASE + "/crossref/grants?page_size=5")
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .body("meta.entity_type", Matchers.equalTo("search_result_page"))
                 .body("meta.part_of.total_items", Matchers.equalTo(1))
                 .body("'@graph'[0].local_identifier", Matchers.equalTo("https://doi.org/10.35802/218300"))

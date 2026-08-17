@@ -1,7 +1,6 @@
 package org.skgif.doi.rest;
 
 import static io.restassured.RestAssured.given;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -35,6 +34,8 @@ class GrantsGoldenTest {
 
     private static final boolean REGENERATE_GOLDEN = Boolean.getBoolean("golden.regenerate");
 
+    private static final int HTTP_OK = 200;
+
     @InjectMock
     @RestClient
     DataCiteClient dataCiteClient;
@@ -63,6 +64,8 @@ class GrantsGoldenTest {
      * Fund, chosen because it exercises both contribution shapes in one real-world record: a
      * ROR-bearing organisational contributor (Code for Science & Society, also a beneficiary) and
      * an ORCID-bearing personal contributor (the project leader).
+     *
+     * @throws IOException if a fixture resource cannot be read
      */
     @Test
     void getGrantById_matchesExpectedJsonLd_r3sy7371() throws IOException {
@@ -72,7 +75,7 @@ class GrantsGoldenTest {
         String actualBody = given()
                 .when().get(BASE + "/datacite/grants/10.71707/r3sy-7371")
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .extract().asString();
 
         compareOrWriteGolden(new ObjectMapper().readTree(actualBody), "expected/datacite-award-r3sy-7371-out.json");
@@ -85,7 +88,7 @@ class GrantsGoldenTest {
         String actualBody = given()
                 .when().get(BASE + "/crossref/grants/10.35802/218300")
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .extract().asString();
 
         compareOrWriteGolden(new ObjectMapper().readTree(actualBody), "expected/crossref-grant-out.json");

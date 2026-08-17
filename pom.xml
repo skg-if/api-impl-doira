@@ -195,6 +195,7 @@
             <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
           </sourceDirectories>
           <includeTestSourceDirectory>false</includeTestSourceDirectory>
+          <propertyExpansion>checkstyle.methodname.format=^[a-z][a-zA-Z0-9]*$</propertyExpansion>
           <skip>${skipTests}</skip>
           <failOnViolation>true</failOnViolation>
           <violationSeverity>warning</violationSeverity>
@@ -206,6 +207,30 @@
             <goals>
               <goal>check</goal>
             </goals>
+          </execution>
+          <execution>
+            <!--
+              Same checkstyle.xml ruleset as the main execution above, run against
+              src/test/java. The only difference is the MethodName pattern: this execution's
+              propertyExpansion loosens it to allow the project's
+              methodUnderTest_scenario_expectedResult test-naming convention, which the
+              default camelCase-only pattern used for src/main/java would otherwise reject.
+            -->
+            <id>test-checkstyle-check</id>
+            <phase>process-test-sources</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+            <configuration>
+              <sourceDirectories combine.self="override">
+                <sourceDirectory>${project.build.testSourceDirectory}</sourceDirectory>
+              </sourceDirectories>
+              <includeTestSourceDirectory>true</includeTestSourceDirectory>
+              <propertyExpansion>checkstyle.methodname.format=^[a-z][a-zA-Z0-9]*(_[a-zA-Z0-9]+)*$</propertyExpansion>
+              <skip>${skipTests}</skip>
+              <failOnViolation>true</failOnViolation>
+              <violationSeverity>warning</violationSeverity>
+            </configuration>
           </execution>
         </executions>
       </plugin>

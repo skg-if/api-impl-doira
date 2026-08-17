@@ -26,6 +26,10 @@ class MedraProductsResourceTest {
 
     private static final String BASE = "/skg-if/api";
 
+    private static final int HTTP_OK = 200;
+    private static final int HTTP_NOT_FOUND = 404;
+    private static final int EXPECTED_CONTEXT_SIZE = 3;
+
     @InjectMock
     @RestClient
     MedraClient medraClient;
@@ -36,10 +40,17 @@ class MedraProductsResourceTest {
         }
     }
 
-    /** See {@code CrossrefProductsResourceTest#okXmlResponse}'s javadoc for why this must be built as its own statement. */
+    /**
+     * See {@code CrossrefProductsResourceTest#okXmlResponse}'s javadoc for why this must be
+     * built as its own statement.
+     *
+     * @param xmlResourceName classpath resource name of the XML fixture to load
+     * @return a mocked 200 {@code Response} whose body is the fixture's raw XML
+     * @throws IOException if the fixture resource cannot be read
+     */
     private Response okXmlResponse(String xmlResourceName) throws IOException {
         Response response = mock(Response.class);
-        when(response.getStatus()).thenReturn(200);
+        when(response.getStatus()).thenReturn(HTTP_OK);
         when(response.readEntity(String.class)).thenReturn(loadRawResource(xmlResourceName));
         return response;
     }
@@ -52,8 +63,8 @@ class MedraProductsResourceTest {
         given()
                 .when().get(BASE + "/medra/products/10.19276/plinius.2019.01004")
                 .then()
-                .statusCode(200)
-                .body("@context", Matchers.hasSize(3))
+                .statusCode(HTTP_OK)
+                .body("@context", Matchers.hasSize(EXPECTED_CONTEXT_SIZE))
                 .body("'@graph'[0].local_identifier",
                         Matchers.equalTo("https://doi.org/10.19276/plinius.2019.01004"))
                 .body("'@graph'[0].product_type", Matchers.equalTo("literature"))
@@ -69,7 +80,7 @@ class MedraProductsResourceTest {
         given()
                 .when().get(BASE + "/medra/products/10.1393/ncc/i2021-21084-7")
                 .then()
-                .statusCode(200)
+                .statusCode(HTTP_OK)
                 .body("'@graph'[0].local_identifier",
                         Matchers.equalTo("https://doi.org/10.1393/ncc/i2021-21084-7"))
                 .body("'@graph'[0]", Matchers.not(Matchers.hasKey("contributions")));
@@ -78,13 +89,13 @@ class MedraProductsResourceTest {
     @Test
     void getProductById_nonOkStatusFromMedra_returns404WithRfc7807Error() {
         Response response = mock(Response.class);
-        when(response.getStatus()).thenReturn(404);
+        when(response.getStatus()).thenReturn(HTTP_NOT_FOUND);
         when(medraClient.getMetadata("10.9999/does-not-exist")).thenReturn(response);
 
         given()
                 .when().get(BASE + "/medra/products/10.9999/does-not-exist")
                 .then()
-                .statusCode(404)
+                .statusCode(HTTP_NOT_FOUND)
                 .body("status", Matchers.equalTo("404"))
                 .body("title", Matchers.equalTo("NOT_FOUND"));
     }
@@ -92,14 +103,14 @@ class MedraProductsResourceTest {
     @Test
     void getProductById_unparseableXml_returns404WithRfc7807Error() {
         Response response = mock(Response.class);
-        when(response.getStatus()).thenReturn(200);
+        when(response.getStatus()).thenReturn(HTTP_OK);
         when(response.readEntity(String.class)).thenReturn("<not-well-formed-onix");
         when(medraClient.getMetadata("10.19276/plinius.2019.01004")).thenReturn(response);
 
         given()
                 .when().get(BASE + "/medra/products/10.19276/plinius.2019.01004")
                 .then()
-                .statusCode(404)
+                .statusCode(HTTP_NOT_FOUND)
                 .body("status", Matchers.equalTo("404"));
     }
 
@@ -111,7 +122,7 @@ class MedraProductsResourceTest {
         given()
                 .when().get(BASE + "/medra/products/10.9999/does-not-exist")
                 .then()
-                .statusCode(404)
+                .statusCode(HTTP_NOT_FOUND)
                 .body("status", Matchers.equalTo("404"));
     }
 }
