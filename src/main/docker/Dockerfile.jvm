@@ -13,6 +13,12 @@
 #
 # docker run -i --rm -p 8080:8080 puma-skg-if-api-jvm
 #
+# Optional: identify this API to Crossref's "polite pool" for better rate limits/uptime, by
+# setting CROSSREF_MAILTO - Quarkus/SmallRye Config maps it onto the crossref.mailto property
+# (application.properties) with no other change needed:
+#
+# docker run -i --rm -p 8080:8080 -e CROSSREF_MAILTO=you@example.org puma-skg-if-api-jvm
+#
 ###
 FROM registry.access.redhat.com/ubi9/openjdk-21:1.21
 

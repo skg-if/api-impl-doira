@@ -8,6 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
@@ -49,31 +53,54 @@ public class CrossrefJournalDoiResolver {
     }
 
     /**
-     * Tries each ISSN in turn (an article commonly carries both a print and an electronic ISSN)
-     * and returns the first journal-level DOI found. Any lookup failure - non-2xx response,
-     * network/timeout error, or no matching record - degrades to an empty result for that ISSN
-     * rather than propagating, so callers can always fall back to their existing otf-id
-     * behavior.
+     * Looks up each ISSN concurrently (an article commonly carries both a print and an electronic
+     * ISSN, and each lookup is a slow live Crossref round-trip) and returns the journal-level DOI
+     * for the first ISSN, in list order, that resolves - so wall-clock cost is bounded by the
+     * slowest single lookup rather than their sum, while the result is unchanged from trying them
+     * one at a time. Any lookup failure - non-2xx response, network/timeout error, or no matching
+     * record - degrades to an empty result for that ISSN rather than propagating, so callers can
+     * always fall back to their existing otf-id behavior.
      *
      * @param issns the journal's ISSN(s) to try, in order
      * @return the first journal-level DOI found, or empty if none resolve
      */
+    // A per-call virtual-thread executor for at most a handful of short-lived HTTP lookups is the
+    // JDK 21-idiomatic fan-out/fan-in shape (fully awaited via future.get() below before the
+    // try-with-resources closes it, never left running past this method) - not the kind of
+    // unmanaged, long-lived thread pool PMD's J2EE-compliance rule is meant to catch.
+    @SuppressWarnings("PMD.DoNotUseThreads")
     public Optional<String> resolveJournalDoi(List<String> issns) {
         if (issns == null) {
             return Optional.empty();
         }
-        for (String issn : issns) {
-            if (issn == null || issn.isBlank()) {
-                continue;
-            }
-            // computeIfAbsent never stores a null mapping function result, so a miss/failure
-            // (fetchJournalDoi returning null) is naturally retried next time rather than cached.
-            String doi = cache.computeIfAbsent(issn, this::fetchJournalDoi);
-            if (doi != null) {
-                return Optional.of(doi);
-            }
+        List<String> candidates =
+                issns.stream().filter(issn -> issn != null && !issn.isBlank()).distinct().toList();
+        if (candidates.isEmpty()) {
+            return Optional.empty();
         }
-        return Optional.empty();
+        // computeIfAbsent never stores a null mapping function result, so a miss/failure
+        // (fetchJournalDoi returning null) is naturally retried next time rather than cached.
+        try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            List<Future<String>> futures = candidates.stream()
+                    .map(issn -> executor.submit(() -> cache.computeIfAbsent(issn, this::fetchJournalDoi)))
+                    .toList();
+            for (Future<String> future : futures) {
+                try {
+                    String doi = future.get();
+                    if (doi != null) {
+                        return Optional.of(doi);
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return Optional.empty();
+                } catch (ExecutionException e) {
+                    // fetchJournalDoi already swallows RuntimeException and returns null for this
+                    // ISSN - this only guards an unexpected Error, so just move on to the next one.
+                    continue;
+                }
+            }
+            return Optional.empty();
+        }
     }
 
     private String fetchJournalDoi(String issn) {

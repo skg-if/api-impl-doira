@@ -81,6 +81,14 @@ docker pull ghcr.io/skg-if/api-impl-doira:latest
 docker run -p 8080:8080 ghcr.io/skg-if/api-impl-doira:latest
 ```
 
+Optionally, set `CROSSREF_MAILTO` to identify this API to Crossref's "polite pool" for better
+rate limits/uptime on `/crossref/products` and `/crossref/grants` (see
+[Configuration](#configuration) below):
+
+```bash
+docker run -p 8080:8080 -e CROSSREF_MAILTO=you@example.org ghcr.io/skg-if/api-impl-doira:latest
+```
+
 To build it locally instead, see [DEPLOYMENT.md](DEPLOYMENT.md#image).
 
 ## Testing
@@ -107,7 +115,10 @@ journal article, a dataset, a journal article with an abstract/funder, and a gra
 
 ## Configuration
 
-Key properties (`src/main/resources/application.properties`):
+Key properties (`src/main/resources/application.properties`). Any of them can be overridden
+without rebuilding the image via a `docker run -e ...` environment variable, per Quarkus/SmallRye
+Config's standard mapping (dots to underscores, uppercased - e.g. `crossref.mailto` becomes
+`CROSSREF_MAILTO`, see [DEPLOYMENT.md](DEPLOYMENT.md#image)):
 
 | Property | Purpose |
 | --- | --- |
@@ -115,7 +126,7 @@ Key properties (`src/main/resources/application.properties`):
 | `datacite.prefix` | Optional - scopes `/datacite/products` and `/datacite/grants` results to one DataCite DOI prefix (e.g. your own organisation's). Blank (default) means no restriction. |
 | `crossref.api.base-url` | Crossref REST API base URL |
 | `crossref.prefix` | Optional - scopes `/crossref/products` and `/crossref/grants` results to one DOI prefix, same convention as `datacite.prefix`. |
-| `crossref.mailto` | Optional - identifies this API to Crossref's "polite pool" for better rate limits/uptime. |
+| `crossref.mailto` | Optional but recommended - identifies this API to Crossref's "polite pool" for better rate limits/uptime. Blank (default) means anonymous/non-polite-pool requests. Set via `-e CROSSREF_MAILTO=you@example.org` on `docker run`. |
 | `skgif.local-identifier.base-url` | `https://doi.org/` - prefixed onto every entity's DOI to form its SKG-IF `local_identifier` |
 | `skgif.sandbox.base-url` | JSON-LD `@context` `@base` root - namespaced per-response to the DataCite client that registered the served DOI(s) (`relationships.client.data.id`, e.g. `inist.esrf`). Crossref has no equivalent concept mapped yet, so Crossref-backed responses always fall back to `skgif.context.base`. |
 | `skgif.context.base` | Fallback `@base`, used when a DataCite DOI carries no client relationship, and always for Crossref-backed responses |

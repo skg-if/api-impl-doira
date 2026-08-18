@@ -46,6 +46,12 @@ docker tag puma-skg-if-api:local registry.esrf.fr:5050/puma-public/puma-skg-if-a
 docker push registry.esrf.fr:5050/puma-public/puma-skg-if-api:latest
 ```
 
+Optionally, pass `-e CROSSREF_MAILTO=you@example.org` to `docker run` to identify this API to
+Crossref's "polite pool" for better rate limits/uptime on `/crossref/products` and
+`/crossref/grants` - Quarkus/SmallRye Config maps that environment variable onto the
+`crossref.mailto` property (`application.properties`, see [README.md](README.md#configuration))
+with no image rebuild needed.
+
 ## Tools Hub runbook
 
 1. **Get a TOSCA baseline.** In *Tools Hub -> All Tools*, find an existing published tool
@@ -72,6 +78,10 @@ docker push registry.esrf.fr:5050/puma-public/puma-skg-if-api:latest
      `datacite.api.base-url` and friends all have working defaults in
      [application.properties](src/main/resources/application.properties), and DataCite
      reads are public/unauthenticated (see [README.md](README.md)).
+   - Optional but recommended if `/crossref/products` or `/crossref/grants` will be used: add
+     an environment variable `CROSSREF_MAILTO` = your contact email in the TOSCA template's
+     environment-variables field, to identify this API to Crossref's "polite pool" for better
+     rate limits/uptime (maps onto `crossref.mailto`, see [README.md](README.md#configuration)).
 
 4. **Review and Confirm** (wizard step 3). The tool now appears under **My Tools**.
 
