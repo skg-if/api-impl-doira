@@ -1,6 +1,7 @@
 target/
 .tools/
-.idea/
+.idea/*
+!.idea/codeStyles/
 *.iml
 .vscode/*
 !.vscode/launch.json

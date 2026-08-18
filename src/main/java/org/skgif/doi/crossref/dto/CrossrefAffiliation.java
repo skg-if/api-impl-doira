@@ -14,5 +14,8 @@ import java.util.List;
  * @param id      structured external identifiers for the affiliation (usually a ROR)
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record CrossrefAffiliation(String name, String country, List<CrossrefIdEntry> id) {
+public record CrossrefAffiliation(
+        String name,
+        String country,
+        List<CrossrefIdEntry> id) {
 }

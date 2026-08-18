@@ -33,10 +33,14 @@ public record DataCiteAttributes(
     // other DTO field in this class - not a naming smell.
     @SuppressWarnings("PMD.AvoidFieldNameMatchingTypeName")
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Title(String title, String lang) {
+    public record Title(
+            String title,
+            String lang) {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Types(String resourceTypeGeneral, String resourceType) {
+    public record Types(
+            String resourceTypeGeneral,
+            String resourceType) {
     }
 }

@@ -160,7 +160,10 @@ final class CrossrefFilters {
      * @param queryTitle         the {@code query.title} free-text search value
      * @param queryBibliographic the {@code query.bibliographic} free-text search value
      */
-    record ParsedFilter(String filter, String queryTitle, String queryBibliographic) {
+    record ParsedFilter(
+            String filter,
+            String queryTitle,
+            String queryBibliographic) {
 
         // Fields intentionally share their names with their fluent setters below, same
         // builder idiom checkstyle.xml's HiddenField already special-cases for this codebase.

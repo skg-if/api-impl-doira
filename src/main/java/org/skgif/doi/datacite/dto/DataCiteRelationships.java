@@ -10,13 +10,16 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * @param client the DataCite client relationship that registered the DOI
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record DataCiteRelationships(ClientRelationship client) {
+public record DataCiteRelationships(
+        ClientRelationship client) {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record ClientRelationship(ClientData data) {
+    public record ClientRelationship(
+            ClientData data) {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record ClientData(String id) {
+    public record ClientData(
+            String id) {
     }
 }

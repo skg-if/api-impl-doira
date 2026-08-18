@@ -348,16 +348,21 @@
 		IntelliJ's Eclipse-profile export set this to 18 (WRAP_COMPACT + INDENT_ON_COLUMN), which
 		aligns wrapped record components to the column right after the opening paren of the record
 		header - not what IntelliJ itself renders on screen for this project's
-		continuation_indentation=2 setting (8-space flat indent from the start of the line).
-		Patched to 16 (WRAP_COMPACT + INDENT_DEFAULT), which falls back to continuation_indentation
+		continuation_indentation=2 setting (8-space flat indent from the start of the line). First
+		patched to 16 (WRAP_COMPACT + INDENT_DEFAULT), which falls back to continuation_indentation
 		and matches IntelliJ's actual behavior - confirmed via `mvn spotless:apply` against a real
 		record (CrossrefProject.java) and by disassembling
 		org.eclipse.jdt.core.formatter.DefaultCodeFormatterConstants#createAlignmentValue to decode
-		the bitmask (wrap-style bits 16/32/48/64/80 OR'd with indent-style bits 0/2/4). Same class of
-		exporter bug as the other alignment_for_* properties noted above that were exported as
-		"never wrap" (0).
+		the bitmask (wrap-style bits 16/32/48/64/80 OR'd with indent-style bits 0/2/4, force-wrap
+		bit 1). Same class of exporter bug as the other alignment_for_* properties noted above that
+		were exported as "never wrap" (0).
+
+		WRAP_COMPACT only wraps when a line would exceed lineSplit, and then packs as many
+		components per line as fit - so short records stayed on one line and long ones didn't get
+		one component per line. Patched again to 49 (WRAP_ONE_PER_LINE(48) + INDENT_DEFAULT(0) +
+		FORCE(1)) so every record, regardless of length, always prints one component per line.
 		-->
-		<setting id="org.eclipse.jdt.core.formatter.alignment_for_record_components" value="16"/>
+		<setting id="org.eclipse.jdt.core.formatter.alignment_for_record_components" value="49"/>
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_superinterfaces_in_record_declaration" value="0"/>
 		<!--
 		Same exporter bug as alignment_for_record_components/alignment_for_parameters_in_*_declaration

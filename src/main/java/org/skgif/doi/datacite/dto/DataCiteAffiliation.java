@@ -5,5 +5,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonDeserialize(using = DataCiteAffiliationDeserializer.class)
-public record DataCiteAffiliation(String name, String affiliationIdentifier, String affiliationIdentifierScheme) {
+public record DataCiteAffiliation(
+        String name,
+        String affiliationIdentifier,
+        String affiliationIdentifierScheme) {
 }

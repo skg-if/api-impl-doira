@@ -1,0 +1,12 @@
+<!--
+  Tells IntelliJ to use the scheme committed in Project.xml (in this same directory) instead of
+  each developer's personal/global Java code style. Without this switch, Project.xml is inert -
+  IntelliJ silently falls back to the global default, which is what happened before this file was
+  changed (it previously pointed PREFERRED_PROJECT_CODE_STYLE at a "Default" scheme that was
+  never actually defined anywhere).
+-->
+<component name="ProjectCodeStyleConfiguration">
+  <state>
+    <option name="USE_PER_PROJECT_SETTINGS" value="true" />
+  </state>
+</component>

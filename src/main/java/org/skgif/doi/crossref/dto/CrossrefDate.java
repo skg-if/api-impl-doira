@@ -13,7 +13,8 @@ import java.util.List;
  * @param dateParts the {@code [[year, month, day]]} parts, with month/day optional
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record CrossrefDate(@JsonProperty("date-parts") List<List<Integer>> dateParts) {
+public record CrossrefDate(
+        @JsonProperty("date-parts") List<List<Integer>> dateParts) {
 
     /**
      * @return this date's {@code date-parts} rendered as an ISO date string (year, year-month,

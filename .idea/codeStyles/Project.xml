@@ -1,0 +1,31 @@
+<!--
+  Committed IntelliJ project code style scheme (see codeStyleConfig.xml for the switch that
+  activates it). Only overrides what actually differs from IntelliJ's stock Java defaults - line
+  length (120), 4-space indent, and 8-space continuation indent already match this repo's
+  conventions out of the box.
+
+  These three JavaCodeStyleSettings fields force every `record` declaration's components onto
+  their own line, always - matching the same rule already enforced at build time by Spotless via
+  the alignment_for_record_components=49 setting in intellij-style.xml (repo root). The exact
+  field combination below was decoded from IntelliJ's own Eclipse-export mapping source
+  (EclipseLineWrappingMappingDefinition.kt / EclipseWrapValueConversions.kt in
+  JetBrains/intellij-community) to find the IntelliJ-side equivalent of that Eclipse value, not
+  guessed:
+    - RECORD_COMPONENTS_WRAP=2 is CommonCodeStyleSettings.WRAP_ALWAYS ("Wrap always, each element
+      on a new line" in Settings > Editor > Code Style > Java > Wrapping and Braces > Record
+      components). Default is 1 (WRAP_AS_NEEDED, "Wrap if long").
+    - NEW_LINE_AFTER_LPAREN_IN_RECORD_HEADER=true puts the first component on its own line too
+      (default false) - required for WRAP_ALWAYS to fully match the Eclipse side.
+    - ALIGN_MULTILINE_RECORDS=false (default true) makes continuation lines indent flatly instead
+      of aligning to the column after the opening '(', matching intellij-style.xml's
+      INDENT_DEFAULT choice.
+-->
+<component name="ProjectCodeStyleConfiguration">
+  <code_scheme name="Project" version="173">
+    <JavaCodeStyleSettings>
+      <option name="RECORD_COMPONENTS_WRAP" value="2" />
+      <option name="ALIGN_MULTILINE_RECORDS" value="false" />
+      <option name="NEW_LINE_AFTER_LPAREN_IN_RECORD_HEADER" value="true" />
+    </JavaCodeStyleSettings>
+  </code_scheme>
+</component>

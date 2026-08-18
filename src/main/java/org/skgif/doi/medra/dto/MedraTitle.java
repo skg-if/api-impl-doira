@@ -10,5 +10,8 @@ package org.skgif.doi.medra.dto;
  * @param language  the title's language (XML attribute)
  * @param text      the title text
  */
-public record MedraTitle(String titleType, String language, String text) {
+public record MedraTitle(
+        String titleType,
+        String language,
+        String text) {
 }

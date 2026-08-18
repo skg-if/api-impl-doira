@@ -12,5 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * @param currency the award amount's currency
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record CrossrefAmount(Double amount, String currency) {
+public record CrossrefAmount(
+        Double amount,
+        String currency) {
 }
