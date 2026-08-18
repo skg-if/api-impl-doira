@@ -160,35 +160,23 @@
       </plugin>
       <plugin>
         <!--
-          Lifecycle binding (the <executions> block below) is temporarily commented out while
-          intellij-style.xml/checkstyle.xml's continuation-indent settings are being revised, so
-          `mvn compile`/`test`/`package` validate the source tree as it sits in git rather than a
-          tree Spotless has just reformatted underneath that work. Spotless still runs fine
-          on-demand via `mvn spotless:apply` / `mvn spotless:check`; re-enable the execution once
-          the revised settings are confirmed good - this is intentionally left for a follow-up,
-          not folded into that change.
+          Bound to process-sources, goal check, positioned (via declaration order - Maven runs
+          same-phase executions in POM order) before maven-pmd-plugin/maven-checkstyle-plugin
+          below, both also bound to process-sources - so a formatting failure is reported before
+          style-rule failures. Gated by skip=${skipTests} like those sibling plugins, so it runs
+          whenever `mvn test`/`package` would run tests and is skipped by `-DskipTests` (and by
+          extension by CI's notest/skiptest commit-message flag - see CLAUDE.md's "Java code
+          style" section).
 
-          Background on why this plugin exists here at all: bound to process-sources, goal apply,
-          positioned (via declaration order - Maven runs same-phase executions in POM order)
-          before maven-pmd-plugin/maven-checkstyle-plugin below, both also bound to
-          process-sources. This makes every `mvn compile`/`test`/`package` self-healing: Spotless
-          reformats/removes unused imports first, then PMD and checkstyle validate the
-          already-fixed code - no separate format step, no per-edit hook needed (an earlier
-          PostToolUse Claude Code hook running this per-edit was replaced by this compile-time
-          binding - too much latency/token overhead for a per-keystroke check; see CLAUDE.md's
-          "Java code style" section for the plain-English rules this exists to catch/fix on top
-          of).
+          This is a hard gate (check, not apply): it fails the build on formatting drift instead
+          of silently rewriting source files. On-demand fixes are still available via
+          `mvn spotless:apply`.
 
           intellij-style.xml (repo root) is a real IntelliJ-exported Eclipse formatter profile,
           patched to fix several `alignment_for_*` properties that were exported as "never wrap"
           (0) - verified empirically against this project's actual checkstyle.xml/pmd-ruleset.xml
           via a real `mvn compile` run before being trusted (see git history / PR description for
           the specific LineLength and OperatorWrap failures this fixed).
-
-          Trade-off: this writes to source files as a side effect of building, including in CI
-          (harmless there - only the ephemeral build workspace changes, not the repo - but it also
-          means CI can never fail on formatting drift with `apply`; swap to `check` if a future
-          "reject unformatted PRs" requirement shows up).
         -->
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
@@ -205,18 +193,17 @@
             </eclipse>
             <removeUnusedImports></removeUnusedImports>
           </java>
+          <skip>${skipTests}</skip>
         </configuration>
-        <!--
         <executions>
           <execution>
-            <id>spotless-apply</id>
+            <id>spotless-check</id>
             <phase>process-sources</phase>
             <goals>
-              <goal>apply</goal>
+              <goal>check</goal>
             </goals>
           </execution>
         </executions>
-        -->
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

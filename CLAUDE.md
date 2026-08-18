@@ -59,9 +59,10 @@ update the relevant doc, not just satisfy the test by adding a bare filename men
 
 ## Java code style
 
-Follow these when writing or editing `.java` files - `spotless-maven-plugin` (pom.xml) auto-fixes
-formatting on every `mvn compile`/`test`, but getting it right the first time avoids unnecessary
-diffs:
+Follow these when writing or editing `.java` files - `spotless-maven-plugin` (pom.xml) enforces
+formatting on every `mvn test`/`package` (skipped by `-DskipTests`, same as PMD/checkstyle) and
+fails the build on drift rather than auto-fixing it, so getting it right the first time avoids a
+failed build. Run `mvn spotless:apply` to fix violations it reports:
 
 - 4-space indent, never tabs.
 - Max line length: 120 characters.
@@ -78,3 +79,16 @@ diffs:
 - No unused or wildcard imports.
 - No trailing whitespace; file ends with a newline.
 - Public classes/methods need Javadoc.
+
+Before reporting a task done, if it edited any `.java` files, run `spotless:apply` scoped to just
+those files - this catches/fixes drift proactively instead of letting `mvn test` fail on it later,
+without touching unrelated files elsewhere in the tree:
+
+```
+mvn spotless:apply -DspotlessFiles=<absolute-path-regex-1>,<absolute-path-regex-2>,...
+```
+
+`-DspotlessFiles` takes a comma-separated list of regexes, each matched with `Pattern.matches()`
+against a candidate file's absolute path (so a bare filename needs a leading `.*`, e.g.
+`.*MapperTextUtils\.java`) - confirmed by decompiling `AbstractSpotlessMojo.class` in the
+`spotless-maven-plugin` 2.46.1 jar, since this isn't documented in the plugin's compiled metadata.
