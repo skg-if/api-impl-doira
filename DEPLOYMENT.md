@@ -31,9 +31,22 @@ this repo.
 
 CI ([.github/workflows/maven-build.yml](.github/workflows/maven-build.yml)) builds and pushes
 `ghcr.io/skg-if/api-impl-doira:latest` (and a `:<short-sha>` tag) on every push to `main` - no
-manual step needed for that image. EOSC's Tools Hub, however, needs the image on ESRF's own
-GitLab registry (see [Prerequisites](#prerequisites)); that push is still manual. To build and
-test locally, or to push to ESRF's registry:
+manual step needed for that image. To cut a versioned release instead of tracking `:latest`, tag
+the commit and push the tag:
+
+```bash
+git tag v1.2.3
+git push origin v1.2.3
+```
+
+CI then also publishes `:1.2.3` and `:1.2` image tags. Version tags are meant to be created once
+and never force-moved (`git tag -f` + `git push --force`) to a different commit - registries don't
+enforce tag immutability, so retagging silently overwrites the image anyone else pulls under that
+version.
+
+EOSC's Tools Hub, however, needs the image on ESRF's own GitLab registry (see
+[Prerequisites](#prerequisites)); that push is still manual. To build and test locally, or to push
+to ESRF's registry:
 
 ```bash
 mvn package

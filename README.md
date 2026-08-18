@@ -81,6 +81,10 @@ docker pull ghcr.io/skg-if/api-impl-doira:latest
 docker run -p 8080:8080 ghcr.io/skg-if/api-impl-doira:latest
 ```
 
+Pushing a `vX.Y.Z` git tag also publishes matching `:X.Y.Z` and `:X.Y` image tags, so a specific
+release can be pinned instead of tracking `:latest`. Version tags are meant to be created once and
+never force-moved to a different commit.
+
 Optionally, set `CROSSREF_MAILTO` to identify this API to Crossref's "polite pool" for better
 rate limits/uptime on `/crossref/products` and `/crossref/grants` (see
 [Configuration](#configuration) below):
