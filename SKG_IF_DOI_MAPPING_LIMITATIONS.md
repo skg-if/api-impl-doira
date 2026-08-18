@@ -60,7 +60,7 @@
   `deposited` is Crossref's genuine most-recent-metadata-update signal - and, per Crossref's own
   description of it ("date on which the work metadata was most recently updated"), it feeds
   SKG-IF's `modified` directly, in addition to the `deposit` date type it already fed (see
-  `CrossrefToSkgIfMapperTest.mapsDepositedIntoBothDepositAndModified`) - the same source value
+  `CrossrefToSkgIfMapperDatesTest.mapsDepositedIntoBothDepositAndModified`) - the same source value
   appears twice in the output, once under each key.
 - **Crossref's generic `published` field** duplicates `issued` in every fixture observed (Crossref
   computes it as the earliest of `published-print`/`published-online`, same as `issued`) - reading
