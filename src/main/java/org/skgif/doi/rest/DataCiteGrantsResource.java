@@ -114,8 +114,8 @@ public class DataCiteGrantsResource {
             return notFound(localIdentifierParam);
         }
         if (!ResourceTypeMapping.isAward(data.attributes())) {
-            return JsonLdResponses.notFound("No grant found for local_identifier '" + localIdentifierParam
-                    + "' - this DOI is a product, see /datacite/products/" + localIdentifierParam);
+            return JsonLdResponses.notFound("No grant found for local_identifier '" + localIdentifierParam +
+                    "' - this DOI is a product, see /datacite/products/" + localIdentifierParam);
         }
 
         Grant grant = mapper.toGrant(data.attributes());

@@ -54,8 +54,8 @@ final class CrossrefBiblioMapper {
     }
 
     private boolean hasNoBiblioData(CrossrefWork work, CrossrefVenueMetadata venueMetadata) {
-        return work.publisher() == null && work.containerTitle() == null && work.issue() == null
-                && work.volume() == null && work.page() == null && venueMetadata == null;
+        return work.publisher() == null && work.containerTitle() == null && work.issue() == null &&
+                work.volume() == null && work.page() == null && venueMetadata == null;
     }
 
     // The REST JSON's `volume` is the product's own volume/issue number (e.g. a journal
@@ -114,14 +114,14 @@ final class CrossrefBiblioMapper {
             return null;
         }
         String name = work.containerTitle().getFirst();
-        List<String> issns = work.issn() != null
-                ? work.issn().stream().filter(Objects::nonNull).toList()
-                : List.of();
+        List<String> issns = work.issn() != null ?
+                work.issn().stream().filter(Objects::nonNull).toList() :
+                List.of();
         String journalDoi = resolveJournalDoi(issns);
 
         VenueLite venue = new VenueLite()
-                .localIdentifier(journalDoi != null ? localIdentifiers.toFullLocalIdentifier(journalDoi)
-                        : MapperTextUtils.otf(work.doi(), name))
+                .localIdentifier(journalDoi != null ? localIdentifiers.toFullLocalIdentifier(journalDoi) :
+                        MapperTextUtils.otf(work.doi(), name))
                 .entityType(EntityTypes.VENUE)
                 .name(name);
 
@@ -133,8 +133,8 @@ final class CrossrefBiblioMapper {
     }
 
     private boolean hasNoContainerTitle(CrossrefWork work) {
-        return work.containerTitle() == null || work.containerTitle().isEmpty()
-                || work.containerTitle().getFirst() == null;
+        return work.containerTitle() == null || work.containerTitle().isEmpty() ||
+                work.containerTitle().getFirst() == null;
     }
 
     private String resolveJournalDoi(List<String> issns) {
@@ -154,8 +154,8 @@ final class CrossrefBiblioMapper {
         String name = venueMetadata.containerTitle();
         String containerDoi = venueMetadata.containerDoi();
         VenueLite venue = new VenueLite()
-                .localIdentifier(containerDoi != null ? localIdentifiers.toFullLocalIdentifier(containerDoi)
-                        : MapperTextUtils.otf(doi, name))
+                .localIdentifier(containerDoi != null ? localIdentifiers.toFullLocalIdentifier(containerDoi) :
+                        MapperTextUtils.otf(doi, name))
                 .entityType(EntityTypes.VENUE)
                 .name(name);
 

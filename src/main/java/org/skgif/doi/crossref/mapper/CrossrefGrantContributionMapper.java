@@ -48,9 +48,9 @@ final class CrossrefGrantContributionMapper {
                                                                     GrantContribution.RolesEnum role) {
         String bareOrcid = CrossrefContributionMapper.bareOrcid(investigator.orcid());
         String name = CrossrefContributionMapper.displayName(investigator.given(), investigator.family());
-        List<PersonLiteAllOfIdentifiers> orcidIdentifiers = bareOrcid != null
-                ? List.of(new PersonLiteAllOfIdentifiers().scheme("orcid").value(bareOrcid))
-                : null;
+        List<PersonLiteAllOfIdentifiers> orcidIdentifiers = bareOrcid != null ?
+                List.of(new PersonLiteAllOfIdentifiers().scheme("orcid").value(bareOrcid)) :
+                null;
         PersonLite by = EntityRefs.personRef(doi, name, investigator.given(), investigator.family(), bareOrcid,
                 orcidIdentifiers);
         return new GrantContribution()

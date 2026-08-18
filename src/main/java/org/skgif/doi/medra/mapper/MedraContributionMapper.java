@@ -99,7 +99,7 @@ final class MedraContributionMapper {
             return new String[0];
         }
         String[] parts = inverted.split(",\\s*", 2);
-        return parts.length == 2 ? new String[]{parts[0].trim(), parts[1].trim()}
-                : new String[]{parts[0].trim(), null};
+        return parts.length == 2 ? new String[]{parts[0].trim(), parts[1].trim()} :
+                new String[]{parts[0].trim(), null};
     }
 }

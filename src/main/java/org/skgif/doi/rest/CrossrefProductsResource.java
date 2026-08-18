@@ -141,8 +141,8 @@ public class CrossrefProductsResource {
             return notFound(localIdentifierParam);
         }
         if (CrossrefTypeMapping.isGrant(work)) {
-            return JsonLdResponses.notFound("No product found for local_identifier '" + localIdentifierParam
-                    + "' - this DOI is a grant, see /crossref/grants/" + localIdentifierParam);
+            return JsonLdResponses.notFound("No product found for local_identifier '" + localIdentifierParam +
+                    "' - this DOI is a grant, see /crossref/grants/" + localIdentifierParam);
         }
 
         CrossrefVenueMetadata venueMetadata = null;

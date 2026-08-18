@@ -295,8 +295,8 @@ class CrossrefProductsResourceTest {
                 .body("'@graph'[0].local_identifier", Matchers.equalTo("https://doi.org/10.2991/assehr.k.211222.032"))
                 .body("'@graph'[0].product_type", Matchers.equalTo("literature"))
                 .body("'@graph'[0].manifestations[0].biblio.in.name", Matchers.equalTo(
-                        "Proceedings of the 4th International Conference on Innovative Research Across Disciplines "
-                                + "(ICIRAD 2021)"))
+                        "Proceedings of the 4th International Conference on Innovative Research Across Disciplines " +
+                                "(ICIRAD 2021)"))
                 .body("'@graph'[0].manifestations[0].biblio.in.local_identifier", Matchers.startsWith("otf___"))
                 .body("'@graph'[0].manifestations[0].biblio.in.identifiers.scheme",
                         Matchers.hasItems("issn", "isbn"))

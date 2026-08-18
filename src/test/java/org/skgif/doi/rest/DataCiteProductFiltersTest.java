@@ -30,8 +30,8 @@ class DataCiteProductFiltersTest {
     @Test
     void toDataCiteQuery_combinesMultipleFiltersWithAnd() {
         assertEquals(
-                "doi:\"10.15151/esrf-dc-2493599001\" AND "
-                        + "(creators.familyName:\"Choiniere\" OR contributors.familyName:\"Choiniere\")",
+                "doi:\"10.15151/esrf-dc-2493599001\" AND " +
+                        "(creators.familyName:\"Choiniere\" OR contributors.familyName:\"Choiniere\")",
                 DataCiteProductFilters.toDataCiteQuery(
                         "identifiers.id:10.15151/esrf-dc-2493599001,contributions.by.family_name:Choiniere"));
     }
@@ -43,8 +43,8 @@ class DataCiteProductFiltersTest {
         // misparse these as bogus additional filter segments.
         String esrfAddress = "ESRF, 71 avenue des Martyrs, CS 40220, 38043 Grenoble Cedex 9, France";
         assertEquals(
-                "(creators.affiliation.name:\"" + esrfAddress
-                        + "\" OR contributors.affiliation.name:\"" + esrfAddress + "\")",
+                "(creators.affiliation.name:\"" + esrfAddress +
+                        "\" OR contributors.affiliation.name:\"" + esrfAddress + "\")",
                 DataCiteProductFilters.toDataCiteQuery(
                         "contributions.declared_affiliations.name:" + esrfAddress));
     }
@@ -52,8 +52,8 @@ class DataCiteProductFiltersTest {
     @Test
     void toDataCiteQuery_valueContainingCommas_followedByAnotherRealFilter() {
         assertEquals(
-                "(creators.affiliation.name:\"ESRF, Grenoble\" OR contributors.affiliation.name:\"ESRF, Grenoble\")"
-                        + " AND doi:\"__no_match__\"",
+                "(creators.affiliation.name:\"ESRF, Grenoble\" OR contributors.affiliation.name:\"ESRF, Grenoble\")" +
+                        " AND doi:\"__no_match__\"",
                 DataCiteProductFilters.toDataCiteQuery(
                         "contributions.declared_affiliations.name:ESRF, Grenoble,product_type:bogus"));
     }
@@ -77,8 +77,8 @@ class DataCiteProductFiltersTest {
     @Test
     void toDataCiteQuery_productType_researchSoftware_orsItsResourceTypes() {
         assertEquals(
-                "(types.resourceTypeGeneral:\"ComputationalNotebook\" OR types.resourceTypeGeneral:\"Software\""
-                        + " OR types.resourceTypeGeneral:\"Workflow\")",
+                "(types.resourceTypeGeneral:\"ComputationalNotebook\" OR types.resourceTypeGeneral:\"Software\"" +
+                        " OR types.resourceTypeGeneral:\"Workflow\")",
                 DataCiteProductFilters.toDataCiteQuery("product_type:research software"));
     }
 
@@ -116,16 +116,16 @@ class DataCiteProductFiltersTest {
     @Test
     void toDataCiteQuery_byLocalIdentifier_searchesBothRolesWithValueAsIs() {
         String orcidUrl = "https://orcid.org/0000-0002-1008-0687";
-        assertEquals("(creators.nameIdentifiers.nameIdentifier:\"" + orcidUrl
-                + "\" OR contributors.nameIdentifiers.nameIdentifier:\"" + orcidUrl + "\")",
+        assertEquals("(creators.nameIdentifiers.nameIdentifier:\"" + orcidUrl +
+                "\" OR contributors.nameIdentifiers.nameIdentifier:\"" + orcidUrl + "\")",
                 DataCiteProductFilters.toDataCiteQuery("contributions.by.local_identifier:" + orcidUrl));
     }
 
     @Test
     void toDataCiteQuery_byIdentifiersId_addsOrcidPrefixAndSearchesBothRoles() {
         assertEquals(
-                "(creators.nameIdentifiers.nameIdentifier:\"https://orcid.org/0000-0002-1008-0687\""
-                        + " OR contributors.nameIdentifiers.nameIdentifier:\"https://orcid.org/0000-0002-1008-0687\")",
+                "(creators.nameIdentifiers.nameIdentifier:\"https://orcid.org/0000-0002-1008-0687\"" +
+                        " OR contributors.nameIdentifiers.nameIdentifier:\"https://orcid.org/0000-0002-1008-0687\")",
                 DataCiteProductFilters.toDataCiteQuery("contributions.by.identifiers.id:0000-0002-1008-0687"));
     }
 
@@ -166,8 +166,8 @@ class DataCiteProductFiltersTest {
     @Test
     void toDataCiteQuery_declaredAffiliationsLocalIdentifier_searchesBothRolesWithValueAsIs() {
         String rorUrl = "https://ror.org/02550n020";
-        assertEquals("(creators.affiliation.affiliationIdentifier:\"" + rorUrl
-                + "\" OR contributors.affiliation.affiliationIdentifier:\"" + rorUrl + "\")",
+        assertEquals("(creators.affiliation.affiliationIdentifier:\"" + rorUrl +
+                "\" OR contributors.affiliation.affiliationIdentifier:\"" + rorUrl + "\")",
                 DataCiteProductFilters.toDataCiteQuery(
                         "contributions.declared_affiliations.local_identifier:" + rorUrl));
     }
@@ -175,8 +175,8 @@ class DataCiteProductFiltersTest {
     @Test
     void toDataCiteQuery_declaredAffiliationsIdentifiersId_addsRorPrefixAndSearchesBothRoles() {
         assertEquals(
-                "(creators.affiliation.affiliationIdentifier:\"https://ror.org/02550n020\""
-                        + " OR contributors.affiliation.affiliationIdentifier:\"https://ror.org/02550n020\")",
+                "(creators.affiliation.affiliationIdentifier:\"https://ror.org/02550n020\"" +
+                        " OR contributors.affiliation.affiliationIdentifier:\"https://ror.org/02550n020\")",
                 DataCiteProductFilters.toDataCiteQuery("contributions.declared_affiliations.identifiers.id:02550n020"));
     }
 
@@ -202,8 +202,8 @@ class DataCiteProductFiltersTest {
     @Test
     void toDataCiteQuery_declaredAffiliationsName_searchesBothRoles() {
         assertEquals(
-                "(creators.affiliation.name:\"European Synchrotron Radiation Facility\""
-                        + " OR contributors.affiliation.name:\"European Synchrotron Radiation Facility\")",
+                "(creators.affiliation.name:\"European Synchrotron Radiation Facility\"" +
+                        " OR contributors.affiliation.name:\"European Synchrotron Radiation Facility\")",
                 DataCiteProductFilters.toDataCiteQuery(
                         "contributions.declared_affiliations.name:European Synchrotron Radiation Facility"));
     }

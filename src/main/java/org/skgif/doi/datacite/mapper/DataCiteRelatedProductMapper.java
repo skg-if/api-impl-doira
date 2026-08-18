@@ -55,8 +55,8 @@ final class DataCiteRelatedProductMapper {
         List<ProductsRelatedCitesInner> isDocumentedBy = relatedByType(attributes, "IsDocumentedBy");
         List<ProductsRelatedCitesInner> isNewVersionOf = relatedByType(attributes, "IsNewVersionOf");
         List<ProductsRelatedCitesInner> isPartOf = relatedByType(attributes, "IsPartOf");
-        if (cites.isEmpty() && citedBy.isEmpty() && isSupplementedBy.isEmpty() && isDocumentedBy.isEmpty()
-                && isNewVersionOf.isEmpty() && isPartOf.isEmpty()) {
+        if (cites.isEmpty() && citedBy.isEmpty() && isSupplementedBy.isEmpty() && isDocumentedBy.isEmpty() &&
+                isNewVersionOf.isEmpty() && isPartOf.isEmpty()) {
             return null;
         }
         return assembleRelated(cites, isSupplementedBy, isDocumentedBy, isNewVersionOf, isPartOf);
@@ -92,15 +92,15 @@ final class DataCiteRelatedProductMapper {
             if (!relationType.equals(related.relationType()) || related.relatedIdentifier() == null) {
                 continue;
             }
-            String scheme = related.relatedIdentifierType() != null
-                    ? related.relatedIdentifierType().toLowerCase(Locale.ROOT)
-                    : "url";
+            String scheme = related.relatedIdentifierType() != null ?
+                    related.relatedIdentifierType().toLowerCase(Locale.ROOT) :
+                    "url";
             // A related product with a DOI is identified by the full https://doi.org/... URL,
             // consistent with how this API identifies its own products; anything else falls
             // back to otf.
-            String localIdentifier = SCHEME_DOI.equals(scheme)
-                    ? localIdentifiers.toFullLocalIdentifier(related.relatedIdentifier())
-                    : MapperTextUtils.otf(attributes.doi(), related.relatedIdentifier());
+            String localIdentifier = SCHEME_DOI.equals(scheme) ?
+                    localIdentifiers.toFullLocalIdentifier(related.relatedIdentifier()) :
+                    MapperTextUtils.otf(attributes.doi(), related.relatedIdentifier());
             result.add(new ProductsRelatedItem()
                     .localIdentifier(localIdentifier)
                     .entityType(EntityTypes.PRODUCT)

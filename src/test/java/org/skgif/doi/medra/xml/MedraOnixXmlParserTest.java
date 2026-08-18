@@ -98,8 +98,8 @@ class MedraOnixXmlParserTest {
 
         // Journal level has 4 Title entries (2 languages x 2 TitleTypes) - first TitleType "01" in
         // document order is the Italian one.
-        assertEquals("Atti della Accademia Perloritana dei Pericolanti. Classe di Scienze Fisiche, Matematiche"
-                + " e Naturali", work.journalTitle());
+        assertEquals("Atti della Accademia Perloritana dei Pericolanti. Classe di Scienze Fisiche, Matematiche" +
+                " e Naturali", work.journalTitle());
         assertEquals(java.util.List.of("18251242"), work.issns());
         final int expectedContributorCount = 8;
         assertEquals(expectedContributorCount, work.contributors().size());

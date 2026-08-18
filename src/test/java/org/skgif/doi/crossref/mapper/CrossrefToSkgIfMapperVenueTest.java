@@ -227,8 +227,8 @@ class CrossrefToSkgIfMapperVenueTest {
 
         VenueLite venue = (VenueLite) product.getManifestations().getFirst().getBiblio().getIn();
         assertEquals(
-                "Proceedings of the 4th International Conference on Innovative Research Across Disciplines "
-                        + "(ICIRAD 2021)",
+                "Proceedings of the 4th International Conference on Innovative Research Across Disciplines " +
+                        "(ICIRAD 2021)",
                 venue.getName());
         assertTrue(venue.getLocalIdentifier().startsWith("otf___"));
 

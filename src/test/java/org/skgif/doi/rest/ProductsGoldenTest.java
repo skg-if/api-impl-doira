@@ -608,8 +608,8 @@ class ProductsGoldenTest {
         var expected = objectMapper.readTree(getClass().getClassLoader().getResourceAsStream(expectedResource));
 
         org.junit.jupiter.api.Assertions.assertEquals(expected, actual,
-                "Actual JSON-LD output no longer matches " + expectedResource
-                        + ". If this change is intentional: mvn test -Dtest=ProductsGoldenTest"
-                        + " -Dgolden.regenerate=true, then review the diff before committing.");
+                "Actual JSON-LD output no longer matches " + expectedResource +
+                        ". If this change is intentional: mvn test -Dtest=ProductsGoldenTest" +
+                        " -Dgolden.regenerate=true, then review the diff before committing.");
     }
 }

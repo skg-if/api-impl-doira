@@ -52,18 +52,18 @@ class DataCiteGrantFiltersTest {
     @Test
     void toDataCiteQuery_byIdentifiersValue_orsOrcidAndRorFormsAcrossBothRoles() {
         assertEquals(
-                "(creators.nameIdentifiers.nameIdentifier:\"https://orcid.org/018n2ja79\""
-                        + " OR contributors.nameIdentifiers.nameIdentifier:\"https://orcid.org/018n2ja79\""
-                        + " OR creators.nameIdentifiers.nameIdentifier:\"https://ror.org/018n2ja79\""
-                        + " OR contributors.nameIdentifiers.nameIdentifier:\"https://ror.org/018n2ja79\")",
+                "(creators.nameIdentifiers.nameIdentifier:\"https://orcid.org/018n2ja79\"" +
+                        " OR contributors.nameIdentifiers.nameIdentifier:\"https://orcid.org/018n2ja79\"" +
+                        " OR creators.nameIdentifiers.nameIdentifier:\"https://ror.org/018n2ja79\"" +
+                        " OR contributors.nameIdentifiers.nameIdentifier:\"https://ror.org/018n2ja79\")",
                 DataCiteGrantFilters.toDataCiteQuery("contributions.by.identifiers.value:018n2ja79"));
     }
 
     @Test
     void toDataCiteQuery_declaredAffiliationsName_searchesBothRoles() {
         assertEquals(
-                "(creators.affiliation.name:\"Brown University\" "
-                        + "OR contributors.affiliation.name:\"Brown University\")",
+                "(creators.affiliation.name:\"Brown University\" " +
+                        "OR contributors.affiliation.name:\"Brown University\")",
                 DataCiteGrantFilters.toDataCiteQuery("contributions.declared_affiliations.name:Brown University"));
     }
 

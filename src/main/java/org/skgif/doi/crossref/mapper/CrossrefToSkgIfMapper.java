@@ -121,8 +121,8 @@ public class CrossrefToSkgIfMapper implements GrantCapableMapper<CrossrefWork> {
 
         List<CrossrefProject> projects = work.project() != null ? work.project() : List.of();
         CrossrefProject primaryProject = projects.isEmpty() ? null : projects.getFirst();
-        CrossrefFunding primaryFunding = primaryProject != null && primaryProject.funding() != null
-                && !primaryProject.funding().isEmpty() ? primaryProject.funding().getFirst() : null;
+        CrossrefFunding primaryFunding = primaryProject != null && primaryProject.funding() != null &&
+                !primaryProject.funding().isEmpty() ? primaryProject.funding().getFirst() : null;
 
         return new Grant()
                 .localIdentifier(localIdentifiers.toFullLocalIdentifier(work.doi()))

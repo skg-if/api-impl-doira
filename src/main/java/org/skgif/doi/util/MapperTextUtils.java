@@ -50,8 +50,8 @@ public final class MapperTextUtils {
      * @return the bare ROR id
      */
     public static String stripRorUrl(String ror) {
-        return ror.startsWith(ExternalIdentifierUrls.ROR_BASE_URL)
-                ? ror.substring(ExternalIdentifierUrls.ROR_BASE_URL.length())
-                : ror;
+        return ror.startsWith(ExternalIdentifierUrls.ROR_BASE_URL) ?
+                ror.substring(ExternalIdentifierUrls.ROR_BASE_URL.length()) :
+                ror;
     }
 }

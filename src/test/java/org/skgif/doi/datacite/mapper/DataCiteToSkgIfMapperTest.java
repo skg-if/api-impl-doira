@@ -138,8 +138,8 @@ class DataCiteToSkgIfMapperTest {
         assertFalse(first.getDeclaredAffiliations().isEmpty());
         Organisation affiliation = (Organisation) first.getDeclaredAffiliations().getFirst();
         assertEquals(
-                "EPFL - PTPSP, Protein Production and Structure Core Facilit, EPFL SV PTECH PTPSP, "
-                        + "Station 19, Ch-1015 Lausanne, Switzerland",
+                "EPFL - PTPSP, Protein Production and Structure Core Facilit, EPFL SV PTECH PTPSP, " +
+                        "Station 19, Ch-1015 Lausanne, Switzerland",
                 affiliation.getName());
         // DataCite gave a plain string, not a structured affiliation object, so there's no
         // external identifier to carry over.

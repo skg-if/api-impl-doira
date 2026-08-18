@@ -88,9 +88,9 @@ final class DataCiteGrantMapper {
         if (organizational) {
             String ror = DataCiteContributionMapper.firstRor(nameIdentifiers);
             Organisation by = new Organisation()
-                    .localIdentifier(ror != null
-                            ? ExternalIdentifierUrls.ROR_BASE_URL + ror
-                            : MapperTextUtils.otf(doi, name))
+                    .localIdentifier(ror != null ?
+                            ExternalIdentifierUrls.ROR_BASE_URL + ror :
+                            MapperTextUtils.otf(doi, name))
                     .name(name)
                     .entityType(EntityTypes.ORGANISATION);
             if (ror != null) {
@@ -112,8 +112,8 @@ final class DataCiteGrantMapper {
             if (affiliation.name() == null) {
                 continue;
             }
-            boolean hasRor = affiliation.affiliationIdentifier() != null
-                    && SCHEME_ROR_UPPER.equalsIgnoreCase(affiliation.affiliationIdentifierScheme());
+            boolean hasRor = affiliation.affiliationIdentifier() != null &&
+                    SCHEME_ROR_UPPER.equalsIgnoreCase(affiliation.affiliationIdentifierScheme());
             String bareRor = hasRor ? MapperTextUtils.stripRorUrl(affiliation.affiliationIdentifier()) : null;
             result.add(EntityRefs.organisationRef(doi, affiliation.name(), bareRor));
         }
@@ -138,10 +138,10 @@ final class DataCiteGrantMapper {
                 continue;
             }
             String ror = DataCiteContributionMapper.firstRor(contributor.nameIdentifiers());
-            DataCiteAffiliation asAffiliation = ror != null
-                    ? new DataCiteAffiliation(contributor.name(), ExternalIdentifierUrls.ROR_BASE_URL + ror,
-                            SCHEME_ROR_UPPER)
-                    : new DataCiteAffiliation(contributor.name(), null, null);
+            DataCiteAffiliation asAffiliation = ror != null ?
+                    new DataCiteAffiliation(contributor.name(), ExternalIdentifierUrls.ROR_BASE_URL + ror,
+                            SCHEME_ROR_UPPER) :
+                    new DataCiteAffiliation(contributor.name(), null, null);
             organizationalContributors.add(asAffiliation);
         }
         return grantAffiliations(doi, organizationalContributors);

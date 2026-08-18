@@ -71,8 +71,8 @@ final class MedraManifestationMapper {
             case YEAR_MONTH_LENGTH ->
                 raw.substring(0, YEAR_LENGTH) + "-" + raw.substring(YEAR_LENGTH, YEAR_MONTH_LENGTH);
             case FULL_DATE_LENGTH ->
-                raw.substring(0, YEAR_LENGTH) + "-" + raw.substring(YEAR_LENGTH, YEAR_MONTH_LENGTH)
-                        + "-" + raw.substring(YEAR_MONTH_LENGTH, FULL_DATE_LENGTH);
+                raw.substring(0, YEAR_LENGTH) + "-" + raw.substring(YEAR_LENGTH, YEAR_MONTH_LENGTH) +
+                        "-" + raw.substring(YEAR_MONTH_LENGTH, FULL_DATE_LENGTH);
             default -> null;
         };
     }

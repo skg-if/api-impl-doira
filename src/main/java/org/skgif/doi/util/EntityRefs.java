@@ -41,9 +41,9 @@ public final class EntityRefs {
      */
     public static Organisation organisationRef(String doi, String name, String bareRor) {
         Organisation org = new Organisation()
-                .localIdentifier(bareRor != null
-                        ? ExternalIdentifierUrls.ROR_BASE_URL + bareRor
-                        : MapperTextUtils.otf(doi, name))
+                .localIdentifier(bareRor != null ?
+                        ExternalIdentifierUrls.ROR_BASE_URL + bareRor :
+                        MapperTextUtils.otf(doi, name))
                 .name(name)
                 .entityType(EntityTypes.ORGANISATION);
         if (bareRor != null) {
@@ -111,9 +111,9 @@ public final class EntityRefs {
     public static PersonLite personRef(String doi, String name, String givenName, String familyName,
                                        String bareOrcid, List<PersonLiteAllOfIdentifiers> orcidIdentifiers) {
         PersonLite by = new PersonLite()
-                .localIdentifier(bareOrcid != null
-                        ? ExternalIdentifierUrls.ORCID_BASE_URL + bareOrcid
-                        : MapperTextUtils.otf(doi, name))
+                .localIdentifier(bareOrcid != null ?
+                        ExternalIdentifierUrls.ORCID_BASE_URL + bareOrcid :
+                        MapperTextUtils.otf(doi, name))
                 .name(name)
                 .givenName(givenName)
                 .familyName(familyName)

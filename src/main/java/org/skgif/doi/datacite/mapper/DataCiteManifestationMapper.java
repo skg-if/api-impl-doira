@@ -95,9 +95,9 @@ final class DataCiteManifestationMapper {
             // coincides with e.g. `Issued` or the top-level `created` timestamp, that's just
             // "published and immediately available," not an embargo end date, so it's dropped
             // rather than emitted anywhere.
-            boolean redundantEmbargo = !missingMapping
-                    && ManifestationDateSetters.EMBARGO.equals(skgIfDateType)
-                    && otherRecordDays(attributes, date).contains(normalizeDay(date.date()));
+            boolean redundantEmbargo = !missingMapping &&
+                    ManifestationDateSetters.EMBARGO.equals(skgIfDateType) &&
+                    otherRecordDays(attributes, date).contains(normalizeDay(date.date()));
             if (missingMapping || redundantEmbargo) {
                 continue;
             }
@@ -191,8 +191,8 @@ final class DataCiteManifestationMapper {
     }
 
     private static List<String> licenceUrls(DataCiteAttributes attributes) {
-        return attributes.rightsList() == null
-                ? List.of()
-                : attributes.rightsList().stream().map(DataCiteRights::rightsUri).toList();
+        return attributes.rightsList() == null ?
+                List.of() :
+                attributes.rightsList().stream().map(DataCiteRights::rightsUri).toList();
     }
 }

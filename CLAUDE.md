@@ -69,11 +69,11 @@ diffs:
   preceding closing brace (`} else {`).
 - No space just inside parens: `foo(bar)`, `if (x)` - not `foo( bar )`.
 - Space around binary/assignment operators: `a + b`, `x = y`.
-- When a boolean/logical expression must wrap, put the operator at the START of the continuation
-  line, not the end:
+- When a boolean/logical expression must wrap, put the operator at the END of the line being
+  wrapped, not the start of the continuation line:
   ```java
-  if (someCondition
-          && anotherCondition) {
+  if (someCondition &&
+          anotherCondition) {
   ```
 - No unused or wildcard imports.
 - No trailing whitespace; file ends with a newline.

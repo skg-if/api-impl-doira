@@ -131,10 +131,10 @@ final class DataCiteGrantFilters {
     private static String byIdentifierValueClause(String bareValue) {
         String orcid = ExternalIdentifierUrls.ORCID_BASE_URL + escape(bareValue);
         String ror = ExternalIdentifierUrls.ROR_BASE_URL + escape(bareValue);
-        return "(creators.nameIdentifiers.nameIdentifier:\"" + orcid
-                + "\" OR contributors.nameIdentifiers.nameIdentifier:\"" + orcid
-                + "\" OR creators.nameIdentifiers.nameIdentifier:\"" + ror
-                + "\" OR contributors.nameIdentifiers.nameIdentifier:\"" + ror + "\")";
+        return "(creators.nameIdentifiers.nameIdentifier:\"" + orcid +
+                "\" OR contributors.nameIdentifiers.nameIdentifier:\"" + orcid +
+                "\" OR creators.nameIdentifiers.nameIdentifier:\"" + ror +
+                "\" OR contributors.nameIdentifiers.nameIdentifier:\"" + ror + "\")";
     }
 
     /**

@@ -2,6 +2,7 @@ package org.skgif.doi.crossref.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
 /**
@@ -18,8 +19,8 @@ import java.util.List;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record CrossrefFunder(
-                             String name,
-                             @JsonProperty("DOI") String doi,
-                             List<String> award,
-                             List<CrossrefIdEntry> id) {
+        String name,
+        @JsonProperty("DOI") String doi,
+        List<String> award,
+        List<CrossrefIdEntry> id) {
 }

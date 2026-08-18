@@ -112,8 +112,8 @@ public class CrossrefGrantsResource {
             return notFound(localIdentifierParam);
         }
         if (!CrossrefTypeMapping.isGrant(work)) {
-            return JsonLdResponses.notFound("No grant found for local_identifier '" + localIdentifierParam
-                    + "' - this DOI is a product, see /crossref/products/" + localIdentifierParam);
+            return JsonLdResponses.notFound("No grant found for local_identifier '" + localIdentifierParam +
+                    "' - this DOI is a product, see /crossref/products/" + localIdentifierParam);
         }
 
         Grant grant = mapper.toGrant(work);

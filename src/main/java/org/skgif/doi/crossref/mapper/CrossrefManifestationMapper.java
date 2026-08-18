@@ -48,12 +48,12 @@ final class CrossrefManifestationMapper {
     }
 
     private ProductManifestationType manifestationType(CrossrefWork work) {
-        return work.type() != null
-                ? new ProductManifestationType()
+        return work.type() != null ?
+                new ProductManifestationType()
                         .propertyClass(CROSSREF_TYPES_BASE_URL + work.type())
                         .definedIn(CROSSREF_TYPES_BASE_URL)
-                        .labels(Map.of("en", work.type()))
-                : null;
+                        .labels(Map.of("en", work.type())) :
+                null;
     }
 
     private ProductManifestationDates dates(CrossrefWork work) {

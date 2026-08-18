@@ -93,9 +93,9 @@ final class DataCiteContributionMapper {
         }
         return nameIdentifiers.stream()
                 .filter(ni -> "ORCID".equalsIgnoreCase(ni.nameIdentifierScheme()) && ni.nameIdentifier() != null)
-                .map(ni -> ni.nameIdentifier().startsWith(ExternalIdentifierUrls.ORCID_BASE_URL)
-                        ? ni.nameIdentifier().substring(ExternalIdentifierUrls.ORCID_BASE_URL.length())
-                        : ni.nameIdentifier())
+                .map(ni -> ni.nameIdentifier().startsWith(ExternalIdentifierUrls.ORCID_BASE_URL) ?
+                        ni.nameIdentifier().substring(ExternalIdentifierUrls.ORCID_BASE_URL.length()) :
+                        ni.nameIdentifier())
                 .findFirst()
                 .orElse(null);
     }
@@ -129,8 +129,8 @@ final class DataCiteContributionMapper {
             if (affiliation.name() == null) {
                 continue;
             }
-            boolean hasRor = affiliation.affiliationIdentifier() != null
-                    && SCHEME_ROR_UPPER.equalsIgnoreCase(affiliation.affiliationIdentifierScheme());
+            boolean hasRor = affiliation.affiliationIdentifier() != null &&
+                    SCHEME_ROR_UPPER.equalsIgnoreCase(affiliation.affiliationIdentifierScheme());
             String bareRor = hasRor ? MapperTextUtils.stripRorUrl(affiliation.affiliationIdentifier()) : null;
             result.add(EntityRefs.organisationRef(doi, affiliation.name(), bareRor));
         }
@@ -142,8 +142,8 @@ final class DataCiteContributionMapper {
             return null;
         }
         return nameIdentifiers.stream()
-                .filter(ni -> SCHEME_ROR_UPPER.equalsIgnoreCase(ni.nameIdentifierScheme())
-                        && ni.nameIdentifier() != null)
+                .filter(ni -> SCHEME_ROR_UPPER.equalsIgnoreCase(ni.nameIdentifierScheme()) &&
+                        ni.nameIdentifier() != null)
                 .map(ni -> MapperTextUtils.stripRorUrl(ni.nameIdentifier()))
                 .findFirst()
                 .orElse(null);

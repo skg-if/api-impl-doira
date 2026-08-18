@@ -60,9 +60,9 @@ public final class CrossrefVenueMetadataXmlParser {
             Document document = parseDocument(xml);
             XPath xpath = XPathFactory.newInstance().newXPath();
             Node containerNode = (Node) xpath.evaluate(
-                    "//*[local-name()='book' or local-name()='conference']"
-                            + "/*[local-name()='book_series_metadata' or local-name()='book_metadata'"
-                            + " or local-name()='proceedings_series_metadata' or local-name()='proceedings_metadata']",
+                    "//*[local-name()='book' or local-name()='conference']" +
+                            "/*[local-name()='book_series_metadata' or local-name()='book_metadata'" +
+                            " or local-name()='proceedings_series_metadata' or local-name()='proceedings_metadata']",
                     document, XPathConstants.NODE);
             if (containerNode == null) {
                 return Optional.empty();
@@ -82,8 +82,8 @@ public final class CrossrefVenueMetadataXmlParser {
 
             Node seriesMetadata =
                     (Node) xpath.evaluate("*[local-name()='series_metadata']", containerNode, XPathConstants.NODE);
-            String seriesTitle = seriesMetadata == null ? null
-                    : text(xpath, seriesMetadata, "*[local-name()='titles']/*[local-name()='title']");
+            String seriesTitle = seriesMetadata == null ? null :
+                    text(xpath, seriesMetadata, "*[local-name()='titles']/*[local-name()='title']");
             List<String> seriesIssns =
                     seriesMetadata == null ? List.of() : textList(xpath, seriesMetadata, "*[local-name()='issn']");
             String volume = text(xpath, containerNode, "*[local-name()='volume']");

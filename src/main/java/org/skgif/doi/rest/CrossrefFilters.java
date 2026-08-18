@@ -148,9 +148,9 @@ final class CrossrefFilters {
     }
 
     private static String stripOrcidUrl(String value) {
-        return value.startsWith(ExternalIdentifierUrls.ORCID_BASE_URL)
-                ? value.substring(ExternalIdentifierUrls.ORCID_BASE_URL.length())
-                : value;
+        return value.startsWith(ExternalIdentifierUrls.ORCID_BASE_URL) ?
+                value.substring(ExternalIdentifierUrls.ORCID_BASE_URL.length()) :
+                value;
     }
 
     /**

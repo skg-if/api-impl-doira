@@ -58,9 +58,9 @@ final class CrossrefContributionMapper {
     static ProductContributionBy personRef(String doi, String given, String family, String rawOrcid) {
         String bareOrcid = bareOrcid(rawOrcid);
         String name = displayName(given, family);
-        List<PersonLiteAllOfIdentifiers> orcidIdentifiers = bareOrcid != null
-                ? List.of(new PersonLiteAllOfIdentifiers().scheme("orcid").value(bareOrcid))
-                : null;
+        List<PersonLiteAllOfIdentifiers> orcidIdentifiers = bareOrcid != null ?
+                List.of(new PersonLiteAllOfIdentifiers().scheme("orcid").value(bareOrcid)) :
+                null;
         return EntityRefs.personRef(doi, name, given, family, bareOrcid, orcidIdentifiers);
     }
 

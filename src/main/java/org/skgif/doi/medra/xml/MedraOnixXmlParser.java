@@ -80,13 +80,13 @@ public final class MedraOnixXmlParser {
             Node serialWork =
                     (Node) xpath.evaluate("//*[local-name()='SerialWork']", document, XPathConstants.NODE);
             String journalTitle = serialWork == null ? null : journalTitle(xpath, serialWork);
-            String publisherName = serialWork == null ? null
-                    : text(xpath, serialWork, "*[local-name()='Publisher']/*[local-name()='PublisherName']");
+            String publisherName = serialWork == null ? null :
+                    text(xpath, serialWork, "*[local-name()='Publisher']/*[local-name()='PublisherName']");
             String registrantName = text(xpath, document, "//*[local-name()='RegistrantName']");
 
             List<String> issns = textList(xpath, document,
-                    "//*[local-name()='SerialVersion']/*[local-name()='ProductIdentifier']"
-                            + "[*[local-name()='ProductIDType']='07']/*[local-name()='IDValue']")
+                    "//*[local-name()='SerialVersion']/*[local-name()='ProductIdentifier']" +
+                            "[*[local-name()='ProductIDType']='07']/*[local-name()='IDValue']")
                     .stream().distinct().toList();
 
             return Optional.of(new MedraWork(doi, titles(xpath, contentItem), contributors(xpath, contentItem),

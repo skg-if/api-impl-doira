@@ -105,8 +105,8 @@ final class JsonLdResponses {
     }
 
     private static String clientId(DataCiteDoiData data) {
-        if (data == null || data.relationships() == null || data.relationships().client() == null
-                || data.relationships().client().data() == null) {
+        if (data == null || data.relationships() == null || data.relationships().client() == null ||
+                data.relationships().client().data() == null) {
             return null;
         }
         String id = data.relationships().client().data().id();

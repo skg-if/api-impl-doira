@@ -60,9 +60,9 @@ final class FilterQuerySyntax {
     }
 
     static String stripDoiUrl(String value) {
-        return value.startsWith(ExternalIdentifierUrls.DOI_BASE_URL)
-                ? value.substring(ExternalIdentifierUrls.DOI_BASE_URL.length())
-                : value;
+        return value.startsWith(ExternalIdentifierUrls.DOI_BASE_URL) ?
+                value.substring(ExternalIdentifierUrls.DOI_BASE_URL.length()) :
+                value;
     }
 
     /**
@@ -117,9 +117,9 @@ final class FilterQuerySyntax {
             String key = segment.substring(0, idx).trim();
             String value = segment.substring(idx + 1).trim();
             if (!supportedKeys.contains(key)) {
-                throw new UnsupportedFilterException("The filter '" + key
-                        + "' is not supported by this implementation, valid filters are "
-                        + String.join(", ", supportedKeys));
+                throw new UnsupportedFilterException("The filter '" + key +
+                        "' is not supported by this implementation, valid filters are " +
+                        String.join(", ", supportedKeys));
             }
             String clause = clauseBuilder.apply(key, value);
             if (clause != null) {

@@ -133,7 +133,17 @@
     <module name="MethodParamPad"/>
     <module name="NoWhitespaceAfter"/>
     <module name="NoWhitespaceBefore"/>
-    <module name="OperatorWrap"/>
+    <!--
+      option=eol (rather than Checkstyle's own default of nl) matches intellij-style.xml's
+      Standard-Indents formatter profile, which leaves wrap_before_*_operator=false - operators
+      stay at the end of the line being wrapped, not the start of the continuation line.
+    -->
+    <module name="OperatorWrap">
+      <property name="option" value="eol"/>
+      <property name="tokens"
+                value="QUESTION, COLON, EQUAL, NOT_EQUAL, DIV, PLUS, MINUS, STAR, MOD,
+                       SR, BSR, GE, GT, SL, LE, LT, BXOR, BOR, LOR, BAND, LAND, LITERAL_INSTANCEOF"/>
+    </module>
     <module name="ParenPad"/>
     <module name="TypecastParenPad"/>
     <module name="WhitespaceAfter"/>
@@ -232,6 +242,42 @@
     <module name="StringLiteralEquality"/>
     <module name="UnnecessaryParentheses"/>
     <module name="UnusedLocalVariable"/>
+    <!--
+      lineWrappingIndentation is set explicitly (rather than left at Checkstyle's own default)
+      because intellij-style.xml's continuation_indentation=2, combined with
+      indentation.size=4, produces an 8-space continuation indent - the "Standard Indents"
+      wrapping this codebase's formatter profile uses throughout. forceStrictCondition=false
+      relaxes column-alignment checking for lines Eclipse/IntelliJ wraps on its own, since this
+      profile no longer forces column alignment (alignment_for_*=0) the way e27ff78 briefly did.
+    -->
+    <module name="Indentation">
+      <property name="basicOffset" value="4"/>
+      <property name="braceAdjustment" value="0"/>
+      <property name="caseIndent" value="4"/>
+      <property name="throwsIndent" value="8"/>
+      <property name="lineWrappingIndentation" value="8"/>
+      <property name="arrayInitIndent" value="4"/>
+      <property name="forceStrictCondition" value="false"/>
+    </module>
+    <!--
+      Net-new (Sun's baseline has no AnnotationLocation check): mirrors intellij-style.xml's
+      alignment_for_annotations_on_{type,field,method}=49 (own line required). A second module
+      for parameter/local-variable annotations (matching alignment_for_annotations_on_
+      {parameter,local_variable}=0, "same line allowed") isn't possible - AnnotationLocation's
+      acceptable tokens are only CLASS_DEF/INTERFACE_DEF/ENUM_DEF/METHOD_DEF/CTOR_DEF/
+      VARIABLE_DEF/RECORD_DEF/COMPACT_CTOR_DEF; it has no way to check PARAMETER_DEF or
+      distinguish local variables from VARIABLE_DEF fields. Left unchecked, which matches the
+      "0 = no constraint" intent for those two settings anyway.
+    -->
+    <module name="AnnotationLocation">
+      <property name="id" value="AnnotationLocationMostCases"/>
+      <property name="tokens"
+                value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, METHOD_DEF, CTOR_DEF, VARIABLE_DEF,
+                       RECORD_DEF, COMPACT_CTOR_DEF"/>
+      <property name="allowSamelineMultipleAnnotations" value="false"/>
+      <property name="allowSamelineSingleParameterlessAnnotation" value="false"/>
+      <property name="allowSamelineParameterizedAnnotation" value="false"/>
+    </module>
 
   </module>
 

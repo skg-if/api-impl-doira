@@ -160,15 +160,24 @@
       </plugin>
       <plugin>
         <!--
-          Bound to process-sources, goal apply, positioned (via declaration order - Maven runs
-          same-phase executions in POM order) before maven-pmd-plugin/maven-checkstyle-plugin
-          below, both also bound to process-sources. This makes every `mvn compile`/`test`/
-          `package` self-healing: Spotless reformats/removes unused imports first, then PMD and
-          checkstyle validate the already-fixed code - no separate format step, no per-edit hook
-          needed (an earlier PostToolUse Claude Code hook running this per-edit was replaced by
-          this compile-time binding - too much latency/token overhead for a per-keystroke check;
-          see CLAUDE.md's "Java code style" section for the plain-English rules this exists to
-          catch/fix on top of).
+          Lifecycle binding (the <executions> block below) is temporarily commented out while
+          intellij-style.xml/checkstyle.xml's continuation-indent settings are being revised, so
+          `mvn compile`/`test`/`package` validate the source tree as it sits in git rather than a
+          tree Spotless has just reformatted underneath that work. Spotless still runs fine
+          on-demand via `mvn spotless:apply` / `mvn spotless:check`; re-enable the execution once
+          the revised settings are confirmed good - this is intentionally left for a follow-up,
+          not folded into that change.
+
+          Background on why this plugin exists here at all: bound to process-sources, goal apply,
+          positioned (via declaration order - Maven runs same-phase executions in POM order)
+          before maven-pmd-plugin/maven-checkstyle-plugin below, both also bound to
+          process-sources. This makes every `mvn compile`/`test`/`package` self-healing: Spotless
+          reformats/removes unused imports first, then PMD and checkstyle validate the
+          already-fixed code - no separate format step, no per-edit hook needed (an earlier
+          PostToolUse Claude Code hook running this per-edit was replaced by this compile-time
+          binding - too much latency/token overhead for a per-keystroke check; see CLAUDE.md's
+          "Java code style" section for the plain-English rules this exists to catch/fix on top
+          of).
 
           intellij-style.xml (repo root) is a real IntelliJ-exported Eclipse formatter profile,
           patched to fix several `alignment_for_*` properties that were exported as "never wrap"
@@ -197,6 +206,7 @@
             <removeUnusedImports></removeUnusedImports>
           </java>
         </configuration>
+        <!--
         <executions>
           <execution>
             <id>spotless-apply</id>
@@ -206,6 +216,7 @@
             </goals>
           </execution>
         </executions>
+        -->
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

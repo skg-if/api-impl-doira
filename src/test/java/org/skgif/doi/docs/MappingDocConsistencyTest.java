@@ -64,10 +64,10 @@ class MappingDocConsistencyTest {
             }
         }
         assertTrue(undocumented.isEmpty(),
-                "These fixtures under src/test/resources aren't mentioned in any SKG_IF_DOI_MAPPING*.md file: "
-                        + undocumented + ". Add a row/link describing what they exercise, or add them to "
-                        + "MappingDocConsistencyTest.EXCLUDED_FROM_DOC with a reason if they're genuinely "
-                        + "out of scope (e.g. a list/search-endpoint golden).");
+                "These fixtures under src/test/resources aren't mentioned in any SKG_IF_DOI_MAPPING*.md file: " +
+                        undocumented + ". Add a row/link describing what they exercise, or add them to " +
+                        "MappingDocConsistencyTest.EXCLUDED_FROM_DOC with a reason if they're genuinely " +
+                        "out of scope (e.g. a list/search-endpoint golden).");
     }
 
     @Test

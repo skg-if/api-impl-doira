@@ -41,9 +41,9 @@ final class DataCiteFundingMapper {
             // DataCite funding references carry no stable identifier for the grant itself
             // (unlike the funder, which often has a ROR) - the award number/title is the
             // closest thing to a natural key, so that's what the otf id is built from.
-            String label = fundingReference.awardNumber() != null
-                    ? fundingReference.awardNumber()
-                    : fundingReference.awardTitle();
+            String label = fundingReference.awardNumber() != null ?
+                    fundingReference.awardNumber() :
+                    fundingReference.awardTitle();
             GrantLite grant = new GrantLite()
                     .localIdentifier(MapperTextUtils.otf(attributes.doi(), label))
                     .entityType(GrantLite.EntityTypeEnum.GRANT)
@@ -75,8 +75,8 @@ final class DataCiteFundingMapper {
         if (fundingReference.funderName() == null) {
             return null;
         }
-        boolean hasRor = fundingReference.funderIdentifier() != null
-                && SCHEME_ROR_UPPER.equalsIgnoreCase(fundingReference.funderIdentifierType());
+        boolean hasRor = fundingReference.funderIdentifier() != null &&
+                SCHEME_ROR_UPPER.equalsIgnoreCase(fundingReference.funderIdentifierType());
         String bareRor = hasRor ? MapperTextUtils.stripRorUrl(fundingReference.funderIdentifier()) : null;
         String funderDoi = hasRor ? null : extractDoi(fundingReference.funderIdentifier());
         String doiLocalIdentifier = funderDoi != null ? localIdentifiers.toFullLocalIdentifier(funderDoi) : null;
