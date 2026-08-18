@@ -32,7 +32,7 @@ final class FilterQuerySyntax {
      * {@code supportedKeys} - see the class javadoc for why. A value with no comma in it, or the
      * final segment of the filter string, always ends up as a single segment either way.
      *
-     * @param filter the raw SKG-IF filter query string
+     * @param filter        the raw SKG-IF filter query string
      * @param supportedKeys the filter keys the caller recognizes
      * @return the filter string split into key:value segments
      */
@@ -82,9 +82,9 @@ final class FilterQuerySyntax {
     /**
      * For attributes we only ever emit one fixed scheme/value for - no-op if it matches, else forces zero results.
      *
-     * @param value the filter value to check
+     * @param value          the filter value to check
      * @param expectedScheme the only scheme value this API ever emits for the attribute
-     * @param noMatchClause the clause to return when value doesn't match expectedScheme
+     * @param noMatchClause  the clause to return when value doesn't match expectedScheme
      * @return null (no-op) if value matches expectedScheme, else noMatchClause
      */
     static String schemeOnlyFilter(String value, String expectedScheme, String noMatchClause) {
@@ -98,15 +98,15 @@ final class FilterQuerySyntax {
      * Shared by every provider's filter parser so the malformed-segment / unsupported-filter
      * error messages exist in exactly one place.
      *
-     * @param filter the raw SKG-IF filter query string
+     * @param filter        the raw SKG-IF filter query string
      * @param supportedKeys the filter keys this provider/entity implementation recognizes
      * @param clauseBuilder builds a provider-specific clause from each valid (key, value) pair,
-     *     or returns null to omit it from the result
+     *                      or returns null to omit it from the result
      * @return the non-null clauses built from filter's segments
      * @throws UnsupportedFilterException if a segment is malformed, or its key isn't in supportedKeys
      */
     static List<String> parseClauses(String filter, Set<String> supportedKeys,
-            BinaryOperator<String> clauseBuilder) {
+                                     BinaryOperator<String> clauseBuilder) {
         List<String> clauses = new ArrayList<>();
         for (String segment : splitSegments(filter, supportedKeys)) {
             int idx = segment.indexOf(':');

@@ -17,7 +17,7 @@ public record CrossrefDate(@JsonProperty("date-parts") List<List<Integer>> dateP
 
     /**
      * @return this date's {@code date-parts} rendered as an ISO date string (year, year-month,
-     *     or full date depending on how many parts are present), or null if dateParts is empty
+     *         or full date depending on how many parts are present), or null if dateParts is empty
      */
     public String toIsoDate() {
         if (dateParts == null || dateParts.isEmpty()) {

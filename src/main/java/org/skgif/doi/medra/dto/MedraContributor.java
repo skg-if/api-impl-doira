@@ -8,18 +8,18 @@ package org.skgif.doi.medra.dto;
  * personNameInverted}), or {@code personNameInverted} alone - see {@code
  * MedraContributionMapper#personRef} for the precedence used to resolve them into a display name.
  *
- * @param role the raw ContributorRole code (e.g. "A01" for author)
- * @param namesBeforeKey given-name part when paired with keyNames (mutually exclusive with the
- *     other name fields)
- * @param keyNames family-name part when paired with namesBeforeKey
- * @param personName a natural-order composed name, alone or paired with personNameInverted
+ * @param role               the raw ContributorRole code (e.g. "A01" for author)
+ * @param namesBeforeKey     given-name part when paired with keyNames (mutually exclusive with the
+ *                           other name fields)
+ * @param keyNames           family-name part when paired with namesBeforeKey
+ * @param personName         a natural-order composed name, alone or paired with personNameInverted
  * @param personNameInverted an inverted-order name ("Family, Given"), alone or paired with
- *     personName
+ *                           personName
  */
 public record MedraContributor(
-        String role,
-        String namesBeforeKey,
-        String keyNames,
-        String personName,
-        String personNameInverted) {
+                               String role,
+                               String namesBeforeKey,
+                               String keyNames,
+                               String personName,
+                               String personNameInverted) {
 }

@@ -3,6 +3,7 @@ package org.skgif.doi.datacite.mapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
 import org.skgif.doi.datacite.dto.DataCiteRelatedIdentifier;
 import org.skgif.doi.generated.model.EntityIdentifiersInner;
@@ -62,8 +63,10 @@ final class DataCiteRelatedProductMapper {
     }
 
     private ProductsRelated assembleRelated(List<ProductsRelatedCitesInner> cites,
-            List<ProductsRelatedCitesInner> isSupplementedBy, List<ProductsRelatedCitesInner> isDocumentedBy,
-            List<ProductsRelatedCitesInner> isNewVersionOf, List<ProductsRelatedCitesInner> isPartOf) {
+                                            List<ProductsRelatedCitesInner> isSupplementedBy,
+                                            List<ProductsRelatedCitesInner> isDocumentedBy,
+                                            List<ProductsRelatedCitesInner> isNewVersionOf,
+                                            List<ProductsRelatedCitesInner> isPartOf) {
         ProductsRelated related = new ProductsRelated();
         if (!cites.isEmpty()) {
             related.cites(cites);

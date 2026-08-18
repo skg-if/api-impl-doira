@@ -55,14 +55,14 @@ public class MedraProductsResource {
     String fallbackContextBase;
 
     /**
-     * @param medraClient the mEDRA REST client used to fetch ONIX-for-DOI metadata
-     * @param mapper maps mEDRA works to SKG-IF Product records
+     * @param medraClient      the mEDRA REST client used to fetch ONIX-for-DOI metadata
+     * @param mapper           maps mEDRA works to SKG-IF Product records
      * @param localIdentifiers resolves local identifiers to/from DOIs
-     * @param objectMapper used to assemble the JSON-LD response envelope
+     * @param objectMapper     used to assemble the JSON-LD response envelope
      */
     @Inject
     public MedraProductsResource(@RestClient MedraClient medraClient, MedraToSkgIfMapper mapper,
-            LocalIdentifiers localIdentifiers, ObjectMapper objectMapper) {
+                                 LocalIdentifiers localIdentifiers, ObjectMapper objectMapper) {
         this.medraClient = medraClient;
         this.mapper = mapper;
         this.localIdentifiers = localIdentifiers;
@@ -71,23 +71,29 @@ public class MedraProductsResource {
 
     /**
      * @param localIdentifierParam the DOI to look up (with or without the SKG base domain prefix)
-     * @param uriInfo the current request URI, used to build self/context links
+     * @param uriInfo              the current request URI, used to build self/context links
      * @return the JSON-LD product envelope, or a 404 error response if not found
      */
     @GET
     @Path("/{local_identifier: .+}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getProductById(
-            @Parameter(description = "DOI to look up (with or without the SKG base domain prefix)", examples = {
-                    @ExampleObject(name = "plinius", value = "10.19276/plinius.2019.01004"),
-                    @ExampleObject(name = "ncc-2021", value = "10.1393/ncc/i2021-21084-7"),
-                    @ExampleObject(name = "ncc-2025", value = "10.1393/ncc/i2025-25069-2"),
-                    @ExampleObject(name = "aapp", value = "10.1478/AAPP.98S1A9"),
-                    @ExampleObject(name = "sapere", value = "10.12919/sapere.2018.04.3"),
-                    @ExampleObject(name = "ecai", value = "10.3254/978-1-61499-732-0-119"),
-                    @ExampleObject(name = "il-nuovo-cimento", value = "10.1400/255846")
-            }) @PathParam("local_identifier") String localIdentifierParam,
-            @Context UriInfo uriInfo) {
+                                   @Parameter(
+                                           description = "DOI to look up (with or without the SKG base domain prefix)",
+                                           examples = {
+                                                   @ExampleObject(name = "plinius",
+                                                           value = "10.19276/plinius.2019.01004"),
+                                                   @ExampleObject(name = "ncc-2021",
+                                                           value = "10.1393/ncc/i2021-21084-7"),
+                                                   @ExampleObject(name = "ncc-2025",
+                                                           value = "10.1393/ncc/i2025-25069-2"),
+                                                   @ExampleObject(name = "aapp", value = "10.1478/AAPP.98S1A9"),
+                                                   @ExampleObject(name = "sapere", value = "10.12919/sapere.2018.04.3"),
+                                                   @ExampleObject(name = "ecai",
+                                                           value = "10.3254/978-1-61499-732-0-119"),
+                                                   @ExampleObject(name = "il-nuovo-cimento", value = "10.1400/255846")
+                                           }) @PathParam("local_identifier") String localIdentifierParam,
+                                   @Context UriInfo uriInfo) {
         String doi = localIdentifiers.toDoi(localIdentifierParam);
 
         String xml;

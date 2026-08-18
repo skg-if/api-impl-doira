@@ -85,8 +85,7 @@ class MedraToSkgIfMapperTest {
         Product product = mapFixture("medra-multilang-titles.xml");
 
         Object titles = product.getTitles();
-        @SuppressWarnings("unchecked")
-        var titlesMap = (java.util.Map<String, List<String>>) titles;
+        @SuppressWarnings("unchecked") var titlesMap = (java.util.Map<String, List<String>>) titles;
         assertEquals(List.of("Transverse THz dynamics of phospholipid membranes: A neutron scattering study"),
                 titlesMap.get("en"));
     }

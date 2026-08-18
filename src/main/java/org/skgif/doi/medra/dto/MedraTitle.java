@@ -7,8 +7,8 @@ package org.skgif.doi.medra.dto;
  * keeps the two separate by the ancestor it queried under (see {@code MedraOnixXmlParser}).
  *
  * @param titleType the ONIX TitleType code
- * @param language the title's language (XML attribute)
- * @param text the title text
+ * @param language  the title's language (XML attribute)
+ * @param text      the title text
  */
 public record MedraTitle(String titleType, String language, String text) {
 }

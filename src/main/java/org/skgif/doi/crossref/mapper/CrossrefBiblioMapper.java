@@ -102,7 +102,7 @@ final class CrossrefBiblioMapper {
      * alongside {@code issn}); when not (no journal-level DOI registered, or the lookup fails),
      * falls back to the {@code container-title[0]}+otf-id+ISSN-only heuristic.
      *
-     * @param work the Crossref work record to derive a venue from
+     * @param work          the Crossref work record to derive a venue from
      * @param venueMetadata venue metadata parsed from Crossref's XML transform endpoint, or null
      * @return the mapped Venue, or null if no container information is available
      */

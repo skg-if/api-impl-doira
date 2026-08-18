@@ -31,13 +31,13 @@ public final class EntityRefs {
      * a bare ROR value first (schemes/field names for "this affiliation has a ROR" differ per
      * provider); this only builds the resulting reference object.
      *
-     * @param doi the owning record's DOI, used to build a deterministic otf id when bareRor is
-     *     null
-     * @param name the organisation's name
+     * @param doi     the owning record's DOI, used to build a deterministic otf id when bareRor is
+     *                null
+     * @param name    the organisation's name
      * @param bareRor the organisation's bare ROR id (no {@code https://ror.org/} prefix), or null
-     *     if none is known
+     *                if none is known
      * @return an Organisation reference, ROR-identified when bareRor is present, otf-identified
-     *     otherwise
+     *         otherwise
      */
     public static Organisation organisationRef(String doi, String name, String bareRor) {
         Organisation org = new Organisation()
@@ -59,20 +59,20 @@ public final class EntityRefs {
      * for DOI, the real dereferenceable local_identifier via its own {@code LocalIdentifiers})
      * first; this only builds the resulting reference object.
      *
-     * @param doi the owning record's DOI, used to build a deterministic otf id when neither
-     *     bareRor nor bareDoiValue is present
-     * @param name the funding agency's name
-     * @param bareRor the funder's bare ROR id, or null if none is known
+     * @param doi                the owning record's DOI, used to build a deterministic otf id when neither
+     *                           bareRor nor bareDoiValue is present
+     * @param name               the funding agency's name
+     * @param bareRor            the funder's bare ROR id, or null if none is known
      * @param doiLocalIdentifier the funder's DOI resolved to a full local_identifier (via {@code
      *     LocalIdentifiers#toFullLocalIdentifier}), or null if bareDoiValue is null
-     * @param bareDoiValue the funder's bare Funder Registry DOI, or null if none is known
+     * @param bareDoiValue       the funder's bare Funder Registry DOI, or null if none is known
      * @return an Organisation reference, ROR-identified, else DOI-identified, else otf-identified
      */
     // Each parameter maps 1:1 to a value the caller already resolved from its own DTO/service -
     // same reasoning as personRef's suppression above.
     @SuppressWarnings("PMD.UseObjectForClearerAPI")
     public static Organisation organisationRef(String doi, String name, String bareRor, String doiLocalIdentifier,
-            String bareDoiValue) {
+                                               String bareDoiValue) {
         if (bareRor != null) {
             return organisationRef(doi, name, bareRor);
         }
@@ -92,24 +92,24 @@ public final class EntityRefs {
      * value and the identifiers list first (the shape of "does this contributor have an ORCID"
      * differs per provider); this only builds the resulting reference object.
      *
-     * @param doi the owning record's DOI, used to build a deterministic otf id when bareOrcid is
-     *     null
-     * @param name the person's display name
-     * @param givenName the person's given name, or null
-     * @param familyName the person's family name, or null
-     * @param bareOrcid the person's bare ORCID id (no {@code https://orcid.org/} prefix), or null
-     *     if none is known
+     * @param doi              the owning record's DOI, used to build a deterministic otf id when bareOrcid is
+     *                         null
+     * @param name             the person's display name
+     * @param givenName        the person's given name, or null
+     * @param familyName       the person's family name, or null
+     * @param bareOrcid        the person's bare ORCID id (no {@code https://orcid.org/} prefix), or null
+     *                         if none is known
      * @param orcidIdentifiers the person's {@code identifiers[]} entry for this ORCID, or null if
-     *     bareOrcid is null
+     *                         bareOrcid is null
      * @return a PersonLite reference, ORCID-identified when bareOrcid is present, otf-identified
-     *     otherwise
+     *         otherwise
      */
     // Each parameter maps 1:1 to a PersonLite field the caller already extracted from its own
     // DTO - bundling them into a container object would need a new DTO for no real clarity gain
     // over five named, individually-documented parameters (same call as CrossrefClient's).
     @SuppressWarnings("PMD.UseObjectForClearerAPI")
     public static PersonLite personRef(String doi, String name, String givenName, String familyName,
-            String bareOrcid, List<PersonLiteAllOfIdentifiers> orcidIdentifiers) {
+                                       String bareOrcid, List<PersonLiteAllOfIdentifiers> orcidIdentifiers) {
         PersonLite by = new PersonLite()
                 .localIdentifier(bareOrcid != null
                         ? ExternalIdentifierUrls.ORCID_BASE_URL + bareOrcid
@@ -129,7 +129,7 @@ public final class EntityRefs {
      * hosted." A bare publisher string has no external identifier system behind it, so this
      * always gets an otf id.
      *
-     * @param doi the owning record's DOI, used to build a deterministic otf id
+     * @param doi  the owning record's DOI, used to build a deterministic otf id
      * @param name the publisher's name
      * @return a DataSourceLite for name, with an otf local_identifier
      */

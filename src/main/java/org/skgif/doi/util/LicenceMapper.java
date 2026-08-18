@@ -20,7 +20,7 @@ public final class LicenceMapper {
     /**
      * @param licenceUrls the record's licence/rights URLs, in provider order, or null
      * @return an OPEN access-rights status if any URL (nulls tolerated per-entry) is a Creative
-     *     Commons licence, else null
+     *         Commons licence, else null
      */
     public static ProductManifestationAccessRights accessRights(List<String> licenceUrls) {
         if (licenceUrls == null || licenceUrls.isEmpty()) {
@@ -38,8 +38,8 @@ public final class LicenceMapper {
     /**
      * @param licenceUrls the record's licence/rights URLs, in provider order, or null
      * @return the first entry verbatim - which may itself be null - or null if licenceUrls is
-     *     null/empty. Deliberately does not skip forward to a later non-null entry: only the
-     *     first-listed licence is ever reported here.
+     *         null/empty. Deliberately does not skip forward to a later non-null entry: only the
+     *         first-listed licence is ever reported here.
      */
     public static String licence(List<String> licenceUrls) {
         if (licenceUrls == null || licenceUrls.isEmpty()) {

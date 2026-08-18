@@ -55,3 +55,25 @@ change:
 under `src/test/resources` isn't mentioned anywhere across the `SKG_IF_DOI_MAPPING*.md` files, or
 if any of them links to a fixture that doesn't exist - treat a failure there as a reminder to
 update the relevant doc, not just satisfy the test by adding a bare filename mention.
+
+## Java code style
+
+Follow these when writing or editing `.java` files - `spotless-maven-plugin` (pom.xml) auto-fixes
+formatting on every `mvn compile`/`test`, but getting it right the first time avoids unnecessary
+diffs:
+
+- 4-space indent, never tabs.
+- Max line length: 120 characters.
+- Opening brace on the same line (`if (x) {`); `else`/`catch`/`finally` on the same line as the
+  preceding closing brace (`} else {`).
+- No space just inside parens: `foo(bar)`, `if (x)` - not `foo( bar )`.
+- Space around binary/assignment operators: `a + b`, `x = y`.
+- When a boolean/logical expression must wrap, put the operator at the START of the continuation
+  line, not the end:
+  ```java
+  if (someCondition
+          && anotherCondition) {
+  ```
+- No unused or wildcard imports.
+- No trailing whitespace; file ends with a newline.
+- Public classes/methods need Javadoc.

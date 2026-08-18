@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * project[].funding[].award-amount} both use this exact shape, the latter with an extra,
  * unused {@code percentage} field).
  *
- * @param amount the award amount
+ * @param amount   the award amount
  * @param currency the award amount's currency
  */
 @JsonIgnoreProperties(ignoreUnknown = true)

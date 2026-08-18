@@ -14,22 +14,22 @@ import java.util.List;
  * some real proceedings records).
  *
  * @param containerTitle the container's own title
- * @param containerDoi the container's own DOI, or null if Crossref recorded none (common for
- *     proceedings records)
- * @param seriesTitle the series' own title, or null if the container is not part of a series
- * @param seriesIssns the series' ISSNs, or empty if the container is not part of a series
- * @param volume the series volume number, or null if the container is not part of a series
- * @param isbns the container's ISBNs
- * @param publisherName the container's publisher
+ * @param containerDoi   the container's own DOI, or null if Crossref recorded none (common for
+ *                       proceedings records)
+ * @param seriesTitle    the series' own title, or null if the container is not part of a series
+ * @param seriesIssns    the series' ISSNs, or empty if the container is not part of a series
+ * @param volume         the series volume number, or null if the container is not part of a series
+ * @param isbns          the container's ISBNs
+ * @param publisherName  the container's publisher
  * @param publisherPlace the publisher's place
  */
 public record CrossrefVenueMetadata(
-        String containerTitle,
-        String containerDoi,
-        String seriesTitle,
-        List<String> seriesIssns,
-        String volume,
-        List<String> isbns,
-        String publisherName,
-        String publisherPlace) {
+                                    String containerTitle,
+                                    String containerDoi,
+                                    String seriesTitle,
+                                    List<String> seriesIssns,
+                                    String volume,
+                                    List<String> isbns,
+                                    String publisherName,
+                                    String publisherPlace) {
 }

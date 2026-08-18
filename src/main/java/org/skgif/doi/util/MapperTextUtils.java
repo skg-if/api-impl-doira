@@ -21,7 +21,7 @@ public final class MapperTextUtils {
      * with no stable identifier of their own - built from the owning record's DOI so it's
      * deterministic.
      *
-     * @param doi the owning record's DOI
+     * @param doi   the owning record's DOI
      * @param label a human-readable label for the entity (e.g. a name), slugged into the id
      * @return an "otf___&lt;doi-slug&gt;___&lt;label-slug&gt;" identifier
      */
@@ -32,7 +32,7 @@ public final class MapperTextUtils {
     /**
      * @param text arbitrary text, or null
      * @return a lowercase, hyphenated, length-capped slug of text; "unknown" if text is null,
-     *     empty, or has no alphanumeric characters
+     *         empty, or has no alphanumeric characters
      */
     public static String slug(String text) {
         if (text == null) {

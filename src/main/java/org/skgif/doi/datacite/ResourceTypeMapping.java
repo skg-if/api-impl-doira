@@ -38,7 +38,7 @@ public final class ResourceTypeMapping {
     }
 
     private static void putAll(Map<String, Product.ProductTypeEnum> map, Product.ProductTypeEnum value,
-            String... resourceTypes) {
+                               String... resourceTypes) {
         for (String resourceType : resourceTypes) {
             map.put(resourceType, value);
         }

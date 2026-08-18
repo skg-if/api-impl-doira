@@ -50,7 +50,7 @@ final class MedraContributionMapper {
      * rather than guessed at. No ORCID (or any other person identifier) was observed on any
      * contributor in the fixtures examined, so the local_identifier is always an otf id.
      *
-     * @param doi the owning record's DOI, used to build a deterministic otf id
+     * @param doi         the owning record's DOI, used to build a deterministic otf id
      * @param contributor the ONIX-for-DOI contributor to derive a person reference from
      * @return the mapped PersonLite, or null if contributor carries none of the three name shapes
      */
@@ -99,7 +99,7 @@ final class MedraContributionMapper {
             return new String[0];
         }
         String[] parts = inverted.split(",\\s*", 2);
-        return parts.length == 2 ? new String[] {parts[0].trim(), parts[1].trim()}
-                : new String[] {parts[0].trim(), null};
+        return parts.length == 2 ? new String[]{parts[0].trim(), parts[1].trim()}
+                : new String[]{parts[0].trim(), null};
     }
 }

@@ -69,7 +69,7 @@ final class CrossrefContributionMapper {
      * system behind it, so - like the {@code hosting_data_source} use of the same field - this
      * always gets an otf id.
      *
-     * @param doi the owning record's DOI, used to build a deterministic otf id
+     * @param doi  the owning record's DOI, used to build a deterministic otf id
      * @param name the organisation's name
      * @return an Organisation reference with an otf local_identifier
      */
@@ -111,7 +111,7 @@ final class CrossrefContributionMapper {
      * do assert a ROR on them directly - same occasional-ROR situation as DataCite creator
      * affiliations, so this checks for one before falling back to an otf id.
      *
-     * @param doi the owning record's DOI, used to build a deterministic otf id
+     * @param doi          the owning record's DOI, used to build a deterministic otf id
      * @param affiliations the author/editor's declared affiliations
      * @return the mapped affiliations, or an empty list if affiliations is null/empty
      */

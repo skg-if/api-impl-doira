@@ -9,9 +9,9 @@ import java.util.List;
  * deserializer is needed here). On product/author affiliations, {@code id} is normally absent
  * (name-only); on grant investigator affiliations it's frequently present (usually a ROR).
  *
- * @param name the affiliation name
+ * @param name    the affiliation name
  * @param country the affiliation's country
- * @param id structured external identifiers for the affiliation (usually a ROR)
+ * @param id      structured external identifiers for the affiliation (usually a ROR)
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record CrossrefAffiliation(String name, String country, List<CrossrefIdEntry> id) {

@@ -69,7 +69,7 @@ final class DataCiteContributionMapper {
     }
 
     static ProductContributionBy personRef(String doi, String name, String givenName, String familyName,
-            List<DataCiteNameIdentifier> nameIdentifiers) {
+                                           List<DataCiteNameIdentifier> nameIdentifiers) {
         return EntityRefs.personRef(doi, name, givenName, familyName, firstOrcid(nameIdentifiers),
                 orcidIdentifiers(nameIdentifiers));
     }
@@ -79,7 +79,7 @@ final class DataCiteContributionMapper {
      * system behind it, so - like the {@code hosting_data_source} use of the same field - this
      * always gets an otf id.
      *
-     * @param doi the owning record's DOI, used to build a deterministic otf id
+     * @param doi  the owning record's DOI, used to build a deterministic otf id
      * @param name the organisation's name
      * @return an Organisation reference with an otf local_identifier
      */

@@ -89,7 +89,7 @@ final class CrossrefRelatedProductMapper {
      * {@code id-type: "doi"}) become a real, full-URL identifier just like a DOI-bearing {@code
      * reference[]} entry; anything else falls back to an otf id built from the raw {@code id}.
      *
-     * @param work the Crossref work record to read {@code relation} from
+     * @param work         the Crossref work record to read {@code relation} from
      * @param relationType the relation key to read (e.g. "is-supplemented-by")
      * @return the mapped related-product entries for relationType, or empty if none/absent
      */

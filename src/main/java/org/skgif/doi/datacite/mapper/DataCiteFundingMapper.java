@@ -66,8 +66,8 @@ final class DataCiteFundingMapper {
      * {@code datacite-thesis-crossref-funder-id-4342.json}). Non-DOI identifier types (GRID,
      * ISNI, Wikidata) still have no home here and fall back to an otf id.
      *
-     * @param doi the owning record's DOI, used to build a deterministic otf id when the funder
-     *     has neither a ROR nor a DOI-shaped identifier
+     * @param doi              the owning record's DOI, used to build a deterministic otf id when the funder
+     *                         has neither a ROR nor a DOI-shaped identifier
      * @param fundingReference the DataCite funding reference to derive a funding agency from
      * @return the mapped Organisation, or null if fundingReference has no funder name
      */

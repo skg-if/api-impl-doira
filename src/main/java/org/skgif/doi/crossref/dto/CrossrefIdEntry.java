@@ -8,13 +8,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * identifiers - shared by affiliation ids (usually a ROR) and funder ids (usually a Funder
  * Registry DOI), e.g. {@code affiliation[].id[]} and grant {@code project[].funding[].funder.id[]}.
  *
- * @param id the identifier value
- * @param idType the identifier scheme (e.g. {@code "ROR"}, {@code "DOI"})
+ * @param id         the identifier value
+ * @param idType     the identifier scheme (e.g. {@code "ROR"}, {@code "DOI"})
  * @param assertedBy who asserted this identifier ({@code "publisher"} or {@code "crossref"})
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record CrossrefIdEntry(
-        String id,
-        @JsonProperty("id-type") String idType,
-        @JsonProperty("asserted-by") String assertedBy) {
+                              String id,
+                              @JsonProperty("id-type") String idType,
+                              @JsonProperty("asserted-by") String assertedBy) {
 }

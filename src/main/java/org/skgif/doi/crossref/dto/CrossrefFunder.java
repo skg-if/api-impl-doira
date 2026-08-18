@@ -10,16 +10,16 @@ import java.util.List;
  * {@code id[]} (verified live against a real Wellcome Trust grant record) - both shapes are
  * modeled here, see {@code CrossrefFundingMapper#funderDoi}.
  *
- * @param name the funder name
- * @param doi the Funder Registry DOI, when present directly on this entry
+ * @param name  the funder name
+ * @param doi   the Funder Registry DOI, when present directly on this entry
  * @param award award numbers granted by this funder
- * @param id structured external identifiers for the funder, sometimes including the Funder
- *     Registry DOI instead of (or as well as) {@code doi}
+ * @param id    structured external identifiers for the funder, sometimes including the Funder
+ *              Registry DOI instead of (or as well as) {@code doi}
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record CrossrefFunder(
-        String name,
-        @JsonProperty("DOI") String doi,
-        List<String> award,
-        List<CrossrefIdEntry> id) {
+                             String name,
+                             @JsonProperty("DOI") String doi,
+                             List<String> award,
+                             List<CrossrefIdEntry> id) {
 }

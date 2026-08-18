@@ -159,6 +159,55 @@
         </configuration>
       </plugin>
       <plugin>
+        <!--
+          Bound to process-sources, goal apply, positioned (via declaration order - Maven runs
+          same-phase executions in POM order) before maven-pmd-plugin/maven-checkstyle-plugin
+          below, both also bound to process-sources. This makes every `mvn compile`/`test`/
+          `package` self-healing: Spotless reformats/removes unused imports first, then PMD and
+          checkstyle validate the already-fixed code - no separate format step, no per-edit hook
+          needed (an earlier PostToolUse Claude Code hook running this per-edit was replaced by
+          this compile-time binding - too much latency/token overhead for a per-keystroke check;
+          see CLAUDE.md's "Java code style" section for the plain-English rules this exists to
+          catch/fix on top of).
+
+          intellij-style.xml (repo root) is a real IntelliJ-exported Eclipse formatter profile,
+          patched to fix several `alignment_for_*` properties that were exported as "never wrap"
+          (0) - verified empirically against this project's actual checkstyle.xml/pmd-ruleset.xml
+          via a real `mvn compile` run before being trusted (see git history / PR description for
+          the specific LineLength and OperatorWrap failures this fixed).
+
+          Trade-off: this writes to source files as a side effect of building, including in CI
+          (harmless there - only the ephemeral build workspace changes, not the repo - but it also
+          means CI can never fail on formatting drift with `apply`; swap to `check` if a future
+          "reject unformatted PRs" requirement shows up).
+        -->
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+        <version>2.46.1</version>
+        <configuration>
+          <lineEndings>PRESERVE</lineEndings>
+          <java>
+            <includes>
+              <include>src/main/java/**/*.java</include>
+              <include>src/test/java/**/*.java</include>
+            </includes>
+            <eclipse>
+              <file>${project.basedir}/intellij-style.xml</file>
+            </eclipse>
+            <removeUnusedImports></removeUnusedImports>
+          </java>
+        </configuration>
+        <executions>
+          <execution>
+            <id>spotless-apply</id>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>apply</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
         <version>3.26.0</version>

@@ -10,14 +10,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * CrossrefManifestationMapper#dates} only recognizes those two.
  *
  * @param updated the date the update was applied
- * @param doi the DOI of the update record (e.g. the correction/retraction notice)
- * @param type the kind of update (e.g. {@code "correction"}, {@code "retraction"})
- * @param label a human-readable label for the update
+ * @param doi     the DOI of the update record (e.g. the correction/retraction notice)
+ * @param type    the kind of update (e.g. {@code "correction"}, {@code "retraction"})
+ * @param label   a human-readable label for the update
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record CrossrefUpdateTo(
-        CrossrefDate updated,
-        @JsonProperty("DOI") String doi,
-        String type,
-        String label) {
+                               CrossrefDate updated,
+                               @JsonProperty("DOI") String doi,
+                               String type,
+                               String label) {
 }

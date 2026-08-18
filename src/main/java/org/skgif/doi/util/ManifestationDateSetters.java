@@ -52,9 +52,9 @@ public final class ManifestationDateSetters {
     }
 
     /**
-     * @param dates the dates object to add to
+     * @param dates         the dates object to add to
      * @param skgIfDateType an SKG-IF date-type name (e.g. {@code "creation"}), or null
-     * @param isoValue the ISO-8601-ish date string to add, or null
+     * @param isoValue      the ISO-8601-ish date string to add, or null
      * @return true if isoValue was non-null and skgIfDateType matched a known setter
      */
     public static boolean addDateItem(ProductManifestationDates dates, String skgIfDateType, String isoValue) {

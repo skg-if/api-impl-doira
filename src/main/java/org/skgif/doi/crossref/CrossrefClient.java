@@ -25,12 +25,12 @@ public interface CrossrefClient {
     /**
      * Lists/searches Crossref works matching the given query parameters.
      *
-     * @param filter Crossref {@code filter} query parameter, comma-joined sub-clauses
-     * @param queryTitle Crossref {@code query.title} query parameter
+     * @param filter             Crossref {@code filter} query parameter, comma-joined sub-clauses
+     * @param queryTitle         Crossref {@code query.title} query parameter
      * @param queryBibliographic Crossref {@code query.bibliographic} query parameter
-     * @param rows maximum number of results to return
-     * @param offset number of results to skip
-     * @param mailto contact email for Crossref's polite-pool API access
+     * @param rows               maximum number of results to return
+     * @param offset             number of results to skip
+     * @param mailto             contact email for Crossref's polite-pool API access
      * @return the matching Crossref work list response
      */
     // Each parameter maps 1:1 to its own @QueryParam - the standard MicroProfile REST Client
@@ -39,10 +39,10 @@ public interface CrossrefClient {
     @SuppressWarnings("PMD.UseObjectForClearerAPI")
     @GET
     CrossrefWorkListResponse listWorks(
-            @QueryParam("filter") String filter,
-            @QueryParam("query.title") String queryTitle,
-            @QueryParam("query.bibliographic") String queryBibliographic,
-            @QueryParam("rows") Integer rows,
-            @QueryParam("offset") Integer offset,
-            @QueryParam("mailto") String mailto);
+                                       @QueryParam("filter") String filter,
+                                       @QueryParam("query.title") String queryTitle,
+                                       @QueryParam("query.bibliographic") String queryBibliographic,
+                                       @QueryParam("rows") Integer rows,
+                                       @QueryParam("offset") Integer offset,
+                                       @QueryParam("mailto") String mailto);
 }

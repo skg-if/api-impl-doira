@@ -70,14 +70,14 @@ public class DataCiteGrantsResource {
     int defaultPageSize;
 
     /**
-     * @param dataCiteClient the DataCite REST client used to fetch DOI records
-     * @param mapper maps DataCite DOI records to SKG-IF Grant records
+     * @param dataCiteClient   the DataCite REST client used to fetch DOI records
+     * @param mapper           maps DataCite DOI records to SKG-IF Grant records
      * @param localIdentifiers resolves local identifiers to/from DOIs
-     * @param objectMapper used to assemble the JSON-LD response envelope
+     * @param objectMapper     used to assemble the JSON-LD response envelope
      */
     @Inject
     public DataCiteGrantsResource(@RestClient DataCiteClient dataCiteClient, DataCiteToSkgIfMapper mapper,
-            LocalIdentifiers localIdentifiers, ObjectMapper objectMapper) {
+                                  LocalIdentifiers localIdentifiers, ObjectMapper objectMapper) {
         this.dataCiteClient = dataCiteClient;
         this.mapper = mapper;
         this.localIdentifiers = localIdentifiers;
@@ -86,17 +86,18 @@ public class DataCiteGrantsResource {
 
     /**
      * @param localIdentifierParam the DOI to look up (with or without the SKG base domain prefix)
-     * @param uriInfo the current request URI, used to build self/context links
+     * @param uriInfo              the current request URI, used to build self/context links
      * @return the JSON-LD grant envelope, or a 404 error response if not found
      */
     @GET
     @Path("/{local_identifier: .+}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getGrantById(
-            @Parameter(description = "DOI to look up (with or without the SKG base domain prefix)", examples = {
-                    @ExampleObject(name = "award", value = "10.71707/r3sy-7371")
-            }) @PathParam("local_identifier") String localIdentifierParam,
-            @Context UriInfo uriInfo) {
+                                 @Parameter(description = "DOI to look up (with or without the SKG base domain prefix)",
+                                         examples = {
+                                                 @ExampleObject(name = "award", value = "10.71707/r3sy-7371")
+                                         }) @PathParam("local_identifier") String localIdentifierParam,
+                                 @Context UriInfo uriInfo) {
         String doi = localIdentifiers.toDoi(localIdentifierParam);
 
         DataCiteDoiData data;
@@ -135,20 +136,20 @@ public class DataCiteGrantsResource {
     }
 
     /**
-     * @param filter the SKG-IF {@code filter} query string, translated to DataCite's own filter
-     *     syntax
-     * @param page the page cursor/number to fetch, or null for the first page
+     * @param filter   the SKG-IF {@code filter} query string, translated to DataCite's own filter
+     *                 syntax
+     * @param page     the page cursor/number to fetch, or null for the first page
      * @param pageSize results per page, or null to use defaultPageSize
-     * @param uriInfo the current request URI, used to build pagination/context links
+     * @param uriInfo  the current request URI, used to build pagination/context links
      * @return the JSON-LD grant list envelope
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getGrants(
-            @QueryParam("filter") String filter,
-            @QueryParam("page") String page,
-            @QueryParam("page_size") Integer pageSize,
-            @Context UriInfo uriInfo) {
+                              @QueryParam("filter") String filter,
+                              @QueryParam("page") String page,
+                              @QueryParam("page_size") Integer pageSize,
+                              @Context UriInfo uriInfo) {
 
         String query;
         try {

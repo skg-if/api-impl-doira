@@ -36,7 +36,7 @@ final class DataCiteGrantMapper {
     }
 
     static Organisation grantFundingAgency(String doi, Optional<DataCiteCreator> fundingAgencyCreator,
-            String publisher) {
+                                           String publisher) {
         if (fundingAgencyCreator.isPresent()) {
             DataCiteCreator creator = fundingAgencyCreator.get();
             String ror = DataCiteContributionMapper.firstRor(creator.nameIdentifiers());
@@ -58,7 +58,8 @@ final class DataCiteGrantMapper {
     }
 
     static List<GrantAllOfContributions> grantContributions(String doi, List<DataCiteCreator> creators,
-            List<DataCiteContributor> contributors, Optional<DataCiteCreator> fundingAgencyCreator) {
+                                                            List<DataCiteContributor> contributors, Optional<
+                                                                    DataCiteCreator> fundingAgencyCreator) {
         List<GrantAllOfContributions> result = new ArrayList<>();
         for (DataCiteCreator creator : creators) {
             if (fundingAgencyCreator.isPresent() && fundingAgencyCreator.get() == creator) {
@@ -81,7 +82,9 @@ final class DataCiteGrantMapper {
     }
 
     private static GrantContributionBy grantContributionBy(String doi, String name, String givenName,
-            String familyName, List<DataCiteNameIdentifier> nameIdentifiers, boolean organizational) {
+                                                           String familyName, List<
+                                                                   DataCiteNameIdentifier> nameIdentifiers,
+                                                           boolean organizational) {
         if (organizational) {
             String ror = DataCiteContributionMapper.firstRor(nameIdentifiers);
             Organisation by = new Organisation()
@@ -123,10 +126,10 @@ final class DataCiteGrantMapper {
      * legitimate per the spec's own worked example (GraspOS: Brown University is both a
      * contribution's declared affiliation and a top-level beneficiary).
      *
-     * @param doi the owning record's DOI, used to build a deterministic otf id
+     * @param doi          the owning record's DOI, used to build a deterministic otf id
      * @param contributors the record's contributors
      * @return the organisational contributors mapped as beneficiaries, or an empty list if there
-     *     are none
+     *         are none
      */
     static List<GrantAllOfBeneficiaries> grantBeneficiaries(String doi, List<DataCiteContributor> contributors) {
         List<DataCiteAffiliation> organizationalContributors = new ArrayList<>();

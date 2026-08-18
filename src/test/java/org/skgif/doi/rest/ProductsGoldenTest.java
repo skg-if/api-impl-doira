@@ -576,14 +576,14 @@ class ProductsGoldenTest {
      * transform fetch (see {@code CrossrefTypeMapping#isXmlVenueEnrichable}) that the plain
      * overload above never triggers.
      *
-     * @param doi doi of the fixture under test
-     * @param crossrefFixture classpath resource name of the Crossref JSON fixture
-     * @param venueXmlFixture classpath resource name of the venue XML transform fixture
+     * @param doi                    doi of the fixture under test
+     * @param crossrefFixture        classpath resource name of the Crossref JSON fixture
+     * @param venueXmlFixture        classpath resource name of the venue XML transform fixture
      * @param expectedJsonLdResource classpath resource name of the expected golden JSON-LD
      * @throws IOException if a fixture resource cannot be read
      */
     private void assertMatchesExpectedCrossrefJsonLd(String doi, String crossrefFixture, String venueXmlFixture,
-            String expectedJsonLdResource) throws IOException {
+                                                     String expectedJsonLdResource) throws IOException {
         when(crossrefClient.getWork(doi)).thenReturn(loadCrossrefFixture(crossrefFixture));
         // Built as a separate statement, not inline as thenReturn(...)'s argument - okXmlResponse
         // itself opens Mockito when(...)/thenReturn(...) stubs, and evaluating it inside another

@@ -76,14 +76,14 @@ public class DataCiteProductsResource {
     int defaultPageSize;
 
     /**
-     * @param dataCiteClient the DataCite REST client used to fetch DOI records
-     * @param mapper maps DataCite DOI records to SKG-IF Product records
+     * @param dataCiteClient   the DataCite REST client used to fetch DOI records
+     * @param mapper           maps DataCite DOI records to SKG-IF Product records
      * @param localIdentifiers resolves local identifiers to/from DOIs
-     * @param objectMapper used to assemble the JSON-LD response envelope
+     * @param objectMapper     used to assemble the JSON-LD response envelope
      */
     @Inject
     public DataCiteProductsResource(@RestClient DataCiteClient dataCiteClient, DataCiteToSkgIfMapper mapper,
-            LocalIdentifiers localIdentifiers, ObjectMapper objectMapper) {
+                                    LocalIdentifiers localIdentifiers, ObjectMapper objectMapper) {
         this.dataCiteClient = dataCiteClient;
         this.mapper = mapper;
         this.localIdentifiers = localIdentifiers;
@@ -92,26 +92,34 @@ public class DataCiteProductsResource {
 
     /**
      * @param localIdentifierParam the DOI to look up (with or without the SKG base domain prefix)
-     * @param uriInfo the current request URI, used to build self/context links
+     * @param uriInfo              the current request URI, used to build self/context links
      * @return the JSON-LD product envelope, or a 404 error response if not found
      */
     @GET
     @Path("/{local_identifier: .+}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getProductById(
-            @Parameter(description = "DOI to look up (with or without the SKG base domain prefix)", examples = {
-                    @ExampleObject(name = "dataset", value = "10.15151/esrf-dc-2493599001"),
-                    @ExampleObject(name = "dataset-2", value = "10.15151/esrf-es-2210534378"),
-                    @ExampleObject(name = "software", value = "10.5281/zenodo.21826016"),
-                    @ExampleObject(name = "text", value = "10.5281/zenodo.20750072"),
-                    @ExampleObject(name = "editor-contributor", value = "10.5281/zenodo.21232199"),
-                    @ExampleObject(name = "cites-references", value = "10.5281/zenodo.21914195"),
-                    @ExampleObject(name = "relations", value = "10.5281/zenodo.21827103"),
-                    @ExampleObject(name = "thesis-funder-id", value = "10.82227/repository.uwtsd.ac.uk.00004342"),
-                    @ExampleObject(name = "dataset-funder-no-identifier",
-                            value = "10.17630/e449e75a-1ee9-4490-909c-e3913052cce1")
-            }) @PathParam("local_identifier") String localIdentifierParam,
-            @Context UriInfo uriInfo) {
+                                   @Parameter(
+                                           description = "DOI to look up (with or without the SKG base domain prefix)",
+                                           examples = {
+                                                   @ExampleObject(name = "dataset",
+                                                           value = "10.15151/esrf-dc-2493599001"),
+                                                   @ExampleObject(name = "dataset-2",
+                                                           value = "10.15151/esrf-es-2210534378"),
+                                                   @ExampleObject(name = "software", value = "10.5281/zenodo.21826016"),
+                                                   @ExampleObject(name = "text", value = "10.5281/zenodo.20750072"),
+                                                   @ExampleObject(name = "editor-contributor",
+                                                           value = "10.5281/zenodo.21232199"),
+                                                   @ExampleObject(name = "cites-references",
+                                                           value = "10.5281/zenodo.21914195"),
+                                                   @ExampleObject(name = "relations",
+                                                           value = "10.5281/zenodo.21827103"),
+                                                   @ExampleObject(name = "thesis-funder-id",
+                                                           value = "10.82227/repository.uwtsd.ac.uk.00004342"),
+                                                   @ExampleObject(name = "dataset-funder-no-identifier",
+                                                           value = "10.17630/e449e75a-1ee9-4490-909c-e3913052cce1")
+                                           }) @PathParam("local_identifier") String localIdentifierParam,
+                                   @Context UriInfo uriInfo) {
         String doi = localIdentifiers.toDoi(localIdentifierParam);
 
         DataCiteDoiData data;
@@ -150,20 +158,20 @@ public class DataCiteProductsResource {
     }
 
     /**
-     * @param filter the SKG-IF {@code filter} query string, translated to DataCite's own filter
-     *     syntax
-     * @param page the page cursor/number to fetch, or null for the first page
+     * @param filter   the SKG-IF {@code filter} query string, translated to DataCite's own filter
+     *                 syntax
+     * @param page     the page cursor/number to fetch, or null for the first page
      * @param pageSize results per page, or null to use defaultPageSize
-     * @param uriInfo the current request URI, used to build pagination/context links
+     * @param uriInfo  the current request URI, used to build pagination/context links
      * @return the JSON-LD product list envelope
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getProducts(
-            @QueryParam("filter") String filter,
-            @QueryParam("page") String page,
-            @QueryParam("page_size") Integer pageSize,
-            @Context UriInfo uriInfo) {
+                                @QueryParam("filter") String filter,
+                                @QueryParam("page") String page,
+                                @QueryParam("page_size") Integer pageSize,
+                                @Context UriInfo uriInfo) {
 
         String query;
         try {

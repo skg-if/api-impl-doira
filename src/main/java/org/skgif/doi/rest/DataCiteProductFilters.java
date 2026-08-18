@@ -18,16 +18,16 @@ import org.skgif.doi.util.ExternalIdentifierUrls;
  * <p>Deliberately NOT implemented, with reasons (see the follow-up task in the project plan
  * for the live verification behind each):
  * <ul>
- *   <li>{@code contributions.declared_affiliations.short_name} - never populated by
- *       {@code DataCiteToSkgIfMapper}; DataCite's affiliation schema has no such concept either.
- *   <li>{@code funding.local_identifier} - always a synthesized {@code otf___} id, unguessable
- *       by any real client.
- *   <li>{@code funding.identifiers.id}/{@code .scheme} - {@code funding[].identifiers} (the
- *       grant's own identifiers, distinct from {@code funding[].funding_agency.identifiers}) is
- *       never populated; live-checking whether DataCite's unused {@code awardUri} field could
- *       back this showed real-world funding references essentially never carry it.
- *   <li>{@code cf.contributions_aff_country} - confirmed against DataCite's own metadata schema
- *       docs: affiliations have no country attribute at all.
+ * <li>{@code contributions.declared_affiliations.short_name} - never populated by
+ * {@code DataCiteToSkgIfMapper}; DataCite's affiliation schema has no such concept either.
+ * <li>{@code funding.local_identifier} - always a synthesized {@code otf___} id, unguessable
+ * by any real client.
+ * <li>{@code funding.identifiers.id}/{@code .scheme} - {@code funding[].identifiers} (the
+ * grant's own identifiers, distinct from {@code funding[].funding_agency.identifiers}) is
+ * never populated; live-checking whether DataCite's unused {@code awardUri} field could
+ * back this showed real-world funding references essentially never carry it.
+ * <li>{@code cf.contributions_aff_country} - confirmed against DataCite's own metadata schema
+ * docs: affiliations have no country attribute at all.
  * </ul>
  */
 final class DataCiteProductFilters {
@@ -75,41 +75,41 @@ final class DataCiteProductFilters {
             case ProductFilterKeys.IDENTIFIERS_ID -> "doi:\"" + escape(value) + "\"";
             // We only ever expose doi identifiers, so any other requested scheme never matches.
             case ProductFilterKeys.IDENTIFIERS_SCHEME ->
-                    FilterQuerySyntax.schemeOnlyFilter(value, "doi", NO_MATCH_CLAUSE);
+                FilterQuerySyntax.schemeOnlyFilter(value, "doi", NO_MATCH_CLAUSE);
 
             // contributions.by.* - "contributions" is populated from both DataCite creators[]
             // and contributors[] (see DataCiteToSkgIfMapper), so every by-filter has to match
             // against either.
             case ProductFilterKeys.CONTRIBUTIONS_BY_LOCAL_IDENTIFIER ->
-                    // by.local_identifier is already the full https://orcid.org/... URL when
-                    // known (or an unguessable otf id otherwise, which harmlessly never
-                    // matches) - DataCite stores nameIdentifier in that same full-URL form.
-                    FilterQuerySyntax.creatorOrContributorClause("nameIdentifiers.nameIdentifier", value);
+                // by.local_identifier is already the full https://orcid.org/... URL when
+                // known (or an unguessable otf id otherwise, which harmlessly never
+                // matches) - DataCite stores nameIdentifier in that same full-URL form.
+                FilterQuerySyntax.creatorOrContributorClause("nameIdentifiers.nameIdentifier", value);
             case ProductFilterKeys.CF_CONTRIBUTIONS_ORCID, ProductFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_ID ->
-                    orcidClause(value);
+                orcidClause(value);
             // We only ever emit "orcid" as the scheme for by.identifiers.
             case ProductFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME ->
-                    FilterQuerySyntax.schemeOnlyFilter(value, "orcid", NO_MATCH_CLAUSE);
+                FilterQuerySyntax.schemeOnlyFilter(value, "orcid", NO_MATCH_CLAUSE);
             case ProductFilterKeys.CONTRIBUTIONS_BY_FAMILY_NAME ->
-                    FilterQuerySyntax.creatorOrContributorClause("familyName", value);
+                FilterQuerySyntax.creatorOrContributorClause("familyName", value);
             case ProductFilterKeys.CONTRIBUTIONS_BY_GIVEN_NAME ->
-                    FilterQuerySyntax.creatorOrContributorClause("givenName", value);
+                FilterQuerySyntax.creatorOrContributorClause("givenName", value);
             case ProductFilterKeys.CONTRIBUTIONS_BY_NAME ->
-                    FilterQuerySyntax.creatorOrContributorClause("name", value);
+                FilterQuerySyntax.creatorOrContributorClause("name", value);
 
             // contributions.declared_affiliations.* - same creators[]/contributors[] duality.
             case ProductFilterKeys.CONTRIBUTIONS_DECLARED_AFFILIATIONS_LOCAL_IDENTIFIER ->
-                    // Mirrors by.local_identifier above: already a full https://ror.org/... URL
-                    // when known, matching DataCite's own stored affiliationIdentifier format
-                    // (confirmed live: 15166 matches for the full-URL form vs. 2 for bare).
-                    FilterQuerySyntax.creatorOrContributorClause("affiliation.affiliationIdentifier", value);
+                // Mirrors by.local_identifier above: already a full https://ror.org/... URL
+                // when known, matching DataCite's own stored affiliationIdentifier format
+                // (confirmed live: 15166 matches for the full-URL form vs. 2 for bare).
+                FilterQuerySyntax.creatorOrContributorClause("affiliation.affiliationIdentifier", value);
             case ProductFilterKeys.CONTRIBUTIONS_DECLARED_AFFILIATIONS_IDENTIFIERS_ID,
                     ProductFilterKeys.CF_CONTRIBUTIONS_AFF_ROR -> rorClause(value);
             // We only ever emit "ror" as the scheme for declared_affiliations.identifiers.
             case ProductFilterKeys.CONTRIBUTIONS_DECLARED_AFFILIATIONS_IDENTIFIERS_SCHEME ->
-                    FilterQuerySyntax.schemeOnlyFilter(value, "ror", NO_MATCH_CLAUSE);
+                FilterQuerySyntax.schemeOnlyFilter(value, "ror", NO_MATCH_CLAUSE);
             case ProductFilterKeys.CONTRIBUTIONS_DECLARED_AFFILIATIONS_NAME ->
-                    FilterQuerySyntax.creatorOrContributorClause("affiliation.name", value);
+                FilterQuerySyntax.creatorOrContributorClause("affiliation.name", value);
 
             case ProductFilterKeys.FUNDING_GRANT_NUMBER -> "fundingReferences.awardNumber:\"" + escape(value) + "\"";
 
@@ -121,7 +121,7 @@ final class DataCiteProductFilters {
             // a pre-existing simplification, not something introduced here).
             case ProductFilterKeys.CF_CITES, ProductFilterKeys.CF_CITED_BY, ProductFilterKeys.CF_CITES_DOI,
                     ProductFilterKeys.CF_CITED_BY_DOI ->
-                    "relatedIdentifiers.relatedIdentifier:\"" + escape(FilterQuerySyntax.stripDoiUrl(value)) + "\"";
+                "relatedIdentifiers.relatedIdentifier:\"" + escape(FilterQuerySyntax.stripDoiUrl(value)) + "\"";
             default -> null;
         };
     }

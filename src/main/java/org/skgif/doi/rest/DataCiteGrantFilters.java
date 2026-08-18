@@ -68,52 +68,52 @@ final class DataCiteGrantFilters {
             case GrantFilterKeys.IDENTIFIERS_VALUE -> "doi:\"" + escape(value) + "\"";
             // We only ever expose doi identifiers, so any other requested scheme never matches.
             case GrantFilterKeys.IDENTIFIERS_SCHEME ->
-                    FilterQuerySyntax.schemeOnlyFilter(value, "doi", NO_MATCH_CLAUSE);
+                FilterQuerySyntax.schemeOnlyFilter(value, "doi", NO_MATCH_CLAUSE);
 
             // contributions.by.* - populated from remaining creators[] + all contributors[]
             // (see DataCiteToSkgIfMapper.toGrant), so every by-filter matches against either.
             case GrantFilterKeys.CONTRIBUTIONS_BY_LOCAL_IDENTIFIER ->
-                    FilterQuerySyntax.creatorOrContributorClause("nameIdentifiers.nameIdentifier", value);
+                FilterQuerySyntax.creatorOrContributorClause("nameIdentifiers.nameIdentifier", value);
             // Unlike Product contributions (always a person -> orcid only), Grant contributions
             // can be organisational (-> ror), so both schemes are valid here.
             case GrantFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME ->
-                    ("orcid".equalsIgnoreCase(value) || SCHEME_ROR.equalsIgnoreCase(value)) ? null : NO_MATCH_CLAUSE;
+                ("orcid".equalsIgnoreCase(value) || SCHEME_ROR.equalsIgnoreCase(value)) ? null : NO_MATCH_CLAUSE;
             case GrantFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_VALUE -> byIdentifierValueClause(value);
             case GrantFilterKeys.CONTRIBUTIONS_BY_FAMILY_NAME ->
-                    FilterQuerySyntax.creatorOrContributorClause("familyName", value);
+                FilterQuerySyntax.creatorOrContributorClause("familyName", value);
             case GrantFilterKeys.CONTRIBUTIONS_BY_GIVEN_NAME ->
-                    FilterQuerySyntax.creatorOrContributorClause("givenName", value);
+                FilterQuerySyntax.creatorOrContributorClause("givenName", value);
             case GrantFilterKeys.CONTRIBUTIONS_BY_NAME ->
-                    FilterQuerySyntax.creatorOrContributorClause("name", value);
+                FilterQuerySyntax.creatorOrContributorClause("name", value);
 
             // contributions.declared_affiliations.* - built from creator/contributor
             // affiliation[], same as Product.
             case GrantFilterKeys.CONTRIBUTIONS_DECLARED_AFFILIATIONS_LOCAL_IDENTIFIER ->
-                    FilterQuerySyntax.creatorOrContributorClause("affiliation.affiliationIdentifier", value);
+                FilterQuerySyntax.creatorOrContributorClause("affiliation.affiliationIdentifier", value);
             case GrantFilterKeys.CONTRIBUTIONS_DECLARED_AFFILIATIONS_IDENTIFIERS_VALUE ->
-                    FilterQuerySyntax.creatorOrContributorClause("affiliation.affiliationIdentifier",
-                            ExternalIdentifierUrls.ROR_BASE_URL + value);
+                FilterQuerySyntax.creatorOrContributorClause("affiliation.affiliationIdentifier",
+                        ExternalIdentifierUrls.ROR_BASE_URL + value);
             case GrantFilterKeys.CONTRIBUTIONS_DECLARED_AFFILIATIONS_IDENTIFIERS_SCHEME ->
-                    FilterQuerySyntax.schemeOnlyFilter(value, SCHEME_ROR, NO_MATCH_CLAUSE);
+                FilterQuerySyntax.schemeOnlyFilter(value, SCHEME_ROR, NO_MATCH_CLAUSE);
             case GrantFilterKeys.CONTRIBUTIONS_DECLARED_AFFILIATIONS_NAME ->
-                    FilterQuerySyntax.creatorOrContributorClause("affiliation.name", value);
+                FilterQuerySyntax.creatorOrContributorClause("affiliation.name", value);
 
             // beneficiaries.* - organisational contributors only (see
             // DataCiteToSkgIfMapper.grantBeneficiaries), but DataCite has no way to constrain a
             // flat query to just the organisational subset, so this matches all contributors.
             case GrantFilterKeys.BENEFICIARIES_IDENTIFIERS_SCHEME ->
-                    FilterQuerySyntax.schemeOnlyFilter(value, SCHEME_ROR, NO_MATCH_CLAUSE);
+                FilterQuerySyntax.schemeOnlyFilter(value, SCHEME_ROR, NO_MATCH_CLAUSE);
             case GrantFilterKeys.BENEFICIARIES_IDENTIFIERS_VALUE ->
-                    rorClause("contributors.nameIdentifiers.nameIdentifier", value);
+                rorClause("contributors.nameIdentifiers.nameIdentifier", value);
             case GrantFilterKeys.BENEFICIARIES_NAME -> "contributors.name:\"" + escape(value) + "\"";
 
             // funding_agency.* - the first ROR-bearing creator (falling back to publisher, which
             // has no separate DataCite field to filter on beyond the creator name/ROR itself).
             case GrantFilterKeys.FUNDING_AGENCY_NAME -> "creators.name:\"" + escape(value) + "\"";
             case GrantFilterKeys.FUNDING_AGENCY_IDENTIFIERS_SCHEME ->
-                    FilterQuerySyntax.schemeOnlyFilter(value, SCHEME_ROR, NO_MATCH_CLAUSE);
+                FilterQuerySyntax.schemeOnlyFilter(value, SCHEME_ROR, NO_MATCH_CLAUSE);
             case GrantFilterKeys.FUNDING_AGENCY_IDENTIFIERS_VALUE ->
-                    rorClause("creators.nameIdentifiers.nameIdentifier", value);
+                rorClause("creators.nameIdentifiers.nameIdentifier", value);
 
             case GrantFilterKeys.CF_SEARCH_TITLE, GrantFilterKeys.CF_SEARCH_TITLE_ABSTRACT -> escape(value);
             default -> null;
@@ -140,7 +140,7 @@ final class DataCiteGrantFilters {
     /**
      * Bare ROR id -> the given single field, matched against the full ROR URL.
      *
-     * @param field the DataCite field to match against
+     * @param field   the DataCite field to match against
      * @param bareRor the bare ROR id from the filter value
      * @return a Lucene clause matching field against the full ROR URL for bareRor
      */

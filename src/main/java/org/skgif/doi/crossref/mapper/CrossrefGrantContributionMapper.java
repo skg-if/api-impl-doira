@@ -45,7 +45,7 @@ final class CrossrefGrantContributionMapper {
     }
 
     private static GrantAllOfContributions investigatorContribution(String doi, CrossrefInvestigator investigator,
-            GrantContribution.RolesEnum role) {
+                                                                    GrantContribution.RolesEnum role) {
         String bareOrcid = CrossrefContributionMapper.bareOrcid(investigator.orcid());
         String name = CrossrefContributionMapper.displayName(investigator.given(), investigator.family());
         List<PersonLiteAllOfIdentifiers> orcidIdentifiers = bareOrcid != null
@@ -80,10 +80,10 @@ final class CrossrefGrantContributionMapper {
      * beneficiaries (deduped by name), the closest available analogue. Same documented judgment
      * call as {@code DataCiteGrantMapper#grantBeneficiaries}.
      *
-     * @param doi the owning grant DOI, used to build a deterministic otf id
+     * @param doi      the owning grant DOI, used to build a deterministic otf id
      * @param projects the grant DOI's project entries
      * @return the deduped beneficiary organisations, or an empty list if none have a declared
-     *     affiliation
+     *         affiliation
      */
     static List<GrantAllOfBeneficiaries> grantBeneficiaries(String doi, List<CrossrefProject> projects) {
         Map<String, CrossrefAffiliation> byName = new LinkedHashMap<>();
@@ -95,7 +95,7 @@ final class CrossrefGrantContributionMapper {
     }
 
     private static void collectAffiliations(Map<String, CrossrefAffiliation> byName,
-            List<CrossrefInvestigator> investigators) {
+                                            List<CrossrefInvestigator> investigators) {
         if (investigators == null) {
             return;
         }

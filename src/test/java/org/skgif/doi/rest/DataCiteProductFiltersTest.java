@@ -117,7 +117,7 @@ class DataCiteProductFiltersTest {
     void toDataCiteQuery_byLocalIdentifier_searchesBothRolesWithValueAsIs() {
         String orcidUrl = "https://orcid.org/0000-0002-1008-0687";
         assertEquals("(creators.nameIdentifiers.nameIdentifier:\"" + orcidUrl
-                        + "\" OR contributors.nameIdentifiers.nameIdentifier:\"" + orcidUrl + "\")",
+                + "\" OR contributors.nameIdentifiers.nameIdentifier:\"" + orcidUrl + "\")",
                 DataCiteProductFilters.toDataCiteQuery("contributions.by.local_identifier:" + orcidUrl));
     }
 
@@ -167,7 +167,7 @@ class DataCiteProductFiltersTest {
     void toDataCiteQuery_declaredAffiliationsLocalIdentifier_searchesBothRolesWithValueAsIs() {
         String rorUrl = "https://ror.org/02550n020";
         assertEquals("(creators.affiliation.affiliationIdentifier:\"" + rorUrl
-                        + "\" OR contributors.affiliation.affiliationIdentifier:\"" + rorUrl + "\")",
+                + "\" OR contributors.affiliation.affiliationIdentifier:\"" + rorUrl + "\")",
                 DataCiteProductFilters.toDataCiteQuery(
                         "contributions.declared_affiliations.local_identifier:" + rorUrl));
     }

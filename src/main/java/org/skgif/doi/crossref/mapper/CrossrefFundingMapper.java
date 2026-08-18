@@ -65,8 +65,8 @@ final class CrossrefFundingMapper {
      * - note the identifier scheme emitted here is {@code doi}, not {@code ror}, since that's
      * genuinely what Crossref gives (a funder's Funder Registry DOI, not its ROR).
      *
-     * @param doi the owning record's DOI, used to build a deterministic otf id when funder has
-     *     no Funder Registry DOI
+     * @param doi    the owning record's DOI, used to build a deterministic otf id when funder has
+     *               no Funder Registry DOI
      * @param funder the Crossref funder record
      * @return an Organisation for funder, identified by its Funder Registry DOI when present
      */
@@ -103,9 +103,9 @@ final class CrossrefFundingMapper {
      * when Crossref's grant DOI carries no {@code project[].funding[]} entry at all - the first
      * top-level {@code work.funder[]} entry.
      *
-     * @param doi the owning grant DOI, used to build a deterministic otf id when funder has no
-     *     Funder Registry DOI
-     * @param primaryFunding the grant's first project's first funding entry, or null
+     * @param doi             the owning grant DOI, used to build a deterministic otf id when funder has no
+     *                        Funder Registry DOI
+     * @param primaryFunding  the grant's first project's first funding entry, or null
      * @param topLevelFunders the grant record's top-level funder[], or null
      * @return the mapped Organisation, or null if no funder name is available
      */

@@ -82,9 +82,9 @@ final class CrossrefFilters {
             case ProductFilterKeys.PRODUCT_TYPE -> productTypeClause(value);
             case ProductFilterKeys.IDENTIFIERS_ID -> "doi:" + FilterQuerySyntax.stripDoiUrl(value);
             case ProductFilterKeys.IDENTIFIERS_SCHEME ->
-                    FilterQuerySyntax.schemeOnlyFilter(value, "doi", NO_MATCH_CLAUSE);
+                FilterQuerySyntax.schemeOnlyFilter(value, "doi", NO_MATCH_CLAUSE);
             case ProductFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_ID, ProductFilterKeys.CF_CONTRIBUTIONS_ORCID ->
-                    "orcid:" + stripOrcidUrl(value);
+                "orcid:" + stripOrcidUrl(value);
             case ProductFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME ->
                 FilterQuerySyntax.schemeOnlyFilter(value, "orcid", NO_MATCH_CLAUSE);
             case ProductFilterKeys.FUNDING_GRANT_NUMBER -> "award.number:" + value;
@@ -104,12 +104,12 @@ final class CrossrefFilters {
         return switch (key) {
             case GrantFilterKeys.IDENTIFIERS_VALUE -> "doi:" + FilterQuerySyntax.stripDoiUrl(value);
             case GrantFilterKeys.IDENTIFIERS_SCHEME ->
-                    FilterQuerySyntax.schemeOnlyFilter(value, "doi", NO_MATCH_CLAUSE);
+                FilterQuerySyntax.schemeOnlyFilter(value, "doi", NO_MATCH_CLAUSE);
             case GrantFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_VALUE -> "orcid:" + stripOrcidUrl(value);
             // Grant contributions can be organisational (ror) too, but Crossref's "orcid" filter
             // only ever matches a person - a ror-scoped value harmlessly never matches.
             case GrantFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME ->
-                    ("orcid".equalsIgnoreCase(value) || "ror".equalsIgnoreCase(value)) ? null : NO_MATCH_CLAUSE;
+                ("orcid".equalsIgnoreCase(value) || "ror".equalsIgnoreCase(value)) ? null : NO_MATCH_CLAUSE;
             case GrantFilterKeys.FUNDING_AGENCY_IDENTIFIERS_VALUE -> "award.funder:" + value;
             case GrantFilterKeys.CF_SEARCH_TITLE -> {
                 builder.queryTitle(value);
@@ -131,7 +131,7 @@ final class CrossrefFilters {
      *
      * @param value the SKG-IF product_type filter value
      * @return the comma-joined Crossref {@code type:} sub-clause, or NO_MATCH_CLAUSE if value is
-     *     unrecognized or maps to no Crossref type
+     *         unrecognized or maps to no Crossref type
      */
     private static String productTypeClause(String value) {
         Product.ProductTypeEnum productType;
@@ -156,8 +156,8 @@ final class CrossrefFilters {
     /**
      * The three independent query components Crossref's {@code /works} list endpoint accepts.
      *
-     * @param filter the {@code filter=} clause
-     * @param queryTitle the {@code query.title} free-text search value
+     * @param filter             the {@code filter=} clause
+     * @param queryTitle         the {@code query.title} free-text search value
      * @param queryBibliographic the {@code query.bibliographic} free-text search value
      */
     record ParsedFilter(String filter, String queryTitle, String queryBibliographic) {

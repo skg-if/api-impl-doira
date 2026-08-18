@@ -54,7 +54,7 @@ public final class CrossrefTypeMapping {
     }
 
     private static void putAll(Map<String, Product.ProductTypeEnum> map, Product.ProductTypeEnum value,
-            String... types) {
+                               String... types) {
         for (String type : types) {
             map.put(type, value);
         }

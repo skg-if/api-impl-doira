@@ -25,16 +25,16 @@ public interface DataCiteClient {
     /**
      * Lists/searches DataCite DOIs matching the given query parameters.
      *
-     * @param prefix DataCite DOI prefix to filter by
-     * @param query DataCite {@code query} parameter (Elasticsearch query string)
-     * @param pageSize maximum number of results to return
+     * @param prefix     DataCite DOI prefix to filter by
+     * @param query      DataCite {@code query} parameter (Elasticsearch query string)
+     * @param pageSize   maximum number of results to return
      * @param pageNumber page number to fetch
      * @return the matching DataCite DOI list response
      */
     @GET
     DataCiteDoiListResponse listDois(
-            @QueryParam("prefix") String prefix,
-            @QueryParam("query") String query,
-            @QueryParam("page[size]") Integer pageSize,
-            @QueryParam("page[number]") Integer pageNumber);
+                                     @QueryParam("prefix") String prefix,
+                                     @QueryParam("query") String query,
+                                     @QueryParam("page[size]") Integer pageSize,
+                                     @QueryParam("page[number]") Integer pageNumber);
 }

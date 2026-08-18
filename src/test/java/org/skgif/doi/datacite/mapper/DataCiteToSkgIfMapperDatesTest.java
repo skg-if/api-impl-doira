@@ -32,7 +32,7 @@ class DataCiteToSkgIfMapperDatesTest {
     }
 
     private static DataCiteAttributes withLifecycleDates(DataCiteAttributes attributes, String created,
-            String registered, String updated, String published) {
+                                                         String registered, String updated, String published) {
         return new DataCiteAttributes(
                 attributes.doi(), attributes.titles(), attributes.creators(), attributes.contributors(),
                 attributes.publisher(), attributes.publicationYear(), attributes.subjects(), attributes.dates(),

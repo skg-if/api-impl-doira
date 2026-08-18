@@ -46,7 +46,7 @@ public class CrossrefToSkgIfMapper implements GrantCapableMapper<CrossrefWork> {
     private final CrossrefGrantMapper grantMapper;
 
     /**
-     * @param localIdentifiers builds full/otf local_identifier values for mapped entities
+     * @param localIdentifiers   builds full/otf local_identifier values for mapped entities
      * @param journalDoiResolver looks up a real journal-level DOI for an article's ISSN(s)
      */
     public CrossrefToSkgIfMapper(LocalIdentifiers localIdentifiers, CrossrefJournalDoiResolver journalDoiResolver) {
@@ -80,7 +80,7 @@ public class CrossrefToSkgIfMapper implements GrantCapableMapper<CrossrefWork> {
      * {@code venueMetadata} is {@code null} (e.g. the XML fetch failed, or this isn't an
      * enrichable record).
      *
-     * @param work the Crossref work record to map
+     * @param work          the Crossref work record to map
      * @param venueMetadata venue metadata parsed from Crossref's XML transform endpoint, or null
      * @return the mapped Product
      */

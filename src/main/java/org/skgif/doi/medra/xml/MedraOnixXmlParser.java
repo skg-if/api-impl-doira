@@ -100,7 +100,7 @@ public final class MedraOnixXmlParser {
     /**
      * {@code ContentItem}'s own titles - distinct from {@link #journalTitle}.
      *
-     * @param xpath the XPath instance to evaluate queries with
+     * @param xpath       the XPath instance to evaluate queries with
      * @param contentItem the {@code ContentItem} node to read titles from
      * @return the ContentItem's titles, in document order
      * @throws XPathExpressionException if the XPath evaluation fails
@@ -129,7 +129,7 @@ public final class MedraOnixXmlParser {
      * combination, so anything past the first is dropped (see the "titles" row in
      * SKG_IF_DOI_MAPPING_PRODUCT.md for the AAPP fixture that exercises this).
      *
-     * @param xpath the XPath instance to evaluate queries with
+     * @param xpath      the XPath instance to evaluate queries with
      * @param serialWork the {@code SerialWork} node to read the journal/series title from
      * @return the journal/series' own name, or null if none found
      * @throws XPathExpressionException if the XPath evaluation fails

@@ -113,7 +113,7 @@ final class DataCiteManifestationMapper {
      * An explicit {@code dates[]} entry always takes precedence since these only fire when the
      * getter is still null.
      *
-     * @param dates the dates already populated from {@code attributes.dates[]}
+     * @param dates      the dates already populated from {@code attributes.dates[]}
      * @param attributes the DataCite record to read fallback timestamps from
      * @return true if any fallback timestamp was added
      */
@@ -145,7 +145,7 @@ final class DataCiteManifestationMapper {
      * date on the record.
      *
      * @param attributes the DataCite record to collect known dates from
-     * @param excluding the date entry to exclude from the result set
+     * @param excluding  the date entry to exclude from the result set
      * @return the day-normalized (YYYY-MM-DD) set of every other known date
      */
     private static Set<String> otherRecordDays(DataCiteAttributes attributes, DataCiteDate excluding) {
