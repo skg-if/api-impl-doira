@@ -66,4 +66,4 @@ jobs:
           path: target/quarkus-app
 
       - name: Validate live DataCite/Crossref endpoints
-        run: sudo -E bash scripts/ci/validate-live-endpoints.sh
+        run: bash scripts/ci/validate-live-endpoints.sh

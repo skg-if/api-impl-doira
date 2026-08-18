@@ -76,9 +76,14 @@ classify_status() {
     fi
 }
 
+SUDO=""
+if [ "$(id -u)" -ne 0 ]; then
+    SUDO="sudo"
+fi
+
 echo "Installing jq (prism itself is run via npx, not installed globally - see below)..."
-apt-get update -qq
-apt-get install -y --no-install-recommends nodejs npm jq >/dev/null
+$SUDO apt-get update -qq
+$SUDO apt-get install -y --no-install-recommends nodejs npm jq >/dev/null
 
 # Deliberately npx, not `npm install -g @stoplight/prism-cli`: a global install resolves nested
 # deps (e.g. @faker-js/faker, pulled in by prism-http's mocker code even though only proxy mode
