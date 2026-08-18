@@ -85,13 +85,15 @@ compiler/plugin setup output for files that haven't changed.
 
 ### Trust the exit code
 
-A `0` exit from `mvn` (package/test/`pmd:check`/etc.) is sufficient proof the goal
-ran and passed - report success and move on. Don't additionally open
-`target/pmd.xml`, `target/surefire-reports/*.xml`, or other generated report files
-just to reconfirm what the exit code already established, even under `-q` where
-per-file summary lines are suppressed. Only dig into those report files when the
-exit code is non-zero (to find the failure), or when the task itself asks for the
-report's content (e.g. counting violations).
+A `0` exit from `mvn` (package/test/`pmd:check`/`checkstyle:check`/etc.) is
+sufficient proof the goal ran and passed - report success and move on. This
+applies to every verification plugin bound into the build (PMD, checkstyle,
+surefire, ...), not just PMD specifically. Don't additionally open
+`target/pmd.xml`, `target/checkstyle-result.xml`, `target/surefire-reports/*.xml`,
+or other generated report files just to reconfirm what the exit code already
+established, even under `-q` where per-file summary lines are suppressed. Only
+dig into those report files when the exit code is non-zero (to find the failure),
+or when the task itself asks for the report's content (e.g. counting violations).
 
 When iterating on one class rather than validating the whole change, scope the run
 instead of re-running everything - reach for this by default whenever the change

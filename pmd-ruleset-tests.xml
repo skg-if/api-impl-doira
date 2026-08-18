@@ -59,12 +59,6 @@
       entity stream or connection, not an actual resource that needs closing.
     -->
     <exclude name="CloseResource"/>
-    <!--
-      1 hit, on the 709-line CrossrefToSkgIfMapperTest (value 26, threshold 20) - inherent to a
-      single test class comprehensively verifying a mapper that touches many SKG-IF DTO types, not
-      a design smell to split up.
-    -->
-    <exclude name="CouplingBetweenObjects"/>
   </rule>
 
 </ruleset>
