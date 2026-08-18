@@ -45,7 +45,7 @@ final class CrossrefGrantContributionMapper {
     }
 
     private static GrantAllOfContributions investigatorContribution(String doi, CrossrefInvestigator investigator,
-                                                                    GrantContribution.RolesEnum role) {
+            GrantContribution.RolesEnum role) {
         String bareOrcid = CrossrefContributionMapper.bareOrcid(investigator.orcid());
         String name = CrossrefContributionMapper.displayName(investigator.given(), investigator.family());
         List<PersonLiteAllOfIdentifiers> orcidIdentifiers = bareOrcid != null ?
@@ -95,7 +95,7 @@ final class CrossrefGrantContributionMapper {
     }
 
     private static void collectAffiliations(Map<String, CrossrefAffiliation> byName,
-                                            List<CrossrefInvestigator> investigators) {
+            List<CrossrefInvestigator> investigators) {
         if (investigators == null) {
             return;
         }

@@ -543,8 +543,8 @@ class ProductsGoldenTest {
                 "expected/medra-multiple-product-identifiers-out.json");
     }
 
-    private void assertMatchesExpectedMedraJsonLd(String doi, String medraXmlFixture, String expectedJsonLdResource)
-            throws IOException {
+    private void assertMatchesExpectedMedraJsonLd(String doi, String medraXmlFixture,
+            String expectedJsonLdResource) throws IOException {
         Response xmlResponse = okXmlResponse(medraXmlFixture);
         when(medraClient.getMetadata(doi)).thenReturn(xmlResponse);
 
@@ -553,8 +553,8 @@ class ProductsGoldenTest {
         compareOrWriteGolden(new ObjectMapper().readTree(actualBody), expectedJsonLdResource);
     }
 
-    private void assertMatchesExpectedDataCiteJsonLd(String doi, String dataCiteFixture, String expectedJsonLdResource)
-            throws IOException {
+    private void assertMatchesExpectedDataCiteJsonLd(String doi, String dataCiteFixture,
+            String expectedJsonLdResource) throws IOException {
         when(dataCiteClient.getDoi(doi)).thenReturn(loadDataCiteFixture(dataCiteFixture));
 
         String actualBody = given().when().get(BASE + "/datacite/products/" + doi)
@@ -562,8 +562,8 @@ class ProductsGoldenTest {
         compareOrWriteGolden(new ObjectMapper().readTree(actualBody), expectedJsonLdResource);
     }
 
-    private void assertMatchesExpectedCrossrefJsonLd(String doi, String crossrefFixture, String expectedJsonLdResource)
-            throws IOException {
+    private void assertMatchesExpectedCrossrefJsonLd(String doi, String crossrefFixture,
+            String expectedJsonLdResource) throws IOException {
         when(crossrefClient.getWork(doi)).thenReturn(loadCrossrefFixture(crossrefFixture));
 
         String actualBody = given().when().get(BASE + "/crossref/products/" + doi)
@@ -583,7 +583,7 @@ class ProductsGoldenTest {
      * @throws IOException if a fixture resource cannot be read
      */
     private void assertMatchesExpectedCrossrefJsonLd(String doi, String crossrefFixture, String venueXmlFixture,
-                                                     String expectedJsonLdResource) throws IOException {
+            String expectedJsonLdResource) throws IOException {
         when(crossrefClient.getWork(doi)).thenReturn(loadCrossrefFixture(crossrefFixture));
         // Built as a separate statement, not inline as thenReturn(...)'s argument - okXmlResponse
         // itself opens Mockito when(...)/thenReturn(...) stubs, and evaluating it inside another

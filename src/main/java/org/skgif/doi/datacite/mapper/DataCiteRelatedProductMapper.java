@@ -63,10 +63,10 @@ final class DataCiteRelatedProductMapper {
     }
 
     private ProductsRelated assembleRelated(List<ProductsRelatedCitesInner> cites,
-                                            List<ProductsRelatedCitesInner> isSupplementedBy,
-                                            List<ProductsRelatedCitesInner> isDocumentedBy,
-                                            List<ProductsRelatedCitesInner> isNewVersionOf,
-                                            List<ProductsRelatedCitesInner> isPartOf) {
+            List<ProductsRelatedCitesInner> isSupplementedBy,
+            List<ProductsRelatedCitesInner> isDocumentedBy,
+            List<ProductsRelatedCitesInner> isNewVersionOf,
+            List<ProductsRelatedCitesInner> isPartOf) {
         ProductsRelated related = new ProductsRelated();
         if (!cites.isEmpty()) {
             related.cites(cites);

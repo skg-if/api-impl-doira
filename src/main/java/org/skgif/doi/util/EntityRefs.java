@@ -72,7 +72,7 @@ public final class EntityRefs {
     // same reasoning as personRef's suppression above.
     @SuppressWarnings("PMD.UseObjectForClearerAPI")
     public static Organisation organisationRef(String doi, String name, String bareRor, String doiLocalIdentifier,
-                                               String bareDoiValue) {
+            String bareDoiValue) {
         if (bareRor != null) {
             return organisationRef(doi, name, bareRor);
         }
@@ -109,7 +109,7 @@ public final class EntityRefs {
     // over five named, individually-documented parameters (same call as CrossrefClient's).
     @SuppressWarnings("PMD.UseObjectForClearerAPI")
     public static PersonLite personRef(String doi, String name, String givenName, String familyName,
-                                       String bareOrcid, List<PersonLiteAllOfIdentifiers> orcidIdentifiers) {
+            String bareOrcid, List<PersonLiteAllOfIdentifiers> orcidIdentifiers) {
         PersonLite by = new PersonLite()
                 .localIdentifier(bareOrcid != null ?
                         ExternalIdentifierUrls.ORCID_BASE_URL + bareOrcid :

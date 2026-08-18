@@ -69,7 +69,7 @@ final class DataCiteContributionMapper {
     }
 
     static ProductContributionBy personRef(String doi, String name, String givenName, String familyName,
-                                           List<DataCiteNameIdentifier> nameIdentifiers) {
+            List<DataCiteNameIdentifier> nameIdentifiers) {
         return EntityRefs.personRef(doi, name, givenName, familyName, firstOrcid(nameIdentifiers),
                 orcidIdentifiers(nameIdentifiers));
     }

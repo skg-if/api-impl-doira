@@ -24,12 +24,12 @@ import java.util.List;
  * @param publisherPlace the publisher's place
  */
 public record CrossrefVenueMetadata(
-                                    String containerTitle,
-                                    String containerDoi,
-                                    String seriesTitle,
-                                    List<String> seriesIssns,
-                                    String volume,
-                                    List<String> isbns,
-                                    String publisherName,
-                                    String publisherPlace) {
+        String containerTitle,
+        String containerDoi,
+        String seriesTitle,
+        List<String> seriesIssns,
+        String volume,
+        List<String> isbns,
+        String publisherName,
+        String publisherPlace) {
 }

@@ -121,8 +121,7 @@ public final class CrossrefVenueMetadataXmlParser {
         return value == null || value.isBlank() ? null : value.trim();
     }
 
-    private static List<String> textList(XPath xpath, Node context, String expression)
-            throws XPathExpressionException {
+    private static List<String> textList(XPath xpath, Node context, String expression) throws XPathExpressionException {
         NodeList nodes = (NodeList) xpath.evaluate(expression, context, XPathConstants.NODESET);
         List<String> values = new ArrayList<>();
         for (int i = 0; i < nodes.getLength(); i++) {

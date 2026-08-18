@@ -82,9 +82,9 @@ public class CrossrefProductsResource {
      */
     @Inject
     public CrossrefProductsResource(@RestClient CrossrefClient crossrefClient,
-                                    @RestClient CrossrefXmlTransformClient crossrefXmlTransformClient,
-                                    CrossrefToSkgIfMapper mapper, LocalIdentifiers localIdentifiers,
-                                    ObjectMapper objectMapper) {
+            @RestClient CrossrefXmlTransformClient crossrefXmlTransformClient,
+            CrossrefToSkgIfMapper mapper, LocalIdentifiers localIdentifiers,
+            ObjectMapper objectMapper) {
         this.crossrefClient = crossrefClient;
         this.crossrefXmlTransformClient = crossrefXmlTransformClient;
         this.mapper = mapper;
@@ -101,30 +101,30 @@ public class CrossrefProductsResource {
     @Path("/{local_identifier: .+}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getProductById(
-                                   @Parameter(
-                                           description = "DOI to look up (with or without the SKG base domain prefix)",
-                                           examples = {
-                                                   @ExampleObject(name = "journal-article",
-                                                           value = "10.1038/nature12373"),
-                                                   @ExampleObject(name = "orcid", value = "10.1038/s41467-022-33468-6"),
-                                                   @ExampleObject(name = "proceedings", value = "10.17537/icmbb18.42"),
-                                                   @ExampleObject(name = "ror-affiliation",
-                                                           value = "10.1103/physrevb.110.174515"),
-                                                   @ExampleObject(name = "book-chapter",
-                                                           value = "10.1007/978-3-319-66787-4_9"),
-                                                   @ExampleObject(name = "proceedings-with-series",
-                                                           value = "10.2991/assehr.k.211222.032"),
-                                                   @ExampleObject(name = "dataset", value = "10.17989/encsr154xia"),
-                                                   @ExampleObject(name = "funder-without-identifier",
-                                                           value = "10.1155/2016/1353212"),
-                                                   @ExampleObject(name = "standalone-book-chapter",
-                                                           value = "10.1007/978-1-4842-7310-4_15"),
-                                                   @ExampleObject(name = "standalone-proceedings",
-                                                           value = "10.1109/freq.1998.717994"),
-                                                   @ExampleObject(name = "is-supplemented-by",
-                                                           value = "10.1107/s2414314618016334")
-                                           }) @PathParam("local_identifier") String localIdentifierParam,
-                                   @Context UriInfo uriInfo) {
+            @Parameter(
+                    description = "DOI to look up (with or without the SKG base domain prefix)",
+                    examples = {
+                            @ExampleObject(name = "journal-article",
+                                    value = "10.1038/nature12373"),
+                            @ExampleObject(name = "orcid", value = "10.1038/s41467-022-33468-6"),
+                            @ExampleObject(name = "proceedings", value = "10.17537/icmbb18.42"),
+                            @ExampleObject(name = "ror-affiliation",
+                                    value = "10.1103/physrevb.110.174515"),
+                            @ExampleObject(name = "book-chapter",
+                                    value = "10.1007/978-3-319-66787-4_9"),
+                            @ExampleObject(name = "proceedings-with-series",
+                                    value = "10.2991/assehr.k.211222.032"),
+                            @ExampleObject(name = "dataset", value = "10.17989/encsr154xia"),
+                            @ExampleObject(name = "funder-without-identifier",
+                                    value = "10.1155/2016/1353212"),
+                            @ExampleObject(name = "standalone-book-chapter",
+                                    value = "10.1007/978-1-4842-7310-4_15"),
+                            @ExampleObject(name = "standalone-proceedings",
+                                    value = "10.1109/freq.1998.717994"),
+                            @ExampleObject(name = "is-supplemented-by",
+                                    value = "10.1107/s2414314618016334")
+                    }) @PathParam("local_identifier") String localIdentifierParam,
+            @Context UriInfo uriInfo) {
         String doi = localIdentifiers.toDoi(localIdentifierParam);
 
         CrossrefWork work;
@@ -178,10 +178,10 @@ public class CrossrefProductsResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getProducts(
-                                @QueryParam("filter") String filter,
-                                @QueryParam("page") String page,
-                                @QueryParam("page_size") Integer pageSize,
-                                @Context UriInfo uriInfo) {
+            @QueryParam("filter") String filter,
+            @QueryParam("page") String page,
+            @QueryParam("page_size") Integer pageSize,
+            @Context UriInfo uriInfo) {
 
         CrossrefFilters.ParsedFilter parsed;
         try {

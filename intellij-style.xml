@@ -1,4 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  This is an IntelliJ-exported Eclipse formatter profile, consumed by spotless-maven-plugin
+  (pom.xml) so `mvn spotless:apply`/`spotless:check` can approximate IntelliJ's formatting from
+  the command line and in CI. It is NOT read by IntelliJ itself: hitting Ctrl+Alt+L in the IDE
+  uses IntelliJ's own native formatter and its own live settings (continuation_indentation=2,
+  120-column wrap, etc.) - never this file. Spotless, on the other hand, only reads this XML and
+  hands it to the Eclipse JDT formatter engine.
+
+  That split matters because IntelliJ's Eclipse-profile exporter has a known bug: several
+  `alignment_for_*` settings get written out with a bitmask value missing the "wrap-style" bits
+  (16/32/48/64/80) - e.g. 0 or 2 instead of 16. Eclipse JDT decodes a value with no wrap-style bit
+  as M_NO_ALIGNMENT, which it treats as "never wrap this construct, regardless of line length."
+  IntelliJ's own formatter never has this problem, since Ctrl+Alt+L doesn't go through this
+  exported bitmask at all - it uses its live settings directly and wraps at 120 columns as
+  expected.
+
+  Left unpatched, this produces a real divergence: Ctrl+Alt+L in the IDE correctly wraps a long
+  method-parameter list, fluent chain, ternary, string concatenation, etc., but
+  `mvn spotless:apply` leaves the same construct as one giant line - or wraps it awkwardly at
+  whatever alignment setting IS still enabled, instead of the natural one (e.g. splitting
+  `MapperTextUtils` from `.otf(doi, name)` mid-call because the ternary's `?`/`:` wrap was
+  disabled). That Spotless output then fails checkstyle.xml's LineLength(120)/OperatorWrap checks
+  in the real Maven build - "looks fine in my editor" but fails CI - plus needless reformatting
+  churn every time IDE-formatted code meets a Spotless run.
+
+  Each affected `alignment_for_*` setting below has been patched to 16 (WRAP_COMPACT +
+  INDENT_DEFAULT), the bitmask that actually matches what IntelliJ renders on screen for this
+  project's continuation_indentation=2 setting - see the individual comments next to each patched
+  setting for the specific construct and violation that proved it. This makes the exported
+  profile a faithful stand-in for IntelliJ's real behavior, so Ctrl+Alt+L and `spotless:apply`
+  produce the same formatting and both satisfy checkstyle.xml - one canonical style instead of two
+  that quietly disagree. Confirmed via real `mvn spotless:apply` + `mvn checkstyle:check` runs
+  against this repo, not just inspection.
+-->
 <profiles version="21">
 	<profile kind="CodeFormatterProfile" name="Default" version="21">
 		<setting id="org.eclipse.jdt.core.formatter.tabulation.char" value="space"/>
@@ -294,11 +328,19 @@
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_superclass_in_type_declaration" value="0"/>
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_superinterfaces_in_type_declaration" value="0"/>
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_multiple_fields" value="16"/>
-		<setting id="org.eclipse.jdt.core.formatter.alignment_for_parameters_in_constructor_declaration" value="2"/>
+		<!--
+		Same exporter bug as alignment_for_record_components below: IntelliJ's Eclipse-profile
+		export set these to 2, which is indent-style bit 2 (INDENT_ON_COLUMN) with NO wrap-style
+		bit (16/32/48/64/80) set, so JDT treats it as "never wrap" regardless of line length - this
+		is what let CrossrefClient#listWorks's six @QueryParam parameters sit on one 293-character
+		line past the 120-column lineSplit. Patched to 16 (WRAP_COMPACT + INDENT_DEFAULT), same fix
+		and reasoning as alignment_for_record_components.
+		-->
+		<setting id="org.eclipse.jdt.core.formatter.alignment_for_parameters_in_constructor_declaration" value="16"/>
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_throws_clause_in_constructor_declaration" value="0"/>
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_method_declaration" value="0"/>
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_throws_clause_in_method_declaration" value="0"/>
-		<setting id="org.eclipse.jdt.core.formatter.alignment_for_parameters_in_method_declaration" value="2"/>
+		<setting id="org.eclipse.jdt.core.formatter.alignment_for_parameters_in_method_declaration" value="16"/>
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_enum_constants" value="0"/>
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_arguments_in_enum_constant" value="0"/>
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_superinterfaces_in_enum_declaration" value="0"/>
@@ -317,16 +359,57 @@
 		-->
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_record_components" value="16"/>
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_superinterfaces_in_record_declaration" value="0"/>
-		<setting id="org.eclipse.jdt.core.formatter.alignment_for_arguments_in_method_invocation" value="0"/>
-		<setting id="org.eclipse.jdt.core.formatter.alignment_for_selector_in_method_invocation" value="0"/>
-		<setting id="org.eclipse.jdt.core.formatter.alignment_for_arguments_in_explicit_constructor_call" value="0"/>
-		<setting id="org.eclipse.jdt.core.formatter.alignment_for_arguments_in_allocation_expression" value="0"/>
-		<setting id="org.eclipse.jdt.core.formatter.alignment_for_arguments_in_qualified_allocation_expression" value="0"/>
+		<!--
+		Same exporter bug as alignment_for_record_components/alignment_for_parameters_in_*_declaration
+		above: 0 has neither a wrap-style bit (16/32/48/64/80) nor an indent-style bit set, so JDT
+		never wraps a method call's argument list regardless of length. Left unfixed this produced
+		single lines up to 1,018 characters (DataCiteProductFilters, CrossrefProductsResource,
+		DataCiteGrantFilters) in List.of/Map.of-style calls with many arguments - all confirmed
+		failing checkstyle's LineLength(max=120) via a real `mvn checkstyle:check` run. Patched to
+		16 (WRAP_COMPACT + INDENT_DEFAULT), same fix and reasoning as alignment_for_record_components.
+		-->
+		<setting id="org.eclipse.jdt.core.formatter.alignment_for_arguments_in_method_invocation" value="16"/>
+		<!--
+		Same exporter bug as alignment_for_record_components/alignment_for_parameters_in_*_declaration
+		above: 0 has neither a wrap-style bit (16/32/48/64/80) nor an indent-style bit set, so JDT
+		never wraps a fluent call chain regardless of length. This is what let
+		CrossrefTitleMapper's `new Topic().localIdentifier(...).entityType(...).labels(...)` builder
+		chain sit on one 175-character line past the 120-column lineSplit. Patched to 16
+		(WRAP_COMPACT + INDENT_DEFAULT), same fix and reasoning as alignment_for_record_components.
+		-->
+		<setting id="org.eclipse.jdt.core.formatter.alignment_for_selector_in_method_invocation" value="16"/>
+		<!--
+		Same exporter bug as alignment_for_record_components above: 0 has neither a wrap-style bit
+		(16/32/48/64/80) nor an indent-style bit set, so JDT never wraps a constructor/`new`
+		argument list regardless of length. Left unfixed this forced the formatter to wrap
+		elsewhere to hit the 120-column limit instead - e.g. splitting mid method-chain in
+		CrossrefToSkgIfMapper's `new CrossrefManifestationMapper(new CrossrefBiblioMapper(...))` and
+		MedraOnixXmlParser's `new MedraWork(...)` calls - confirmed failing checkstyle's
+		LineLength(max=120) via a real `mvn checkstyle:check` run. Patched to 16
+		(WRAP_COMPACT + INDENT_DEFAULT), same fix and reasoning as alignment_for_record_components;
+		the explicit-constructor-call and qualified-allocation variants are fixed alongside since
+		they're the same construct under a different call shape (this(...)/super(...) and
+		Outer.new Inner(...)) and share the identical exporter bug.
+		-->
+		<setting id="org.eclipse.jdt.core.formatter.alignment_for_arguments_in_explicit_constructor_call" value="16"/>
+		<setting id="org.eclipse.jdt.core.formatter.alignment_for_arguments_in_allocation_expression" value="16"/>
+		<setting id="org.eclipse.jdt.core.formatter.alignment_for_arguments_in_qualified_allocation_expression" value="16"/>
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_multiplicative_operator" value="0"/>
 		<setting id="org.eclipse.jdt.core.formatter.wrap_before_multiplicative_operator" value="false"/>
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_additive_operator" value="0"/>
 		<setting id="org.eclipse.jdt.core.formatter.wrap_before_additive_operator" value="false"/>
-		<setting id="org.eclipse.jdt.core.formatter.alignment_for_string_concatenation" value="0"/>
+		<!--
+		Same exporter bug as alignment_for_record_components above: 0 has neither a wrap-style bit
+		(16/32/48/64/80) nor an indent-style bit set, so JDT never wraps a chain of `+`-concatenated
+		string literals regardless of length. Left unfixed this produced single lines up to 346
+		characters (MedraOnixXmlParser, CrossrefVenueMetadataXmlParser) building XPath expressions
+		out of concatenated string fragments - confirmed failing checkstyle's LineLength(max=120)
+		via a real `mvn checkstyle:check` run. Patched to 16 (WRAP_COMPACT + INDENT_DEFAULT), same
+		fix and reasoning as alignment_for_record_components. wrap_before_string_concatenation stays
+		false so the `+` stays at the end of the wrapped line, matching this project's
+		wrap-operator-at-eol convention (see checkstyle.xml's OperatorWrap option=eol comment).
+		-->
+		<setting id="org.eclipse.jdt.core.formatter.alignment_for_string_concatenation" value="16"/>
 		<setting id="org.eclipse.jdt.core.formatter.wrap_before_string_concatenation" value="false"/>
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_shift_operator" value="0"/>
 		<setting id="org.eclipse.jdt.core.formatter.wrap_before_shift_operator" value="false"/>
@@ -334,14 +417,57 @@
 		<setting id="org.eclipse.jdt.core.formatter.wrap_before_relational_operator" value="false"/>
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_bitwise_operator" value="0"/>
 		<setting id="org.eclipse.jdt.core.formatter.wrap_before_bitwise_operator" value="false"/>
-		<setting id="org.eclipse.jdt.core.formatter.alignment_for_logical_operator" value="0"/>
+		<!--
+		Same exporter bug as alignment_for_record_components above: 0 has neither a wrap-style bit
+		(16/32/48/64/80) nor an indent-style bit set, so JDT never wraps a chain of `&&`/`||`
+		conditions regardless of length. Left unfixed this forced the formatter to instead wrap at
+		whatever other alignment WAS enabled to hit the 120-column limit (e.g. mid method-chain,
+		splitting `response` from `.message().items().isEmpty()` in
+		CrossrefJournalDoiResolver#fetchJournalDoi) rather than at the more natural `&&`/`||`
+		boundary - confirmed failing checkstyle's LineLength(max=120) via a real
+		`mvn checkstyle:check` run. Patched to 16 (WRAP_COMPACT + INDENT_DEFAULT), same fix and
+		reasoning as alignment_for_record_components. wrap_before_logical_operator stays false so
+		`&&`/`||` stay at the end of the wrapped line, matching checkstyle.xml's OperatorWrap
+		option=eol requirement (LOR/LAND are both in its token list).
+		-->
+		<setting id="org.eclipse.jdt.core.formatter.alignment_for_logical_operator" value="16"/>
 		<setting id="org.eclipse.jdt.core.formatter.wrap_before_logical_operator" value="false"/>
-		<setting id="org.eclipse.jdt.core.formatter.alignment_for_conditional_expression" value="0"/>
-		<setting id="org.eclipse.jdt.core.formatter.alignment_for_conditional_expression_chain" value="0"/>
+		<!--
+		Same exporter bug as alignment_for_record_components above: 0 has neither a wrap-style bit
+		(16/32/48/64/80) nor an indent-style bit set, so JDT never wraps a ternary `?`/`:`
+		regardless of length. Left unfixed this forced the formatter to wrap elsewhere to hit the
+		120-column limit instead - e.g. splitting `MapperTextUtils` from `.otf(doi, name)` mid-call
+		in EntityRefs#personRef's `bareOrcid != null ? ... : MapperTextUtils.otf(doi, name)` -
+		confirmed failing checkstyle's LineLength(max=120)/OperatorWrap via a real
+		`mvn checkstyle:check` run. Patched to 16 (WRAP_COMPACT + INDENT_DEFAULT), same fix and
+		reasoning as alignment_for_record_components; the chain variant (a ? b : c ? d : e) is fixed
+		alongside since it's the same construct. wrap_before_conditional_operator stays false so
+		`?`/`:` stay at the end of the wrapped line, matching checkstyle.xml's OperatorWrap
+		option=eol requirement (QUESTION/COLON are both in its token list).
+		-->
+		<setting id="org.eclipse.jdt.core.formatter.alignment_for_conditional_expression" value="16"/>
+		<setting id="org.eclipse.jdt.core.formatter.alignment_for_conditional_expression_chain" value="16"/>
 		<setting id="org.eclipse.jdt.core.formatter.wrap_before_conditional_operator" value="false"/>
-		<setting id="org.eclipse.jdt.core.formatter.alignment_for_assignment" value="0"/>
+		<!--
+		Same exporter bug as alignment_for_record_components above: 0 has neither a wrap-style bit
+		(16/32/48/64/80) nor an indent-style bit set, so JDT never wraps at `=` regardless of
+		length - the field declarations in GrantFilterKeys/ProductFilterKeys/
+		DataCiteManifestationMapper/MedraManifestationMapper pair a long identifier with a long
+		string-literal constant and have no other wrap point, so they sat over 120 columns with no
+		way to fix them until this was patched - confirmed failing checkstyle's LineLength(max=120)
+		via a real `mvn checkstyle:check` run. Patched to 16 (WRAP_COMPACT + INDENT_DEFAULT), same
+		fix and reasoning as alignment_for_record_components.
+		-->
+		<setting id="org.eclipse.jdt.core.formatter.alignment_for_assignment" value="16"/>
 		<setting id="org.eclipse.jdt.core.formatter.wrap_before_assignment_operator" value="false"/>
-		<setting id="org.eclipse.jdt.core.formatter.alignment_for_expressions_in_array_initializer" value="0"/>
+		<!--
+		Same exporter bug as alignment_for_record_components above: 0 has neither a wrap-style bit
+		(16/32/48/64/80) nor an indent-style bit set, so JDT never wraps an array initializer's
+		elements (`{...}`) regardless of length - confirmed failing checkstyle's LineLength(max=120)
+		via a real `mvn checkstyle:check` run. Patched to 16 (WRAP_COMPACT + INDENT_DEFAULT), same
+		fix and reasoning as alignment_for_record_components.
+		-->
+		<setting id="org.eclipse.jdt.core.formatter.alignment_for_expressions_in_array_initializer" value="16"/>
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_expressions_in_for_loop_header" value="2"/>
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_compact_if" value="16"/>
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_compact_loops" value="16"/>
@@ -361,7 +487,16 @@
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_annotations_on_local_variable" value="0"/>
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_annotations_on_parameter" value="0"/>
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_type_annotations" value="49"/>
-		<setting id="org.eclipse.jdt.core.formatter.alignment_for_arguments_in_annotation" value="0"/>
+		<!--
+		Same exporter bug as alignment_for_record_components above: 0 has neither a wrap-style bit
+		(16/32/48/64/80) nor an indent-style bit set, so JDT never wraps an annotation's argument
+		list regardless of length - this is what left DataCiteProductsResource's
+		`@ExampleObject(name = "...", value = "...")` entries (inside a `@ExampleObject[]` array
+		initializer) over 120 columns with no way to shrink them - confirmed failing checkstyle's
+		LineLength(max=120) via a real `mvn checkstyle:check` run. Patched to 16
+		(WRAP_COMPACT + INDENT_DEFAULT), same fix and reasoning as alignment_for_record_components.
+		-->
+		<setting id="org.eclipse.jdt.core.formatter.alignment_for_arguments_in_annotation" value="16"/>
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_module_statements" value="0"/>
 		<setting id="org.eclipse.jdt.core.formatter.comment.line_length" value="120"/>
 		<setting id="org.eclipse.jdt.core.formatter.comment.count_line_length_from_starting_position" value="false"/>

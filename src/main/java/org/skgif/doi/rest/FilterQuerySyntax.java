@@ -106,7 +106,7 @@ final class FilterQuerySyntax {
      * @throws UnsupportedFilterException if a segment is malformed, or its key isn't in supportedKeys
      */
     static List<String> parseClauses(String filter, Set<String> supportedKeys,
-                                     BinaryOperator<String> clauseBuilder) {
+            BinaryOperator<String> clauseBuilder) {
         List<String> clauses = new ArrayList<>();
         for (String segment : splitSegments(filter, supportedKeys)) {
             int idx = segment.indexOf(':');

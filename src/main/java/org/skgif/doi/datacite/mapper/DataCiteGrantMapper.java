@@ -36,7 +36,7 @@ final class DataCiteGrantMapper {
     }
 
     static Organisation grantFundingAgency(String doi, Optional<DataCiteCreator> fundingAgencyCreator,
-                                           String publisher) {
+            String publisher) {
         if (fundingAgencyCreator.isPresent()) {
             DataCiteCreator creator = fundingAgencyCreator.get();
             String ror = DataCiteContributionMapper.firstRor(creator.nameIdentifiers());
@@ -58,8 +58,7 @@ final class DataCiteGrantMapper {
     }
 
     static List<GrantAllOfContributions> grantContributions(String doi, List<DataCiteCreator> creators,
-                                                            List<DataCiteContributor> contributors, Optional<
-                                                                    DataCiteCreator> fundingAgencyCreator) {
+            List<DataCiteContributor> contributors, Optional<DataCiteCreator> fundingAgencyCreator) {
         List<GrantAllOfContributions> result = new ArrayList<>();
         for (DataCiteCreator creator : creators) {
             if (fundingAgencyCreator.isPresent() && fundingAgencyCreator.get() == creator) {
@@ -82,9 +81,8 @@ final class DataCiteGrantMapper {
     }
 
     private static GrantContributionBy grantContributionBy(String doi, String name, String givenName,
-                                                           String familyName, List<
-                                                                   DataCiteNameIdentifier> nameIdentifiers,
-                                                           boolean organizational) {
+            String familyName, List<DataCiteNameIdentifier> nameIdentifiers,
+            boolean organizational) {
         if (organizational) {
             String ror = DataCiteContributionMapper.firstRor(nameIdentifiers);
             Organisation by = new Organisation()

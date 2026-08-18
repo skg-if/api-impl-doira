@@ -21,7 +21,8 @@ class DataCiteAffiliationDeserializer extends JsonDeserializer<DataCiteAffiliati
             return new DataCiteAffiliation(node.asText(), null, null);
         } else if (node.isObject()) {
             return new DataCiteAffiliation(
-                    node.path("name").asText(null), node.path("affiliationIdentifier").asText(null), node.path("affiliationIdentifierScheme").asText(null));
+                    node.path("name").asText(null), node.path("affiliationIdentifier").asText(null), node.path(
+                            "affiliationIdentifierScheme").asText(null));
         }
         return null;
     }

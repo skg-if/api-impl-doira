@@ -43,7 +43,7 @@ public class CrossrefJournalDoiResolver {
      */
     @Inject
     public CrossrefJournalDoiResolver(@RestClient CrossrefClient crossrefClient,
-                                      @ConfigProperty(name = "crossref.mailto") Optional<String> crossrefMailto) {
+            @ConfigProperty(name = "crossref.mailto") Optional<String> crossrefMailto) {
         this.crossrefClient = crossrefClient;
         this.mailto = crossrefMailto.filter(m -> !m.isBlank()).orElse(null);
     }

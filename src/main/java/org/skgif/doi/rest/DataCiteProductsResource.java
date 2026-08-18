@@ -83,7 +83,7 @@ public class DataCiteProductsResource {
      */
     @Inject
     public DataCiteProductsResource(@RestClient DataCiteClient dataCiteClient, DataCiteToSkgIfMapper mapper,
-                                    LocalIdentifiers localIdentifiers, ObjectMapper objectMapper) {
+            LocalIdentifiers localIdentifiers, ObjectMapper objectMapper) {
         this.dataCiteClient = dataCiteClient;
         this.mapper = mapper;
         this.localIdentifiers = localIdentifiers;
@@ -99,27 +99,27 @@ public class DataCiteProductsResource {
     @Path("/{local_identifier: .+}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getProductById(
-                                   @Parameter(
-                                           description = "DOI to look up (with or without the SKG base domain prefix)",
-                                           examples = {
-                                                   @ExampleObject(name = "dataset",
-                                                           value = "10.15151/esrf-dc-2493599001"),
-                                                   @ExampleObject(name = "dataset-2",
-                                                           value = "10.15151/esrf-es-2210534378"),
-                                                   @ExampleObject(name = "software", value = "10.5281/zenodo.21826016"),
-                                                   @ExampleObject(name = "text", value = "10.5281/zenodo.20750072"),
-                                                   @ExampleObject(name = "editor-contributor",
-                                                           value = "10.5281/zenodo.21232199"),
-                                                   @ExampleObject(name = "cites-references",
-                                                           value = "10.5281/zenodo.21914195"),
-                                                   @ExampleObject(name = "relations",
-                                                           value = "10.5281/zenodo.21827103"),
-                                                   @ExampleObject(name = "thesis-funder-id",
-                                                           value = "10.82227/repository.uwtsd.ac.uk.00004342"),
-                                                   @ExampleObject(name = "dataset-funder-no-identifier",
-                                                           value = "10.17630/e449e75a-1ee9-4490-909c-e3913052cce1")
-                                           }) @PathParam("local_identifier") String localIdentifierParam,
-                                   @Context UriInfo uriInfo) {
+            @Parameter(
+                    description = "DOI to look up (with or without the SKG base domain prefix)",
+                    examples = {
+                            @ExampleObject(name = "dataset",
+                                    value = "10.15151/esrf-dc-2493599001"),
+                            @ExampleObject(name = "dataset-2",
+                                    value = "10.15151/esrf-es-2210534378"),
+                            @ExampleObject(name = "software", value = "10.5281/zenodo.21826016"),
+                            @ExampleObject(name = "text", value = "10.5281/zenodo.20750072"),
+                            @ExampleObject(name = "editor-contributor",
+                                    value = "10.5281/zenodo.21232199"),
+                            @ExampleObject(name = "cites-references",
+                                    value = "10.5281/zenodo.21914195"),
+                            @ExampleObject(name = "relations",
+                                    value = "10.5281/zenodo.21827103"),
+                            @ExampleObject(name = "thesis-funder-id",
+                                    value = "10.82227/repository.uwtsd.ac.uk.00004342"),
+                            @ExampleObject(name = "dataset-funder-no-identifier",
+                                    value = "10.17630/e449e75a-1ee9-4490-909c-e3913052cce1")
+                    }) @PathParam("local_identifier") String localIdentifierParam,
+            @Context UriInfo uriInfo) {
         String doi = localIdentifiers.toDoi(localIdentifierParam);
 
         DataCiteDoiData data;
@@ -168,10 +168,10 @@ public class DataCiteProductsResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getProducts(
-                                @QueryParam("filter") String filter,
-                                @QueryParam("page") String page,
-                                @QueryParam("page_size") Integer pageSize,
-                                @Context UriInfo uriInfo) {
+            @QueryParam("filter") String filter,
+            @QueryParam("page") String page,
+            @QueryParam("page_size") Integer pageSize,
+            @Context UriInfo uriInfo) {
 
         String query;
         try {

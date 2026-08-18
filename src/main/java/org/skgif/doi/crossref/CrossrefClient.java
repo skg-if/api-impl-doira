@@ -39,10 +39,10 @@ public interface CrossrefClient {
     @SuppressWarnings("PMD.UseObjectForClearerAPI")
     @GET
     CrossrefWorkListResponse listWorks(
-                                       @QueryParam("filter") String filter,
-                                       @QueryParam("query.title") String queryTitle,
-                                       @QueryParam("query.bibliographic") String queryBibliographic,
-                                       @QueryParam("rows") Integer rows,
-                                       @QueryParam("offset") Integer offset,
-                                       @QueryParam("mailto") String mailto);
+            @QueryParam("filter") String filter,
+            @QueryParam("query.title") String queryTitle,
+            @QueryParam("query.bibliographic") String queryBibliographic,
+            @QueryParam("rows") Integer rows,
+            @QueryParam("offset") Integer offset,
+            @QueryParam("mailto") String mailto);
 }

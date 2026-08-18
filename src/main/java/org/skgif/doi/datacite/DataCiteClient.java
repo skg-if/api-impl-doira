@@ -33,8 +33,8 @@ public interface DataCiteClient {
      */
     @GET
     DataCiteDoiListResponse listDois(
-                                     @QueryParam("prefix") String prefix,
-                                     @QueryParam("query") String query,
-                                     @QueryParam("page[size]") Integer pageSize,
-                                     @QueryParam("page[number]") Integer pageNumber);
+            @QueryParam("prefix") String prefix,
+            @QueryParam("query") String query,
+            @QueryParam("page[size]") Integer pageSize,
+            @QueryParam("page[number]") Integer pageNumber);
 }

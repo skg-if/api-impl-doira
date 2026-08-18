@@ -75,7 +75,7 @@ public class CrossrefGrantsResource {
      */
     @Inject
     public CrossrefGrantsResource(@RestClient CrossrefClient crossrefClient, CrossrefToSkgIfMapper mapper,
-                                  LocalIdentifiers localIdentifiers, ObjectMapper objectMapper) {
+            LocalIdentifiers localIdentifiers, ObjectMapper objectMapper) {
         this.crossrefClient = crossrefClient;
         this.mapper = mapper;
         this.localIdentifiers = localIdentifiers;
@@ -91,11 +91,11 @@ public class CrossrefGrantsResource {
     @Path("/{local_identifier: .+}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getGrantById(
-                                 @Parameter(description = "DOI to look up (with or without the SKG base domain prefix)",
-                                         examples = {
-                                                 @ExampleObject(name = "grant", value = "10.35802/218300")
-                                         }) @PathParam("local_identifier") String localIdentifierParam,
-                                 @Context UriInfo uriInfo) {
+            @Parameter(description = "DOI to look up (with or without the SKG base domain prefix)",
+                    examples = {
+                            @ExampleObject(name = "grant", value = "10.35802/218300")
+                    }) @PathParam("local_identifier") String localIdentifierParam,
+            @Context UriInfo uriInfo) {
         String doi = localIdentifiers.toDoi(localIdentifierParam);
 
         CrossrefWork work;
@@ -145,10 +145,10 @@ public class CrossrefGrantsResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getGrants(
-                              @QueryParam("filter") String filter,
-                              @QueryParam("page") String page,
-                              @QueryParam("page_size") Integer pageSize,
-                              @Context UriInfo uriInfo) {
+            @QueryParam("filter") String filter,
+            @QueryParam("page") String page,
+            @QueryParam("page_size") Integer pageSize,
+            @Context UriInfo uriInfo) {
 
         CrossrefFilters.ParsedFilter parsed;
         try {

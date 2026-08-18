@@ -77,7 +77,7 @@ public class DataCiteGrantsResource {
      */
     @Inject
     public DataCiteGrantsResource(@RestClient DataCiteClient dataCiteClient, DataCiteToSkgIfMapper mapper,
-                                  LocalIdentifiers localIdentifiers, ObjectMapper objectMapper) {
+            LocalIdentifiers localIdentifiers, ObjectMapper objectMapper) {
         this.dataCiteClient = dataCiteClient;
         this.mapper = mapper;
         this.localIdentifiers = localIdentifiers;
@@ -93,11 +93,11 @@ public class DataCiteGrantsResource {
     @Path("/{local_identifier: .+}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getGrantById(
-                                 @Parameter(description = "DOI to look up (with or without the SKG base domain prefix)",
-                                         examples = {
-                                                 @ExampleObject(name = "award", value = "10.71707/r3sy-7371")
-                                         }) @PathParam("local_identifier") String localIdentifierParam,
-                                 @Context UriInfo uriInfo) {
+            @Parameter(description = "DOI to look up (with or without the SKG base domain prefix)",
+                    examples = {
+                            @ExampleObject(name = "award", value = "10.71707/r3sy-7371")
+                    }) @PathParam("local_identifier") String localIdentifierParam,
+            @Context UriInfo uriInfo) {
         String doi = localIdentifiers.toDoi(localIdentifierParam);
 
         DataCiteDoiData data;
@@ -146,10 +146,10 @@ public class DataCiteGrantsResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getGrants(
-                              @QueryParam("filter") String filter,
-                              @QueryParam("page") String page,
-                              @QueryParam("page_size") Integer pageSize,
-                              @Context UriInfo uriInfo) {
+            @QueryParam("filter") String filter,
+            @QueryParam("page") String page,
+            @QueryParam("page_size") Integer pageSize,
+            @Context UriInfo uriInfo) {
 
         String query;
         try {
