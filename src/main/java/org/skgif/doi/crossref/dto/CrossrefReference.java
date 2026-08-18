@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record CrossrefReference(
-                                @JsonProperty("DOI") String doi,
-                                @JsonProperty("key") String key,
-                                @JsonProperty("unstructured") String unstructured) {
+        @JsonProperty("DOI") String doi,
+        @JsonProperty("key") String key,
+        @JsonProperty("unstructured") String unstructured) {
 }

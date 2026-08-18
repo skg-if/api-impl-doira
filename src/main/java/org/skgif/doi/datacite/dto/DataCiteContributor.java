@@ -5,11 +5,11 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record DataCiteContributor(
-                                  String name,
-                                  String givenName,
-                                  String familyName,
-                                  String nameType,
-                                  String contributorType,
-                                  List<DataCiteNameIdentifier> nameIdentifiers,
-                                  List<DataCiteAffiliation> affiliation) {
+        String name,
+        String givenName,
+        String familyName,
+        String nameType,
+        String contributorType,
+        List<DataCiteNameIdentifier> nameIdentifiers,
+        List<DataCiteAffiliation> affiliation) {
 }

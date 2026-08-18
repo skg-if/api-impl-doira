@@ -17,9 +17,9 @@ package org.skgif.doi.medra.dto;
  *                           personName
  */
 public record MedraContributor(
-                               String role,
-                               String namesBeforeKey,
-                               String keyNames,
-                               String personName,
-                               String personNameInverted) {
+        String role,
+        String namesBeforeKey,
+        String keyNames,
+        String personName,
+        String personNameInverted) {
 }

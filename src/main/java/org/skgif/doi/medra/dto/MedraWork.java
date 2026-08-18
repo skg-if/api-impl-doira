@@ -35,14 +35,14 @@ import java.util.List;
  *                        JournalIssue/ContentItem - {@code DOISerialArticleWork} or {@code DOISerialArticleVersion}
  */
 public record MedraWork(
-                        String doi,
-                        List<MedraTitle> titles,
-                        List<MedraContributor> contributors,
-                        String abstractText,
-                        String publicationDate,
-                        String journalTitle,
-                        List<String> issns,
-                        String registrantName,
-                        String publisherName,
-                        String workElementName) {
+        String doi,
+        List<MedraTitle> titles,
+        List<MedraContributor> contributors,
+        String abstractText,
+        String publicationDate,
+        String journalTitle,
+        List<String> issns,
+        String registrantName,
+        String publisherName,
+        String workElementName) {
 }

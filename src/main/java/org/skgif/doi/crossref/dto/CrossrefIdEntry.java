@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record CrossrefIdEntry(
-                              String id,
-                              @JsonProperty("id-type") String idType,
-                              @JsonProperty("asserted-by") String assertedBy) {
+        String id,
+        @JsonProperty("id-type") String idType,
+        @JsonProperty("asserted-by") String assertedBy) {
 }

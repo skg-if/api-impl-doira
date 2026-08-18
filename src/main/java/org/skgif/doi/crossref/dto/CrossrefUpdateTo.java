@@ -16,8 +16,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record CrossrefUpdateTo(
-                               CrossrefDate updated,
-                               @JsonProperty("DOI") String doi,
-                               String type,
-                               String label) {
+        CrossrefDate updated,
+        @JsonProperty("DOI") String doi,
+        String type,
+        String label) {
 }

@@ -21,12 +21,12 @@ import java.util.List;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record CrossrefProject(
-                              @JsonProperty("project-title") List<CrossrefProjectTitle> projectTitle,
-                              @JsonProperty("project-description") List<CrossrefProjectDescription> projectDescription,
-                              List<CrossrefInvestigator> investigator,
-                              @JsonProperty("lead-investigator") List<CrossrefInvestigator> leadInvestigator,
-                              @JsonProperty("award-amount") CrossrefAmount awardAmount,
-                              @JsonProperty("award-start") CrossrefDate awardStart,
-                              @JsonProperty("award-end") CrossrefDate awardEnd,
-                              List<CrossrefFunding> funding) {
+        @JsonProperty("project-title") List<CrossrefProjectTitle> projectTitle,
+        @JsonProperty("project-description") List<CrossrefProjectDescription> projectDescription,
+        List<CrossrefInvestigator> investigator,
+        @JsonProperty("lead-investigator") List<CrossrefInvestigator> leadInvestigator,
+        @JsonProperty("award-amount") CrossrefAmount awardAmount,
+        @JsonProperty("award-start") CrossrefDate awardStart,
+        @JsonProperty("award-end") CrossrefDate awardEnd,
+        List<CrossrefFunding> funding) {
 }

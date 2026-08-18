@@ -6,8 +6,8 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record CrossrefInvestigator(
-                                   String given,
-                                   String family,
-                                   @JsonProperty("ORCID") String orcid,
-                                   List<CrossrefAffiliation> affiliation) {
+        String given,
+        String family,
+        @JsonProperty("ORCID") String orcid,
+        List<CrossrefAffiliation> affiliation) {
 }

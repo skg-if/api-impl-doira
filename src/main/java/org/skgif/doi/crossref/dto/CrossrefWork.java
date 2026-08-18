@@ -2,6 +2,7 @@ package org.skgif.doi.crossref.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 import java.util.Map;
 
@@ -48,33 +49,33 @@ import java.util.Map;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record CrossrefWork(
-                           @JsonProperty("DOI") String doi,
-                           @JsonProperty("URL") String url,
-                           String type,
-                           String publisher,
-                           List<String> title,
-                           List<String> subtitle,
-                           @JsonProperty("container-title") List<String> containerTitle,
-                           String page,
-                           String volume,
-                           String issue,
-                           @JsonProperty("abstract") String abstractText,
-                           List<String> subject,
-                           @JsonProperty("ISSN") List<String> issn,
-                           List<CrossrefContributor> author,
-                           List<CrossrefContributor> editor,
-                           List<CrossrefFunder> funder,
-                           List<CrossrefLicense> license,
-                           List<CrossrefReference> reference,
-                           Map<String, List<CrossrefIdEntry>> relation,
-                           CrossrefDate issued,
-                           CrossrefDate created,
-                           CrossrefDate deposited,
-                           @JsonProperty("published-print") CrossrefDate publishedPrint,
-                           @JsonProperty("published-online") CrossrefDate publishedOnline,
-                           CrossrefDate accepted,
-                           @JsonProperty("update-to") List<CrossrefUpdateTo> updateTo,
-                           String award,
-                           List<CrossrefProject> project,
-                           CrossrefResource resource) {
+        @JsonProperty("DOI") String doi,
+        @JsonProperty("URL") String url,
+        String type,
+        String publisher,
+        List<String> title,
+        List<String> subtitle,
+        @JsonProperty("container-title") List<String> containerTitle,
+        String page,
+        String volume,
+        String issue,
+        @JsonProperty("abstract") String abstractText,
+        List<String> subject,
+        @JsonProperty("ISSN") List<String> issn,
+        List<CrossrefContributor> author,
+        List<CrossrefContributor> editor,
+        List<CrossrefFunder> funder,
+        List<CrossrefLicense> license,
+        List<CrossrefReference> reference,
+        Map<String, List<CrossrefIdEntry>> relation,
+        CrossrefDate issued,
+        CrossrefDate created,
+        CrossrefDate deposited,
+        @JsonProperty("published-print") CrossrefDate publishedPrint,
+        @JsonProperty("published-online") CrossrefDate publishedOnline,
+        CrossrefDate accepted,
+        @JsonProperty("update-to") List<CrossrefUpdateTo> updateTo,
+        String award,
+        List<CrossrefProject> project,
+        CrossrefResource resource) {
 }
