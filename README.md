@@ -72,6 +72,17 @@ mvn package
 java -jar target/quarkus-app/quarkus-run.jar
 ```
 
+## Docker image
+
+CI publishes a JVM-mode image to GitHub Container Registry on every push to `main`:
+
+```bash
+docker pull ghcr.io/skg-if/api-impl-doira:latest
+docker run -p 8080:8080 ghcr.io/skg-if/api-impl-doira:latest
+```
+
+To build it locally instead, see [DEPLOYMENT.md](DEPLOYMENT.md#image).
+
 ## Testing
 
 ```bash

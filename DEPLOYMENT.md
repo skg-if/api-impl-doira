@@ -5,10 +5,12 @@ This documents how to run `puma-skg-if-api` for free on the
 **Cloud Container Platform** (OKD) service, per the
 *EOSC EU Node Tools Hub User Guide v2.1*.
 
-Building and publishing the container image is currently a manual step (see [Image](#image)) -
-there is no CI job wired up for it. Everything from there on is a manual sequence of steps in the
-Tools Hub web UI - there is no API to script this against, so this is a runbook, not
-something that can be automated from this repo.
+CI now automatically builds and publishes `ghcr.io/skg-if/api-impl-doira:latest` on every push to
+`main` (see [Image](#image)) - useful if you just want to `docker pull` and run the app. Getting
+it deployed on EOSC's Tools Hub specifically still needs the manual sequence of steps below in the
+Tools Hub web UI, including a separate push to ESRF's registry (see [Image](#image)) - there is no
+API to script that part against, so it remains a runbook, not something that can be automated from
+this repo.
 
 ## Prerequisites
 
@@ -27,14 +29,21 @@ something that can be automated from this repo.
 
 ## Image
 
-No CI job builds or pushes this image yet - build and push it manually. To build and test
-locally:
+CI ([.github/workflows/maven-build.yml](.github/workflows/maven-build.yml)) builds and pushes
+`ghcr.io/skg-if/api-impl-doira:latest` (and a `:<short-sha>` tag) on every push to `main` - no
+manual step needed for that image. EOSC's Tools Hub, however, needs the image on ESRF's own
+GitLab registry (see [Prerequisites](#prerequisites)); that push is still manual. To build and
+test locally, or to push to ESRF's registry:
 
 ```bash
 mvn package
 docker build -f src/main/docker/Dockerfile.jvm -t puma-skg-if-api:local .
 docker run -p 8080:8080 puma-skg-if-api:local
 curl "http://localhost:8080/skg-if/api/datacite/products?page_size=1"
+
+# to push to ESRF's registry instead of/in addition to running locally:
+docker tag puma-skg-if-api:local registry.esrf.fr:5050/puma-public/puma-skg-if-api:latest
+docker push registry.esrf.fr:5050/puma-public/puma-skg-if-api:latest
 ```
 
 ## Tools Hub runbook
