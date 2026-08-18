@@ -39,6 +39,11 @@ jobs:
             ./mvnw -B package
           fi
 
+      - name: Check Spotless formatting (report-only until intellij-style.xml/checkstyle.xml
+          settings are confirmed - see pom.xml)
+        continue-on-error: true
+        run: ./mvnw -B spotless:check
+
       - uses: actions/upload-artifact@v4
         with:
           name: quarkus-app
