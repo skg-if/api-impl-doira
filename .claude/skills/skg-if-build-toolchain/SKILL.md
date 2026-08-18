@@ -83,6 +83,16 @@ Reserve `clean` for a final verification pass. While iterating, drop it - an
 incremental `mvn -q -B test` reuses already-compiled classes and doesn't reprint
 compiler/plugin setup output for files that haven't changed.
 
+### Trust the exit code
+
+A `0` exit from `mvn` (package/test/`pmd:check`/etc.) is sufficient proof the goal
+ran and passed - report success and move on. Don't additionally open
+`target/pmd.xml`, `target/surefire-reports/*.xml`, or other generated report files
+just to reconfirm what the exit code already established, even under `-q` where
+per-file summary lines are suppressed. Only dig into those report files when the
+exit code is non-zero (to find the failure), or when the task itself asks for the
+report's content (e.g. counting violations).
+
 When iterating on one class rather than validating the whole change, scope the run
 instead of re-running everything - reach for this by default whenever the change
 is localized to one mapper/resource, not just when a full run already failed:

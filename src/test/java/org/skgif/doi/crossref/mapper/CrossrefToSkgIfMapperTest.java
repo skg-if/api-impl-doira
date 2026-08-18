@@ -36,6 +36,7 @@ import org.skgif.doi.util.LocalIdentifiers;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -640,7 +641,7 @@ class CrossrefToSkgIfMapperTest {
                 .filter(c -> "Halim".equals(((PersonLite) ((GrantContribution) c).getBy()).getFamilyName()))
                 .findFirst()
                 .orElseThrow();
-        assertEquals(List.of(GrantContribution.RolesEnum.LEAD_APPLICANT), lead.getRoles());
+        assertEquals(Collections.singletonList(GrantContribution.RolesEnum.LEAD_APPLICANT), lead.getRoles());
         PersonLite leadBy = (PersonLite) lead.getBy();
         assertEquals("orcid", leadBy.getIdentifiers().getFirst().getScheme());
         assertEquals("0000-0001-9773-0023", leadBy.getIdentifiers().getFirst().getValue());
@@ -649,7 +650,7 @@ class CrossrefToSkgIfMapperTest {
                 .filter(c -> "Caldas".equals(((PersonLite) ((GrantContribution) c).getBy()).getFamilyName()))
                 .findFirst()
                 .orElseThrow();
-        assertEquals(List.of(GrantContribution.RolesEnum.CO_APPLICANT), coApplicant.getRoles());
+        assertEquals(Collections.singletonList(GrantContribution.RolesEnum.CO_APPLICANT), coApplicant.getRoles());
         Organisation coApplicantAffiliation = (Organisation) coApplicant.getDeclaredAffiliations().getFirst();
         assertEquals("ror", coApplicantAffiliation.getIdentifiers().getFirst().getScheme());
         assertEquals("013meh722", coApplicantAffiliation.getIdentifiers().getFirst().getValue());

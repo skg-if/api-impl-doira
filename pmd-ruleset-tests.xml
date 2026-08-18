@@ -65,15 +65,6 @@
       a design smell to split up.
     -->
     <exclude name="CouplingBetweenObjects"/>
-    <!--
-      2 hits, both `List.of(GrantContribution.RolesEnum.LEAD_APPLICANT)`/`List.of(...CO_APPLICANT)`
-      in CrossrefToSkgIfMapperTest - single-argument calls that bind unambiguously to List's
-      fixed-arity `of(E)` overload, not its varargs one, so there's no real ambiguity to flag. Same
-      class of false positive pmd-ruleset.xml's own UnusedPrivateMethod exclusion above already
-      documents: PMD's type resolution struggling with the openapi-generated RolesEnum type on the
-      compile classpath.
-    -->
-    <exclude name="ConfusingArgumentToVarargsMethod"/>
   </rule>
 
 </ruleset>
