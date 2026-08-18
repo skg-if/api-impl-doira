@@ -166,7 +166,7 @@ class ProductsGoldenTest {
      * DOI 10.5281/zenodo.21914195 - a real Zenodo deposit whose relatedIdentifiers mix both
      * DataCite citation-like relation types ("Cites" and "References"), proving both feed
      * related_products.cites at the golden-output level (see {@code
-     * DataCiteToSkgIfMapperTest.mapsBothCitesAndReferencesRelationTypesIntoTheSameCitesArray}).
+     * DataCiteToSkgIfMapperRelatedProductsTest.mapsBothCitesAndReferencesRelationTypesIntoTheSameCitesArray}).
      *
      * @throws IOException if a fixture resource cannot be read
      */
@@ -180,8 +180,8 @@ class ProductsGoldenTest {
      * DOI 10.5281/zenodo.21827103 - a real Zenodo dataset whose relatedIdentifiers exercise
      * "IsSupplementedBy", "IsDocumentedBy", "IsNewVersionOf", and "IsPartOf" - each landing in
      * its own related_products field - alongside a decoy "IsSupplementTo" and an unmodeled
-     * "HasVersion" (see {@code DataCiteToSkgIfMapperTest.mapsIsSupplementedByIsDocumentedByAndIsNewVersionOf}
-     * et al.).
+     * "HasVersion" (see {@code
+     * DataCiteToSkgIfMapperRelatedProductsTest.mapsIsSupplementedByIsDocumentedByAndIsNewVersionOf} et al.).
      *
      * @throws IOException if a fixture resource cannot be read
      */

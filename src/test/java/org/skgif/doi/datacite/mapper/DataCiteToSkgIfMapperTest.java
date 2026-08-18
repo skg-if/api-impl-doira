@@ -8,12 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
-import org.skgif.doi.datacite.dto.DataCiteDate;
 import org.skgif.doi.datacite.dto.DataCiteDoiResponse;
 import org.skgif.doi.datacite.dto.DataCiteFundingReference;
 import org.skgif.doi.generated.model.DataSourceLite;
-import org.skgif.doi.generated.model.Grant;
-import org.skgif.doi.generated.model.GrantContribution;
 import org.skgif.doi.generated.model.GrantLite;
 import org.skgif.doi.generated.model.Organisation;
 import org.skgif.doi.generated.model.PersonLite;
@@ -21,7 +18,6 @@ import org.skgif.doi.generated.model.Product;
 import org.skgif.doi.generated.model.ProductContribution;
 import org.skgif.doi.generated.model.ProductManifestation;
 import org.skgif.doi.generated.model.ProductManifestationAccessRights;
-import org.skgif.doi.generated.model.ProductsRelatedItem;
 import org.skgif.doi.generated.model.Topic;
 import org.skgif.doi.util.LocalIdentifiers;
 import java.io.IOException;
@@ -39,26 +35,11 @@ class DataCiteToSkgIfMapperTest {
         return mapper.toProduct(readFixture(resourceName));
     }
 
-    private Grant mapGrantFixture(String resourceName) throws IOException {
-        return mapper.toGrant(readFixture(resourceName));
-    }
-
     private DataCiteAttributes readFixture(String resourceName) throws IOException {
         try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
             DataCiteDoiResponse response = objectMapper.readValue(in, DataCiteDoiResponse.class);
             return response.data().attributes();
         }
-    }
-
-    private static DataCiteAttributes withLifecycleDates(DataCiteAttributes attributes, String created,
-            String registered, String updated, String published) {
-        return new DataCiteAttributes(
-                attributes.doi(), attributes.titles(), attributes.creators(), attributes.contributors(),
-                attributes.publisher(), attributes.publicationYear(), attributes.subjects(), attributes.dates(),
-                created, registered, updated, published,
-                attributes.language(), attributes.types(), attributes.rightsList(), attributes.descriptions(),
-                attributes.relatedIdentifiers(), attributes.fundingReferences(), attributes.version(),
-                attributes.url());
     }
 
     @Test
@@ -237,87 +218,6 @@ class DataCiteToSkgIfMapperTest {
         assertTrue(funding.getFundingAgency().getLocalIdentifier().startsWith("otf___"));
     }
 
-    @Test
-    void fallsBackToTopLevelAttributesWhenDatesArrayIsEmpty() throws IOException {
-        // "dates": [] (not absent, but genuinely empty) - unlike every other fixture, which has
-        // at least one date. Every DataCite record still carries the system-generated
-        // created/registered/updated/published attributes though, and those are the only
-        // real-world source for creation/deposit/modified/publication in practice: no fixture's
-        // dates[] ever has a Created/Submitted/Updated entry.
-        var attributes = readFixture("datacite-thesis-crossref-funder-id-4342.json");
-
-        Product product = mapper.toProduct(attributes);
-
-        var dates = product.getManifestations().getFirst().getDates();
-        assertEquals(List.of(attributes.created()), dates.getCreation());
-        assertEquals(List.of(attributes.registered()), dates.getDeposit());
-        assertEquals(List.of(attributes.updated()), dates.getModified());
-        assertEquals(List.of(attributes.published()), dates.getPublication());
-    }
-
-    @Test
-    void doesNotFabricateManifestationDatesWhenNoDateSourceExistsAtAll() throws IOException {
-        var attributes = withLifecycleDates(
-                readFixture("datacite-thesis-crossref-funder-id-4342.json"), null, null, null, null);
-
-        Product product = mapper.toProduct(attributes);
-
-        assertNull(product.getManifestations().getFirst().getDates());
-    }
-
-    @Test
-    void explicitDatesEntryWinsOverTopLevelAttributeFallback() throws IOException {
-        var attributes = readFixture("datacite-esrf-dc-2493599001.json");
-        var created = new DataCiteDate("2020-01-01", "Created");
-        attributes.dates().add(created);
-        assertNotEquals(created.date(), attributes.created());
-
-        Product product = mapper.toProduct(attributes);
-
-        assertEquals(List.of(created.date()), product.getManifestations().getFirst().getDates().getCreation());
-    }
-
-    @Test
-    void dropsUnrecognizedDateTypesLikeCoverage() throws IOException {
-        // "Coverage" is a real DataCite 4.7 dateType (the temporal span a resource's *content*
-        // covers, not an event in the resource's own lifecycle) with no SKG-IF equivalent - it
-        // must be silently dropped, same as "Other", and must not by itself trigger a non-null
-        // dates object.
-        var attributes = withLifecycleDates(
-                readFixture("datacite-thesis-crossref-funder-id-4342.json"), null, null, null, null);
-        var coverage = new DataCiteDate("1990/2000", "Coverage");
-        attributes.dates().add(coverage);
-
-        Product product = mapper.toProduct(attributes);
-
-        assertNull(product.getManifestations().getFirst().getDates());
-    }
-
-    @Test
-    void mapsAvailableToEmbargoWhenItDiffersFromEveryOtherRecordDate() throws IOException {
-        // datacite-esrf-es-2210534378.json is a genuine embargo case: Collected 2025-09-05,
-        // Issued 2028, Available 2028-09-06 - none of those coincide, so Available is a real
-        // embargo end date.
-        Product product = mapFixture("datacite-esrf-es-2210534378.json");
-
-        var dates = product.getManifestations().getFirst().getDates();
-        assertEquals(List.of("2028-09-06"), dates.getEmbargo());
-        assertNull(dates.getAccess());
-    }
-
-    @Test
-    void dropsAvailableWhenItMatchesAnotherRecordDateOnTheSameDay() throws IOException {
-        // datacite-dataset-funder-no-identifier-e449e75a.json has a single Available date,
-        // 2024-05-07, which is the same day as the top-level created/registered timestamps
-        // (2024-05-07T10:07:27.000Z) - that's "published and immediately available," not an
-        // embargo, so it must be dropped rather than surfacing as access or embargo.
-        Product product = mapFixture("datacite-dataset-funder-no-identifier-e449e75a.json");
-
-        var dates = product.getManifestations().getFirst().getDates();
-        assertNull(dates.getEmbargo());
-        assertNull(dates.getAccess());
-    }
-
     // datacite-dataset-funder-no-identifier-e449e75a.json: a real University of St Andrews
     // dataset (DOI 10.17630/e449e75a-1ee9-4490-909c-e3913052cce1) whose 3 funding references
     // (EPSRC x2, UK Research and Innovation x1) carry funderName/awardNumber/awardTitle but no
@@ -346,9 +246,7 @@ class DataCiteToSkgIfMapperTest {
     // datacite-zenodo-editor-21232199.json: a real Zenodo journal-article deposit whose
     // contributor carries contributorType "Editor" - unlike datacite-esrf-es-2210534378.json's
     // contributors ("DataCollector"/"ProjectManager", both of which fall back to author), this
-    // is the first fixture to exercise the editor-role mapping. It also has relatedIdentifiers
-    // of types the mapper doesn't model ("HasVersion", "IsPartOf") and no "Cites"/"IsCitedBy" -
-    // related_products must stay unset rather than surfacing either of them.
+    // is the first fixture to exercise the editor-role mapping.
 
     @Test
     void mapsEditorContributorTypeToEditorRole() throws IOException {
@@ -364,178 +262,5 @@ class DataCiteToSkgIfMapperTest {
         PersonLite editorBy = (PersonLite) editor.getBy();
         assertEquals("Dr. Ramesh V. Bhole", editorBy.getFamilyName());
         assertTrue(editorBy.getLocalIdentifier().startsWith("otf___"));
-    }
-
-    @Test
-    void surfacesIsPartOfButNotUnmodeledHasVersion() throws IOException {
-        // relatedIdentifiers has a "HasVersion" DOI (unmodeled - stays out entirely) and an
-        // "IsPartOf" ISSN, which now does surface as related_products.is_part_of.
-        Product product = mapFixture("datacite-zenodo-editor-21232199.json");
-
-        assertNull(product.getRelatedProducts().getCites());
-        assertEquals(1, product.getRelatedProducts().getIsPartOf().size());
-        ProductsRelatedItem isPartOf = (ProductsRelatedItem) product.getRelatedProducts().getIsPartOf().getFirst();
-        assertEquals("issn", isPartOf.getIdentifiers().getFirst().getScheme());
-        assertEquals("2230-9578", isPartOf.getIdentifiers().getFirst().getValue());
-    }
-
-    // datacite-zenodo-cites-references-21914195.json: a real Zenodo deposit (DOI
-    // 10.5281/zenodo.21914195) whose relatedIdentifiers mix DataCite's two citation-like
-    // relation types - "Cites" and "References" - alongside "IsPartOf"/"IsDocumentedBy" (now
-    // modeled too, into their own fields - see the zenodo.21827103 block below) and
-    // "IsDerivedFrom"/"HasVersion" (still unmodeled). Both citation types must land in the
-    // same related_products.cites array, since SKG-IF has no separate field for "References".
-
-    @Test
-    void mapsBothCitesAndReferencesRelationTypesIntoTheSameCitesArray() throws IOException {
-        Product product = mapFixture("datacite-zenodo-cites-references-21914195.json");
-
-        // 2 "Cites" entries + 1 "References" entry = 3 cites; "IsDerivedFrom"/"HasVersion"
-        // (still unmodeled) must not add any more, and "IsPartOf"/"IsDocumentedBy" land in
-        // their own fields rather than here.
-        final int expectedCitesCount = 3;
-        assertEquals(expectedCitesCount, product.getRelatedProducts().getCites().size());
-        boolean hasReferencesEntry = product.getRelatedProducts().getCites().stream()
-                .anyMatch(c -> "https://doi.org/10.5281/zenodo.21913675"
-                        .equals(((ProductsRelatedItem) c).getLocalIdentifier()));
-        assertTrue(hasReferencesEntry);
-    }
-
-    @Test
-    void mapsNonDoiRelatedIdentifierToOtfId() throws IOException {
-        // The "Cites" entry with relatedIdentifierType "ISBN" (978-963-281-509-1) has no DOI,
-        // so it must fall back to an otf id rather than being dropped or mis-typed as a DOI.
-        Product product = mapFixture("datacite-zenodo-cites-references-21914195.json");
-
-        ProductsRelatedItem isbnCite = (ProductsRelatedItem) product.getRelatedProducts().getCites().stream()
-                .filter(c -> ((ProductsRelatedItem) c).getLocalIdentifier().startsWith("otf___"))
-                .findFirst()
-                .orElseThrow();
-        assertEquals("isbn", isbnCite.getIdentifiers().getFirst().getScheme());
-        assertEquals("978-963-281-509-1", isbnCite.getIdentifiers().getFirst().getValue());
-    }
-
-    // datacite-zenodo-relations-21827103.json: a real Zenodo dataset (DOI
-    // 10.5281/zenodo.21827103) whose relatedIdentifiers exercise 4 relation types the mapper
-    // didn't previously model - "IsSupplementedBy", "IsDocumentedBy", "IsNewVersionOf", and
-    // "IsPartOf" - each landing in its own related_products field rather than "cites". It also
-    // carries a decoy, "IsSupplementTo" (the inverse of "IsSupplementedBy", easy to confuse by
-    // name), and "HasVersion", neither of which the mapper models - both must stay excluded.
-
-    @Test
-    void mapsIsSupplementedByIsDocumentedByAndIsNewVersionOf() throws IOException {
-        Product product = mapFixture("datacite-zenodo-relations-21827103.json");
-        var related = product.getRelatedProducts();
-
-        assertEquals(1, related.getIsSupplementedBy().size());
-        ProductsRelatedItem isSupplementedBy = (ProductsRelatedItem) related.getIsSupplementedBy().getFirst();
-        assertEquals("url", isSupplementedBy.getIdentifiers().getFirst().getScheme());
-        assertEquals("https://github.com/vicgos/MICRO", isSupplementedBy.getIdentifiers().getFirst().getValue());
-
-        assertEquals(1, related.getIsDocumentedBy().size());
-        assertEquals("handle",
-                ((ProductsRelatedItem) related.getIsDocumentedBy().getFirst()).getIdentifiers().getFirst().getScheme());
-
-        assertEquals(2, related.getIsNewVersionOf().size());
-        boolean hasNsdVersion = related.getIsNewVersionOf().stream()
-                .anyMatch(r -> "10.18712/NSD-NSD2457-V3"
-                        .equals(((ProductsRelatedItem) r).getIdentifiers().getFirst().getValue()));
-        assertTrue(hasNsdVersion);
-    }
-
-    @Test
-    void mapsIsPartOfWithFullDoiLocalIdentifier() throws IOException {
-        Product product = mapFixture("datacite-zenodo-relations-21827103.json");
-        var related = product.getRelatedProducts();
-
-        assertEquals(2, related.getIsPartOf().size());
-        boolean hasKnownPart = related.getIsPartOf().stream()
-                .anyMatch(r -> "https://doi.org/10.5281/zenodo.21827101"
-                        .equals(((ProductsRelatedItem) r).getLocalIdentifier()));
-        assertTrue(hasKnownPart);
-    }
-
-    @Test
-    void doesNotConfuseIsSupplementToWithIsSupplementedByOrSurfaceHasVersion() throws IOException {
-        Product product = mapFixture("datacite-zenodo-relations-21827103.json");
-        var related = product.getRelatedProducts();
-
-        // "IsSupplementTo" and "IsSupplementedBy" both target the same identifier (10852/56047)
-        // in this fixture, so a substring/prefix mixup would silently double it into
-        // is_supplemented_by - it must appear there exactly once, from "IsSupplementedBy" only.
-        assertEquals(1, related.getIsSupplementedBy().size());
-        // Neither "IsSupplementTo" nor "HasVersion" have a related_products field at all -
-        // cites/citedBy stay null, not just empty.
-        assertNull(related.getCites());
-    }
-
-    // datacite-award-r3sy-7371.json: a real DataCite Award record (resourceTypeGeneral: "Award")
-    // - the grant itself, not a product with a funding reference. Creator = the funding body (The
-    // Navigation Fund, with ROR); contributors = a personal project leader (ORCID) and a
-    // beneficiary organisation (Code for Science & Society, with ROR).
-
-    @Test
-    void toGrant_mapsCoreFieldsFromRealAwardRecord() throws IOException {
-        Grant grant = mapGrantFixture("datacite-award-r3sy-7371.json");
-
-        assertEquals("https://doi.org/10.71707/r3sy-7371", grant.getLocalIdentifier());
-        assertEquals("grant", grant.getEntityType().toString());
-        assertEquals(1, grant.getIdentifiers().size());
-        assertEquals("doi", grant.getIdentifiers().getFirst().getScheme());
-        assertEquals("10.71707/r3sy-7371", grant.getIdentifiers().getFirst().getValue());
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    void toGrant_mapsTitlesAndAbstracts() throws IOException {
-        Grant grant = mapGrantFixture("datacite-award-r3sy-7371.json");
-
-        Map<String, String> titles = (Map<String, String>) grant.getTitles();
-        assertTrue(titles.get("en").contains("2i2c"));
-
-        Map<String, String> abstracts = (Map<String, String>) grant.getAbstracts();
-        assertTrue(abstracts.get("en").contains("open cloud service"));
-    }
-
-    @Test
-    void toGrant_derivesFundingAgencyFromRorBearingCreator() throws IOException {
-        Grant grant = mapGrantFixture("datacite-award-r3sy-7371.json");
-
-        assertEquals("The Navigation Fund", grant.getFundingAgency().getName());
-        assertEquals("ror", grant.getFundingAgency().getIdentifiers().getFirst().getScheme());
-        assertEquals("00mgfk810", grant.getFundingAgency().getIdentifiers().getFirst().getValue());
-    }
-
-    @Test
-    void toGrant_mapsPersonalContributorAsContribution() throws IOException {
-        Grant grant = mapGrantFixture("datacite-award-r3sy-7371.json");
-
-        // The only creator was consumed as the funding agency, so contributions holds just the
-        // two contributors, in fixture order: the personal project leader first.
-        assertEquals(2, grant.getContributions().size());
-        GrantContribution contribution = (GrantContribution) grant.getContributions().getFirst();
-        PersonLite by = (PersonLite) contribution.getBy();
-        assertEquals("Holdgraf, Chris", by.getName());
-        assertEquals("Chris", by.getGivenName());
-        assertEquals("Holdgraf", by.getFamilyName());
-        assertEquals("orcid", by.getIdentifiers().getFirst().getScheme());
-        assertEquals("0000-0002-9420-9301", by.getIdentifiers().getFirst().getValue());
-    }
-
-    @Test
-    void toGrant_mapsOrganisationalContributorAsContributionAndBeneficiary() throws IOException {
-        Grant grant = mapGrantFixture("datacite-award-r3sy-7371.json");
-
-        GrantContribution contribution = (GrantContribution) grant.getContributions().get(1);
-        Organisation by = (Organisation) contribution.getBy();
-        assertEquals("Code for Science & Society", by.getName());
-        assertEquals("organisation", by.getEntityType());
-        assertEquals("ror", by.getIdentifiers().getFirst().getScheme());
-        assertEquals("01dmavx46", by.getIdentifiers().getFirst().getValue());
-
-        assertEquals(1, grant.getBeneficiaries().size());
-        Organisation beneficiary = (Organisation) grant.getBeneficiaries().getFirst();
-        assertEquals("Code for Science & Society", beneficiary.getName());
-        assertEquals("01dmavx46", beneficiary.getIdentifiers().getFirst().getValue());
     }
 }

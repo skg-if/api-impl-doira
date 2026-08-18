@@ -7,7 +7,7 @@
   guessed at.
 - **DataCite's `Other` and `Coverage` `dateType` values** have no SKG-IF equivalent - both are
   absent from `DataCiteManifestationMapper#DATACITE_DATE_TYPE_TO_SKGIF` and silently dropped, same as
-  any other unrecognized `dateType` (see `DataCiteToSkgIfMapperTest.dropsUnrecognizedDateTypesLikeCoverage`).
+  any other unrecognized `dateType` (see `DataCiteToSkgIfMapperDatesTest.dropsUnrecognizedDateTypesLikeCoverage`).
   `Coverage` describes the temporal span covered by the resource's *content* (e.g. a historical
   dataset spanning 1900-1950), not an event in the resource's own lifecycle - conceptually closest
   to `collected`, but SKG-IF has no field for it either.
@@ -15,7 +15,7 @@
   timestamps, distinct from the researcher-asserted `dates[]` array - see `DataCiteAttributes`)
   are read by the mapper only as *fallbacks* for `creation`/`deposit`/`modified`/`publication`
   respectively: an explicit `dates[]` entry always wins when both exist (see
-  `DataCiteToSkgIfMapperTest.explicitDatesEntryWinsOverTopLevelAttributeFallback`). In practice
+  `DataCiteToSkgIfMapperDatesTest.explicitDatesEntryWinsOverTopLevelAttributeFallback`). In practice
   they're the primary source, not a rare fallback - no fixture's `dates[]` has ever carried a
   `Created`/`Submitted`/`Updated` entry.
 - **DataCite's `fundingReferences[].funderIdentifierType`** has no literal `"DOI"` value in its
