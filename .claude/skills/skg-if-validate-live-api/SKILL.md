@@ -1,6 +1,6 @@
 ---
 name: skg-if-validate-live-api
-description: Run scripts/ci/validate-live-endpoints.sh locally to reproduce the GitHub/GitLab "validate-live-api" job — validates the live DataCite/Crossref products/grants endpoints against the OpenAPI spec via a Stoplight Prism proxy in front of the built app. Use when a mapper/OpenAPI-spec change needs sanity-checking against real DataCite/Crossref responses, or to reproduce a CI failure from that job before pushing.
+description: Run scripts/ci/validate-live-endpoints.sh locally to reproduce the GitHub Actions "validate-live-api" job — validates the live DataCite/Crossref products/grants endpoints against the OpenAPI spec via a Stoplight Prism proxy in front of the built app. Use when a mapper/OpenAPI-spec change needs sanity-checking against real DataCite/Crossref responses, or to reproduce a CI failure from that job before pushing.
 ---
 
 # Running the live-endpoint validation script locally
@@ -16,8 +16,8 @@ directly with `java`, `node`/`npx`, `jq`, and `curl` already on `PATH` from that
 package manager.
 
 [`scripts/ci/validate-live-endpoints.sh`](../../../scripts/ci/validate-live-endpoints.sh) is the
-same script both `.gitlab-ci.yml`'s `validate-live-api` job and
-`.github/workflows/maven-build.yml`'s `validate-live-api` job run. It starts the built app, puts
+same script `.github/workflows/maven-build.yml`'s `validate-live-api` job runs. It starts the
+built app, puts
 a Stoplight Prism proxy in front of it, and checks the live `/datacite` and `/crossref`
 `products`/`grants` responses against `src/main/openapi/skg-if-openapi.yaml` — real outbound
 calls to `api.datacite.org`/`api.crossref.org`, no local DB involved.

@@ -2,7 +2,7 @@
 # Validates the live /datacite and /crossref products/grants endpoints against
 # src/main/openapi/skg-if-openapi.yaml, using a Stoplight Prism proxy in front of the real,
 # running app - the same "Prism as validator" pattern skg-if/api's
-# .github/WORFLOW.md uses for its own live-implementation workflow, adapted for GitLab CI.
+# .github/WORFLOW.md uses for its own live-implementation workflow, adapted for GitHub Actions CI.
 #
 # The endpoints under test are live pass-throughs to the public, unauthenticated
 # api.datacite.org / api.crossref.org APIs (no local DB - see application.properties), so this

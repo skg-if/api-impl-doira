@@ -8,12 +8,13 @@ There is no system-wide JDK/Maven on this machine. For building, testing, or run
 ## "notest"/"skiptest" commit messages skip CI tests/validation
 
 If a commit message contains `notest`, `notests`, `skiptest`, or `skiptests` (case-insensitive,
-anywhere in the message), the GitLab pipeline defined in [.gitlab-ci.yml](.gitlab-ci.yml) skips
-verification for that commit: the `build` job runs `mvn -B package -DskipTests` instead of
-`mvn -B package`, and the `validate-live-api` job (the live DataCite/Crossref contract-test
-script, `scripts/ci/validate-live-endpoints.sh`) doesn't run at all. This is intentional - don't
-treat a skipped/green-without-tests pipeline as broken when the triggering commit message uses
-one of these keywords.
+anywhere in the message), the GitHub Actions workflow defined in
+[.github/workflows/maven-build.yml](.github/workflows/maven-build.yml) skips verification for
+that commit: the `build` job runs `./mvnw -B package -DskipTests` instead of `./mvnw -B package`,
+and the `validate-live-api` job (the live DataCite/Crossref contract-test script,
+`scripts/ci/validate-live-endpoints.sh`) doesn't run at all. This is intentional - don't treat a
+skipped/green-without-tests pipeline as broken when the triggering commit message uses one of
+these keywords.
 
 ## Grep before reading large files
 

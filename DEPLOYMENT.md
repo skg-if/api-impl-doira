@@ -5,8 +5,8 @@ This documents how to run `puma-skg-if-api` for free on the
 **Cloud Container Platform** (OKD) service, per the
 *EOSC EU Node Tools Hub User Guide v2.1*.
 
-Building and publishing the container image is automated by [.gitlab-ci.yml](.gitlab-ci.yml)
-(see [Image](#image)). Everything from there on is a manual sequence of steps in the
+Building and publishing the container image is currently a manual step (see [Image](#image)) -
+there is no CI job wired up for it. Everything from there on is a manual sequence of steps in the
 Tools Hub web UI - there is no API to script this against, so this is a runbook, not
 something that can be automated from this repo.
 
@@ -27,8 +27,8 @@ something that can be automated from this repo.
 
 ## Image
 
-Pushed automatically by the `docker-build-push` CI job on every push to the default
-branch, tagged both `latest` and the branch/tag slug. To build and test locally:
+No CI job builds or pushes this image yet - build and push it manually. To build and test
+locally:
 
 ```bash
 mvn package
