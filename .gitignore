@@ -12,3 +12,5 @@ target/
 *.log
 resp.json
 resp_byid.json
+# Added by code-review-graph
+.code-review-graph/

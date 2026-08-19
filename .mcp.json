@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "code-review-graph": {
+      "command": "${CLAUDE_PROJECT_DIR:-.}\\.tools\\venv-crg\\Scripts\\python.exe",
+      "args": [
+        "-m",
+        "code_review_graph",
+        "serve"
+      ],
+      "cwd": "${CLAUDE_PROJECT_DIR:-.}",
+      "type": "stdio"
+    }
+  }
+}

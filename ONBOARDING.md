@@ -18,6 +18,13 @@ Use the **`skg-if-build-toolchain`** skill for any `mvn`/`java` invocation - it 
 toolchain cached under `.tools/` (gitignored, survives across conversations, downloaded once per
 checkout).
 
+## Code intelligence - code-review-graph
+
+A knowledge-graph MCP server (`.mcp.json`) exposes tools like `query_graph_tool` and
+`get_impact_radius_tool` - prefer them over Grep/Glob/Read for tracing callers/tests/impact (see
+CLAUDE.md for the full tool list). On a fresh checkout these tools won't appear until the local
+venv they run from is built - use the **`code-review-graph-setup`** skill for that one-time step.
+
 ## The mapping doc is a contract, not documentation-after-the-fact
 
 [`SKG_IF_DOI_MAPPING.md`](SKG_IF_DOI_MAPPING.md) indexes four files (Product entity, Date-type
