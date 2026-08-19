@@ -1,7 +1,12 @@
 # Puma SKG-IF API
 
-A [SKG-IF](https://skg-if.github.io/api/) (Scientific Knowledge Graph Interoperability
-Framework) REST API exposing metadata for **any DataCite or Crossref DOI**, sourced live from
+This project is maintained as part of the SKG-IF RDA Working Group.
+It is an implementation of the [SKG-IF API](https://skg-if.github.io/api/) for a set of [DOI registration agencies](https://www.doi.org/the-community/existing-registration-agencies/).
+PR are welcome for any update :-).
+
+## Features
+
+The implementation exposes a REST API with metadata for **any DataCite or Crossref DOI**, sourced live from
 [DataCite](https://datacite.org) or [Crossref](https://www.crossref.org) - no local database,
 every request is served by calling the relevant upstream REST API and mapping the result onto a
 SKG-IF entity.
@@ -29,6 +34,8 @@ Two SKG-IF entities are implemented per provider:
 - Maven 3.9+
 - Network access to `api.datacite.org` and `api.crossref.org` (no API key needed for either -
   both are public, unauthenticated reads)
+- The SKG-IF API yaml reference is stored in `src/main/openapi/skg-if-openapi.yaml`.
+- The `openapi-generator-maven-plugin` is used to generate java implementation from the openapi yaml
 
 ## Running
 
