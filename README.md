@@ -39,6 +39,9 @@ Two SKG-IF entities are implemented per provider:
 
 ## Running
 
+To run this project in a preconfigured GitHub Codespace instead of locally, see
+[DEPLOYMENT_CODESPACES.md](DEPLOYMENT_CODESPACES.md).
+
 ```bash
 mvn quarkus:dev
 ```
