@@ -100,7 +100,17 @@ rate limits/uptime on `/crossref/products` and `/crossref/grants` (see
 docker run -p 8080:8080 -e CROSSREF_MAILTO=you@example.org ghcr.io/skg-if/api-impl-doira:latest
 ```
 
-To build it locally instead, see [DEPLOYMENT.md](DEPLOYMENT.md#image).
+To deploy this image on the EOSC EU Node Tools Hub instead of running it yourself, see
+[DEPLOYMENT_EOSC_NODE.md](DEPLOYMENT_EOSC_NODE.md).
+
+To build and test the image locally instead of relying on the published GHCR image:
+
+```bash
+mvn package
+docker build -f src/main/docker/Dockerfile.jvm -t puma-skg-if-api:local .
+docker run -p 8080:8080 puma-skg-if-api:local
+curl "http://localhost:8080/skg-if/api/datacite/products?page_size=1"
+```
 
 ## Testing
 
@@ -129,7 +139,7 @@ journal article, a dataset, a journal article with an abstract/funder, and a gra
 Key properties (`src/main/resources/application.properties`). Any of them can be overridden
 without rebuilding the image via a `docker run -e ...` environment variable, per Quarkus/SmallRye
 Config's standard mapping (dots to underscores, uppercased - e.g. `crossref.mailto` becomes
-`CROSSREF_MAILTO`, see [DEPLOYMENT.md](DEPLOYMENT.md#image)):
+`CROSSREF_MAILTO`, see [Docker image](#docker-image) above):
 
 | Property | Purpose |
 | --- | --- |

@@ -12,9 +12,8 @@ live, with no local database. Two provider implementations
 the same generated `Product`/`Grant` SKG-IF entities. Provider selection is by URL path
 (`/datacite/...` vs `/crossref/...`), never auto-detected.
 
-## No system Maven/JDK 21
+## System tools - Maven/JDK
 
-This machine has no system-wide JDK/Maven, and none should be installed via `winget`/`choco`.
 Use the **`skg-if-build-toolchain`** skill for any `mvn`/`java` invocation - it sets up a portable
 toolchain cached under `.tools/` (gitignored, survives across conversations, downloaded once per
 checkout).
@@ -51,4 +50,4 @@ whatever the regeneration produces.
 ## Working conventions
 
 - Never commit or push unless explicitly asked to in that message.
-- Don't install tools globally (`winget`/`choco`) - everything portable goes under `.tools/`.
+- Don't install tools globally - everything portable goes under `.tools/`.

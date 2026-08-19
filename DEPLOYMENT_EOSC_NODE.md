@@ -6,64 +6,19 @@ This documents how to run `puma-skg-if-api` for free on the
 *EOSC EU Node Tools Hub User Guide v2.1*.
 
 CI now automatically builds and publishes `ghcr.io/skg-if/api-impl-doira:latest` on every push to
-`main` (see [Image](#image)) - useful if you just want to `docker pull` and run the app. Getting
-it deployed on EOSC's Tools Hub specifically still needs the manual sequence of steps below in the
-Tools Hub web UI, including a separate push to ESRF's registry (see [Image](#image)) - there is no
-API to script that part against, so it remains a runbook, not something that can be automated from
-this repo.
+`main` (see [README.md](README.md#docker-image)) - useful if you just want to `docker pull` and run
+the app, and it's also the image OKD pulls for the Tools Hub deployment below, since it's already
+public on GitHub Container Registry. Getting it deployed on EOSC's Tools Hub specifically still
+needs the manual sequence of steps below in the Tools Hub web UI - there is no API to script that
+part against, so it remains a runbook, not something that can be automated from this repo.
 
 ## Prerequisites
 
 - An EOSC EU Node account with **Cloud Container Platform** resources already allocated
   to a Personal or Group project (Resource Hub -> allocate before deploying, per guide
   section 2.1).
-- This project's **Container Registry** enabled on gitlab.esrf.fr (Settings -> General ->
-  Visibility, or Packages & Registries) so the CI pipeline has somewhere to push the image,
-  and so OKD can pull it. Note the exact registry host/port shown on that page (e.g.
-  `registry.esrf.fr:5050/puma-public/puma-skg-if-api`) - `$CI_REGISTRY_IMAGE` resolves to
-  it automatically in CI, but you'll need it verbatim for the TOSCA template below.
-- If the registry/image is **not** public, you'll additionally need an image pull
-  credential (e.g. a GitLab deploy token) wired into the TOSCA template - the guide
-  doesn't document this syntax, so treat it as an open question to resolve against the
-  copied template's own image-pull fields, or ask EOSC support.
-
-## Image
-
-CI ([.github/workflows/maven-build.yml](.github/workflows/maven-build.yml)) builds and pushes
-`ghcr.io/skg-if/api-impl-doira:latest` (and a `:<short-sha>` tag) on every push to `main` - no
-manual step needed for that image. To cut a versioned release instead of tracking `:latest`, tag
-the commit and push the tag:
-
-```bash
-git tag v1.2.3
-git push origin v1.2.3
-```
-
-CI then also publishes `:1.2.3` and `:1.2` image tags. Version tags are meant to be created once
-and never force-moved (`git tag -f` + `git push --force`) to a different commit - registries don't
-enforce tag immutability, so retagging silently overwrites the image anyone else pulls under that
-version.
-
-EOSC's Tools Hub, however, needs the image on ESRF's own GitLab registry (see
-[Prerequisites](#prerequisites)); that push is still manual. To build and test locally, or to push
-to ESRF's registry:
-
-```bash
-mvn package
-docker build -f src/main/docker/Dockerfile.jvm -t puma-skg-if-api:local .
-docker run -p 8080:8080 puma-skg-if-api:local
-curl "http://localhost:8080/skg-if/api/datacite/products?page_size=1"
-
-# to push to ESRF's registry instead of/in addition to running locally:
-docker tag puma-skg-if-api:local registry.esrf.fr:5050/puma-public/puma-skg-if-api:latest
-docker push registry.esrf.fr:5050/puma-public/puma-skg-if-api:latest
-```
-
-Optionally, pass `-e CROSSREF_MAILTO=you@example.org` to `docker run` to identify this API to
-Crossref's "polite pool" for better rate limits/uptime on `/crossref/products` and
-`/crossref/grants` - Quarkus/SmallRye Config maps that environment variable onto the
-`crossref.mailto` property (`application.properties`, see [README.md](README.md#configuration))
-with no image rebuild needed.
+- No registry setup is needed: `ghcr.io/skg-if/api-impl-doira` is public, so OKD can pull it
+  directly with no image pull credential.
 
 ## Tools Hub runbook
 
@@ -78,14 +33,15 @@ with no image rebuild needed.
    - Name: `Puma SKG-IF API`
    - Description: summary from [README.md](README.md) ("A SKG-IF REST API exposing metadata
      for any DataCite DOI, sourced live from DataCite...")
-   - Resource Organisation: `ESRF`
-   - Keywords: `skg-if`, `datacite`, `esrf`
+   - Resource Organisation: `SKG-IF RDA WG`
+   - Keywords: `skg-if`, `datacite`, `crossref`
    - License: project's actual license (none currently committed to the repo - pick
      whatever is appropriate, or leave as internal/proprietary)
 
 3. **Edit the TOSCA template** (wizard step 2 - Content):
-   - Replace the container image reference with the pushed image, e.g.
-     `<registry-host-from-prerequisites>/puma-public/puma-skg-if-api:latest`.
+   - Replace the container image reference with `ghcr.io/skg-if/api-impl-doira:latest`
+     (or a pinned version tag, e.g. `ghcr.io/skg-if/api-impl-doira:1.2.3` - see
+     [README.md](README.md#docker-image)).
    - Set the exposed/target port to `8080`.
    - No environment variables or secrets are required for a basic deployment -
      `datacite.api.base-url` and friends all have working defaults in
