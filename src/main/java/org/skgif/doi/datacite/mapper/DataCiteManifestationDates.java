@@ -1,9 +1,12 @@
 package org.skgif.doi.datacite.mapper;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
 import org.skgif.doi.datacite.dto.DataCiteDate;
 import org.skgif.doi.generated.model.ProductManifestationDates;
@@ -18,28 +21,57 @@ final class DataCiteManifestationDates {
 
     private static final int DAY_LENGTH = 10;
 
-    private static final String DATACITE_ACCEPTED = "Accepted";
-    private static final String DATACITE_AVAILABLE = "Available";
-    private static final String DATACITE_COLLECTED = "Collected";
-    private static final String DATACITE_COPYRIGHTED = "Copyrighted";
-    private static final String DATACITE_CREATED = "Created";
-    private static final String DATACITE_ISSUED = "Issued";
-    private static final String DATACITE_SUBMITTED = "Submitted";
-    private static final String DATACITE_UPDATED = "Updated";
-    private static final String DATACITE_VALID = "Valid";
-    private static final String DATACITE_WITHDRAWN = "Withdrawn";
+    /**
+     * The {@code dateType} values documented in the DataCite Metadata Schema. DataCite has added
+     * values to this list before and may do so again - {@link #fromValue(String)} returns {@link
+     * Optional#empty()} rather than throwing for a value not yet in this enum, so a DataCite record
+     * using a newer value is skipped like any other unmapped date instead of failing the mapping.
+     */
+    private enum DataCiteDateType {
 
-    private static final Map<String, String> DATACITE_DATE_TYPE_TO_SKGIF = Map.of(
-            DATACITE_ACCEPTED, ManifestationDateSetters.ACCEPTANCE,
-            DATACITE_AVAILABLE, ManifestationDateSetters.EMBARGO,
-            DATACITE_COLLECTED, ManifestationDateSetters.COLLECTED,
-            DATACITE_COPYRIGHTED, ManifestationDateSetters.COPYRIGHT,
-            DATACITE_CREATED, ManifestationDateSetters.CREATION,
-            DATACITE_ISSUED, ManifestationDateSetters.PUBLICATION,
-            DATACITE_SUBMITTED, ManifestationDateSetters.DEPOSIT,
-            DATACITE_UPDATED, ManifestationDateSetters.MODIFIED,
-            DATACITE_VALID, ManifestationDateSetters.VALIDITY,
-            DATACITE_WITHDRAWN, ManifestationDateSetters.RETRACTION);
+        ACCEPTED("Accepted"),
+        AVAILABLE("Available"),
+        COLLECTED("Collected"),
+        COPYRIGHTED("Copyrighted"),
+        CREATED("Created"),
+        ISSUED("Issued"),
+        SUBMITTED("Submitted"),
+        UPDATED("Updated"),
+        VALID("Valid"),
+        WITHDRAWN("Withdrawn");
+
+        private static final Map<String, DataCiteDateType> BY_VALUE = Arrays.stream(values())
+                .collect(Collectors.toMap(DataCiteDateType::value, Function.identity()));
+
+        // Field intentionally shares its name with its accessor below, same idiom
+        // CrossrefFilters.ParsedFilter.Builder's fields already do this for.
+        @SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
+        private final String value;
+
+        DataCiteDateType(String value) {
+            this.value = value;
+        }
+
+        String value() {
+            return value;
+        }
+
+        static Optional<DataCiteDateType> fromValue(String value) {
+            return Optional.ofNullable(BY_VALUE.get(value));
+        }
+    }
+
+    private static final Map<DataCiteDateType, String> DATACITE_DATE_TYPE_TO_SKGIF = Map.of(
+            DataCiteDateType.ACCEPTED, ManifestationDateSetters.ACCEPTANCE,
+            DataCiteDateType.AVAILABLE, ManifestationDateSetters.EMBARGO,
+            DataCiteDateType.COLLECTED, ManifestationDateSetters.COLLECTED,
+            DataCiteDateType.COPYRIGHTED, ManifestationDateSetters.COPYRIGHT,
+            DataCiteDateType.CREATED, ManifestationDateSetters.CREATION,
+            DataCiteDateType.ISSUED, ManifestationDateSetters.PUBLICATION,
+            DataCiteDateType.SUBMITTED, ManifestationDateSetters.DEPOSIT,
+            DataCiteDateType.UPDATED, ManifestationDateSetters.MODIFIED,
+            DataCiteDateType.VALID, ManifestationDateSetters.VALIDITY,
+            DataCiteDateType.WITHDRAWN, ManifestationDateSetters.RETRACTION);
 
     private DataCiteManifestationDates() {
     }
@@ -57,7 +89,9 @@ final class DataCiteManifestationDates {
         }
         boolean any = false;
         for (DataCiteDate date : attributes.dates()) {
-            String skgIfDateType = DATACITE_DATE_TYPE_TO_SKGIF.get(date.dateType());
+            String skgIfDateType = DataCiteDateType.fromValue(date.dateType())
+                    .map(DATACITE_DATE_TYPE_TO_SKGIF::get)
+                    .orElse(null);
             boolean missingMapping = skgIfDateType == null || date.date() == null;
             // An `Available` date only signals a genuine embargo when it differs (at day
             // granularity) from every other date already known for this record - if it
