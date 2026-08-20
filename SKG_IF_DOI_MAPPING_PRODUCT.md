@@ -44,9 +44,9 @@ this provider
 | SKG-IF `product_type` [ℹ️](https://skg-if.github.io/interoperability-framework/docs/research-product.html#product_type) | DataCite values [ℹ️](https://datacite-metadata-schema.readthedocs.io/en/4.7/properties/resourcetype/#a-resourcetypegeneral) |
 |---|---|
 | `research software` | `Software`, `ComputationalNotebook`, `Workflow` |
-| `literature` | `Book`, `BookChapter`, `ConferencePaper`, `ConferenceProceeding`, `DataPaper`, `Dissertation`, `JournalArticle`, `Journal`, `Preprint`, `Report`, `Text`, `PeerReview`, `StudyRegistration`, `OutputManagementPlan` |
+| `literature` | `Book`, `BookChapter`, `ConferencePaper`, `ConferenceProceeding`, `DataPaper`, `Dissertation`, `JournalArticle`, `Journal`, `Preprint`, `Report`, `Text`, `PeerReview`, `StudyRegistration`, `OutputManagementPlan`, `Poster`, `Presentation` |
 | `research data` | `Dataset`, `Collection`, `Image` |
-| `other` | `Event`, `Service`, `Project`, `Other`, `Sound`, `PhysicalObject`, `Model`, `Audiovisual`, `InteractiveResource`, `Standard`, and anything unrecognized |
+| `other` | `Event`, `Service`, `Project`, `Other`, `Sound`, `PhysicalObject`, `Model`, `Audiovisual`, `InteractiveResource`, `Standard`, `Instrument`, and anything unrecognized |
 | *(routed to Grants, not a Product)* | `Award` |
 
 ### DataCite relatedIdentifierType vocabulary

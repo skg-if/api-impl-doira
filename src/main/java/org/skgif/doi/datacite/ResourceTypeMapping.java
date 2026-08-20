@@ -1,8 +1,12 @@
 package org.skgif.doi.datacite;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
 import org.skgif.doi.generated.model.Product;
 
@@ -18,40 +22,116 @@ import org.skgif.doi.generated.model.Product;
  */
 public final class ResourceTypeMapping {
 
-    public static final String AWARD = "Award";
+    public static final String AWARD = DataCiteResourceType.AWARD.value();
 
-    private static final Map<String, Product.ProductTypeEnum> TO_PRODUCT_TYPE = buildMap();
+    private static final Map<DataCiteResourceType, Product.ProductTypeEnum> TO_PRODUCT_TYPE = buildMap();
 
     private ResourceTypeMapping() {
     }
 
-    private static Map<String, Product.ProductTypeEnum> buildMap() {
-        Map<String, Product.ProductTypeEnum> map = new HashMap<>();
-        putAll(map, Product.ProductTypeEnum.RESEARCH_SOFTWARE, "Software", "ComputationalNotebook", "Workflow");
-        putAll(map, Product.ProductTypeEnum.LITERATURE, "Book", "BookChapter", "ConferencePaper",
-                "ConferenceProceeding", "DataPaper", "Dissertation", "JournalArticle", "Journal", "Preprint",
-                "Report", "Text", "PeerReview", "StudyRegistration", "OutputManagementPlan");
-        putAll(map, Product.ProductTypeEnum.RESEARCH_DATA, "Dataset", "Collection", "Image");
-        putAll(map, Product.ProductTypeEnum.OTHER, "Event", "Service", "Project", "Other", "Sound",
-                "PhysicalObject", "Model", "Audiovisual", "InteractiveResource", "Standard");
+    /**
+     * The {@code resourceTypeGeneral} values documented in the DataCite Metadata Schema
+     * (https://datacite-metadata-schema.readthedocs.io/en/4.7/properties/resourcetype/#a-resourcetypegeneral).
+     * DataCite has added values to this list before and may do so again - {@link
+     * #fromValue(String)} returns {@link Optional#empty()} rather than throwing for a value not
+     * yet in this enum, so a DataCite record using a newer value falls back to {@code OTHER}
+     * (see {@link #productType(String)}) instead of failing the mapping.
+     */
+    private enum DataCiteResourceType {
+
+        AUDIOVISUAL("Audiovisual"),
+        AWARD("Award"),
+        BOOK("Book"),
+        BOOK_CHAPTER("BookChapter"),
+        COLLECTION("Collection"),
+        COMPUTATIONAL_NOTEBOOK("ComputationalNotebook"),
+        CONFERENCE_PAPER("ConferencePaper"),
+        CONFERENCE_PROCEEDING("ConferenceProceeding"),
+        DATA_PAPER("DataPaper"),
+        DATASET("Dataset"),
+        DISSERTATION("Dissertation"),
+        EVENT("Event"),
+        IMAGE("Image"),
+        INTERACTIVE_RESOURCE("InteractiveResource"),
+        INSTRUMENT("Instrument"),
+        JOURNAL("Journal"),
+        JOURNAL_ARTICLE("JournalArticle"),
+        MODEL("Model"),
+        OUTPUT_MANAGEMENT_PLAN("OutputManagementPlan"),
+        PEER_REVIEW("PeerReview"),
+        PHYSICAL_OBJECT("PhysicalObject"),
+        POSTER("Poster"),
+        PREPRINT("Preprint"),
+        PRESENTATION("Presentation"),
+        PROJECT("Project"),
+        REPORT("Report"),
+        SERVICE("Service"),
+        SOFTWARE("Software"),
+        SOUND("Sound"),
+        STANDARD("Standard"),
+        STUDY_REGISTRATION("StudyRegistration"),
+        TEXT("Text"),
+        WORKFLOW("Workflow"),
+        OTHER("Other");
+
+        private static final Map<String, DataCiteResourceType> BY_VALUE = Arrays.stream(values())
+                .collect(Collectors.toMap(DataCiteResourceType::value, Function.identity()));
+
+        @SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
+        private final String value;
+
+        DataCiteResourceType(String value) {
+            this.value = value;
+        }
+
+        String value() {
+            return value;
+        }
+
+        static Optional<DataCiteResourceType> fromValue(String value) {
+            return Optional.ofNullable(BY_VALUE.get(value));
+        }
+    }
+
+    private static Map<DataCiteResourceType, Product.ProductTypeEnum> buildMap() {
+        Map<DataCiteResourceType, Product.ProductTypeEnum> map = new HashMap<>();
+        putAll(map, Product.ProductTypeEnum.RESEARCH_SOFTWARE, DataCiteResourceType.SOFTWARE,
+                DataCiteResourceType.COMPUTATIONAL_NOTEBOOK, DataCiteResourceType.WORKFLOW);
+        putAll(map, Product.ProductTypeEnum.LITERATURE, DataCiteResourceType.BOOK, DataCiteResourceType.BOOK_CHAPTER,
+                DataCiteResourceType.CONFERENCE_PAPER, DataCiteResourceType.CONFERENCE_PROCEEDING,
+                DataCiteResourceType.DATA_PAPER, DataCiteResourceType.DISSERTATION,
+                DataCiteResourceType.JOURNAL_ARTICLE, DataCiteResourceType.JOURNAL, DataCiteResourceType.PREPRINT,
+                DataCiteResourceType.REPORT, DataCiteResourceType.TEXT, DataCiteResourceType.PEER_REVIEW,
+                DataCiteResourceType.STUDY_REGISTRATION, DataCiteResourceType.OUTPUT_MANAGEMENT_PLAN,
+                DataCiteResourceType.POSTER, DataCiteResourceType.PRESENTATION);
+        putAll(map, Product.ProductTypeEnum.RESEARCH_DATA, DataCiteResourceType.DATASET,
+                DataCiteResourceType.COLLECTION, DataCiteResourceType.IMAGE);
+        putAll(map, Product.ProductTypeEnum.OTHER, DataCiteResourceType.EVENT, DataCiteResourceType.SERVICE,
+                DataCiteResourceType.PROJECT, DataCiteResourceType.OTHER, DataCiteResourceType.SOUND,
+                DataCiteResourceType.PHYSICAL_OBJECT, DataCiteResourceType.MODEL, DataCiteResourceType.AUDIOVISUAL,
+                DataCiteResourceType.INTERACTIVE_RESOURCE, DataCiteResourceType.STANDARD,
+                DataCiteResourceType.INSTRUMENT);
         return Map.copyOf(map);
     }
 
-    private static void putAll(Map<String, Product.ProductTypeEnum> map, Product.ProductTypeEnum value,
-            String... resourceTypes) {
-        for (String resourceType : resourceTypes) {
+    private static void putAll(Map<DataCiteResourceType, Product.ProductTypeEnum> map, Product.ProductTypeEnum value,
+            DataCiteResourceType... resourceTypes) {
+        for (DataCiteResourceType resourceType : resourceTypes) {
             map.put(resourceType, value);
         }
     }
 
     /**
-     * {@code Award} is deliberately absent from the map above - never reaches this method.
+     * A {@code resourceTypeGeneral} value DataCite has added since this enum was last updated
+     * (or any other unrecognized value) resolves to {@code OTHER} rather than throwing.
      *
      * @param resourceTypeGeneral the DataCite {@code resourceTypeGeneral} value
      * @return the corresponding SKG-IF product_type, or OTHER if unrecognized
      */
     public static Product.ProductTypeEnum productType(String resourceTypeGeneral) {
-        return TO_PRODUCT_TYPE.getOrDefault(resourceTypeGeneral, Product.ProductTypeEnum.OTHER);
+        return DataCiteResourceType.fromValue(resourceTypeGeneral)
+                .map(TO_PRODUCT_TYPE::get)
+                .orElse(Product.ProductTypeEnum.OTHER);
     }
 
     /**
@@ -59,8 +139,12 @@ public final class ResourceTypeMapping {
      * @return whether attributes' {@code resourceTypeGeneral} is {@code Award}
      */
     public static boolean isAward(DataCiteAttributes attributes) {
-        return attributes != null && attributes.types() != null &&
-                AWARD.equalsIgnoreCase(attributes.types().resourceTypeGeneral());
+        if (attributes == null || attributes.types() == null) {
+            return false;
+        }
+        return DataCiteResourceType.fromValue(attributes.types().resourceTypeGeneral())
+                .filter(type -> type == DataCiteResourceType.AWARD)
+                .isPresent();
     }
 
     /**
@@ -75,7 +159,7 @@ public final class ResourceTypeMapping {
     public static List<String> resourceTypesFor(Product.ProductTypeEnum productType) {
         return TO_PRODUCT_TYPE.entrySet().stream()
                 .filter(entry -> entry.getValue() == productType)
-                .map(Map.Entry::getKey)
+                .map(entry -> entry.getKey().value())
                 .sorted()
                 .toList();
     }
