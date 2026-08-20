@@ -40,13 +40,6 @@
 
   <rule ref="category/java/errorprone.xml">
     <!--
-      CompareObjectsWithEquals disabled: both violations found (DataCiteToSkgIfMapper#otherRecordDays,
-      #grantContributions) are intentional reference-identity checks - excluding one specific
-      object instance while iterating the same list it came from (e.g. `date != excluding`) -
-      not accidental == vs .equals() confusion.
-    -->
-    <exclude name="CompareObjectsWithEquals"/>
-    <!--
       AvoidDuplicateLiterals disabled here so its maxDuplicateLiterals property can be overridden
       below: the default of 4 occurrences missed a real 3x-duplicated literal ("Organizational" in
       DataCiteGrantMapper) - lowered to 3 to actually catch that class of duplication.
