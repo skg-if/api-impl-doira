@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import org.skgif.doi.datacite.ResourceTypeMapping;
 import org.skgif.doi.generated.model.Product;
@@ -79,7 +80,7 @@ final class DataCiteProductFilters {
                 // known (or an unguessable otf id otherwise, which harmlessly never
                 // matches) - DataCite stores nameIdentifier in that same full-URL form.
                 value -> FilterQuerySyntax.creatorOrContributorClause("nameIdentifiers.nameIdentifier", value));
-        Function<String, String> orcidClauseBuilder = DataCiteProductFilters::orcidClause;
+        UnaryOperator<String> orcidClauseBuilder = DataCiteProductFilters::orcidClause;
         CLAUSE_BUILDERS.put(ProductFilterKeys.CF_CONTRIBUTIONS_ORCID, orcidClauseBuilder);
         CLAUSE_BUILDERS.put(ProductFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_ID, orcidClauseBuilder);
         // We only ever emit "orcid" as the scheme for by.identifiers.
@@ -98,7 +99,7 @@ final class DataCiteProductFilters {
                 // when known, matching DataCite's own stored affiliationIdentifier format
                 // (confirmed live: 15166 matches for the full-URL form vs. 2 for bare).
                 value -> FilterQuerySyntax.creatorOrContributorClause("affiliation.affiliationIdentifier", value));
-        Function<String, String> rorClauseBuilder = DataCiteProductFilters::rorClause;
+        UnaryOperator<String> rorClauseBuilder = DataCiteProductFilters::rorClause;
         CLAUSE_BUILDERS.put(ProductFilterKeys.CONTRIBUTIONS_DECLARED_AFFILIATIONS_IDENTIFIERS_ID, rorClauseBuilder);
         CLAUSE_BUILDERS.put(ProductFilterKeys.CF_CONTRIBUTIONS_AFF_ROR, rorClauseBuilder);
         // We only ever emit "ror" as the scheme for declared_affiliations.identifiers.
@@ -110,7 +111,7 @@ final class DataCiteProductFilters {
         CLAUSE_BUILDERS.put(ProductFilterKeys.FUNDING_GRANT_NUMBER,
                 value -> "fundingReferences.awardNumber:\"" + escape(value) + "\"");
 
-        Function<String, String> searchClauseBuilder = DataCiteProductFilters::escape;
+        UnaryOperator<String> searchClauseBuilder = DataCiteProductFilters::escape;
         CLAUSE_BUILDERS.put(ProductFilterKeys.CF_SEARCH_TITLE, searchClauseBuilder);
         CLAUSE_BUILDERS.put(ProductFilterKeys.CF_SEARCH_TITLE_ABSTRACT, searchClauseBuilder);
         // "a local_identifier" per spec, which for our products is DOI-based in bare-or-
@@ -118,7 +119,7 @@ final class DataCiteProductFilters {
         // same clause as cites_doi/cited_by_doi (relationType direction isn't reliably
         // scopable to the same relatedIdentifiers array element in a flat query string -
         // a pre-existing simplification, not something introduced here).
-        Function<String, String> citesClauseBuilder = value -> "relatedIdentifiers.relatedIdentifier:\"" +
+        UnaryOperator<String> citesClauseBuilder = value -> "relatedIdentifiers.relatedIdentifier:\"" +
                 escape(ExternalIdentifierUrls.stripDoiUrl(value)) + "\"";
         CLAUSE_BUILDERS.put(ProductFilterKeys.CF_CITES, citesClauseBuilder);
         CLAUSE_BUILDERS.put(ProductFilterKeys.CF_CITED_BY, citesClauseBuilder);

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import org.skgif.doi.spec.GrantFilterKeys;
 import org.skgif.doi.util.ExternalIdentifierUrls;
@@ -113,7 +114,7 @@ final class DataCiteGrantFilters {
         CLAUSE_BUILDERS.put(GrantFilterKeys.FUNDING_AGENCY_IDENTIFIERS_VALUE,
                 value -> rorClause("creators.nameIdentifiers.nameIdentifier", value));
 
-        Function<String, String> searchClauseBuilder = DataCiteGrantFilters::escape;
+        UnaryOperator<String> searchClauseBuilder = DataCiteGrantFilters::escape;
         CLAUSE_BUILDERS.put(GrantFilterKeys.CF_SEARCH_TITLE, searchClauseBuilder);
         CLAUSE_BUILDERS.put(GrantFilterKeys.CF_SEARCH_TITLE_ABSTRACT, searchClauseBuilder);
     }

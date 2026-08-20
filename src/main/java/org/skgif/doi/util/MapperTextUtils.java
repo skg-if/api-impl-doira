@@ -38,7 +38,7 @@ public final class MapperTextUtils {
         if (text == null) {
             return "unknown";
         }
-        String slug = text.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]+", "-").replaceAll("^-+|-+$", "");
+        String slug = text.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]+", "-").replaceAll("(^-+)|(-+$)", "");
         if (slug.isEmpty()) {
             return "unknown";
         }
