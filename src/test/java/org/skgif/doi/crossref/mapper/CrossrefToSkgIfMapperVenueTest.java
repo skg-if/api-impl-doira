@@ -1,8 +1,6 @@
 package org.skgif.doi.crossref.mapper;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -77,15 +75,15 @@ class CrossrefToSkgIfMapperVenueTest {
 
         ProductManifestation manifestation = product.getManifestations().getFirst();
         VenueLite in = (VenueLite) manifestation.getBiblio().getIn();
-        assertEquals("Nature", in.getName());
-        assertEquals("issn", in.getIdentifiers().getFirst().getScheme());
-        assertEquals("0028-0836", in.getIdentifiers().getFirst().getValue());
-        assertEquals("500", manifestation.getBiblio().getVolume());
-        assertEquals("7460", manifestation.getBiblio().getIssue());
-        assertEquals("54", manifestation.getBiblio().getPages().getFirst());
-        assertEquals("58", manifestation.getBiblio().getPages().getLast());
-        assertEquals("Springer Science and Business Media LLC",
-                ((DataSourceLite) manifestation.getBiblio().getHostingDataSource()).getName());
+        assertThat(in.getName()).isEqualTo("Nature");
+        assertThat(in.getIdentifiers().getFirst().getScheme()).isEqualTo("issn");
+        assertThat(in.getIdentifiers().getFirst().getValue()).isEqualTo("0028-0836");
+        assertThat(manifestation.getBiblio().getVolume()).isEqualTo("500");
+        assertThat(manifestation.getBiblio().getIssue()).isEqualTo("7460");
+        assertThat(manifestation.getBiblio().getPages().getFirst()).isEqualTo("54");
+        assertThat(manifestation.getBiblio().getPages().getLast()).isEqualTo("58");
+        assertThat(((DataSourceLite) manifestation.getBiblio().getHostingDataSource()).getName())
+                .isEqualTo("Springer Science and Business Media LLC");
     }
 
     @Test
@@ -99,18 +97,18 @@ class CrossrefToSkgIfMapperVenueTest {
         Product product = mapFixture("crossref-journal-article.json");
 
         VenueLite venue = (VenueLite) product.getManifestations().getFirst().getBiblio().getIn();
-        assertEquals("Nature", venue.getName());
-        assertEquals("https://doi.org/10.1038/41586.1476-4687", venue.getLocalIdentifier());
+        assertThat(venue.getName()).isEqualTo("Nature");
+        assertThat(venue.getLocalIdentifier()).isEqualTo("https://doi.org/10.1038/41586.1476-4687");
 
         List<VenueLiteAllOfIdentifiers> identifiers = venue.getIdentifiers();
         final int expectedIdentifierCount = 3;
-        assertEquals(expectedIdentifierCount, identifiers.size());
-        assertEquals("doi", identifiers.getFirst().getScheme());
-        assertEquals("10.1038/41586.1476-4687", identifiers.getFirst().getValue());
-        assertTrue(identifiers.stream()
-                .anyMatch(i -> "issn".equals(i.getScheme()) && "0028-0836".equals(i.getValue())));
-        assertTrue(identifiers.stream()
-                .anyMatch(i -> "issn".equals(i.getScheme()) && "1476-4687".equals(i.getValue())));
+        assertThat(identifiers.size()).isEqualTo(expectedIdentifierCount);
+        assertThat(identifiers.getFirst().getScheme()).isEqualTo("doi");
+        assertThat(identifiers.getFirst().getValue()).isEqualTo("10.1038/41586.1476-4687");
+        assertThat(identifiers)
+                .anyMatch(i -> "issn".equals(i.getScheme()) && "0028-0836".equals(i.getValue()));
+        assertThat(identifiers)
+                .anyMatch(i -> "issn".equals(i.getScheme()) && "1476-4687".equals(i.getValue()));
     }
 
     @Test
@@ -124,9 +122,9 @@ class CrossrefToSkgIfMapperVenueTest {
         Product product = mapFixture("crossref-journal-article.json");
 
         VenueLite venue = (VenueLite) product.getManifestations().getFirst().getBiblio().getIn();
-        assertTrue(venue.getLocalIdentifier().startsWith("otf___"));
-        assertEquals("issn", venue.getIdentifiers().getFirst().getScheme());
-        assertEquals("0028-0836", venue.getIdentifiers().getFirst().getValue());
+        assertThat(venue.getLocalIdentifier()).startsWith("otf___");
+        assertThat(venue.getIdentifiers().getFirst().getScheme()).isEqualTo("issn");
+        assertThat(venue.getIdentifiers().getFirst().getValue()).isEqualTo("0028-0836");
     }
 
     @Test
@@ -137,10 +135,10 @@ class CrossrefToSkgIfMapperVenueTest {
         Product product = mapFixture("crossref-journal-article-with-orcid.json");
 
         ProductManifestation manifestation = product.getManifestations().getFirst();
-        assertNull(manifestation.getBiblio().getPages());
-        assertEquals("13", manifestation.getBiblio().getVolume());
-        assertEquals("1", manifestation.getBiblio().getIssue());
-        assertEquals("Nature Communications", ((VenueLite) manifestation.getBiblio().getIn()).getName());
+        assertThat(manifestation.getBiblio().getPages()).isNull();
+        assertThat(manifestation.getBiblio().getVolume()).isEqualTo("13");
+        assertThat(manifestation.getBiblio().getIssue()).isEqualTo("1");
+        assertThat(((VenueLite) manifestation.getBiblio().getIn()).getName()).isEqualTo("Nature Communications");
     }
 
     @Test
@@ -152,8 +150,8 @@ class CrossrefToSkgIfMapperVenueTest {
         // mapsVenueFromXmlMetadataForBookInSeries below for the corrected, enriched path.
         Product product = mapFixture("crossref-book-chapter.json");
 
-        assertEquals("Lecture Notes in Computer Science",
-                ((VenueLite) product.getManifestations().getFirst().getBiblio().getIn()).getName());
+        assertThat(((VenueLite) product.getManifestations().getFirst().getBiblio().getIn()).getName())
+                .isEqualTo("Lecture Notes in Computer Science");
     }
 
     @Test
@@ -166,24 +164,24 @@ class CrossrefToSkgIfMapperVenueTest {
         Product product = mapFixtureWithVenueMetadata("crossref-book-chapter.json", "crossref-book-chapter.xml");
 
         VenueLite venue = (VenueLite) product.getManifestations().getFirst().getBiblio().getIn();
-        assertEquals("Cryptographic Hardware and Embedded Systems – CHES 2017", venue.getName());
-        assertEquals("https://doi.org/10.1007/978-3-319-66787-4", venue.getLocalIdentifier());
+        assertThat(venue.getName()).isEqualTo("Cryptographic Hardware and Embedded Systems – CHES 2017");
+        assertThat(venue.getLocalIdentifier()).isEqualTo("https://doi.org/10.1007/978-3-319-66787-4");
 
         List<VenueLiteAllOfIdentifiers> identifiers = venue.getIdentifiers();
         final int expectedIdentifierCount = 5;
-        assertEquals(expectedIdentifierCount, identifiers.size());
-        assertEquals("doi", identifiers.getFirst().getScheme());
-        assertEquals("10.1007/978-3-319-66787-4", identifiers.getFirst().getValue());
-        assertTrue(identifiers.stream()
-                .anyMatch(i -> "issn".equals(i.getScheme()) && "0302-9743".equals(i.getValue())));
-        assertTrue(identifiers.stream()
-                .anyMatch(i -> "issn".equals(i.getScheme()) && "1611-3349".equals(i.getValue())));
-        assertTrue(identifiers.stream()
-                .anyMatch(i -> "isbn".equals(i.getScheme()) && "978-3-319-66786-7".equals(i.getValue())));
-        assertTrue(identifiers.stream()
-                .anyMatch(i -> "isbn".equals(i.getScheme()) && "978-3-319-66787-4".equals(i.getValue())));
+        assertThat(identifiers.size()).isEqualTo(expectedIdentifierCount);
+        assertThat(identifiers.getFirst().getScheme()).isEqualTo("doi");
+        assertThat(identifiers.getFirst().getValue()).isEqualTo("10.1007/978-3-319-66787-4");
+        assertThat(identifiers)
+                .anyMatch(i -> "issn".equals(i.getScheme()) && "0302-9743".equals(i.getValue()));
+        assertThat(identifiers)
+                .anyMatch(i -> "issn".equals(i.getScheme()) && "1611-3349".equals(i.getValue()));
+        assertThat(identifiers)
+                .anyMatch(i -> "isbn".equals(i.getScheme()) && "978-3-319-66786-7".equals(i.getValue()));
+        assertThat(identifiers)
+                .anyMatch(i -> "isbn".equals(i.getScheme()) && "978-3-319-66787-4".equals(i.getValue()));
 
-        assertEquals("10529", product.getManifestations().getFirst().getBiblio().getVolume());
+        assertThat(product.getManifestations().getFirst().getBiblio().getVolume()).isEqualTo("10529");
     }
 
     @Test
@@ -196,21 +194,21 @@ class CrossrefToSkgIfMapperVenueTest {
                 "crossref-book-chapter-standalone.xml");
 
         VenueLite venue = (VenueLite) product.getManifestations().getFirst().getBiblio().getIn();
-        assertEquals("The Definitive Guide to Jakarta Faces in Jakarta EE 10", venue.getName());
-        assertEquals("https://doi.org/10.1007/978-1-4842-7310-4", venue.getLocalIdentifier());
+        assertThat(venue.getName()).isEqualTo("The Definitive Guide to Jakarta Faces in Jakarta EE 10");
+        assertThat(venue.getLocalIdentifier()).isEqualTo("https://doi.org/10.1007/978-1-4842-7310-4");
 
         List<VenueLiteAllOfIdentifiers> identifiers = venue.getIdentifiers();
         final int expectedIdentifierCount = 3;
-        assertEquals(expectedIdentifierCount, identifiers.size());
-        assertEquals("doi", identifiers.getFirst().getScheme());
-        assertEquals("10.1007/978-1-4842-7310-4", identifiers.getFirst().getValue());
-        assertTrue(identifiers.stream().noneMatch(i -> "issn".equals(i.getScheme())));
-        assertTrue(identifiers.stream()
-                .anyMatch(i -> "isbn".equals(i.getScheme()) && "978-1-4842-7309-8".equals(i.getValue())));
-        assertTrue(identifiers.stream()
-                .anyMatch(i -> "isbn".equals(i.getScheme()) && "978-1-4842-7310-4".equals(i.getValue())));
+        assertThat(identifiers.size()).isEqualTo(expectedIdentifierCount);
+        assertThat(identifiers.getFirst().getScheme()).isEqualTo("doi");
+        assertThat(identifiers.getFirst().getValue()).isEqualTo("10.1007/978-1-4842-7310-4");
+        assertThat(identifiers).noneMatch(i -> "issn".equals(i.getScheme()));
+        assertThat(identifiers)
+                .anyMatch(i -> "isbn".equals(i.getScheme()) && "978-1-4842-7309-8".equals(i.getValue()));
+        assertThat(identifiers)
+                .anyMatch(i -> "isbn".equals(i.getScheme()) && "978-1-4842-7310-4".equals(i.getValue()));
 
-        assertNull(product.getManifestations().getFirst().getBiblio().getVolume());
+        assertThat(product.getManifestations().getFirst().getBiblio().getVolume()).isNull();
     }
 
     @Test
@@ -226,21 +224,20 @@ class CrossrefToSkgIfMapperVenueTest {
                 "crossref-proceedings-article-with-series.xml");
 
         VenueLite venue = (VenueLite) product.getManifestations().getFirst().getBiblio().getIn();
-        assertEquals(
+        assertThat(venue.getName()).isEqualTo(
                 "Proceedings of the 4th International Conference on Innovative Research Across Disciplines " +
-                        "(ICIRAD 2021)",
-                venue.getName());
-        assertTrue(venue.getLocalIdentifier().startsWith("otf___"));
+                        "(ICIRAD 2021)");
+        assertThat(venue.getLocalIdentifier()).startsWith("otf___");
 
         List<VenueLiteAllOfIdentifiers> identifiers = venue.getIdentifiers();
-        assertEquals(2, identifiers.size());
-        assertTrue(identifiers.stream().noneMatch(i -> "doi".equals(i.getScheme())));
-        assertTrue(identifiers.stream()
-                .anyMatch(i -> "issn".equals(i.getScheme()) && "2352-5398".equals(i.getValue())));
-        assertTrue(identifiers.stream()
-                .anyMatch(i -> "isbn".equals(i.getScheme()) && "978-94-6239-490-2".equals(i.getValue())));
+        assertThat(identifiers.size()).isEqualTo(2);
+        assertThat(identifiers).noneMatch(i -> "doi".equals(i.getScheme()));
+        assertThat(identifiers)
+                .anyMatch(i -> "issn".equals(i.getScheme()) && "2352-5398".equals(i.getValue()));
+        assertThat(identifiers)
+                .anyMatch(i -> "isbn".equals(i.getScheme()) && "978-94-6239-490-2".equals(i.getValue()));
 
-        assertEquals("613", product.getManifestations().getFirst().getBiblio().getVolume());
+        assertThat(product.getManifestations().getFirst().getBiblio().getVolume()).isEqualTo("613");
     }
 
     @Test
@@ -254,15 +251,15 @@ class CrossrefToSkgIfMapperVenueTest {
                 "crossref-proceedings-article-standalone.xml");
 
         VenueLite venue = (VenueLite) product.getManifestations().getFirst().getBiblio().getIn();
-        assertEquals("Proceedings of the 1998 IEEE International Frequency Control Symposium (Cat. No.98CH36165)",
-                venue.getName());
-        assertTrue(venue.getLocalIdentifier().startsWith("otf___"));
+        assertThat(venue.getName()).isEqualTo(
+                "Proceedings of the 1998 IEEE International Frequency Control Symposium (Cat. No.98CH36165)");
+        assertThat(venue.getLocalIdentifier()).startsWith("otf___");
 
         List<VenueLiteAllOfIdentifiers> identifiers = venue.getIdentifiers();
-        assertEquals(1, identifiers.size());
-        assertEquals("isbn", identifiers.getFirst().getScheme());
-        assertEquals("0-7803-4373-5", identifiers.getFirst().getValue());
+        assertThat(identifiers.size()).isEqualTo(1);
+        assertThat(identifiers.getFirst().getScheme()).isEqualTo("isbn");
+        assertThat(identifiers.getFirst().getValue()).isEqualTo("0-7803-4373-5");
 
-        assertNull(product.getManifestations().getFirst().getBiblio().getVolume());
+        assertThat(product.getManifestations().getFirst().getBiblio().getVolume()).isNull();
     }
 }

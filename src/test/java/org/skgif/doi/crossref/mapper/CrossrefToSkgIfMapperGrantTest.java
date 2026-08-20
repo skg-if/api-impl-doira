@@ -1,8 +1,6 @@
 package org.skgif.doi.crossref.mapper;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,12 +47,12 @@ class CrossrefToSkgIfMapperGrantTest {
     void toGrant_mapsCoreFieldsFromRealGrantRecord() throws IOException {
         Grant grant = mapGrantFixture("crossref-grant.json");
 
-        assertEquals("https://doi.org/10.35802/218300", grant.getLocalIdentifier());
-        assertEquals("grant", grant.getEntityType().toString());
-        assertEquals(1, grant.getIdentifiers().size());
-        assertEquals("doi", grant.getIdentifiers().getFirst().getScheme());
-        assertEquals("10.35802/218300", grant.getIdentifiers().getFirst().getValue());
-        assertEquals("218300", grant.getGrantNumber());
+        assertThat(grant.getLocalIdentifier()).isEqualTo("https://doi.org/10.35802/218300");
+        assertThat(grant.getEntityType().toString()).isEqualTo("grant");
+        assertThat(grant.getIdentifiers().size()).isEqualTo(1);
+        assertThat(grant.getIdentifiers().getFirst().getScheme()).isEqualTo("doi");
+        assertThat(grant.getIdentifiers().getFirst().getValue()).isEqualTo("10.35802/218300");
+        assertThat(grant.getGrantNumber()).isEqualTo("218300");
     }
 
     @Test
@@ -63,27 +61,28 @@ class CrossrefToSkgIfMapperGrantTest {
         Grant grant = mapGrantFixture("crossref-grant.json");
 
         Map<String, String> titles = (Map<String, String>) grant.getTitles();
-        assertTrue(titles.get("en").contains("Biocontainment Level 2"));
+        assertThat(titles.get("en")).contains("Biocontainment Level 2");
 
         // Two project-description entries in the fixture, concatenated into one string since
         // Grant.abstracts (unlike Product.abstracts) is a plain string per language.
         Map<String, String> abstracts = (Map<String, String>) grant.getAbstracts();
-        assertTrue(abstracts.get("en").contains("Provision of cutting edge cell-sorter"));
-        assertTrue(abstracts.get("en").contains("Our bodies are composed of trillions"));
+        assertThat(abstracts.get("en")).contains("Provision of cutting edge cell-sorter");
+        assertThat(abstracts.get("en")).contains("Our bodies are composed of trillions");
     }
 
     @Test
     void toGrant_mapsFundingAgencyAmountCurrencyAndDurationExplicitly() throws IOException {
         Grant grant = mapGrantFixture("crossref-grant.json");
 
-        assertEquals("Wellcome Trust", grant.getFundingAgency().getName());
-        assertEquals("doi", grant.getFundingAgency().getIdentifiers().getFirst().getScheme());
-        assertEquals("10.13039/100010269", grant.getFundingAgency().getIdentifiers().getFirst().getValue());
+        assertThat(grant.getFundingAgency().getName()).isEqualTo("Wellcome Trust");
+        assertThat(grant.getFundingAgency().getIdentifiers().getFirst().getScheme()).isEqualTo("doi");
+        assertThat(grant.getFundingAgency().getIdentifiers().getFirst().getValue())
+                .isEqualTo("10.13039/100010269");
         final int expectedFundedAmount = 479450;
-        assertEquals(expectedFundedAmount, grant.getFundedAmount());
-        assertEquals("GBP", grant.getCurrency());
-        assertEquals("2019-11-01", grant.getDuration().getStart());
-        assertEquals("2024-10-31", grant.getDuration().getEnd());
+        assertThat(grant.getFundedAmount()).isEqualTo(expectedFundedAmount);
+        assertThat(grant.getCurrency()).isEqualTo("GBP");
+        assertThat(grant.getDuration().getStart()).isEqualTo("2019-11-01");
+        assertThat(grant.getDuration().getEnd()).isEqualTo("2024-10-31");
     }
 
     @Test
@@ -91,24 +90,25 @@ class CrossrefToSkgIfMapperGrantTest {
         Grant grant = mapGrantFixture("crossref-grant.json");
 
         final int expectedInvestigatorCount = 9;
-        assertEquals(expectedInvestigatorCount, grant.getContributions().size());
+        assertThat(grant.getContributions().size()).isEqualTo(expectedInvestigatorCount);
         GrantContribution lead = (GrantContribution) grant.getContributions().stream()
                 .filter(c -> "Halim".equals(((PersonLite) ((GrantContribution) c).getBy()).getFamilyName()))
                 .findFirst()
                 .orElseThrow();
-        assertEquals(Collections.singletonList(GrantContribution.RolesEnum.LEAD_APPLICANT), lead.getRoles());
+        assertThat(lead.getRoles()).isEqualTo(Collections.singletonList(GrantContribution.RolesEnum.LEAD_APPLICANT));
         PersonLite leadBy = (PersonLite) lead.getBy();
-        assertEquals("orcid", leadBy.getIdentifiers().getFirst().getScheme());
-        assertEquals("0000-0001-9773-0023", leadBy.getIdentifiers().getFirst().getValue());
+        assertThat(leadBy.getIdentifiers().getFirst().getScheme()).isEqualTo("orcid");
+        assertThat(leadBy.getIdentifiers().getFirst().getValue()).isEqualTo("0000-0001-9773-0023");
 
         GrantContribution coApplicant = (GrantContribution) grant.getContributions().stream()
                 .filter(c -> "Caldas".equals(((PersonLite) ((GrantContribution) c).getBy()).getFamilyName()))
                 .findFirst()
                 .orElseThrow();
-        assertEquals(Collections.singletonList(GrantContribution.RolesEnum.CO_APPLICANT), coApplicant.getRoles());
+        assertThat(coApplicant.getRoles())
+                .isEqualTo(Collections.singletonList(GrantContribution.RolesEnum.CO_APPLICANT));
         Organisation coApplicantAffiliation = (Organisation) coApplicant.getDeclaredAffiliations().getFirst();
-        assertEquals("ror", coApplicantAffiliation.getIdentifiers().getFirst().getScheme());
-        assertEquals("013meh722", coApplicantAffiliation.getIdentifiers().getFirst().getValue());
+        assertThat(coApplicantAffiliation.getIdentifiers().getFirst().getScheme()).isEqualTo("ror");
+        assertThat(coApplicantAffiliation.getIdentifiers().getFirst().getValue()).isEqualTo("013meh722");
     }
 
     @Test
@@ -118,9 +118,9 @@ class CrossrefToSkgIfMapperGrantTest {
         // 3 distinct institutions appear across 9 investigators (University of Cambridge
         // repeats 6 times) - beneficiaries must be deduped by name.
         final int expectedDistinctInstitutionCount = 3;
-        assertEquals(expectedDistinctInstitutionCount, grant.getBeneficiaries().size());
-        assertTrue(grant.getBeneficiaries().stream()
-                .anyMatch(b -> "University of Cambridge".equals(((Organisation) b).getName())));
+        assertThat(grant.getBeneficiaries().size()).isEqualTo(expectedDistinctInstitutionCount);
+        assertThat(grant.getBeneficiaries())
+                .anyMatch(b -> "University of Cambridge".equals(((Organisation) b).getName()));
     }
 
     @Test
@@ -128,6 +128,6 @@ class CrossrefToSkgIfMapperGrantTest {
         // No Crossref grant-schema field found for this - left unset rather than guessed at.
         Grant grant = mapGrantFixture("crossref-grant.json");
 
-        assertNull(grant.getAcronym());
+        assertThat(grant.getAcronym()).isNull();
     }
 }

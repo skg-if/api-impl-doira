@@ -1,9 +1,6 @@
 package org.skgif.doi.medra.mapper;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,14 +35,14 @@ class MedraToSkgIfMapperTest {
     void namesBeforeKeyAndKeyNamesTakePrecedenceWhenAllFourNameFieldsArePresent() throws IOException {
         Product product = mapFixture("medra-mixed-name-shapes.xml");
 
-        assertEquals("https://doi.org/10.19276/plinius.2019.01004", product.getLocalIdentifier());
+        assertThat(product.getLocalIdentifier()).isEqualTo("https://doi.org/10.19276/plinius.2019.01004");
         List<ProductContribution> contributions = product.getContributions();
-        assertEquals(1, contributions.size());
+        assertThat(contributions.size()).isEqualTo(1);
         PersonLite person = (PersonLite) contributions.getFirst().getBy();
-        assertEquals("Daniela D'Alessio", person.getName());
-        assertEquals("Daniela", person.getGivenName());
-        assertEquals("D'Alessio", person.getFamilyName());
-        assertEquals(ProductContribution.RoleEnum.AUTHOR, contributions.getFirst().getRole());
+        assertThat(person.getName()).isEqualTo("Daniela D'Alessio");
+        assertThat(person.getGivenName()).isEqualTo("Daniela");
+        assertThat(person.getFamilyName()).isEqualTo("D'Alessio");
+        assertThat(contributions.getFirst().getRole()).isEqualTo(ProductContribution.RoleEnum.AUTHOR);
     }
 
     @Test
@@ -53,12 +50,12 @@ class MedraToSkgIfMapperTest {
         Product product = mapFixture("medra-version-message-book-series.xml");
 
         List<ProductContribution> contributions = product.getContributions();
-        assertEquals(2, contributions.size());
+        assertThat(contributions.size()).isEqualTo(2);
         PersonLite first = (PersonLite) contributions.getFirst().getBy();
-        assertEquals("Cotte M.", first.getName());
-        assertNull(first.getGivenName());
-        assertNull(first.getFamilyName());
-        assertNotNull(product.getAbstracts());
+        assertThat(first.getName()).isEqualTo("Cotte M.");
+        assertThat(first.getGivenName()).isNull();
+        assertThat(first.getFamilyName()).isNull();
+        assertThat(product.getAbstracts()).isNotNull();
     }
 
     @Test
@@ -66,18 +63,18 @@ class MedraToSkgIfMapperTest {
         Product product = mapFixture("medra-personname-inverted-only.xml");
 
         List<ProductContribution> contributions = product.getContributions();
-        assertEquals(1, contributions.size());
+        assertThat(contributions.size()).isEqualTo(1);
         PersonLite person = (PersonLite) contributions.getFirst().getBy();
-        assertEquals("Giovanna Fragneto", person.getName());
-        assertEquals("Giovanna", person.getGivenName());
-        assertEquals("Fragneto", person.getFamilyName());
+        assertThat(person.getName()).isEqualTo("Giovanna Fragneto");
+        assertThat(person.getGivenName()).isEqualTo("Giovanna");
+        assertThat(person.getFamilyName()).isEqualTo("Fragneto");
     }
 
     @Test
     void mapsEmptyContributionsToEmptyListWhenNoContributorExists() throws IOException {
         Product product = mapFixture("medra-no-contributors.xml");
 
-        assertTrue(product.getContributions().isEmpty());
+        assertThat(product.getContributions()).isEmpty();
     }
 
     @Test
@@ -86,21 +83,22 @@ class MedraToSkgIfMapperTest {
 
         Object titles = product.getTitles();
         @SuppressWarnings("unchecked") var titlesMap = (java.util.Map<String, List<String>>) titles;
-        assertEquals(List.of("Transverse THz dynamics of phospholipid membranes: A neutron scattering study"),
-                titlesMap.get("en"));
+        assertThat(titlesMap.get("en"))
+                .isEqualTo(List.of("Transverse THz dynamics of phospholipid membranes: A neutron scattering study"));
     }
 
     @Test
     void mapsPublicationDateOfVaryingPrecisionToIsoForm() throws IOException {
         // "medra-mixed-name-shapes.xml"'s PublicationDate is year-only ("2019").
         Product yearOnly = mapFixture("medra-mixed-name-shapes.xml");
-        assertEquals(List.of("2019"), yearOnly.getManifestations().getFirst().getDates().getPublication());
+        assertThat(yearOnly.getManifestations().getFirst().getDates().getPublication()).isEqualTo(List.of("2019"));
 
         // "medra-no-contributors.xml"'s PublicationDate is a full 8-digit date ("20210813").
         // "medra-version-message-book-series.xml" has no PublicationDate at all (only
         // JournalIssueDate, which is deliberately not mapped - see MedraManifestationMapper#isoDate).
         Product fullDate = mapFixture("medra-no-contributors.xml");
-        assertEquals(List.of("2021-08-13"), fullDate.getManifestations().getFirst().getDates().getPublication());
+        assertThat(fullDate.getManifestations().getFirst().getDates().getPublication())
+                .isEqualTo(List.of("2021-08-13"));
     }
 
     @Test
@@ -108,39 +106,40 @@ class MedraToSkgIfMapperTest {
         Product product = mapFixture("medra-multiple-product-identifiers.xml");
 
         List<ProductContribution> contributions = product.getContributions();
-        assertEquals(1, contributions.size());
+        assertThat(contributions.size()).isEqualTo(1);
         PersonLite person = (PersonLite) contributions.getFirst().getBy();
-        assertEquals("Maria Helena Camara Bastos", person.getName());
-        assertEquals("Maria Helena", person.getGivenName());
-        assertEquals("Camara Bastos", person.getFamilyName());
+        assertThat(person.getName()).isEqualTo("Maria Helena Camara Bastos");
+        assertThat(person.getGivenName()).isEqualTo("Maria Helena");
+        assertThat(person.getFamilyName()).isEqualTo("Camara Bastos");
 
         VenueLite venue = (VenueLite) product.getManifestations().getFirst().getBiblio().getIn();
-        assertEquals(List.of("19711131"), venue.getIdentifiers().stream()
-                .map(org.skgif.doi.generated.model.VenueLiteAllOfIdentifiers::getValue).toList());
+        assertThat(venue.getIdentifiers().stream()
+                .map(org.skgif.doi.generated.model.VenueLiteAllOfIdentifiers::getValue).toList())
+                .isEqualTo(List.of("19711131"));
 
         // No PublicationDate on this ContentItem at all - dates must be omitted, not fabricated
         // from the JournalIssueDate.
-        assertNull(product.getManifestations().getFirst().getDates());
+        assertThat(product.getManifestations().getFirst().getDates()).isNull();
     }
 
     @Test
     void mapsProductTypeAsLiteratureAndVenueFromJournalTitleAndIssn() throws IOException {
         Product product = mapFixture("medra-mixed-name-shapes.xml");
 
-        assertEquals(Product.ProductTypeEnum.LITERATURE, product.getProductType());
+        assertThat(product.getProductType()).isEqualTo(Product.ProductTypeEnum.LITERATURE);
         VenueLite venue = (VenueLite) product.getManifestations().getFirst().getBiblio().getIn();
-        assertEquals("Plinius", venue.getName());
+        assertThat(venue.getName()).isEqualTo("Plinius");
     }
 
     @Test
     void mapsManifestationTypeLabelFromTheRecordsOwnWrapperElementName() throws IOException {
         // WorkRegistrationMessage variant - wrapped in DOISerialArticleWork.
         Product workVariant = mapFixture("medra-mixed-name-shapes.xml");
-        assertEquals("DOISerialArticleWork", manifestationTypeLabel(workVariant));
+        assertThat(manifestationTypeLabel(workVariant)).isEqualTo("DOISerialArticleWork");
 
         // VersionRegistrationMessage variant - wrapped in DOISerialArticleVersion, not Work.
         Product versionVariant = mapFixture("medra-version-message-book-series.xml");
-        assertEquals("DOISerialArticleVersion", manifestationTypeLabel(versionVariant));
+        assertThat(manifestationTypeLabel(versionVariant)).isEqualTo("DOISerialArticleVersion");
     }
 
     @SuppressWarnings("unchecked")

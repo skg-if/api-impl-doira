@@ -1,6 +1,7 @@
 package org.skgif.doi.rest;
 
 import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -607,9 +608,10 @@ class ProductsGoldenTest {
 
         var expected = objectMapper.readTree(getClass().getClassLoader().getResourceAsStream(expectedResource));
 
-        org.junit.jupiter.api.Assertions.assertEquals(expected, actual,
-                "Actual JSON-LD output no longer matches " + expectedResource +
+        assertThat(actual)
+                .as("Actual JSON-LD output no longer matches " + expectedResource +
                         ". If this change is intentional: mvn test -Dtest=ProductsGoldenTest" +
-                        " -Dgolden.regenerate=true, then review the diff before committing.");
+                        " -Dgolden.regenerate=true, then review the diff before committing.")
+                .isEqualTo(expected);
     }
 }

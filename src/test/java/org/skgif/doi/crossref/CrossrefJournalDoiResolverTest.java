@@ -1,8 +1,7 @@
 package org.skgif.doi.crossref;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -43,14 +42,14 @@ class CrossrefJournalDoiResolverTest {
 
     @Test
     void resolvesToNullIssnList() {
-        assertEquals(Optional.empty(), resolver.resolveJournalDoi(null));
+        assertThat(resolver.resolveJournalDoi(null)).isEqualTo(Optional.empty());
         verifyNoInteractions(crossrefClient);
     }
 
     @Test
     void resolvesToEmptyForBlankOrEmptyIssns() {
-        assertEquals(Optional.empty(), resolver.resolveJournalDoi(List.of()));
-        assertEquals(Optional.empty(), resolver.resolveJournalDoi(List.of(" ", "")));
+        assertThat(resolver.resolveJournalDoi(List.of())).isEqualTo(Optional.empty());
+        assertThat(resolver.resolveJournalDoi(List.of(" ", ""))).isEqualTo(Optional.empty());
         verifyNoInteractions(crossrefClient);
     }
 
@@ -63,7 +62,7 @@ class CrossrefJournalDoiResolverTest {
 
         Optional<String> resolved = resolver.resolveJournalDoi(List.of("0028-0836", "1476-4687"));
 
-        assertEquals(Optional.of("10.1038/print-doi"), resolved);
+        assertThat(resolved).isEqualTo(Optional.of("10.1038/print-doi"));
     }
 
     @Test
@@ -75,7 +74,7 @@ class CrossrefJournalDoiResolverTest {
 
         Optional<String> resolved = resolver.resolveJournalDoi(List.of("0028-0836", "1476-4687"));
 
-        assertEquals(Optional.of("10.1038/electronic-doi"), resolved);
+        assertThat(resolved).isEqualTo(Optional.of("10.1038/electronic-doi"));
     }
 
     /**
@@ -105,7 +104,7 @@ class CrossrefJournalDoiResolverTest {
         Optional<String> resolved = assertTimeoutPreemptively(Duration.ofSeconds(TEST_TIMEOUT_SECONDS),
                 () -> resolver.resolveJournalDoi(List.of("0028-0836", "1476-4687")));
 
-        assertEquals(Optional.of("10.1038/electronic-doi"), resolved);
+        assertThat(resolved).isEqualTo(Optional.of("10.1038/electronic-doi"));
     }
 
     // Restoring the interrupt flag on a test-helper thread (mirrors CrossrefJournalDoiResolver's
@@ -114,8 +113,9 @@ class CrossrefJournalDoiResolverTest {
     @SuppressWarnings("PMD.DoNotUseThreads")
     private static void awaitOrFail(CountDownLatch latch) {
         try {
-            assertTrue(latch.await(TEST_TIMEOUT_SECONDS, TimeUnit.SECONDS),
-                    "both ISSN lookups should have started concurrently");
+            assertThat(latch.await(TEST_TIMEOUT_SECONDS, TimeUnit.SECONDS))
+                    .as("both ISSN lookups should have started concurrently")
+                    .isTrue();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new AssertionError("interrupted while waiting for concurrent lookups", e);

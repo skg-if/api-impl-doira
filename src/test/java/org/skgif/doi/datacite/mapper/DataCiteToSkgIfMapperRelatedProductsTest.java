@@ -1,8 +1,6 @@
 package org.skgif.doi.datacite.mapper;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
@@ -40,11 +38,11 @@ class DataCiteToSkgIfMapperRelatedProductsTest {
         // "IsPartOf" ISSN, which now does surface as related_products.is_part_of.
         Product product = mapFixture("datacite-zenodo-editor-21232199.json");
 
-        assertNull(product.getRelatedProducts().getCites());
-        assertEquals(1, product.getRelatedProducts().getIsPartOf().size());
+        assertThat(product.getRelatedProducts().getCites()).isNull();
+        assertThat(product.getRelatedProducts().getIsPartOf()).hasSize(1);
         ProductsRelatedItem isPartOf = (ProductsRelatedItem) product.getRelatedProducts().getIsPartOf().getFirst();
-        assertEquals("issn", isPartOf.getIdentifiers().getFirst().getScheme());
-        assertEquals("2230-9578", isPartOf.getIdentifiers().getFirst().getValue());
+        assertThat(isPartOf.getIdentifiers().getFirst().getScheme()).isEqualTo("issn");
+        assertThat(isPartOf.getIdentifiers().getFirst().getValue()).isEqualTo("2230-9578");
     }
 
     // datacite-zenodo-cites-references-21914195.json: a real Zenodo deposit (DOI
@@ -62,11 +60,10 @@ class DataCiteToSkgIfMapperRelatedProductsTest {
         // (still unmodeled) must not add any more, and "IsPartOf"/"IsDocumentedBy" land in
         // their own fields rather than here.
         final int expectedCitesCount = 3;
-        assertEquals(expectedCitesCount, product.getRelatedProducts().getCites().size());
-        boolean hasReferencesEntry = product.getRelatedProducts().getCites().stream()
+        assertThat(product.getRelatedProducts().getCites()).hasSize(expectedCitesCount);
+        assertThat(product.getRelatedProducts().getCites())
                 .anyMatch(c -> "https://doi.org/10.5281/zenodo.21913675"
                         .equals(((ProductsRelatedItem) c).getLocalIdentifier()));
-        assertTrue(hasReferencesEntry);
     }
 
     @Test
@@ -79,8 +76,8 @@ class DataCiteToSkgIfMapperRelatedProductsTest {
                 .filter(c -> ((ProductsRelatedItem) c).getLocalIdentifier().startsWith("otf___"))
                 .findFirst()
                 .orElseThrow();
-        assertEquals("isbn", isbnCite.getIdentifiers().getFirst().getScheme());
-        assertEquals("978-963-281-509-1", isbnCite.getIdentifiers().getFirst().getValue());
+        assertThat(isbnCite.getIdentifiers().getFirst().getScheme()).isEqualTo("isbn");
+        assertThat(isbnCite.getIdentifiers().getFirst().getValue()).isEqualTo("978-963-281-509-1");
     }
 
     // datacite-zenodo-relations-21827103.json: a real Zenodo dataset (DOI
@@ -95,20 +92,20 @@ class DataCiteToSkgIfMapperRelatedProductsTest {
         Product product = mapFixture("datacite-zenodo-relations-21827103.json");
         var related = product.getRelatedProducts();
 
-        assertEquals(1, related.getIsSupplementedBy().size());
+        assertThat(related.getIsSupplementedBy()).hasSize(1);
         ProductsRelatedItem isSupplementedBy = (ProductsRelatedItem) related.getIsSupplementedBy().getFirst();
-        assertEquals("url", isSupplementedBy.getIdentifiers().getFirst().getScheme());
-        assertEquals("https://github.com/vicgos/MICRO", isSupplementedBy.getIdentifiers().getFirst().getValue());
+        assertThat(isSupplementedBy.getIdentifiers().getFirst().getScheme()).isEqualTo("url");
+        assertThat(isSupplementedBy.getIdentifiers().getFirst().getValue())
+                .isEqualTo("https://github.com/vicgos/MICRO");
 
-        assertEquals(1, related.getIsDocumentedBy().size());
-        assertEquals("handle",
-                ((ProductsRelatedItem) related.getIsDocumentedBy().getFirst()).getIdentifiers().getFirst().getScheme());
+        assertThat(related.getIsDocumentedBy()).hasSize(1);
+        assertThat(((ProductsRelatedItem) related.getIsDocumentedBy().getFirst()).getIdentifiers().getFirst()
+                .getScheme()).isEqualTo("handle");
 
-        assertEquals(2, related.getIsNewVersionOf().size());
-        boolean hasNsdVersion = related.getIsNewVersionOf().stream()
+        assertThat(related.getIsNewVersionOf()).hasSize(2);
+        assertThat(related.getIsNewVersionOf())
                 .anyMatch(r -> "10.18712/NSD-NSD2457-V3"
                         .equals(((ProductsRelatedItem) r).getIdentifiers().getFirst().getValue()));
-        assertTrue(hasNsdVersion);
     }
 
     @Test
@@ -116,11 +113,10 @@ class DataCiteToSkgIfMapperRelatedProductsTest {
         Product product = mapFixture("datacite-zenodo-relations-21827103.json");
         var related = product.getRelatedProducts();
 
-        assertEquals(2, related.getIsPartOf().size());
-        boolean hasKnownPart = related.getIsPartOf().stream()
+        assertThat(related.getIsPartOf()).hasSize(2);
+        assertThat(related.getIsPartOf())
                 .anyMatch(r -> "https://doi.org/10.5281/zenodo.21827101"
                         .equals(((ProductsRelatedItem) r).getLocalIdentifier()));
-        assertTrue(hasKnownPart);
     }
 
     @Test
@@ -131,9 +127,9 @@ class DataCiteToSkgIfMapperRelatedProductsTest {
         // "IsSupplementTo" and "IsSupplementedBy" both target the same identifier (10852/56047)
         // in this fixture, so a substring/prefix mixup would silently double it into
         // is_supplemented_by - it must appear there exactly once, from "IsSupplementedBy" only.
-        assertEquals(1, related.getIsSupplementedBy().size());
+        assertThat(related.getIsSupplementedBy()).hasSize(1);
         // Neither "IsSupplementTo" nor "HasVersion" have a related_products field at all -
         // cites/citedBy stay null, not just empty.
-        assertNull(related.getCites());
+        assertThat(related.getCites()).isNull();
     }
 }

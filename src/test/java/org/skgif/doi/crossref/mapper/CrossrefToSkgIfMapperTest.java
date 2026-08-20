@@ -1,9 +1,6 @@
 package org.skgif.doi.crossref.mapper;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,7 +21,11 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class CrossrefToSkgIfMapperTest {
 
@@ -52,12 +53,12 @@ class CrossrefToSkgIfMapperTest {
     void mapsCoreFieldsFromRealJournalArticle() throws IOException {
         Product product = mapFixture("crossref-journal-article.json");
 
-        assertEquals("https://doi.org/10.1038/nature12373", product.getLocalIdentifier());
-        assertEquals("product", product.getEntityType());
-        assertEquals(Product.ProductTypeEnum.LITERATURE, product.getProductType());
-        assertEquals(1, product.getIdentifiers().size());
-        assertEquals("doi", product.getIdentifiers().getFirst().getScheme());
-        assertEquals("10.1038/nature12373", product.getIdentifiers().getFirst().getValue());
+        assertThat(product.getLocalIdentifier()).isEqualTo("https://doi.org/10.1038/nature12373");
+        assertThat(product.getEntityType()).isEqualTo("product");
+        assertThat(product.getProductType()).isEqualTo(Product.ProductTypeEnum.LITERATURE);
+        assertThat(product.getIdentifiers().size()).isEqualTo(1);
+        assertThat(product.getIdentifiers().getFirst().getScheme()).isEqualTo("doi");
+        assertThat(product.getIdentifiers().getFirst().getValue()).isEqualTo("10.1038/nature12373");
     }
 
     @Test
@@ -66,28 +67,37 @@ class CrossrefToSkgIfMapperTest {
         Product product = mapFixture("crossref-journal-article.json");
 
         Map<String, List<String>> titles = (Map<String, List<String>>) product.getTitles();
-        assertTrue(titles.get("en").getFirst().contains("Nanometre-scale thermometry"));
+        assertThat(titles.get("en").getFirst()).contains("Nanometre-scale thermometry");
     }
 
-    @Test
-    void mapsResourceTypeToProductType() throws IOException {
-        assertEquals(Product.ProductTypeEnum.LITERATURE, mapFixture("crossref-journal-article.json").getProductType());
-        assertEquals(Product.ProductTypeEnum.RESEARCH_DATA, mapFixture("crossref-dataset.json").getProductType());
+    @ParameterizedTest
+    @MethodSource("resourceTypeToProductTypeFixtures")
+    void mapsResourceTypeToProductType(String fixtureName,
+            Product.ProductTypeEnum expectedProductType) throws IOException {
+        Product.ProductTypeEnum actualProductType = mapFixture(fixtureName).getProductType();
+
+        assertThat(actualProductType).isEqualTo(expectedProductType);
+    }
+
+    private static Stream<Arguments> resourceTypeToProductTypeFixtures() {
+        return Stream.of(
+                Arguments.of("crossref-journal-article.json", Product.ProductTypeEnum.LITERATURE),
+                Arguments.of("crossref-dataset.json", Product.ProductTypeEnum.RESEARCH_DATA));
     }
 
     @Test
     void mapsAuthorsAsAuthorContributionsWithoutOrcidWhenAbsent() throws IOException {
         Product product = mapFixture("crossref-journal-article.json");
 
-        assertFalse(product.getContributions().isEmpty());
+        assertThat(product.getContributions()).isNotEmpty();
         ProductContribution first = product.getContributions().getFirst();
-        assertEquals(ProductContribution.RoleEnum.AUTHOR, first.getRole());
-        assertEquals(1, first.getRank());
+        assertThat(first.getRole()).isEqualTo(ProductContribution.RoleEnum.AUTHOR);
+        assertThat(first.getRank()).isEqualTo(1);
         PersonLite by = (PersonLite) first.getBy();
-        assertEquals("G.", by.getGivenName());
-        assertEquals("Kucsko", by.getFamilyName());
+        assertThat(by.getGivenName()).isEqualTo("G.");
+        assertThat(by.getFamilyName()).isEqualTo("Kucsko");
         // This fixture's authors carry no ORCID - local_identifier falls back to an otf id.
-        assertTrue(by.getLocalIdentifier().startsWith("otf___"));
+        assertThat(by.getLocalIdentifier()).startsWith("otf___");
     }
 
     @Test
@@ -95,7 +105,7 @@ class CrossrefToSkgIfMapperTest {
         // Crossref has no software-versioning concept - left unset rather than guessed at.
         Product product = mapFixture("crossref-journal-article.json");
 
-        assertNull(product.getManifestations().getFirst().getVersion());
+        assertThat(product.getManifestations().getFirst().getVersion()).isNull();
     }
 
     // crossref-journal-article-with-orcid.json: a real Nature Communications article (DOI
@@ -107,9 +117,9 @@ class CrossrefToSkgIfMapperTest {
     void mapsCoreFieldsFromRealArticleWithOrcidAuthors() throws IOException {
         Product product = mapFixture("crossref-journal-article-with-orcid.json");
 
-        assertEquals("https://doi.org/10.1038/s41467-022-33468-6", product.getLocalIdentifier());
-        assertEquals(Product.ProductTypeEnum.LITERATURE, product.getProductType());
-        assertEquals("10.1038/s41467-022-33468-6", product.getIdentifiers().getFirst().getValue());
+        assertThat(product.getLocalIdentifier()).isEqualTo("https://doi.org/10.1038/s41467-022-33468-6");
+        assertThat(product.getProductType()).isEqualTo(Product.ProductTypeEnum.LITERATURE);
+        assertThat(product.getIdentifiers().getFirst().getValue()).isEqualTo("10.1038/s41467-022-33468-6");
     }
 
     @Test
@@ -118,17 +128,16 @@ class CrossrefToSkgIfMapperTest {
 
         ProductContribution first = product.getContributions().getFirst();
         PersonLite by = (PersonLite) first.getBy();
-        assertEquals("M. C.", by.getGivenName());
-        assertEquals("Rahn", by.getFamilyName());
-        assertEquals("https://orcid.org/0000-0001-7403-8288", by.getLocalIdentifier());
-        assertEquals("orcid", by.getIdentifiers().getFirst().getScheme());
-        assertEquals("0000-0001-7403-8288", by.getIdentifiers().getFirst().getValue());
+        assertThat(by.getGivenName()).isEqualTo("M. C.");
+        assertThat(by.getFamilyName()).isEqualTo("Rahn");
+        assertThat(by.getLocalIdentifier()).isEqualTo("https://orcid.org/0000-0001-7403-8288");
+        assertThat(by.getIdentifiers().getFirst().getScheme()).isEqualTo("orcid");
+        assertThat(by.getIdentifiers().getFirst().getValue()).isEqualTo("0000-0001-7403-8288");
 
         // This fixture also has authors without an ORCID (e.g. "A. Hariki") interspersed among
         // the ORCID-bearing ones - those must still fall back to an otf id, not be skipped.
-        boolean hasOtfAuthor = product.getContributions().stream()
+        assertThat(product.getContributions())
                 .anyMatch(c -> ((PersonLite) c.getBy()).getLocalIdentifier().startsWith("otf___"));
-        assertTrue(hasOtfAuthor);
     }
 
     // crossref-proceedings-article.json: a real conference-proceedings record (DOI
@@ -140,17 +149,17 @@ class CrossrefToSkgIfMapperTest {
     void mapsCoreFieldsFromRealProceedingsArticle() throws IOException {
         Product product = mapFixture("crossref-proceedings-article.json");
 
-        assertEquals("https://doi.org/10.17537/icmbb18.42", product.getLocalIdentifier());
-        assertEquals(Product.ProductTypeEnum.LITERATURE, product.getProductType());
-        assertEquals("10.17537/icmbb18.42", product.getIdentifiers().getFirst().getValue());
+        assertThat(product.getLocalIdentifier()).isEqualTo("https://doi.org/10.17537/icmbb18.42");
+        assertThat(product.getProductType()).isEqualTo(Product.ProductTypeEnum.LITERATURE);
+        assertThat(product.getIdentifiers().getFirst().getValue()).isEqualTo("10.17537/icmbb18.42");
     }
 
     @Test
     void doesNotFabricateAccessRightsWhenNoLicensePresent() throws IOException {
         Product product = mapFixture("crossref-proceedings-article.json");
 
-        assertNull(product.getManifestations().getFirst().getAccessRights());
-        assertNull(product.getManifestations().getFirst().getLicence());
+        assertThat(product.getManifestations().getFirst().getAccessRights()).isNull();
+        assertThat(product.getManifestations().getFirst().getLicence()).isNull();
     }
 
     // crossref-journal-article-with-ror-affiliation.json: a real Physical Review B article
@@ -164,17 +173,17 @@ class CrossrefToSkgIfMapperTest {
         Product product = mapFixture("crossref-journal-article-with-ror-affiliation.json");
 
         ProductContribution first = product.getContributions().getFirst();
-        assertEquals("di Mauro", ((PersonLite) first.getBy()).getFamilyName());
+        assertThat(((PersonLite) first.getBy()).getFamilyName()).isEqualTo("di Mauro");
         // This fixture's authors carry no ORCID at all - only their affiliations carry a ROR -
         // so the person's own local_identifier still falls back to an otf id.
-        assertTrue(((PersonLite) first.getBy()).getLocalIdentifier().startsWith("otf___"));
+        assertThat(((PersonLite) first.getBy()).getLocalIdentifier()).startsWith("otf___");
 
         Organisation affiliation = (Organisation) first.getDeclaredAffiliations().getFirst();
-        assertEquals(2, first.getDeclaredAffiliations().size());
-        assertEquals("https://ror.org/00tmb7y09", affiliation.getLocalIdentifier());
-        assertEquals("ror", affiliation.getIdentifiers().getFirst().getScheme());
-        assertEquals("00tmb7y09", affiliation.getIdentifiers().getFirst().getValue());
-        assertEquals("Laboratoire de Chimie Théorique", affiliation.getName());
+        assertThat(first.getDeclaredAffiliations().size()).isEqualTo(2);
+        assertThat(affiliation.getLocalIdentifier()).isEqualTo("https://ror.org/00tmb7y09");
+        assertThat(affiliation.getIdentifiers().getFirst().getScheme()).isEqualTo("ror");
+        assertThat(affiliation.getIdentifiers().getFirst().getValue()).isEqualTo("00tmb7y09");
+        assertThat(affiliation.getName()).isEqualTo("Laboratoire de Chimie Théorique");
     }
 
     @Test
@@ -184,20 +193,20 @@ class CrossrefToSkgIfMapperTest {
         // 4 funder entries in the fixture, two of which are the same "Horizon 2020" funder with
         // two different award numbers - each award must surface as its own funding entry.
         final int expectedFundingCount = 4;
-        assertEquals(expectedFundingCount, product.getFunding().size());
+        assertThat(product.getFunding().size()).isEqualTo(expectedFundingCount);
         List<GrantLite> horizon2020Entries = product.getFunding().stream()
                 .map(f -> (GrantLite) f)
                 .filter(f -> "Horizon 2020".equals(f.getFundingAgency().getName()))
                 .toList();
-        assertEquals(2, horizon2020Entries.size());
-        assertTrue(horizon2020Entries.stream().anyMatch(f -> "810367".equals(f.getGrantNumber())));
-        assertTrue(horizon2020Entries.stream().anyMatch(f -> "802533".equals(f.getGrantNumber())));
+        assertThat(horizon2020Entries.size()).isEqualTo(2);
+        assertThat(horizon2020Entries).anyMatch(f -> "810367".equals(f.getGrantNumber()));
+        assertThat(horizon2020Entries).anyMatch(f -> "802533".equals(f.getGrantNumber()));
 
         // Unlike crossref-journal-article-with-funder.json's funder (no Funder Registry DOI at
         // all), this fixture's funders carry one directly on the top-level funder[] entry.
         var fundingAgency = horizon2020Entries.getFirst().getFundingAgency();
-        assertEquals("doi", fundingAgency.getIdentifiers().getFirst().getScheme());
-        assertEquals("10.13039/501100007601", fundingAgency.getIdentifiers().getFirst().getValue());
+        assertThat(fundingAgency.getIdentifiers().getFirst().getScheme()).isEqualTo("doi");
+        assertThat(fundingAgency.getIdentifiers().getFirst().getValue()).isEqualTo("10.13039/501100007601");
     }
 
     // crossref-book-chapter.json: a real book chapter (DOI 10.1007/978-3-319-66787-4_9,
@@ -209,9 +218,9 @@ class CrossrefToSkgIfMapperTest {
     void mapsCoreFieldsFromRealBookChapter() throws IOException {
         Product product = mapFixture("crossref-book-chapter.json");
 
-        assertEquals("https://doi.org/10.1007/978-3-319-66787-4_9", product.getLocalIdentifier());
-        assertEquals(Product.ProductTypeEnum.LITERATURE, product.getProductType());
-        assertEquals("10.1007/978-3-319-66787-4_9", product.getIdentifiers().getFirst().getValue());
+        assertThat(product.getLocalIdentifier()).isEqualTo("https://doi.org/10.1007/978-3-319-66787-4_9");
+        assertThat(product.getProductType()).isEqualTo(Product.ProductTypeEnum.LITERATURE);
+        assertThat(product.getIdentifiers().getFirst().getValue()).isEqualTo("10.1007/978-3-319-66787-4_9");
     }
 
     @Test
@@ -222,13 +231,13 @@ class CrossrefToSkgIfMapperTest {
         // ranked after every author.
         final int authorCount = 6;
         List<ProductContribution> contributions = product.getContributions();
-        assertEquals(authorCount + 1, contributions.size());
+        assertThat(contributions.size()).isEqualTo(authorCount + 1);
         ProductContribution publisherContribution = contributions.get(authorCount);
-        assertEquals(ProductContribution.RoleEnum.PUBLISHER, publisherContribution.getRole());
-        assertEquals(authorCount + 1, publisherContribution.getRank());
+        assertThat(publisherContribution.getRole()).isEqualTo(ProductContribution.RoleEnum.PUBLISHER);
+        assertThat(publisherContribution.getRank()).isEqualTo(authorCount + 1);
         Organisation publisherBy = (Organisation) publisherContribution.getBy();
-        assertEquals("Springer International Publishing", publisherBy.getName());
-        assertTrue(publisherBy.getLocalIdentifier().startsWith("otf___"));
+        assertThat(publisherBy.getName()).isEqualTo("Springer International Publishing");
+        assertThat(publisherBy.getLocalIdentifier()).startsWith("otf___");
     }
 
     @Test
@@ -237,8 +246,8 @@ class CrossrefToSkgIfMapperTest {
 
         Map<String, List<String>> abstracts = (Map<String, List<String>>) product.getAbstracts();
         String abstractText = abstracts.get("en").getFirst();
-        assertTrue(abstractText.contains("Lissajous scanner"));
-        assertFalse(abstractText.contains("<jats:p>"));
+        assertThat(abstractText).contains("Lissajous scanner");
+        assertThat(abstractText).doesNotContain("<jats:p>");
     }
 
     @Test
@@ -246,20 +255,22 @@ class CrossrefToSkgIfMapperTest {
         Product product = mapFixture("crossref-journal-article-with-funder.json");
 
         ProductManifestation manifestation = product.getManifestations().getFirst();
-        assertEquals(ProductManifestationAccessRights.StatusEnum.OPEN, manifestation.getAccessRights().getStatus());
-        assertTrue(manifestation.getLicence().contains("creativecommons.org"));
+        assertThat(manifestation.getAccessRights().getStatus())
+                .isEqualTo(ProductManifestationAccessRights.StatusEnum.OPEN);
+        assertThat(manifestation.getLicence()).contains("creativecommons.org");
     }
 
     @Test
     void mapsFunderWithoutAwardNumberOrFunderDoi() throws IOException {
         Product product = mapFixture("crossref-journal-article-with-funder.json");
 
-        assertEquals(1, product.getFunding().size());
+        assertThat(product.getFunding().size()).isEqualTo(1);
         GrantLite grant = (GrantLite) product.getFunding().getFirst();
-        assertEquals("Federal Ministries of Transport, Innovation and Technology", grant.getFundingAgency().getName());
+        assertThat(grant.getFundingAgency().getName())
+                .isEqualTo("Federal Ministries of Transport, Innovation and Technology");
         // No Funder Registry DOI on this fixture's funder - local_identifier falls back to otf.
-        assertNull(grant.getFundingAgency().getIdentifiers());
-        assertTrue(grant.getFundingAgency().getLocalIdentifier().startsWith("otf___"));
+        assertThat(grant.getFundingAgency().getIdentifiers()).isNull();
+        assertThat(grant.getFundingAgency().getLocalIdentifier()).startsWith("otf___");
     }
 
     @Test
@@ -267,13 +278,13 @@ class CrossrefToSkgIfMapperTest {
         Product product = mapFixture("crossref-journal-article-with-funder.json");
 
         var affiliations = product.getContributions().getFirst().getDeclaredAffiliations();
-        assertEquals(1, affiliations.size());
+        assertThat(affiliations.size()).isEqualTo(1);
         Organisation affiliation = (Organisation) affiliations.getFirst();
         // Unlike crossref-journal-article-with-ror-affiliation.json, this affiliation carries no
         // ROR at all - only a bare name - so it must fall back to an otf id instead.
-        assertEquals("Carinthian Tech Research AG, Europastrasse 12, 9524 Villach, Austria",
-                affiliation.getName());
-        assertNull(affiliation.getIdentifiers());
-        assertTrue(affiliation.getLocalIdentifier().startsWith("otf___"));
+        assertThat(affiliation.getName())
+                .isEqualTo("Carinthian Tech Research AG, Europastrasse 12, 9524 Villach, Austria");
+        assertThat(affiliation.getIdentifiers()).isNull();
+        assertThat(affiliation.getLocalIdentifier()).startsWith("otf___");
     }
 }

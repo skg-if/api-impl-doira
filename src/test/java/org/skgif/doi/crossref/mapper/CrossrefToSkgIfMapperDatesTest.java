@@ -1,6 +1,6 @@
 package org.skgif.doi.crossref.mapper;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -42,8 +42,8 @@ class CrossrefToSkgIfMapperDatesTest {
         Product product = mapFixture("crossref-journal-article.json");
 
         var dates = product.getManifestations().getFirst().getDates();
-        assertEquals(List.of("2023-05-18"), dates.getDeposit());
-        assertEquals(List.of("2023-05-18"), dates.getModified());
+        assertThat(dates.getDeposit()).isEqualTo(List.of("2023-05-18"));
+        assertThat(dates.getModified()).isEqualTo(List.of("2023-05-18"));
     }
 
     @Test
@@ -51,8 +51,8 @@ class CrossrefToSkgIfMapperDatesTest {
         Product product = mapFixture("crossref-journal-article-with-update-to.json");
 
         var dates = product.getManifestations().getFirst().getDates();
-        assertEquals(List.of("2021-03-05"), dates.getCorrection());
-        assertEquals(List.of("2022-06-20"), dates.getRetraction());
+        assertThat(dates.getCorrection()).isEqualTo(List.of("2021-03-05"));
+        assertThat(dates.getRetraction()).isEqualTo(List.of("2022-06-20"));
     }
 
     @Test
@@ -63,7 +63,7 @@ class CrossrefToSkgIfMapperDatesTest {
         Product product = mapFixture("crossref-journal-article-with-update-to.json");
 
         var dates = product.getManifestations().getFirst().getDates();
-        assertEquals(1, dates.getCorrection().size());
-        assertEquals(1, dates.getRetraction().size());
+        assertThat(dates.getCorrection().size()).isEqualTo(1);
+        assertThat(dates.getRetraction().size()).isEqualTo(1);
     }
 }

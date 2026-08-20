@@ -1,6 +1,7 @@
 package org.skgif.doi.rest;
 
 import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
@@ -118,8 +119,7 @@ class DataCiteGrantsResourceTest {
 
         ArgumentCaptor<String> queryCaptor = ArgumentCaptor.forClass(String.class);
         verify(dataCiteClient).listDois(any(), queryCaptor.capture(), anyInt(), anyInt());
-        org.junit.jupiter.api.Assertions.assertTrue(
-                queryCaptor.getValue().contains("types.resourceTypeGeneral:Award"));
+        assertThat(queryCaptor.getValue()).contains("types.resourceTypeGeneral:Award");
     }
 
     @Test

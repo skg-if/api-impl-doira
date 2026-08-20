@@ -1,8 +1,6 @@
 package org.skgif.doi.crossref.mapper;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,11 +42,10 @@ class CrossrefToSkgIfMapperRelatedProductsTest {
     void mapsRelatedProductsFromReferenceListDois() throws IOException {
         Product product = mapFixture("crossref-journal-article.json");
 
-        assertFalse(product.getRelatedProducts().getCites().isEmpty());
-        boolean hasKnownReference = product.getRelatedProducts().getCites().stream()
+        assertThat(product.getRelatedProducts().getCites()).isNotEmpty();
+        assertThat(product.getRelatedProducts().getCites())
                 .anyMatch(c -> "https://doi.org/10.1038/nature03509"
                         .equals(((ProductsRelatedItem) c).getLocalIdentifier()));
-        assertTrue(hasKnownReference);
     }
 
     @Test
@@ -58,10 +55,9 @@ class CrossrefToSkgIfMapperRelatedProductsTest {
         // This fixture's reference[] has 30 entries, one of which (key BFnature12373_CR17)
         // carries no DOI - it must still surface as a cites entry, via an otf id, not be dropped.
         final int expectedReferenceCount = 30;
-        assertEquals(expectedReferenceCount, product.getRelatedProducts().getCites().size());
-        boolean hasOtfReference = product.getRelatedProducts().getCites().stream()
+        assertThat(product.getRelatedProducts().getCites().size()).isEqualTo(expectedReferenceCount);
+        assertThat(product.getRelatedProducts().getCites())
                 .anyMatch(c -> ((ProductsRelatedItem) c).getLocalIdentifier().startsWith("otf___"));
-        assertTrue(hasOtfReference);
     }
 
     // crossref-journal-article-with-is-supplemented-by.json: a real IUCrData article (DOI
@@ -75,15 +71,15 @@ class CrossrefToSkgIfMapperRelatedProductsTest {
 
         List<ProductsRelatedCitesInner> isSupplementedBy = product.getRelatedProducts().getIsSupplementedBy();
         final int expectedIsSupplementedByCount = 4;
-        assertEquals(expectedIsSupplementedByCount, isSupplementedBy.size());
+        assertThat(isSupplementedBy.size()).isEqualTo(expectedIsSupplementedByCount);
         ProductsRelatedItem first = (ProductsRelatedItem) isSupplementedBy.getFirst();
-        assertEquals("https://doi.org/10.1107/S2414314618016334/lh4040sup1.cif", first.getLocalIdentifier());
-        assertEquals("doi", first.getIdentifiers().getFirst().getScheme());
-        assertEquals("10.1107/S2414314618016334/lh4040sup1.cif", first.getIdentifiers().getFirst().getValue());
+        assertThat(first.getLocalIdentifier()).isEqualTo("https://doi.org/10.1107/S2414314618016334/lh4040sup1.cif");
+        assertThat(first.getIdentifiers().getFirst().getScheme()).isEqualTo("doi");
+        assertThat(first.getIdentifiers().getFirst().getValue()).isEqualTo("10.1107/S2414314618016334/lh4040sup1.cif");
 
         // Same fixture also has a normal reference[] - adding is_supplemented_by must not
         // disturb cites.
-        assertFalse(product.getRelatedProducts().getCites().isEmpty());
+        assertThat(product.getRelatedProducts().getCites()).isNotEmpty();
     }
 
     @Test
@@ -98,7 +94,7 @@ class CrossrefToSkgIfMapperRelatedProductsTest {
         Product product = mapper.toProduct(work);
 
         ProductsRelatedItem item = (ProductsRelatedItem) product.getRelatedProducts().getIsSupplementedBy().getFirst();
-        assertTrue(item.getLocalIdentifier().startsWith("otf___"));
+        assertThat(item.getLocalIdentifier()).startsWith("otf___");
     }
 
     @Test
@@ -108,9 +104,9 @@ class CrossrefToSkgIfMapperRelatedProductsTest {
         // reference key "ref3" carries no DOI and no unstructured text - the otf id must
         // fall back to the reference key itself rather than being dropped.
         final int expectedCitesCount = 5;
-        assertEquals(expectedCitesCount, product.getRelatedProducts().getCites().size());
-        assertTrue(product.getRelatedProducts().getCites().stream()
+        assertThat(product.getRelatedProducts().getCites().size()).isEqualTo(expectedCitesCount);
+        assertThat(product.getRelatedProducts().getCites())
                 .anyMatch(c -> "otf___10-17537-icmbb18-42___ref3"
-                        .equals(((ProductsRelatedItem) c).getLocalIdentifier())));
+                        .equals(((ProductsRelatedItem) c).getLocalIdentifier()));
     }
 }

@@ -1,8 +1,6 @@
 package org.skgif.doi.datacite.mapper;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
@@ -54,10 +52,10 @@ class DataCiteToSkgIfMapperDatesTest {
         Product product = mapper.toProduct(attributes);
 
         var dates = product.getManifestations().getFirst().getDates();
-        assertEquals(List.of(attributes.created()), dates.getCreation());
-        assertEquals(List.of(attributes.registered()), dates.getDeposit());
-        assertEquals(List.of(attributes.updated()), dates.getModified());
-        assertEquals(List.of(attributes.published()), dates.getPublication());
+        assertThat(dates.getCreation()).isEqualTo(List.of(attributes.created()));
+        assertThat(dates.getDeposit()).isEqualTo(List.of(attributes.registered()));
+        assertThat(dates.getModified()).isEqualTo(List.of(attributes.updated()));
+        assertThat(dates.getPublication()).isEqualTo(List.of(attributes.published()));
     }
 
     @Test
@@ -67,7 +65,7 @@ class DataCiteToSkgIfMapperDatesTest {
 
         Product product = mapper.toProduct(attributes);
 
-        assertNull(product.getManifestations().getFirst().getDates());
+        assertThat(product.getManifestations().getFirst().getDates()).isNull();
     }
 
     @Test
@@ -75,11 +73,12 @@ class DataCiteToSkgIfMapperDatesTest {
         var attributes = readFixture("datacite-esrf-dc-2493599001.json");
         var created = new DataCiteDate("2020-01-01", "Created");
         attributes.dates().add(created);
-        assertNotEquals(created.date(), attributes.created());
+        assertThat(created.date()).isNotEqualTo(attributes.created());
 
         Product product = mapper.toProduct(attributes);
 
-        assertEquals(List.of(created.date()), product.getManifestations().getFirst().getDates().getCreation());
+        assertThat(product.getManifestations().getFirst().getDates().getCreation())
+                .isEqualTo(List.of(created.date()));
     }
 
     @Test
@@ -95,7 +94,7 @@ class DataCiteToSkgIfMapperDatesTest {
 
         Product product = mapper.toProduct(attributes);
 
-        assertNull(product.getManifestations().getFirst().getDates());
+        assertThat(product.getManifestations().getFirst().getDates()).isNull();
     }
 
     @Test
@@ -106,8 +105,8 @@ class DataCiteToSkgIfMapperDatesTest {
         Product product = mapFixture("datacite-esrf-es-2210534378.json");
 
         var dates = product.getManifestations().getFirst().getDates();
-        assertEquals(List.of("2028-09-06"), dates.getEmbargo());
-        assertNull(dates.getAccess());
+        assertThat(dates.getEmbargo()).isEqualTo(List.of("2028-09-06"));
+        assertThat(dates.getAccess()).isNull();
     }
 
     @Test
@@ -119,7 +118,7 @@ class DataCiteToSkgIfMapperDatesTest {
         Product product = mapFixture("datacite-dataset-funder-no-identifier-e449e75a.json");
 
         var dates = product.getManifestations().getFirst().getDates();
-        assertNull(dates.getEmbargo());
-        assertNull(dates.getAccess());
+        assertThat(dates.getEmbargo()).isNull();
+        assertThat(dates.getAccess()).isNull();
     }
 }

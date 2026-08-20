@@ -1,7 +1,6 @@
 package org.skgif.doi.datacite.mapper;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
@@ -41,11 +40,11 @@ class DataCiteToSkgIfMapperGrantTest {
     void toGrant_mapsCoreFieldsFromRealAwardRecord() throws IOException {
         Grant grant = mapGrantFixture("datacite-award-r3sy-7371.json");
 
-        assertEquals("https://doi.org/10.71707/r3sy-7371", grant.getLocalIdentifier());
-        assertEquals("grant", grant.getEntityType().toString());
-        assertEquals(1, grant.getIdentifiers().size());
-        assertEquals("doi", grant.getIdentifiers().getFirst().getScheme());
-        assertEquals("10.71707/r3sy-7371", grant.getIdentifiers().getFirst().getValue());
+        assertThat(grant.getLocalIdentifier()).isEqualTo("https://doi.org/10.71707/r3sy-7371");
+        assertThat(grant.getEntityType().toString()).isEqualTo("grant");
+        assertThat(grant.getIdentifiers()).hasSize(1);
+        assertThat(grant.getIdentifiers().getFirst().getScheme()).isEqualTo("doi");
+        assertThat(grant.getIdentifiers().getFirst().getValue()).isEqualTo("10.71707/r3sy-7371");
     }
 
     @Test
@@ -54,19 +53,19 @@ class DataCiteToSkgIfMapperGrantTest {
         Grant grant = mapGrantFixture("datacite-award-r3sy-7371.json");
 
         Map<String, String> titles = (Map<String, String>) grant.getTitles();
-        assertTrue(titles.get("en").contains("2i2c"));
+        assertThat(titles.get("en")).contains("2i2c");
 
         Map<String, String> abstracts = (Map<String, String>) grant.getAbstracts();
-        assertTrue(abstracts.get("en").contains("open cloud service"));
+        assertThat(abstracts.get("en")).contains("open cloud service");
     }
 
     @Test
     void toGrant_derivesFundingAgencyFromRorBearingCreator() throws IOException {
         Grant grant = mapGrantFixture("datacite-award-r3sy-7371.json");
 
-        assertEquals("The Navigation Fund", grant.getFundingAgency().getName());
-        assertEquals("ror", grant.getFundingAgency().getIdentifiers().getFirst().getScheme());
-        assertEquals("00mgfk810", grant.getFundingAgency().getIdentifiers().getFirst().getValue());
+        assertThat(grant.getFundingAgency().getName()).isEqualTo("The Navigation Fund");
+        assertThat(grant.getFundingAgency().getIdentifiers().getFirst().getScheme()).isEqualTo("ror");
+        assertThat(grant.getFundingAgency().getIdentifiers().getFirst().getValue()).isEqualTo("00mgfk810");
     }
 
     @Test
@@ -75,14 +74,14 @@ class DataCiteToSkgIfMapperGrantTest {
 
         // The only creator was consumed as the funding agency, so contributions holds just the
         // two contributors, in fixture order: the personal project leader first.
-        assertEquals(2, grant.getContributions().size());
+        assertThat(grant.getContributions()).hasSize(2);
         GrantContribution contribution = (GrantContribution) grant.getContributions().getFirst();
         PersonLite by = (PersonLite) contribution.getBy();
-        assertEquals("Holdgraf, Chris", by.getName());
-        assertEquals("Chris", by.getGivenName());
-        assertEquals("Holdgraf", by.getFamilyName());
-        assertEquals("orcid", by.getIdentifiers().getFirst().getScheme());
-        assertEquals("0000-0002-9420-9301", by.getIdentifiers().getFirst().getValue());
+        assertThat(by.getName()).isEqualTo("Holdgraf, Chris");
+        assertThat(by.getGivenName()).isEqualTo("Chris");
+        assertThat(by.getFamilyName()).isEqualTo("Holdgraf");
+        assertThat(by.getIdentifiers().getFirst().getScheme()).isEqualTo("orcid");
+        assertThat(by.getIdentifiers().getFirst().getValue()).isEqualTo("0000-0002-9420-9301");
     }
 
     @Test
@@ -91,14 +90,14 @@ class DataCiteToSkgIfMapperGrantTest {
 
         GrantContribution contribution = (GrantContribution) grant.getContributions().get(1);
         Organisation by = (Organisation) contribution.getBy();
-        assertEquals("Code for Science & Society", by.getName());
-        assertEquals("organisation", by.getEntityType());
-        assertEquals("ror", by.getIdentifiers().getFirst().getScheme());
-        assertEquals("01dmavx46", by.getIdentifiers().getFirst().getValue());
+        assertThat(by.getName()).isEqualTo("Code for Science & Society");
+        assertThat(by.getEntityType()).isEqualTo("organisation");
+        assertThat(by.getIdentifiers().getFirst().getScheme()).isEqualTo("ror");
+        assertThat(by.getIdentifiers().getFirst().getValue()).isEqualTo("01dmavx46");
 
-        assertEquals(1, grant.getBeneficiaries().size());
+        assertThat(grant.getBeneficiaries()).hasSize(1);
         Organisation beneficiary = (Organisation) grant.getBeneficiaries().getFirst();
-        assertEquals("Code for Science & Society", beneficiary.getName());
-        assertEquals("01dmavx46", beneficiary.getIdentifiers().getFirst().getValue());
+        assertThat(beneficiary.getName()).isEqualTo("Code for Science & Society");
+        assertThat(beneficiary.getIdentifiers().getFirst().getValue()).isEqualTo("01dmavx46");
     }
 }

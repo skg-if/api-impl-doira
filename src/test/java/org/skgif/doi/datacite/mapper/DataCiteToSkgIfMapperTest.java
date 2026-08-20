@@ -1,10 +1,6 @@
 package org.skgif.doi.datacite.mapper;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
@@ -24,7 +20,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class DataCiteToSkgIfMapperTest {
 
@@ -46,12 +46,12 @@ class DataCiteToSkgIfMapperTest {
     void mapsCoreFieldsFromRealEsrfDataciteRecord() throws IOException {
         Product product = mapFixture("datacite-esrf-dc-2493599001.json");
 
-        assertEquals("https://doi.org/10.15151/esrf-dc-2493599001", product.getLocalIdentifier());
-        assertEquals("product", product.getEntityType());
-        assertEquals(Product.ProductTypeEnum.RESEARCH_DATA, product.getProductType());
-        assertEquals(1, product.getIdentifiers().size());
-        assertEquals("doi", product.getIdentifiers().getFirst().getScheme());
-        assertEquals("10.15151/esrf-dc-2493599001", product.getIdentifiers().getFirst().getValue());
+        assertThat(product.getLocalIdentifier()).isEqualTo("https://doi.org/10.15151/esrf-dc-2493599001");
+        assertThat(product.getEntityType()).isEqualTo("product");
+        assertThat(product.getProductType()).isEqualTo(Product.ProductTypeEnum.RESEARCH_DATA);
+        assertThat(product.getIdentifiers().size()).isEqualTo(1);
+        assertThat(product.getIdentifiers().getFirst().getScheme()).isEqualTo("doi");
+        assertThat(product.getIdentifiers().getFirst().getValue()).isEqualTo("10.15151/esrf-dc-2493599001");
     }
 
     @Test
@@ -60,25 +60,25 @@ class DataCiteToSkgIfMapperTest {
         Product product = mapFixture("datacite-esrf-dc-2493599001.json");
 
         Map<String, List<String>> titles = (Map<String, List<String>>) product.getTitles();
-        assertTrue(titles.get("en").getFirst().contains("Aleodon"));
+        assertThat(titles.get("en").getFirst()).contains("Aleodon");
 
         Map<String, List<String>> abstracts = (Map<String, List<String>>) product.getAbstracts();
-        assertTrue(abstracts.get("en").getFirst().contains("Aleodon"));
+        assertThat(abstracts.get("en").getFirst()).contains("Aleodon");
     }
 
     @Test
     void mapsCreatorsAsAuthorContributionsWithOrcid() throws IOException {
         Product product = mapFixture("datacite-esrf-dc-2493599001.json");
 
-        assertFalse(product.getContributions().isEmpty());
+        assertThat(product.getContributions()).isNotEmpty();
         ProductContribution first = product.getContributions().getFirst();
-        assertEquals(ProductContribution.RoleEnum.AUTHOR, first.getRole());
-        assertEquals(1, first.getRank());
+        assertThat(first.getRole()).isEqualTo(ProductContribution.RoleEnum.AUTHOR);
+        assertThat(first.getRank()).isEqualTo(1);
         PersonLite by = (PersonLite) first.getBy();
-        assertEquals("Jonah", by.getGivenName());
-        assertEquals("Choiniere", by.getFamilyName());
-        assertEquals("orcid", by.getIdentifiers().getFirst().getScheme());
-        assertEquals("0000-0002-1008-0687", by.getIdentifiers().getFirst().getValue());
+        assertThat(by.getGivenName()).isEqualTo("Jonah");
+        assertThat(by.getFamilyName()).isEqualTo("Choiniere");
+        assertThat(by.getIdentifiers().getFirst().getScheme()).isEqualTo("orcid");
+        assertThat(by.getIdentifiers().getFirst().getValue()).isEqualTo("0000-0002-1008-0687");
     }
 
     @Test
@@ -86,13 +86,14 @@ class DataCiteToSkgIfMapperTest {
         Product product = mapFixture("datacite-esrf-dc-2493599001.json");
 
         ProductManifestation manifestation = product.getManifestations().getFirst();
-        assertEquals(ProductManifestationAccessRights.StatusEnum.OPEN, manifestation.getAccessRights().getStatus());
-        assertTrue(manifestation.getLicence().contains("creativecommons.org"));
-        assertEquals("1", manifestation.getVersion());
+        assertThat(manifestation.getAccessRights().getStatus())
+                .isEqualTo(ProductManifestationAccessRights.StatusEnum.OPEN);
+        assertThat(manifestation.getLicence()).contains("creativecommons.org");
+        assertThat(manifestation.getVersion()).isEqualTo("1");
         // hosting_data_source comes generically from the DataCite record's own "publisher"
         // field, not a hardcoded organisation - this fixture's publisher happens to be ESRF.
-        assertEquals("European Synchrotron Radiation Facility",
-                ((DataSourceLite) manifestation.getBiblio().getHostingDataSource()).getName());
+        assertThat(((DataSourceLite) manifestation.getBiblio().getHostingDataSource()).getName())
+                .isEqualTo("European Synchrotron Radiation Facility");
     }
 
     @Test
@@ -102,27 +103,32 @@ class DataCiteToSkgIfMapperTest {
         // affiliations, so relevant_organisations is left unset rather than guessed at.
         Product product = mapFixture("datacite-esrf-dc-2493599001.json");
 
-        assertNull(product.getRelevantOrganisations());
+        assertThat(product.getRelevantOrganisations()).isNull();
     }
 
-    @Test
-    void mapsResourceTypeGeneralToProductType() throws IOException {
-        assertEquals(Product.ProductTypeEnum.RESEARCH_DATA,
-                mapFixture("datacite-esrf-dc-2493599001.json").getProductType());
-        assertEquals(Product.ProductTypeEnum.RESEARCH_SOFTWARE,
-                mapFixture("datacite-zenodo-software-21826016.json").getProductType());
-        assertEquals(Product.ProductTypeEnum.LITERATURE,
-                mapFixture("datacite-zenodo-text-20750072.json").getProductType());
+    @ParameterizedTest
+    @MethodSource("resourceTypeGeneralFixtures")
+    void mapsResourceTypeGeneralToProductType(String fixtureName,
+            Product.ProductTypeEnum expectedProductType) throws IOException {
+        Product product = mapFixture(fixtureName);
+
+        assertThat(product.getProductType()).isEqualTo(expectedProductType);
+    }
+
+    private static Stream<Arguments> resourceTypeGeneralFixtures() {
+        return Stream.of(
+                Arguments.of("datacite-esrf-dc-2493599001.json", Product.ProductTypeEnum.RESEARCH_DATA),
+                Arguments.of("datacite-zenodo-software-21826016.json", Product.ProductTypeEnum.RESEARCH_SOFTWARE),
+                Arguments.of("datacite-zenodo-text-20750072.json", Product.ProductTypeEnum.LITERATURE));
     }
 
     @Test
     void mapsSubjectsAsTopics() throws IOException {
         Product product = mapFixture("datacite-esrf-dc-2493599001.json");
 
-        assertFalse(product.getTopics().isEmpty());
-        boolean hasFossilTopic = product.getTopics().stream()
+        assertThat(product.getTopics()).isNotEmpty();
+        assertThat(product.getTopics())
                 .anyMatch(topic -> Map.of("en", "fossil").equals(((Topic) topic.getTerm()).getLabels()));
-        assertTrue(hasFossilTopic);
     }
 
     // datacite-esrf-es-2210534378.json: unlike the dataset above, this record's creators/
@@ -134,16 +140,15 @@ class DataCiteToSkgIfMapperTest {
         Product product = mapFixture("datacite-esrf-es-2210534378.json");
 
         ProductContribution first = product.getContributions().getFirst();
-        assertEquals("Pojer", ((PersonLite) first.getBy()).getFamilyName());
-        assertFalse(first.getDeclaredAffiliations().isEmpty());
+        assertThat(((PersonLite) first.getBy()).getFamilyName()).isEqualTo("Pojer");
+        assertThat(first.getDeclaredAffiliations()).isNotEmpty();
         Organisation affiliation = (Organisation) first.getDeclaredAffiliations().getFirst();
-        assertEquals(
+        assertThat(affiliation.getName()).isEqualTo(
                 "EPFL - PTPSP, Protein Production and Structure Core Facilit, EPFL SV PTECH PTPSP, " +
-                        "Station 19, Ch-1015 Lausanne, Switzerland",
-                affiliation.getName());
+                        "Station 19, Ch-1015 Lausanne, Switzerland");
         // DataCite gave a plain string, not a structured affiliation object, so there's no
         // external identifier to carry over.
-        assertNull(affiliation.getIdentifiers());
+        assertThat(affiliation.getIdentifiers()).isNull();
     }
 
     @Test
@@ -152,16 +157,16 @@ class DataCiteToSkgIfMapperTest {
 
         // 1 creator + 2 contributors (DataCollector, ProjectManager) + 1 publisher
         final int expectedContributionCount = 4;
-        assertEquals(expectedContributionCount, product.getContributions().size());
+        assertThat(product.getContributions().size()).isEqualTo(expectedContributionCount);
 
         ProductContribution dataCollector = product.getContributions().stream()
                 .filter(c -> "De Sanctis".equals(((PersonLite) c.getBy()).getFamilyName()))
                 .findFirst()
                 .orElseThrow();
         // "DataCollector" doesn't map to editor/publisher, so it falls back to author.
-        assertEquals(ProductContribution.RoleEnum.AUTHOR, dataCollector.getRole());
-        assertEquals("ESRF, 71 avenue des Martyrs, CS 40220, 38043 Grenoble Cedex 9, France",
-                ((Organisation) dataCollector.getDeclaredAffiliations().getFirst()).getName());
+        assertThat(dataCollector.getRole()).isEqualTo(ProductContribution.RoleEnum.AUTHOR);
+        assertThat(((Organisation) dataCollector.getDeclaredAffiliations().getFirst()).getName())
+                .isEqualTo("ESRF, 71 avenue des Martyrs, CS 40220, 38043 Grenoble Cedex 9, France");
     }
 
     @Test
@@ -169,15 +174,15 @@ class DataCiteToSkgIfMapperTest {
     void mapsFundingReferenceWithNormalizedRorOnFundingAgency() throws IOException {
         Product product = mapFixture("datacite-esrf-es-2210534378.json");
 
-        assertEquals(1, product.getFunding().size());
+        assertThat(product.getFunding().size()).isEqualTo(1);
         GrantLite grant = (GrantLite) product.getFunding().getFirst();
-        assertEquals("MX-2738", grant.getGrantNumber());
-        assertTrue(((Map<String, String>) grant.getTitles()).get("en").contains("Swiss consortium"));
-        assertEquals("European Synchrotron Radiation Facility", grant.getFundingAgency().getName());
-        assertEquals("ror", grant.getFundingAgency().getIdentifiers().getFirst().getScheme());
+        assertThat(grant.getGrantNumber()).isEqualTo("MX-2738");
+        assertThat(((Map<String, String>) grant.getTitles()).get("en")).contains("Swiss consortium");
+        assertThat(grant.getFundingAgency().getName()).isEqualTo("European Synchrotron Radiation Facility");
+        assertThat(grant.getFundingAgency().getIdentifiers().getFirst().getScheme()).isEqualTo("ror");
         // DataCite gives the full https://ror.org/... URL - the mapper normalizes to the bare id,
         // consistent with how ESRF's own ROR is stored elsewhere (relevant_organisations).
-        assertEquals("02550n020", grant.getFundingAgency().getIdentifiers().getFirst().getValue());
+        assertThat(grant.getFundingAgency().getIdentifiers().getFirst().getValue()).isEqualTo("02550n020");
     }
 
     // datacite-thesis-crossref-funder-id-4342.json: a real UWTSD repository thesis (DOI
@@ -192,13 +197,14 @@ class DataCiteToSkgIfMapperTest {
     void mapsFundingAgencyToDoiWhenFunderIdentifierIsDoiShapedRegardlessOfType() throws IOException {
         Product product = mapFixture("datacite-thesis-crossref-funder-id-4342.json");
 
-        assertEquals(1, product.getFunding().size());
+        assertThat(product.getFunding().size()).isEqualTo(1);
         GrantLite grant = (GrantLite) product.getFunding().getFirst();
-        assertEquals("UWTSD", ((Map<String, String>) grant.getTitles()).get("en"));
-        assertEquals("University of Wales Trinity Saint David", grant.getFundingAgency().getName());
-        assertEquals("https://doi.org/10.13039/100010038", grant.getFundingAgency().getLocalIdentifier());
-        assertEquals("doi", grant.getFundingAgency().getIdentifiers().getFirst().getScheme());
-        assertEquals("10.13039/100010038", grant.getFundingAgency().getIdentifiers().getFirst().getValue());
+        assertThat(((Map<String, String>) grant.getTitles()).get("en")).isEqualTo("UWTSD");
+        assertThat(grant.getFundingAgency().getName()).isEqualTo("University of Wales Trinity Saint David");
+        assertThat(grant.getFundingAgency().getLocalIdentifier())
+                .isEqualTo("https://doi.org/10.13039/100010038");
+        assertThat(grant.getFundingAgency().getIdentifiers().getFirst().getScheme()).isEqualTo("doi");
+        assertThat(grant.getFundingAgency().getIdentifiers().getFirst().getValue()).isEqualTo("10.13039/100010038");
     }
 
     @Test
@@ -214,8 +220,8 @@ class DataCiteToSkgIfMapperTest {
         Product product = mapper.toProduct(attributes);
 
         GrantLite funding = (GrantLite) product.getFunding().getFirst();
-        assertNull(funding.getFundingAgency().getIdentifiers());
-        assertTrue(funding.getFundingAgency().getLocalIdentifier().startsWith("otf___"));
+        assertThat(funding.getFundingAgency().getIdentifiers()).isNull();
+        assertThat(funding.getFundingAgency().getLocalIdentifier()).startsWith("otf___");
     }
 
     // datacite-dataset-funder-no-identifier-e449e75a.json: a real University of St Andrews
@@ -230,17 +236,17 @@ class DataCiteToSkgIfMapperTest {
         Product product = mapFixture("datacite-dataset-funder-no-identifier-e449e75a.json");
 
         final int expectedFundingCount = 3;
-        assertEquals(expectedFundingCount, product.getFunding().size());
+        assertThat(product.getFunding().size()).isEqualTo(expectedFundingCount);
         var epsrc1 = ((GrantLite) product.getFunding().getFirst()).getFundingAgency();
         var epsrc2 = ((GrantLite) product.getFunding().get(1)).getFundingAgency();
         var ukri = ((GrantLite) product.getFunding().get(2)).getFundingAgency();
 
-        assertNull(epsrc1.getIdentifiers());
-        assertNull(epsrc2.getIdentifiers());
-        assertNull(ukri.getIdentifiers());
-        assertTrue(epsrc1.getLocalIdentifier().startsWith("otf___"));
-        assertEquals(epsrc1.getLocalIdentifier(), epsrc2.getLocalIdentifier());
-        assertNotEquals(epsrc1.getLocalIdentifier(), ukri.getLocalIdentifier());
+        assertThat(epsrc1.getIdentifiers()).isNull();
+        assertThat(epsrc2.getIdentifiers()).isNull();
+        assertThat(ukri.getIdentifiers()).isNull();
+        assertThat(epsrc1.getLocalIdentifier()).startsWith("otf___");
+        assertThat(epsrc1.getLocalIdentifier()).isEqualTo(epsrc2.getLocalIdentifier());
+        assertThat(epsrc1.getLocalIdentifier()).isNotEqualTo(ukri.getLocalIdentifier());
     }
 
     // datacite-zenodo-editor-21232199.json: a real Zenodo journal-article deposit whose
@@ -254,13 +260,13 @@ class DataCiteToSkgIfMapperTest {
 
         // 1 creator (author) + 1 contributor (editor) + 1 publisher.
         final int expectedContributionCount = 3;
-        assertEquals(expectedContributionCount, product.getContributions().size());
+        assertThat(product.getContributions().size()).isEqualTo(expectedContributionCount);
         ProductContribution editor = product.getContributions().stream()
                 .filter(c -> c.getRole() == ProductContribution.RoleEnum.EDITOR)
                 .findFirst()
                 .orElseThrow();
         PersonLite editorBy = (PersonLite) editor.getBy();
-        assertEquals("Dr. Ramesh V. Bhole", editorBy.getFamilyName());
-        assertTrue(editorBy.getLocalIdentifier().startsWith("otf___"));
+        assertThat(editorBy.getFamilyName()).isEqualTo("Dr. Ramesh V. Bhole");
+        assertThat(editorBy.getLocalIdentifier()).startsWith("otf___");
     }
 }

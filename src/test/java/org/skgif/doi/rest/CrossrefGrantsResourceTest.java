@@ -1,6 +1,7 @@
 package org.skgif.doi.rest;
 
 import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
@@ -113,7 +114,7 @@ class CrossrefGrantsResourceTest {
 
         ArgumentCaptor<String> filterCaptor = ArgumentCaptor.forClass(String.class);
         verify(crossrefClient).listWorks(filterCaptor.capture(), any(), any(), anyInt(), anyInt(), any());
-        org.junit.jupiter.api.Assertions.assertTrue(filterCaptor.getValue().contains("type:grant"));
+        assertThat(filterCaptor.getValue()).contains("type:grant");
     }
 
     @Test

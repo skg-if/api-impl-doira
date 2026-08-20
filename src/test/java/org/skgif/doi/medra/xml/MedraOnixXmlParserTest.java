@@ -1,8 +1,6 @@
 package org.skgif.doi.medra.xml;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,42 +24,42 @@ class MedraOnixXmlParserTest {
     void parsesAllFourContributorNameFieldsWhenAllArePresent() throws IOException {
         MedraWork work = parseFixture("medra-mixed-name-shapes.xml");
 
-        assertEquals("10.19276/plinius.2019.01004", work.doi());
-        assertEquals(1, work.contributors().size());
+        assertThat(work.doi()).isEqualTo("10.19276/plinius.2019.01004");
+        assertThat(work.contributors().size()).isEqualTo(1);
         MedraContributor contributor = work.contributors().getFirst();
-        assertEquals("A01", contributor.role());
-        assertEquals("Daniela", contributor.namesBeforeKey());
-        assertEquals("D'Alessio", contributor.keyNames());
-        assertEquals("Daniela D'Alessio", contributor.personName());
-        assertEquals("D'Alessio, Daniela", contributor.personNameInverted());
+        assertThat(contributor.role()).isEqualTo("A01");
+        assertThat(contributor.namesBeforeKey()).isEqualTo("Daniela");
+        assertThat(contributor.keyNames()).isEqualTo("D'Alessio");
+        assertThat(contributor.personName()).isEqualTo("Daniela D'Alessio");
+        assertThat(contributor.personNameInverted()).isEqualTo("D'Alessio, Daniela");
 
-        assertEquals(1, work.titles().size());
-        assertEquals("Synthesis, phase transitions, degassing behaviour of melanophlogite (type I clathrate)",
-                work.titles().getFirst().text());
-        assertEquals("Plinius", work.journalTitle());
-        assertEquals(java.util.List.of("1972-1366"), work.issns());
-        assertNull(work.abstractText());
-        assertEquals("2019", work.publicationDate());
-        assertEquals("DOISerialArticleWork", work.workElementName());
+        assertThat(work.titles().size()).isEqualTo(1);
+        assertThat(work.titles().getFirst().text())
+                .isEqualTo("Synthesis, phase transitions, degassing behaviour of melanophlogite (type I clathrate)");
+        assertThat(work.journalTitle()).isEqualTo("Plinius");
+        assertThat(work.issns()).isEqualTo(java.util.List.of("1972-1366"));
+        assertThat(work.abstractText()).isNull();
+        assertThat(work.publicationDate()).isEqualTo("2019");
+        assertThat(work.workElementName()).isEqualTo("DOISerialArticleWork");
     }
 
     @Test
     void parsesPersonNameOnlyContributorsWithNoInvertedForm() throws IOException {
         MedraWork work = parseFixture("medra-version-message-book-series.xml");
 
-        assertEquals("10.3254/978-1-61499-732-0-119", work.doi());
-        assertEquals(2, work.contributors().size());
+        assertThat(work.doi()).isEqualTo("10.3254/978-1-61499-732-0-119");
+        assertThat(work.contributors().size()).isEqualTo(2);
         MedraContributor first = work.contributors().getFirst();
-        assertEquals("Cotte M.", first.personName());
-        assertNull(first.personNameInverted());
-        assertNull(first.namesBeforeKey());
-        assertNull(first.keyNames());
+        assertThat(first.personName()).isEqualTo("Cotte M.");
+        assertThat(first.personNameInverted()).isNull();
+        assertThat(first.namesBeforeKey()).isNull();
+        assertThat(first.keyNames()).isNull();
 
-        assertTrue(work.abstractText() != null && work.abstractText().startsWith("Synchrotron radiation"));
-        assertEquals(java.util.List.of("0074-784X"), work.issns());
+        assertThat(work.abstractText()).startsWith("Synchrotron radiation");
+        assertThat(work.issns()).isEqualTo(java.util.List.of("0074-784X"));
         // ...VersionRegistrationMessage variant - wraps its fields in DOISerialArticleVersion,
         // not DOISerialArticleWork (see medra-mixed-name-shapes.xml's assertion above).
-        assertEquals("DOISerialArticleVersion", work.workElementName());
+        assertThat(work.workElementName()).isEqualTo("DOISerialArticleVersion");
     }
 
     @Test
@@ -69,88 +67,88 @@ class MedraOnixXmlParserTest {
         MedraWork work = parseFixture("medra-many-authors.xml");
 
         final int expectedContributorCount = 23;
-        assertEquals(expectedContributorCount, work.contributors().size());
+        assertThat(work.contributors().size()).isEqualTo(expectedContributorCount);
         MedraContributor first = work.contributors().getFirst();
-        assertEquals("L.", first.namesBeforeKey());
-        assertEquals("Baldesi", first.keyNames());
-        assertNull(first.personName());
-        assertNull(first.personNameInverted());
-        assertTrue(work.abstractText() != null && work.abstractText().startsWith("This study investigates"));
+        assertThat(first.namesBeforeKey()).isEqualTo("L.");
+        assertThat(first.keyNames()).isEqualTo("Baldesi");
+        assertThat(first.personName()).isNull();
+        assertThat(first.personNameInverted()).isNull();
+        assertThat(work.abstractText()).startsWith("This study investigates");
     }
 
     @Test
     void parsesEmptyContributorListWhenNoContributorElementExists() throws IOException {
         MedraWork work = parseFixture("medra-no-contributors.xml");
 
-        assertEquals("10.1393/ncc/i2021-21084-7", work.doi());
-        assertTrue(work.contributors().isEmpty());
+        assertThat(work.doi()).isEqualTo("10.1393/ncc/i2021-21084-7");
+        assertThat(work.contributors()).isEmpty();
     }
 
     @Test
     void distinguishesArticleTitleFromJournalLevelTitlesAndPicksFirstFullJournalTitle() throws IOException {
         MedraWork work = parseFixture("medra-multilang-titles.xml");
 
-        assertEquals(1, work.titles().size());
+        assertThat(work.titles().size()).isEqualTo(1);
         MedraTitle articleTitle = work.titles().getFirst();
-        assertEquals("Transverse THz dynamics of phospholipid membranes: A neutron scattering study",
-                articleTitle.text());
-        assertNull(articleTitle.language());
+        assertThat(articleTitle.text())
+                .isEqualTo("Transverse THz dynamics of phospholipid membranes: A neutron scattering study");
+        assertThat(articleTitle.language()).isNull();
 
         // Journal level has 4 Title entries (2 languages x 2 TitleTypes) - first TitleType "01" in
         // document order is the Italian one.
-        assertEquals("Atti della Accademia Perloritana dei Pericolanti. Classe di Scienze Fisiche, Matematiche" +
-                " e Naturali", work.journalTitle());
-        assertEquals(java.util.List.of("18251242"), work.issns());
+        assertThat(work.journalTitle()).isEqualTo("Atti della Accademia Perloritana dei Pericolanti. Classe di" +
+                " Scienze Fisiche, Matematiche e Naturali");
+        assertThat(work.issns()).isEqualTo(java.util.List.of("18251242"));
         final int expectedContributorCount = 8;
-        assertEquals(expectedContributorCount, work.contributors().size());
+        assertThat(work.contributors().size()).isEqualTo(expectedContributorCount);
     }
 
     @Test
     void splitsOffOnlyPersonNameInvertedWhenNoOtherNameFieldIsPresent() throws IOException {
         MedraWork work = parseFixture("medra-personname-inverted-only.xml");
 
-        assertEquals(1, work.contributors().size());
+        assertThat(work.contributors().size()).isEqualTo(1);
         MedraContributor contributor = work.contributors().getFirst();
-        assertEquals("Fragneto, Giovanna", contributor.personNameInverted());
-        assertNull(contributor.personName());
-        assertNull(contributor.namesBeforeKey());
-        assertNull(contributor.keyNames());
+        assertThat(contributor.personNameInverted()).isEqualTo("Fragneto, Giovanna");
+        assertThat(contributor.personName()).isNull();
+        assertThat(contributor.namesBeforeKey()).isNull();
+        assertThat(contributor.keyNames()).isNull();
 
         // SerialVersion's ProductIdentifier here is coded ProductIDType "06" (DOI), not "07"
         // (ISSN) - the parser must not misread it as an ISSN.
-        assertTrue(work.issns().isEmpty());
-        assertEquals("Sapere 4/2018", work.journalTitle());
+        assertThat(work.issns()).isEmpty();
+        assertThat(work.journalTitle()).isEqualTo("Sapere 4/2018");
     }
 
     @Test
     void picksOnlyTheIssnTypedIdentifierWhenAProprietaryIdSharesTheSameSerialVersion() throws IOException {
         MedraWork work = parseFixture("medra-multiple-product-identifiers.xml");
 
-        assertEquals("10.1400/255846", work.doi());
+        assertThat(work.doi()).isEqualTo("10.1400/255846");
         // SerialVersion here carries two ProductIdentifier siblings - ProductIDType "01"
         // (proprietary, "4242485") and "07" (ISSN, "19711131") - the parser must pick only the
         // ISSN one, not the proprietary id alongside it.
-        assertEquals(java.util.List.of("19711131"), work.issns());
-        assertEquals("History of Education and Children's Literature", work.journalTitle());
+        assertThat(work.issns()).isEqualTo(java.util.List.of("19711131"));
+        assertThat(work.journalTitle()).isEqualTo("History of Education and Children's Literature");
 
         // This ContentItem has no PublicationDate at all (only a JournalIssueDate, which is
         // deliberately not mapped - see MedraManifestationMapper#isoDate).
-        assertNull(work.publicationDate());
+        assertThat(work.publicationDate()).isNull();
 
-        assertEquals(1, work.contributors().size());
+        assertThat(work.contributors().size()).isEqualTo(1);
         MedraContributor contributor = work.contributors().getFirst();
-        assertEquals("Camara Bastos, Maria Helena", contributor.personNameInverted());
-        assertNull(contributor.personName());
+        assertThat(contributor.personNameInverted()).isEqualTo("Camara Bastos, Maria Helena");
+        assertThat(contributor.personName()).isNull();
     }
 
     @Test
     void returnsEmptyWhenXmlIsBlank() {
-        assertTrue(MedraOnixXmlParser.parse("").isEmpty());
-        assertTrue(MedraOnixXmlParser.parse(null).isEmpty());
+        assertThat(MedraOnixXmlParser.parse("")).isEmpty();
+        assertThat(MedraOnixXmlParser.parse(null)).isEmpty();
     }
 
     @Test
     void returnsEmptyWhenXmlIsUnparseable() {
-        assertTrue(MedraOnixXmlParser.parse("<not-well-formed-xml").isEmpty());
+        assertThat(MedraOnixXmlParser.parse("<not-well-formed-xml")).isEmpty();
     }
 }
