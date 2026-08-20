@@ -109,17 +109,17 @@ public class CrossrefGrantsResource {
             return notFound(localIdentifierParam);
         }
         if (!CrossrefTypeMapping.isGrant(work)) {
-            return JsonLdResponses.notFound("No grant found for local_identifier '" + localIdentifierParam +
+            return JsonLdErrors.notFound("No grant found for local_identifier '" + localIdentifierParam +
                     "' - this DOI is a product, see /crossref/products/" + localIdentifierParam);
         }
 
         Grant grant = mapper.toGrant(work);
-        String selfHref = JsonLdResponses.selfLink(uriInfo, RESOURCE_PATH, doi);
+        String selfHref = JsonLdLinks.selfLink(uriInfo, RESOURCE_PATH, doi);
 
-        String contextBase = JsonLdResponses.contextBaseFor(Optional.<String>empty(), sandboxBaseUrl,
+        String contextBase = JsonLdContextBase.contextBaseFor(Optional.<String>empty(), sandboxBaseUrl,
                 fallbackContextBase);
-        return JsonLdResponses.singleEntityResponse(objectMapper, contextBase,
-                JsonLdResponses.singleEntityMeta(selfHref), grant);
+        return JsonLdEnvelopes.singleEntityResponse(objectMapper, contextBase,
+                JsonLdMeta.singleEntityMeta(selfHref), grant);
     }
 
     /**
@@ -142,7 +142,7 @@ public class CrossrefGrantsResource {
         try {
             parsed = CrossrefFilters.toGrantsQuery(filter);
         } catch (FilterQuerySyntax.UnsupportedFilterException e) {
-            return JsonLdResponses.invalidFilter(uriInfo, e.getMessage());
+            return JsonLdErrors.invalidFilter(uriInfo, e.getMessage());
         }
 
         int pageNumber = parsePage(page);
@@ -167,16 +167,16 @@ public class CrossrefGrantsResource {
                     continue;
                 }
                 grants.add(mapper.toGrant(work));
-                apiItems.add(JsonLdResponses.apiItem(localIdentifiers.toFullLocalIdentifier(work.doi()),
-                        JsonLdResponses.selfLink(uriInfo, RESOURCE_PATH, work.doi())));
+                apiItems.add(JsonLdMeta.apiItem(localIdentifiers.toFullLocalIdentifier(work.doi()),
+                        JsonLdLinks.selfLink(uriInfo, RESOURCE_PATH, work.doi())));
             }
         }
 
         boolean hasNext = offset + size < totalResults;
-        String contextBase = JsonLdResponses.contextBaseFor(Optional.<String>empty(), sandboxBaseUrl,
+        String contextBase = JsonLdContextBase.contextBaseFor(Optional.<String>empty(), sandboxBaseUrl,
                 fallbackContextBase);
-        return JsonLdResponses.searchResultsResponse(objectMapper, contextBase,
-                JsonLdResponses.searchMeta(new JsonLdResponses.SearchPage(uriInfo, RESOURCE_PATH, filter, pageNumber,
+        return JsonLdEnvelopes.searchResultsResponse(objectMapper, contextBase,
+                JsonLdMeta.searchMeta(new JsonLdMeta.SearchPage(uriInfo, RESOURCE_PATH, filter, pageNumber,
                         size), totalResults, hasNext, apiItems),
                 grants);
     }
@@ -208,6 +208,6 @@ public class CrossrefGrantsResource {
     }
 
     private Response notFound(String requestedId) {
-        return JsonLdResponses.notFound("No grant found for local_identifier '" + requestedId + "'");
+        return JsonLdErrors.notFound("No grant found for local_identifier '" + requestedId + "'");
     }
 }

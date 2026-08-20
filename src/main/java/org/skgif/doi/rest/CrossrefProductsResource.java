@@ -33,7 +33,7 @@ import java.util.Optional;
 /**
  * SKG-IF Products endpoint, backed live by the Crossref REST API (no local storage) - the
  * Crossref-provider sibling of {@link DataCiteProductsResource}, see that class's javadoc for why the
- * JSON-LD envelope is hand-assembled via {@link JsonLdResponses}. Provider selection is by URL
+ * JSON-LD envelope is hand-assembled via {@link JsonLdEnvelopes}. Provider selection is by URL
  * path rather than auto-detected: this only ever serves Crossref-registered DOIs, at {@code
  * /crossref/products} rather than {@code /datacite/products}.
  */
@@ -134,19 +134,19 @@ public class CrossrefProductsResource {
             return notFound(localIdentifierParam);
         }
         if (CrossrefTypeMapping.isGrant(work)) {
-            return JsonLdResponses.notFound("No product found for local_identifier '" + localIdentifierParam +
+            return JsonLdErrors.notFound("No product found for local_identifier '" + localIdentifierParam +
                     "' - this DOI is a grant, see /crossref/grants/" + localIdentifierParam);
         }
 
         Product product = mapper.toProduct(work,
                 CrossrefTypeMapping.isXmlVenueEnrichable(work) ? venueEnricher.fetchVenueMetadata(doi).orElse(null) :
                         null);
-        String selfHref = JsonLdResponses.selfLink(uriInfo, RESOURCE_PATH, doi);
+        String selfHref = JsonLdLinks.selfLink(uriInfo, RESOURCE_PATH, doi);
 
-        String contextBase = JsonLdResponses.contextBaseFor(Optional.<String>empty(), sandboxBaseUrl,
+        String contextBase = JsonLdContextBase.contextBaseFor(Optional.<String>empty(), sandboxBaseUrl,
                 fallbackContextBase);
-        return JsonLdResponses.singleEntityResponse(objectMapper, contextBase,
-                JsonLdResponses.singleEntityMeta(selfHref), product);
+        return JsonLdEnvelopes.singleEntityResponse(objectMapper, contextBase,
+                JsonLdMeta.singleEntityMeta(selfHref), product);
     }
 
     /**
@@ -169,7 +169,7 @@ public class CrossrefProductsResource {
         try {
             parsed = CrossrefFilters.toProductsQuery(filter);
         } catch (FilterQuerySyntax.UnsupportedFilterException e) {
-            return JsonLdResponses.invalidFilter(uriInfo, e.getMessage());
+            return JsonLdErrors.invalidFilter(uriInfo, e.getMessage());
         }
 
         int pageNumber = parsePage(page);
@@ -193,16 +193,16 @@ public class CrossrefProductsResource {
                     continue;
                 }
                 products.add(mapper.toProduct(work));
-                apiItems.add(JsonLdResponses.apiItem(localIdentifiers.toFullLocalIdentifier(work.doi()),
-                        JsonLdResponses.selfLink(uriInfo, RESOURCE_PATH, work.doi())));
+                apiItems.add(JsonLdMeta.apiItem(localIdentifiers.toFullLocalIdentifier(work.doi()),
+                        JsonLdLinks.selfLink(uriInfo, RESOURCE_PATH, work.doi())));
             }
         }
 
         boolean hasNext = offset + size < totalResults;
-        String contextBase = JsonLdResponses.contextBaseFor(Optional.<String>empty(), sandboxBaseUrl,
+        String contextBase = JsonLdContextBase.contextBaseFor(Optional.<String>empty(), sandboxBaseUrl,
                 fallbackContextBase);
-        return JsonLdResponses.searchResultsResponse(objectMapper, contextBase,
-                JsonLdResponses.searchMeta(new JsonLdResponses.SearchPage(uriInfo, RESOURCE_PATH, filter, pageNumber,
+        return JsonLdEnvelopes.searchResultsResponse(objectMapper, contextBase,
+                JsonLdMeta.searchMeta(new JsonLdMeta.SearchPage(uriInfo, RESOURCE_PATH, filter, pageNumber,
                         size), totalResults, hasNext, apiItems),
                 products);
     }
@@ -229,6 +229,6 @@ public class CrossrefProductsResource {
     }
 
     private Response notFound(String requestedId) {
-        return JsonLdResponses.notFound("No product found for local_identifier '" + requestedId + "'");
+        return JsonLdErrors.notFound("No product found for local_identifier '" + requestedId + "'");
     }
 }

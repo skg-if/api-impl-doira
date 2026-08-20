@@ -34,7 +34,7 @@ import java.util.Optional;
  * SKG-IF Grants endpoint, backed live by the DataCite REST API (no local storage). Serves only
  * DataCite DOIs with {@code resourceTypeGeneral: "Award"} - every other DOI is a product, see
  * {@link DataCiteProductsResource}. See that class's javadoc for why the JSON-LD envelope is
- * hand-assembled (via {@link JsonLdResponses}) rather than implementing the generated {@code
+ * hand-assembled (via {@link JsonLdEnvelopes}) rather than implementing the generated {@code
  * GrantApi} interface directly.
  */
 @Path("/datacite/grants")
@@ -109,16 +109,16 @@ public class DataCiteGrantsResource {
             return notFound(localIdentifierParam);
         }
         if (!ResourceTypeMapping.isAward(data.attributes())) {
-            return JsonLdResponses.notFound("No grant found for local_identifier '" + localIdentifierParam +
+            return JsonLdErrors.notFound("No grant found for local_identifier '" + localIdentifierParam +
                     "' - this DOI is a product, see /datacite/products/" + localIdentifierParam);
         }
 
         Grant grant = mapper.toGrant(data.attributes());
-        String selfHref = JsonLdResponses.selfLink(uriInfo, RESOURCE_PATH, doi);
+        String selfHref = JsonLdLinks.selfLink(uriInfo, RESOURCE_PATH, doi);
 
-        String contextBase = JsonLdResponses.contextBaseFor(data, sandboxBaseUrl, fallbackContextBase);
-        return JsonLdResponses.singleEntityResponse(objectMapper, contextBase,
-                JsonLdResponses.singleEntityMeta(selfHref), grant);
+        String contextBase = JsonLdContextBase.contextBaseFor(data, sandboxBaseUrl, fallbackContextBase);
+        return JsonLdEnvelopes.singleEntityResponse(objectMapper, contextBase,
+                JsonLdMeta.singleEntityMeta(selfHref), grant);
     }
 
     /**
@@ -141,7 +141,7 @@ public class DataCiteGrantsResource {
         try {
             query = DataCiteGrantFilters.toDataCiteQuery(filter);
         } catch (FilterQuerySyntax.UnsupportedFilterException e) {
-            return JsonLdResponses.invalidFilter(uriInfo, e.getMessage());
+            return JsonLdErrors.invalidFilter(uriInfo, e.getMessage());
         }
         // /datacite/grants only ever serves Award-type DOIs.
         String awardInclusion = "types.resourceTypeGeneral:" + ResourceTypeMapping.AWARD;
@@ -161,16 +161,16 @@ public class DataCiteGrantsResource {
                     continue;
                 }
                 grants.add(mapper.toGrant(item.attributes()));
-                apiItems.add(JsonLdResponses.apiItem(localIdentifiers.toFullLocalIdentifier(item.attributes().doi()),
-                        JsonLdResponses.selfLink(uriInfo, RESOURCE_PATH, item.attributes().doi())));
+                apiItems.add(JsonLdMeta.apiItem(localIdentifiers.toFullLocalIdentifier(item.attributes().doi()),
+                        JsonLdLinks.selfLink(uriInfo, RESOURCE_PATH, item.attributes().doi())));
             }
         }
 
         long total = response.meta() != null ? response.meta().total() : grants.size();
         boolean hasNext = hasMorePages(response, pageNumber);
-        String contextBase = JsonLdResponses.contextBaseFor(response.data(), sandboxBaseUrl, fallbackContextBase);
-        return JsonLdResponses.searchResultsResponse(objectMapper, contextBase,
-                JsonLdResponses.searchMeta(new JsonLdResponses.SearchPage(uriInfo, RESOURCE_PATH, filter, pageNumber,
+        String contextBase = JsonLdContextBase.contextBaseFor(response.data(), sandboxBaseUrl, fallbackContextBase);
+        return JsonLdEnvelopes.searchResultsResponse(objectMapper, contextBase,
+                JsonLdMeta.searchMeta(new JsonLdMeta.SearchPage(uriInfo, RESOURCE_PATH, filter, pageNumber,
                         size), total, hasNext, apiItems),
                 grants);
     }
@@ -192,6 +192,6 @@ public class DataCiteGrantsResource {
     }
 
     private Response notFound(String requestedId) {
-        return JsonLdResponses.notFound("No grant found for local_identifier '" + requestedId + "'");
+        return JsonLdErrors.notFound("No grant found for local_identifier '" + requestedId + "'");
     }
 }

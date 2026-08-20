@@ -27,7 +27,7 @@ import org.skgif.doi.util.LocalIdentifiers;
  * SKG-IF Products endpoint, backed live by mEDRA's ONIX-for-DOI metadata API (no local storage) -
  * the mEDRA-provider sibling of {@link DataCiteProductsResource}/{@link CrossrefProductsResource}, see
  * {@code DataCiteProductsResource}'s javadoc for why the JSON-LD envelope is hand-assembled via {@link
- * JsonLdResponses}. Provider selection is by URL path, not auto-detected: this only ever serves
+ * JsonLdEnvelopes}. Provider selection is by URL path, not auto-detected: this only ever serves
  * mEDRA-registered DOIs, at {@code /medra/products}.
  *
  * <p>Single-item lookup only - unlike {@code DataCiteProductsResource}/{@code CrossrefProductsResource},
@@ -110,18 +110,18 @@ public class MedraProductsResource {
         }
 
         Product product = mapper.toProduct(work.get());
-        String selfHref = JsonLdResponses.selfLink(uriInfo, RESOURCE_PATH, doi);
+        String selfHref = JsonLdLinks.selfLink(uriInfo, RESOURCE_PATH, doi);
 
         MetaSingleEntity meta = new MetaSingleEntity()
                 .localIdentifier(selfHref)
                 .entityType(MetaSingleEntity.EntityTypeEnum.SINGLE_ENTITY);
 
         String contextBase =
-                JsonLdResponses.contextBaseFor(Optional.<String>empty(), sandboxBaseUrl, fallbackContextBase);
-        return JsonLdResponses.singleEntityResponse(objectMapper, contextBase, meta, product);
+                JsonLdContextBase.contextBaseFor(Optional.<String>empty(), sandboxBaseUrl, fallbackContextBase);
+        return JsonLdEnvelopes.singleEntityResponse(objectMapper, contextBase, meta, product);
     }
 
     private Response notFound(String requestedId) {
-        return JsonLdResponses.notFound("No product found for local_identifier '" + requestedId + "'");
+        return JsonLdErrors.notFound("No product found for local_identifier '" + requestedId + "'");
     }
 }

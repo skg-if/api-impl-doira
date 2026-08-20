@@ -59,6 +59,16 @@
       entity stream or connection, not an actual resource that needs closing.
     -->
     <exclude name="CloseResource"/>
+    <!--
+      8 hits (CrossrefGrantMapperTest, CrossrefToSkgIfMapperTest, CrossrefToSkgIfMapperVenueTest,
+      DataCiteToSkgIfMapperTest, MedraToSkgIfMapperTest, CrossrefFiltersTest,
+      CrossrefProductsResourceTest, ProductsGoldenTest) - these mapper/resource/filter tests
+      deliberately cover many independent fixtures/scenarios, one `@Test` method per case, rather
+      than parameterizing them into fewer methods; that's thorough coverage, not the God-class
+      smell TooManyMethods targets on production code (see pmd-ruleset.xml, where this rule was
+      fixed for real production offenders and is no longer excluded there).
+    -->
+    <exclude name="TooManyMethods"/>
   </rule>
 
 </ruleset>

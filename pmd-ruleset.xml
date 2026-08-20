@@ -120,20 +120,15 @@
       table (an EnumMap populated via sequential, non-branching .put() calls, so PMD's complexity
       count for the dispatch method itself drops to ~1) - see CrossrefFiltersTest/
       DataCiteProductFiltersTest/DataCiteGrantFiltersTest's exhaustiveness tests for the safety net
-      that replaces the compiler's switch-exhaustiveness check the lookup table gives up. Leaving
-      GodClass, TooManyMethods, and LoosePackageCoupling - each with real, but entirely different
-      and unrelated, offenders, none of them mapper classes, so each stays excluded individually
-      with its own current rationale instead of one blanket comment:
+      that replaces the compiler's switch-exhaustiveness check the lookup table gives up. GodClass
+      and TooManyMethods have since been fixed and removed from this list too (see git history):
+      both were flagged solely on JsonLdResponses (a REST-layer response-builder, not a format
+      mapper - out of scope for the mapper-splitting refactor above), fixed the same way - split
+      into five single-concern classes (JsonLdContextBase, JsonLdLinks, JsonLdMeta,
+      JsonLdEnvelopes, JsonLdErrors), again kept in the same package rather than a subpackage to
+      avoid trading these exclusions for a LoosePackageCoupling one. Only LoosePackageCoupling
+      remains excluded below, for an unrelated reason (see its own comment):
     -->
-    <!--
-      GodClass: only JsonLdResponses (a REST-layer response-builder, not a format mapper) - out of
-      scope for the mapper-splitting refactor above.
-    -->
-    <exclude name="GodClass"/>
-    <!--
-      TooManyMethods: only JsonLdResponses, same reason as GodClass above.
-    -->
-    <exclude name="TooManyMethods"/>
     <!--
       LoosePackageCoupling errors out (not a violation - a PMD configerror, "No packages or
       classes specified") because it requires an explicit allow-list of packages/classes in its

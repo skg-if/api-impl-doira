@@ -39,7 +39,7 @@ import java.util.Optional;
  * merge of the spec's {@code @context} anyOf (two fixed context URLs + an {@code @base} object)
  * collapses to a type that can only hold the {@code @base} object, dropping the two required
  * context URLs. The JSON-LD envelope (@context/meta/@graph) is therefore assembled by hand here
- * (via {@link JsonLdResponses}) with Jackson, while the generated {@code Product}/{@code
+ * (via {@link JsonLdEnvelopes}) with Jackson, while the generated {@code Product}/{@code
  * MetaSingleEntity}/{@code MetaSearch}/{@code Error} models (which generated correctly) are
  * used for everything nested inside it.
  */
@@ -132,16 +132,16 @@ public class DataCiteProductsResource {
             return notFound(localIdentifierParam);
         }
         if (ResourceTypeMapping.isAward(data.attributes())) {
-            return JsonLdResponses.notFound("No product found for local_identifier '" + localIdentifierParam +
+            return JsonLdErrors.notFound("No product found for local_identifier '" + localIdentifierParam +
                     "' - this DOI is a grant award, see /datacite/grants/" + localIdentifierParam);
         }
 
         Product product = mapper.toProduct(data.attributes());
-        String selfHref = JsonLdResponses.selfLink(uriInfo, RESOURCE_PATH, doi);
+        String selfHref = JsonLdLinks.selfLink(uriInfo, RESOURCE_PATH, doi);
 
-        String contextBase = JsonLdResponses.contextBaseFor(data, sandboxBaseUrl, fallbackContextBase);
-        return JsonLdResponses.singleEntityResponse(objectMapper, contextBase,
-                JsonLdResponses.singleEntityMeta(selfHref), product);
+        String contextBase = JsonLdContextBase.contextBaseFor(data, sandboxBaseUrl, fallbackContextBase);
+        return JsonLdEnvelopes.singleEntityResponse(objectMapper, contextBase,
+                JsonLdMeta.singleEntityMeta(selfHref), product);
     }
 
     /**
@@ -164,7 +164,7 @@ public class DataCiteProductsResource {
         try {
             query = DataCiteProductFilters.toDataCiteQuery(filter);
         } catch (FilterQuerySyntax.UnsupportedFilterException e) {
-            return JsonLdResponses.invalidFilter(uriInfo, e.getMessage());
+            return JsonLdErrors.invalidFilter(uriInfo, e.getMessage());
         }
         // Awards are grants, not products - never let them leak into /datacite/products results.
         String awardExclusion = "NOT types.resourceTypeGeneral:" + ResourceTypeMapping.AWARD;
@@ -184,16 +184,16 @@ public class DataCiteProductsResource {
                     continue;
                 }
                 products.add(mapper.toProduct(item.attributes()));
-                apiItems.add(JsonLdResponses.apiItem(localIdentifiers.toFullLocalIdentifier(item.attributes().doi()),
-                        JsonLdResponses.selfLink(uriInfo, RESOURCE_PATH, item.attributes().doi())));
+                apiItems.add(JsonLdMeta.apiItem(localIdentifiers.toFullLocalIdentifier(item.attributes().doi()),
+                        JsonLdLinks.selfLink(uriInfo, RESOURCE_PATH, item.attributes().doi())));
             }
         }
 
         long total = response.meta() != null ? response.meta().total() : products.size();
         boolean hasNext = hasMorePages(response, pageNumber);
-        String contextBase = JsonLdResponses.contextBaseFor(response.data(), sandboxBaseUrl, fallbackContextBase);
-        return JsonLdResponses.searchResultsResponse(objectMapper, contextBase,
-                JsonLdResponses.searchMeta(new JsonLdResponses.SearchPage(uriInfo, RESOURCE_PATH, filter, pageNumber,
+        String contextBase = JsonLdContextBase.contextBaseFor(response.data(), sandboxBaseUrl, fallbackContextBase);
+        return JsonLdEnvelopes.searchResultsResponse(objectMapper, contextBase,
+                JsonLdMeta.searchMeta(new JsonLdMeta.SearchPage(uriInfo, RESOURCE_PATH, filter, pageNumber,
                         size), total, hasNext, apiItems),
                 products);
     }
@@ -215,6 +215,6 @@ public class DataCiteProductsResource {
     }
 
     private Response notFound(String requestedId) {
-        return JsonLdResponses.notFound("No product found for local_identifier '" + requestedId + "'");
+        return JsonLdErrors.notFound("No product found for local_identifier '" + requestedId + "'");
     }
 }
