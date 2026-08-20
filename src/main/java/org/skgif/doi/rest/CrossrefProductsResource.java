@@ -1,8 +1,6 @@
 package org.skgif.doi.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.skgif.doi.crossref.CrossrefClient;
 import org.skgif.doi.crossref.CrossrefTypeMapping;
 import org.skgif.doi.crossref.CrossrefXmlTransformClient;
@@ -162,13 +160,7 @@ public class CrossrefProductsResource {
 
         String contextBase = JsonLdResponses.contextBaseFor(Optional.<String>empty(), sandboxBaseUrl,
                 fallbackContextBase);
-        ObjectNode root = JsonLdResponses.envelope(objectMapper, contextBase);
-        root.set("meta", objectMapper.valueToTree(meta));
-        ArrayNode graph = objectMapper.createArrayNode();
-        graph.add(objectMapper.valueToTree(product));
-        root.set("@graph", graph);
-
-        return Response.ok(root).build();
+        return JsonLdResponses.singleEntityResponse(objectMapper, contextBase, meta, product);
     }
 
     /**
@@ -243,13 +235,7 @@ public class CrossrefProductsResource {
 
         String contextBase = JsonLdResponses.contextBaseFor(Optional.<String>empty(), sandboxBaseUrl,
                 fallbackContextBase);
-        ObjectNode root = JsonLdResponses.envelope(objectMapper, contextBase);
-        root.set("meta", objectMapper.valueToTree(meta));
-        ArrayNode graph = objectMapper.createArrayNode();
-        products.forEach(p -> graph.add(objectMapper.valueToTree(p)));
-        root.set("@graph", graph);
-
-        return Response.ok(root).build();
+        return JsonLdResponses.searchResultsResponse(objectMapper, contextBase, meta, products);
     }
 
     private String withPrefix(String filter) {

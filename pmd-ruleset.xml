@@ -101,7 +101,7 @@
       in the same package as their facade (not a new subpackage) specifically to avoid trading
       this exclusion for a LoosePackageCoupling one. CouplingBetweenObjects and CognitiveComplexity
       are fully clean now and no longer excluded below - the mapper split alone was enough for
-      those two. The other six rules still have real, but now entirely different and unrelated,
+      those two. The other seven rules still have real, but now entirely different and unrelated,
       offenders - none of them mapper classes - so each stays excluded individually with its own
       current rationale instead of one blanket comment:
     -->
@@ -151,17 +151,6 @@
       package-coupling limits ever comes up.
     -->
     <exclude name="LoosePackageCoupling"/>
-    <!--
-      CouplingBetweenObjects: only CrossrefProductsResource (value 21, threshold 20) - the same
-      "already-cohesive-but-branchy REST resource" shape as the CyclomaticComplexity/
-      NPathComplexity/ExcessiveImports exclusions above on this same class family, tipped over the
-      threshold specifically by converting fetchVenueMetadata to Optional<CrossrefVenueMetadata>
-      (the ReturnNullConsiderOptional refactor below) - Optional/CrossrefVenueMetadata were both
-      already referenced elsewhere in the class, so this isn't new "real" design coupling, just the
-      metric's count of a generic type argument. Not worth restructuring this one already-excluded
-      class further over a single-point metric trip.
-    -->
-    <exclude name="CouplingBetweenObjects"/>
   </rule>
 
   <rule ref="category/java/multithreading.xml">

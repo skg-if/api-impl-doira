@@ -11,6 +11,8 @@ import org.skgif.doi.datacite.dto.DataCiteDoiData;
 import org.skgif.doi.generated.model.ApiItem;
 import org.skgif.doi.generated.model.Error;
 import org.skgif.doi.generated.model.Link;
+import org.skgif.doi.generated.model.MetaSearch;
+import org.skgif.doi.generated.model.MetaSingleEntity;
 
 /**
  * JSON-LD envelope, pagination-link and RFC 7807 error helpers shared by {@link
@@ -144,6 +146,48 @@ final class JsonLdResponses {
         return new ApiItem()
                 .localIdentifier(entityLocalIdentifier)
                 .urls(List.of(new Link().entityType("link").rel("self").href(apiSelfHref)));
+    }
+
+    /**
+     * Builds the full JSON-LD envelope for a single-entity response (@context/meta/@graph with one
+     * item) and wraps it in a 200 response - the shared shape of every provider's
+     * {@code get*ById} endpoint.
+     *
+     * @param objectMapper used to serialize meta/entity into the envelope
+     * @param contextBase  the {@code @base} to namespace this envelope under
+     * @param meta         the single-entity meta block
+     * @param entity       the SKG-IF entity (e.g. {@code Product}/{@code Grant}) to place in {@code @graph}
+     * @return a 200 response with the assembled envelope
+     */
+    static Response singleEntityResponse(ObjectMapper objectMapper, String contextBase, MetaSingleEntity meta,
+            Object entity) {
+        ObjectNode root = envelope(objectMapper, contextBase);
+        root.set("meta", objectMapper.valueToTree(meta));
+        ArrayNode graph = objectMapper.createArrayNode();
+        graph.add(objectMapper.valueToTree(entity));
+        root.set("@graph", graph);
+        return Response.ok(root).build();
+    }
+
+    /**
+     * Builds the full JSON-LD envelope for a search-results response (@context/meta/@graph with a
+     * page of items) and wraps it in a 200 response - the shared shape of every provider's
+     * {@code get*s} list endpoint.
+     *
+     * @param objectMapper used to serialize meta/items into the envelope
+     * @param contextBase  the {@code @base} to namespace this envelope under
+     * @param meta         the search-results meta block
+     * @param items        the page of SKG-IF entities (e.g. {@code Product}/{@code Grant}) to place in {@code @graph}
+     * @return a 200 response with the assembled envelope
+     */
+    static Response searchResultsResponse(ObjectMapper objectMapper, String contextBase, MetaSearch meta,
+            List<?> items) {
+        ObjectNode root = envelope(objectMapper, contextBase);
+        root.set("meta", objectMapper.valueToTree(meta));
+        ArrayNode graph = objectMapper.createArrayNode();
+        items.forEach(item -> graph.add(objectMapper.valueToTree(item)));
+        root.set("@graph", graph);
+        return Response.ok(root).build();
     }
 
     static Response notFound(String detail) {

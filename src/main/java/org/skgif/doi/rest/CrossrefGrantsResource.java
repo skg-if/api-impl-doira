@@ -1,8 +1,6 @@
 package org.skgif.doi.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.skgif.doi.crossref.CrossrefClient;
 import org.skgif.doi.crossref.CrossrefTypeMapping;
 import org.skgif.doi.crossref.dto.CrossrefWork;
@@ -129,13 +127,7 @@ public class CrossrefGrantsResource {
 
         String contextBase = JsonLdResponses.contextBaseFor(Optional.<String>empty(), sandboxBaseUrl,
                 fallbackContextBase);
-        ObjectNode root = JsonLdResponses.envelope(objectMapper, contextBase);
-        root.set("meta", objectMapper.valueToTree(meta));
-        ArrayNode graph = objectMapper.createArrayNode();
-        graph.add(objectMapper.valueToTree(grant));
-        root.set("@graph", graph);
-
-        return Response.ok(root).build();
+        return JsonLdResponses.singleEntityResponse(objectMapper, contextBase, meta, grant);
     }
 
     /**
@@ -211,13 +203,7 @@ public class CrossrefGrantsResource {
 
         String contextBase = JsonLdResponses.contextBaseFor(Optional.<String>empty(), sandboxBaseUrl,
                 fallbackContextBase);
-        ObjectNode root = JsonLdResponses.envelope(objectMapper, contextBase);
-        root.set("meta", objectMapper.valueToTree(meta));
-        ArrayNode graph = objectMapper.createArrayNode();
-        grants.forEach(g -> graph.add(objectMapper.valueToTree(g)));
-        root.set("@graph", graph);
-
-        return Response.ok(root).build();
+        return JsonLdResponses.searchResultsResponse(objectMapper, contextBase, meta, grants);
     }
 
     private String withGrantType(String filter) {

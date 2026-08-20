@@ -1,8 +1,6 @@
 package org.skgif.doi.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.skgif.doi.datacite.DataCiteClient;
 import org.skgif.doi.datacite.ResourceTypeMapping;
 import org.skgif.doi.datacite.dto.DataCiteDoiData;
@@ -128,13 +126,7 @@ public class DataCiteGrantsResource {
                 .entityType(MetaSingleEntity.EntityTypeEnum.SINGLE_ENTITY);
 
         String contextBase = JsonLdResponses.contextBaseFor(data, sandboxBaseUrl, fallbackContextBase);
-        ObjectNode root = JsonLdResponses.envelope(objectMapper, contextBase);
-        root.set("meta", objectMapper.valueToTree(meta));
-        ArrayNode graph = objectMapper.createArrayNode();
-        graph.add(objectMapper.valueToTree(grant));
-        root.set("@graph", graph);
-
-        return Response.ok(root).build();
+        return JsonLdResponses.singleEntityResponse(objectMapper, contextBase, meta, grant);
     }
 
     /**
@@ -205,13 +197,7 @@ public class DataCiteGrantsResource {
                 .totalItems((int) total));
 
         String contextBase = JsonLdResponses.contextBaseFor(response.data(), sandboxBaseUrl, fallbackContextBase);
-        ObjectNode root = JsonLdResponses.envelope(objectMapper, contextBase);
-        root.set("meta", objectMapper.valueToTree(meta));
-        ArrayNode graph = objectMapper.createArrayNode();
-        grants.forEach(g -> graph.add(objectMapper.valueToTree(g)));
-        root.set("@graph", graph);
-
-        return Response.ok(root).build();
+        return JsonLdResponses.searchResultsResponse(objectMapper, contextBase, meta, grants);
     }
 
     private boolean hasMorePages(DataCiteDoiListResponse response, int currentPage) {

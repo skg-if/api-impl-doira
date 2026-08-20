@@ -1,8 +1,6 @@
 package org.skgif.doi.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -120,13 +118,7 @@ public class MedraProductsResource {
 
         String contextBase =
                 JsonLdResponses.contextBaseFor(Optional.<String>empty(), sandboxBaseUrl, fallbackContextBase);
-        ObjectNode root = JsonLdResponses.envelope(objectMapper, contextBase);
-        root.set("meta", objectMapper.valueToTree(meta));
-        ArrayNode graph = objectMapper.createArrayNode();
-        graph.add(objectMapper.valueToTree(product));
-        root.set("@graph", graph);
-
-        return Response.ok(root).build();
+        return JsonLdResponses.singleEntityResponse(objectMapper, contextBase, meta, product);
     }
 
     private Response notFound(String requestedId) {
