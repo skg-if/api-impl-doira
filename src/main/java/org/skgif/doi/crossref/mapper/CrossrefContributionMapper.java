@@ -13,7 +13,6 @@ import org.skgif.doi.generated.model.ProductContribution;
 import org.skgif.doi.generated.model.ProductContributionBy;
 import org.skgif.doi.util.EntityRefs;
 import org.skgif.doi.util.ExternalIdentifierUrls;
-import org.skgif.doi.util.MapperTextUtils;
 
 /**
  * Maps a Crossref work record's author/editor/publisher fields onto {@code
@@ -85,16 +84,7 @@ final class CrossrefContributionMapper {
      * @return the bare ORCID id, or Optional.empty() if orcidUrl is null
      */
     static Optional<String> bareOrcid(String orcidUrl) {
-        if (orcidUrl == null) {
-            return Optional.empty();
-        }
-        if (orcidUrl.startsWith(ExternalIdentifierUrls.ORCID_BASE_URL)) {
-            return Optional.of(orcidUrl.substring(ExternalIdentifierUrls.ORCID_BASE_URL.length()));
-        }
-        if (orcidUrl.startsWith(ExternalIdentifierUrls.ORCID_HTTP_BASE_URL)) {
-            return Optional.of(orcidUrl.substring(ExternalIdentifierUrls.ORCID_HTTP_BASE_URL.length()));
-        }
-        return Optional.of(orcidUrl);
+        return orcidUrl == null ? Optional.empty() : Optional.of(ExternalIdentifierUrls.stripOrcidUrl(orcidUrl));
     }
 
     static String displayName(String given, String family) {
@@ -136,7 +126,7 @@ final class CrossrefContributionMapper {
         }
         return ids.stream()
                 .filter(entry -> "ROR".equalsIgnoreCase(entry.idType()) && entry.id() != null)
-                .map(entry -> MapperTextUtils.stripRorUrl(entry.id()))
+                .map(entry -> ExternalIdentifierUrls.stripRorUrl(entry.id()))
                 .findFirst();
     }
 }

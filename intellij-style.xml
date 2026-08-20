@@ -341,8 +341,18 @@
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_method_declaration" value="0"/>
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_throws_clause_in_method_declaration" value="0"/>
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_parameters_in_method_declaration" value="16"/>
-		<setting id="org.eclipse.jdt.core.formatter.alignment_for_enum_constants" value="0"/>
-		<setting id="org.eclipse.jdt.core.formatter.alignment_for_arguments_in_enum_constant" value="0"/>
+		<!--
+		Same exporter bug as alignment_for_record_components/alignment_for_parameters_in_*_declaration
+		above: 0 has neither a wrap-style bit (16/32/48/64/80) nor an indent-style bit set, so JDT
+		treats it as "never wrap" regardless of line length - this let a multi-constant enum's
+		entire constant list collapse onto one line (well past the 120-column lineSplit) the first
+		time this codebase introduced an enum with constructor arguments (EntityTypes/
+		GrantFilterKeys/ProductFilterKeys). Patched to 49 (WRAP_ONE_PER_LINE(48) + INDENT_DEFAULT(0)
+		+ FORCE(1)), same final value and reasoning as alignment_for_record_components: every
+		constant, regardless of length, always prints one per line.
+		-->
+		<setting id="org.eclipse.jdt.core.formatter.alignment_for_enum_constants" value="49"/>
+		<setting id="org.eclipse.jdt.core.formatter.alignment_for_arguments_in_enum_constant" value="16"/>
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_superinterfaces_in_enum_declaration" value="0"/>
 		<!--
 		IntelliJ's Eclipse-profile export set this to 18 (WRAP_COMPACT + INDENT_ON_COLUMN), which

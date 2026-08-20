@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BinaryOperator;
-import org.skgif.doi.util.ExternalIdentifierUrls;
 
 /**
  * Shared mechanics for translating the SKG-IF {@code filter} query syntax (comma-separated
@@ -57,12 +56,6 @@ final class FilterQuerySyntax {
 
     static String escape(String value) {
         return value.replace("\"", "\\\"");
-    }
-
-    static String stripDoiUrl(String value) {
-        return value.startsWith(ExternalIdentifierUrls.DOI_BASE_URL) ?
-                value.substring(ExternalIdentifierUrls.DOI_BASE_URL.length()) :
-                value;
     }
 
     /**

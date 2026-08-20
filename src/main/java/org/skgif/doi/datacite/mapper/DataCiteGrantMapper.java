@@ -43,7 +43,7 @@ final class DataCiteGrantMapper {
             return Optional.of(new Organisation()
                     .localIdentifier(ExternalIdentifierUrls.ROR_BASE_URL + ror)
                     .name(creator.name())
-                    .entityType(EntityTypes.ORGANISATION)
+                    .entityType(EntityTypes.ORGANISATION.value())
                     .identifiers(List.of(new AgentAllOfIdentifiers().scheme(SCHEME_ROR).value(ror))));
         }
         // No ROR-bearing creator to identify the funder - fall back to the record's own
@@ -54,7 +54,7 @@ final class DataCiteGrantMapper {
         return Optional.of(new Organisation()
                 .localIdentifier(MapperTextUtils.otf(doi, publisher))
                 .name(publisher)
-                .entityType(EntityTypes.ORGANISATION));
+                .entityType(EntityTypes.ORGANISATION.value()));
     }
 
     static List<GrantAllOfContributions> grantContributions(String doi, List<DataCiteCreator> creators,
@@ -90,7 +90,7 @@ final class DataCiteGrantMapper {
                             ExternalIdentifierUrls.ROR_BASE_URL + ror :
                             MapperTextUtils.otf(doi, name))
                     .name(name)
-                    .entityType(EntityTypes.ORGANISATION);
+                    .entityType(EntityTypes.ORGANISATION.value());
             if (ror != null) {
                 by.identifiers(List.of(new AgentAllOfIdentifiers().scheme(SCHEME_ROR).value(ror)));
             }
@@ -112,7 +112,7 @@ final class DataCiteGrantMapper {
             }
             boolean hasRor = affiliation.affiliationIdentifier() != null &&
                     SCHEME_ROR_UPPER.equalsIgnoreCase(affiliation.affiliationIdentifierScheme());
-            String bareRor = hasRor ? MapperTextUtils.stripRorUrl(affiliation.affiliationIdentifier()) : null;
+            String bareRor = hasRor ? ExternalIdentifierUrls.stripRorUrl(affiliation.affiliationIdentifier()) : null;
             result.add(EntityRefs.organisationRef(doi, affiliation.name(), bareRor));
         }
         return result;

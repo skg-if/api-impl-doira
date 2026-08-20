@@ -44,14 +44,4 @@ public final class MapperTextUtils {
         }
         return slug.length() > MAX_SLUG_LENGTH ? slug.substring(0, MAX_SLUG_LENGTH) : slug;
     }
-
-    /**
-     * @param ror a ROR value, either bare or a full {@code https://ror.org/...} URL
-     * @return the bare ROR id
-     */
-    public static String stripRorUrl(String ror) {
-        return ror.startsWith(ExternalIdentifierUrls.ROR_BASE_URL) ?
-                ror.substring(ExternalIdentifierUrls.ROR_BASE_URL.length()) :
-                ror;
-    }
 }

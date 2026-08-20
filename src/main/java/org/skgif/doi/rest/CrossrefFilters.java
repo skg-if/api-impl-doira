@@ -32,24 +32,24 @@ final class CrossrefFilters {
     private static final String NO_MATCH_CLAUSE = "doi:__no_match__";
 
     private static final Set<String> PRODUCT_SUPPORTED = Set.of(
-            ProductFilterKeys.PRODUCT_TYPE,
-            ProductFilterKeys.IDENTIFIERS_ID,
-            ProductFilterKeys.IDENTIFIERS_SCHEME,
-            ProductFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_ID,
-            ProductFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME,
-            ProductFilterKeys.CF_CONTRIBUTIONS_ORCID,
-            ProductFilterKeys.FUNDING_GRANT_NUMBER,
-            ProductFilterKeys.CF_SEARCH_TITLE,
-            ProductFilterKeys.CF_SEARCH_TITLE_ABSTRACT);
+            ProductFilterKeys.PRODUCT_TYPE.key(),
+            ProductFilterKeys.IDENTIFIERS_ID.key(),
+            ProductFilterKeys.IDENTIFIERS_SCHEME.key(),
+            ProductFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_ID.key(),
+            ProductFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME.key(),
+            ProductFilterKeys.CF_CONTRIBUTIONS_ORCID.key(),
+            ProductFilterKeys.FUNDING_GRANT_NUMBER.key(),
+            ProductFilterKeys.CF_SEARCH_TITLE.key(),
+            ProductFilterKeys.CF_SEARCH_TITLE_ABSTRACT.key());
 
     private static final Set<String> GRANT_SUPPORTED = Set.of(
-            GrantFilterKeys.IDENTIFIERS_VALUE,
-            GrantFilterKeys.IDENTIFIERS_SCHEME,
-            GrantFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_VALUE,
-            GrantFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME,
-            GrantFilterKeys.FUNDING_AGENCY_IDENTIFIERS_VALUE,
-            GrantFilterKeys.CF_SEARCH_TITLE,
-            GrantFilterKeys.CF_SEARCH_TITLE_ABSTRACT);
+            GrantFilterKeys.IDENTIFIERS_VALUE.key(),
+            GrantFilterKeys.IDENTIFIERS_SCHEME.key(),
+            GrantFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_VALUE.key(),
+            GrantFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME.key(),
+            GrantFilterKeys.FUNDING_AGENCY_IDENTIFIERS_VALUE.key(),
+            GrantFilterKeys.CF_SEARCH_TITLE.key(),
+            GrantFilterKeys.CF_SEARCH_TITLE_ABSTRACT.key());
 
     private CrossrefFilters() {
     }
@@ -78,21 +78,20 @@ final class CrossrefFilters {
     }
 
     private static String toProductClause(String key, String value, ParsedFilter.Builder builder) {
-        return switch (key) {
-            case ProductFilterKeys.PRODUCT_TYPE -> productTypeClause(value);
-            case ProductFilterKeys.IDENTIFIERS_ID -> "doi:" + FilterQuerySyntax.stripDoiUrl(value);
-            case ProductFilterKeys.IDENTIFIERS_SCHEME ->
-                FilterQuerySyntax.schemeOnlyFilter(value, "doi", NO_MATCH_CLAUSE);
-            case ProductFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_ID, ProductFilterKeys.CF_CONTRIBUTIONS_ORCID ->
-                "orcid:" + stripOrcidUrl(value);
-            case ProductFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME ->
-                FilterQuerySyntax.schemeOnlyFilter(value, "orcid", NO_MATCH_CLAUSE);
-            case ProductFilterKeys.FUNDING_GRANT_NUMBER -> "award.number:" + value;
-            case ProductFilterKeys.CF_SEARCH_TITLE -> {
+        return switch (ProductFilterKeys.fromKey(key)) {
+            case PRODUCT_TYPE -> productTypeClause(value);
+            case IDENTIFIERS_ID -> "doi:" + ExternalIdentifierUrls.stripDoiUrl(value);
+            case IDENTIFIERS_SCHEME -> FilterQuerySyntax.schemeOnlyFilter(value, "doi", NO_MATCH_CLAUSE);
+            case CONTRIBUTIONS_BY_IDENTIFIERS_ID, CF_CONTRIBUTIONS_ORCID ->
+                "orcid:" + ExternalIdentifierUrls.stripOrcidUrl(value);
+            case CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME -> FilterQuerySyntax.schemeOnlyFilter(value, "orcid",
+                    NO_MATCH_CLAUSE);
+            case FUNDING_GRANT_NUMBER -> "award.number:" + value;
+            case CF_SEARCH_TITLE -> {
                 builder.queryTitle(value);
                 yield null;
             }
-            case ProductFilterKeys.CF_SEARCH_TITLE_ABSTRACT -> {
+            case CF_SEARCH_TITLE_ABSTRACT -> {
                 builder.queryBibliographic(value);
                 yield null;
             }
@@ -101,21 +100,20 @@ final class CrossrefFilters {
     }
 
     private static String toGrantClause(String key, String value, ParsedFilter.Builder builder) {
-        return switch (key) {
-            case GrantFilterKeys.IDENTIFIERS_VALUE -> "doi:" + FilterQuerySyntax.stripDoiUrl(value);
-            case GrantFilterKeys.IDENTIFIERS_SCHEME ->
-                FilterQuerySyntax.schemeOnlyFilter(value, "doi", NO_MATCH_CLAUSE);
-            case GrantFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_VALUE -> "orcid:" + stripOrcidUrl(value);
+        return switch (GrantFilterKeys.fromKey(key)) {
+            case IDENTIFIERS_VALUE -> "doi:" + ExternalIdentifierUrls.stripDoiUrl(value);
+            case IDENTIFIERS_SCHEME -> FilterQuerySyntax.schemeOnlyFilter(value, "doi", NO_MATCH_CLAUSE);
+            case CONTRIBUTIONS_BY_IDENTIFIERS_VALUE -> "orcid:" + ExternalIdentifierUrls.stripOrcidUrl(value);
             // Grant contributions can be organisational (ror) too, but Crossref's "orcid" filter
             // only ever matches a person - a ror-scoped value harmlessly never matches.
-            case GrantFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME ->
+            case CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME ->
                 ("orcid".equalsIgnoreCase(value) || "ror".equalsIgnoreCase(value)) ? null : NO_MATCH_CLAUSE;
-            case GrantFilterKeys.FUNDING_AGENCY_IDENTIFIERS_VALUE -> "award.funder:" + value;
-            case GrantFilterKeys.CF_SEARCH_TITLE -> {
+            case FUNDING_AGENCY_IDENTIFIERS_VALUE -> "award.funder:" + value;
+            case CF_SEARCH_TITLE -> {
                 builder.queryTitle(value);
                 yield null;
             }
-            case GrantFilterKeys.CF_SEARCH_TITLE_ABSTRACT -> {
+            case CF_SEARCH_TITLE_ABSTRACT -> {
                 builder.queryBibliographic(value);
                 yield null;
             }
@@ -145,12 +143,6 @@ final class CrossrefFilters {
             return NO_MATCH_CLAUSE;
         }
         return types.stream().map(type -> "type:" + type).collect(Collectors.joining(","));
-    }
-
-    private static String stripOrcidUrl(String value) {
-        return value.startsWith(ExternalIdentifierUrls.ORCID_BASE_URL) ?
-                value.substring(ExternalIdentifierUrls.ORCID_BASE_URL.length()) :
-                value;
     }
 
     /**

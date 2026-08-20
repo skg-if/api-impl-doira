@@ -29,45 +29,45 @@ class CrossrefFiltersTest {
                 Arguments.of("null filter has no clause", null, null),
                 Arguments.of("blank filter has no clause", "   ", null),
                 Arguments.of("product type research data maps to dataset",
-                        ProductFilterKeys.PRODUCT_TYPE + ":research data", "type:dataset"),
+                        ProductFilterKeys.PRODUCT_TYPE.key() + ":research data", "type:dataset"),
                 Arguments.of("product type unrecognized value has no match",
-                        ProductFilterKeys.PRODUCT_TYPE + ":bogus", NO_MATCH_CLAUSE),
+                        ProductFilterKeys.PRODUCT_TYPE.key() + ":bogus", NO_MATCH_CLAUSE),
                 // Crossref has no software-specific type at all (see CrossrefTypeMapping's class
                 // javadoc) - research software can never match any Crossref record via this filter.
                 Arguments.of("product type research software has no match on crossref",
-                        ProductFilterKeys.PRODUCT_TYPE + ":research software", NO_MATCH_CLAUSE),
+                        ProductFilterKeys.PRODUCT_TYPE.key() + ":research software", NO_MATCH_CLAUSE),
                 Arguments.of("identifiers id strips full doi url prefix",
-                        ProductFilterKeys.IDENTIFIERS_ID + ":" + doiUrl,
+                        ProductFilterKeys.IDENTIFIERS_ID.key() + ":" + doiUrl,
                         "doi:10.15151/esrf-dc-2493599001"),
                 Arguments.of("identifiers id passes bare doi through unchanged",
-                        ProductFilterKeys.IDENTIFIERS_ID + ":10.15151/esrf-dc-2493599001",
+                        ProductFilterKeys.IDENTIFIERS_ID.key() + ":10.15151/esrf-dc-2493599001",
                         "doi:10.15151/esrf-dc-2493599001"),
                 Arguments.of("identifiers scheme is a no-op for doi",
-                        ProductFilterKeys.IDENTIFIERS_SCHEME + ":doi", null),
+                        ProductFilterKeys.IDENTIFIERS_SCHEME.key() + ":doi", null),
                 Arguments.of("identifiers scheme zero match for other scheme",
-                        ProductFilterKeys.IDENTIFIERS_SCHEME + ":pmid", NO_MATCH_CLAUSE),
+                        ProductFilterKeys.IDENTIFIERS_SCHEME.key() + ":pmid", NO_MATCH_CLAUSE),
                 Arguments.of("contributions by identifiers id adds orcid prefix and strips orcid url",
-                        ProductFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_ID + ":" + orcidUrl,
+                        ProductFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_ID.key() + ":" + orcidUrl,
                         "orcid:0000-0002-1008-0687"),
                 Arguments.of("cf contributions orcid produces the same clause as identifiers id",
-                        ProductFilterKeys.CF_CONTRIBUTIONS_ORCID + ":0000-0002-1008-0687",
+                        ProductFilterKeys.CF_CONTRIBUTIONS_ORCID.key() + ":0000-0002-1008-0687",
                         "orcid:0000-0002-1008-0687"),
                 Arguments.of("contributions by identifiers scheme is a no-op for orcid",
-                        ProductFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME + ":orcid", null),
+                        ProductFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME.key() + ":orcid", null),
                 Arguments.of("contributions by identifiers scheme zero match for other scheme",
-                        ProductFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME + ":isni", NO_MATCH_CLAUSE),
+                        ProductFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME.key() + ":isni", NO_MATCH_CLAUSE),
                 Arguments.of("funding grant number",
-                        ProductFilterKeys.FUNDING_GRANT_NUMBER + ":MX-2738", "award.number:MX-2738"),
+                        ProductFilterKeys.FUNDING_GRANT_NUMBER.key() + ":MX-2738", "award.number:MX-2738"),
                 Arguments.of("combines multiple filters with a comma",
-                        ProductFilterKeys.IDENTIFIERS_ID + ":10.15151/esrf-dc-2493599001," +
-                                ProductFilterKeys.PRODUCT_TYPE + ":research data",
+                        ProductFilterKeys.IDENTIFIERS_ID.key() + ":10.15151/esrf-dc-2493599001," +
+                                ProductFilterKeys.PRODUCT_TYPE.key() + ":research data",
                         "doi:10.15151/esrf-dc-2493599001,type:dataset"));
     }
 
     @Test
     void toProductsQuery_searchTitle_setsQueryTitleNotFilter() {
         CrossrefFilters.ParsedFilter parsed =
-                CrossrefFilters.toProductsQuery(ProductFilterKeys.CF_SEARCH_TITLE + ":gravitational waves");
+                CrossrefFilters.toProductsQuery(ProductFilterKeys.CF_SEARCH_TITLE.key() + ":gravitational waves");
 
         assertThat(parsed.filter()).isNull();
         assertThat(parsed.queryTitle()).isEqualTo("gravitational waves");
@@ -76,8 +76,8 @@ class CrossrefFiltersTest {
 
     @Test
     void toProductsQuery_searchTitleAbstract_setsQueryBibliographicNotFilter() {
-        CrossrefFilters.ParsedFilter parsed =
-                CrossrefFilters.toProductsQuery(ProductFilterKeys.CF_SEARCH_TITLE_ABSTRACT + ":neutron stars");
+        CrossrefFilters.ParsedFilter parsed = CrossrefFilters
+                .toProductsQuery(ProductFilterKeys.CF_SEARCH_TITLE_ABSTRACT.key() + ":neutron stars");
 
         assertThat(parsed.filter()).isNull();
         assertThat(parsed.queryBibliographic()).isEqualTo("neutron stars");
@@ -90,9 +90,9 @@ class CrossrefFiltersTest {
         // DataCiteProductFiltersTest) but Crossref has no equivalent facet - a stable choice for
         // an "unsupported here" filter key.
         assertThatThrownBy(() -> CrossrefFilters
-                .toProductsQuery(ProductFilterKeys.CONTRIBUTIONS_BY_FAMILY_NAME + ":Choiniere"))
+                .toProductsQuery(ProductFilterKeys.CONTRIBUTIONS_BY_FAMILY_NAME.key() + ":Choiniere"))
                 .isInstanceOf(FilterQuerySyntax.UnsupportedFilterException.class)
-                .hasMessageContaining(ProductFilterKeys.CONTRIBUTIONS_BY_FAMILY_NAME);
+                .hasMessageContaining(ProductFilterKeys.CONTRIBUTIONS_BY_FAMILY_NAME.key());
     }
 
     @ParameterizedTest(name = "{0}")
@@ -106,32 +106,32 @@ class CrossrefFiltersTest {
         return Stream.of(
                 Arguments.of("null filter has no clause", null, null),
                 Arguments.of("identifiers value strips full doi url prefix",
-                        GrantFilterKeys.IDENTIFIERS_VALUE + ":https://doi.org/10.35802/218300",
+                        GrantFilterKeys.IDENTIFIERS_VALUE.key() + ":https://doi.org/10.35802/218300",
                         "doi:10.35802/218300"),
                 Arguments.of("identifiers scheme is a no-op for doi",
-                        GrantFilterKeys.IDENTIFIERS_SCHEME + ":doi", null),
+                        GrantFilterKeys.IDENTIFIERS_SCHEME.key() + ":doi", null),
                 Arguments.of("identifiers scheme zero match for other scheme",
-                        GrantFilterKeys.IDENTIFIERS_SCHEME + ":isni", NO_MATCH_CLAUSE),
+                        GrantFilterKeys.IDENTIFIERS_SCHEME.key() + ":isni", NO_MATCH_CLAUSE),
                 Arguments.of("contributions by identifiers value strips orcid url",
-                        GrantFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_VALUE + ":" + orcidUrl,
+                        GrantFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_VALUE.key() + ":" + orcidUrl,
                         "orcid:0000-0001-9773-0023"),
                 // Grant contributions can be organisational (ror) too, but Crossref's "orcid"
                 // filter only ever matches a person - see CrossrefFilters.toGrantClause.
                 Arguments.of("contributions by identifiers scheme no-op for orcid",
-                        GrantFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME + ":orcid", null),
+                        GrantFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME.key() + ":orcid", null),
                 Arguments.of("contributions by identifiers scheme no-op for ror too",
-                        GrantFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME + ":ror", null),
+                        GrantFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME.key() + ":ror", null),
                 Arguments.of("contributions by identifiers scheme zero match for any other scheme",
-                        GrantFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME + ":isni", NO_MATCH_CLAUSE),
+                        GrantFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME.key() + ":isni", NO_MATCH_CLAUSE),
                 Arguments.of("funding agency identifiers value",
-                        GrantFilterKeys.FUNDING_AGENCY_IDENTIFIERS_VALUE + ":10.13039/100010269",
+                        GrantFilterKeys.FUNDING_AGENCY_IDENTIFIERS_VALUE.key() + ":10.13039/100010269",
                         "award.funder:10.13039/100010269"));
     }
 
     @Test
     void toGrantsQuery_searchTitle_setsQueryTitleNotFilter() {
         CrossrefFilters.ParsedFilter parsed =
-                CrossrefFilters.toGrantsQuery(GrantFilterKeys.CF_SEARCH_TITLE + ":biocontainment");
+                CrossrefFilters.toGrantsQuery(GrantFilterKeys.CF_SEARCH_TITLE.key() + ":biocontainment");
 
         assertThat(parsed.filter()).isNull();
         assertThat(parsed.queryTitle()).isEqualTo("biocontainment");
@@ -140,7 +140,7 @@ class CrossrefFiltersTest {
     @Test
     void toGrantsQuery_searchTitleAbstract_setsQueryBibliographicNotFilter() {
         CrossrefFilters.ParsedFilter parsed =
-                CrossrefFilters.toGrantsQuery(GrantFilterKeys.CF_SEARCH_TITLE_ABSTRACT + ":cell sorter");
+                CrossrefFilters.toGrantsQuery(GrantFilterKeys.CF_SEARCH_TITLE_ABSTRACT.key() + ":cell sorter");
 
         assertThat(parsed.filter()).isNull();
         assertThat(parsed.queryBibliographic()).isEqualTo("cell sorter");
@@ -149,8 +149,9 @@ class CrossrefFiltersTest {
 
     @Test
     void toGrantsQuery_unsupportedFilter_throws() {
-        assertThatThrownBy(() -> CrossrefFilters.toGrantsQuery(GrantFilterKeys.BENEFICIARIES_NAME + ":Cambridge"))
+        assertThatThrownBy(
+                () -> CrossrefFilters.toGrantsQuery(GrantFilterKeys.BENEFICIARIES_NAME.key() + ":Cambridge"))
                 .isInstanceOf(FilterQuerySyntax.UnsupportedFilterException.class)
-                .hasMessageContaining(GrantFilterKeys.BENEFICIARIES_NAME);
+                .hasMessageContaining(GrantFilterKeys.BENEFICIARIES_NAME.key());
     }
 }

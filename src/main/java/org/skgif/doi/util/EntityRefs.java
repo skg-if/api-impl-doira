@@ -45,7 +45,7 @@ public final class EntityRefs {
                         ExternalIdentifierUrls.ROR_BASE_URL + bareRor :
                         MapperTextUtils.otf(doi, name))
                 .name(name)
-                .entityType(EntityTypes.ORGANISATION);
+                .entityType(EntityTypes.ORGANISATION.value());
         if (bareRor != null) {
             org.identifiers(List.of(new AgentAllOfIdentifiers().scheme(SCHEME_ROR).value(bareRor)));
         }
@@ -79,7 +79,7 @@ public final class EntityRefs {
         Organisation agency = new Organisation()
                 .localIdentifier(bareDoiValue != null ? doiLocalIdentifier : MapperTextUtils.otf(doi, name))
                 .name(name)
-                .entityType(EntityTypes.ORGANISATION);
+                .entityType(EntityTypes.ORGANISATION.value());
         if (bareDoiValue != null) {
             agency.identifiers(List.of(new AgentAllOfIdentifiers().scheme(SCHEME_DOI).value(bareDoiValue)));
         }
@@ -117,7 +117,7 @@ public final class EntityRefs {
                 .name(name)
                 .givenName(givenName)
                 .familyName(familyName)
-                .entityType(EntityTypes.PERSON);
+                .entityType(EntityTypes.PERSON.value());
         if (orcidIdentifiers != null) {
             by.identifiers(orcidIdentifiers);
         }

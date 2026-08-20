@@ -104,7 +104,7 @@ final class DataCiteRelatedProductMapper {
                     MapperTextUtils.otf(attributes.doi(), related.relatedIdentifier());
             result.add(new ProductsRelatedItem()
                     .localIdentifier(localIdentifier)
-                    .entityType(EntityTypes.PRODUCT)
+                    .entityType(EntityTypes.PRODUCT.value())
                     .identifiers(List.of(new EntityIdentifiersInner()
                             .scheme(scheme)
                             .value(related.relatedIdentifier()))));

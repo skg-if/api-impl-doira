@@ -1,5 +1,6 @@
 package org.skgif.doi.rest;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -35,29 +36,11 @@ final class DataCiteProductFilters {
 
     private static final String NO_MATCH_CLAUSE = FilterQuerySyntax.NO_MATCH_CLAUSE;
 
-    private static final Set<String> SUPPORTED = Set.of(
-            ProductFilterKeys.PRODUCT_TYPE,
-            ProductFilterKeys.IDENTIFIERS_ID,
-            ProductFilterKeys.IDENTIFIERS_SCHEME,
-            ProductFilterKeys.CONTRIBUTIONS_BY_LOCAL_IDENTIFIER,
-            ProductFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_ID,
-            ProductFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME,
-            ProductFilterKeys.CONTRIBUTIONS_BY_FAMILY_NAME,
-            ProductFilterKeys.CONTRIBUTIONS_BY_GIVEN_NAME,
-            ProductFilterKeys.CONTRIBUTIONS_BY_NAME,
-            ProductFilterKeys.CONTRIBUTIONS_DECLARED_AFFILIATIONS_LOCAL_IDENTIFIER,
-            ProductFilterKeys.CONTRIBUTIONS_DECLARED_AFFILIATIONS_IDENTIFIERS_ID,
-            ProductFilterKeys.CONTRIBUTIONS_DECLARED_AFFILIATIONS_IDENTIFIERS_SCHEME,
-            ProductFilterKeys.CONTRIBUTIONS_DECLARED_AFFILIATIONS_NAME,
-            ProductFilterKeys.FUNDING_GRANT_NUMBER,
-            ProductFilterKeys.CF_SEARCH_TITLE,
-            ProductFilterKeys.CF_SEARCH_TITLE_ABSTRACT,
-            ProductFilterKeys.CF_CONTRIBUTIONS_ORCID,
-            ProductFilterKeys.CF_CONTRIBUTIONS_AFF_ROR,
-            ProductFilterKeys.CF_CITES,
-            ProductFilterKeys.CF_CITED_BY,
-            ProductFilterKeys.CF_CITES_DOI,
-            ProductFilterKeys.CF_CITED_BY_DOI);
+    // Every ProductFilterKeys constant is implemented below, so supportedKeys is derived directly
+    // from the enum rather than re-listed - a newly-added constant can't silently fall out of sync.
+    private static final Set<String> SUPPORTED = Arrays.stream(ProductFilterKeys.values())
+            .map(ProductFilterKeys::key)
+            .collect(Collectors.toUnmodifiableSet());
 
     private DataCiteProductFilters() {
     }
@@ -71,59 +54,51 @@ final class DataCiteProductFilters {
     }
 
     private static String toClause(String key, String value) {
-        return switch (key) {
-            case ProductFilterKeys.PRODUCT_TYPE -> productTypeClause(value);
-            case ProductFilterKeys.IDENTIFIERS_ID -> "doi:\"" + escape(value) + "\"";
+        return switch (ProductFilterKeys.fromKey(key)) {
+            case PRODUCT_TYPE -> productTypeClause(value);
+            case IDENTIFIERS_ID -> "doi:\"" + escape(value) + "\"";
             // We only ever expose doi identifiers, so any other requested scheme never matches.
-            case ProductFilterKeys.IDENTIFIERS_SCHEME ->
-                FilterQuerySyntax.schemeOnlyFilter(value, "doi", NO_MATCH_CLAUSE);
+            case IDENTIFIERS_SCHEME -> FilterQuerySyntax.schemeOnlyFilter(value, "doi", NO_MATCH_CLAUSE);
 
             // contributions.by.* - "contributions" is populated from both DataCite creators[]
             // and contributors[] (see DataCiteToSkgIfMapper), so every by-filter has to match
             // against either.
-            case ProductFilterKeys.CONTRIBUTIONS_BY_LOCAL_IDENTIFIER ->
+            case CONTRIBUTIONS_BY_LOCAL_IDENTIFIER ->
                 // by.local_identifier is already the full https://orcid.org/... URL when
                 // known (or an unguessable otf id otherwise, which harmlessly never
                 // matches) - DataCite stores nameIdentifier in that same full-URL form.
                 FilterQuerySyntax.creatorOrContributorClause("nameIdentifiers.nameIdentifier", value);
-            case ProductFilterKeys.CF_CONTRIBUTIONS_ORCID, ProductFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_ID ->
-                orcidClause(value);
+            case CF_CONTRIBUTIONS_ORCID, CONTRIBUTIONS_BY_IDENTIFIERS_ID -> orcidClause(value);
             // We only ever emit "orcid" as the scheme for by.identifiers.
-            case ProductFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME ->
-                FilterQuerySyntax.schemeOnlyFilter(value, "orcid", NO_MATCH_CLAUSE);
-            case ProductFilterKeys.CONTRIBUTIONS_BY_FAMILY_NAME ->
-                FilterQuerySyntax.creatorOrContributorClause("familyName", value);
-            case ProductFilterKeys.CONTRIBUTIONS_BY_GIVEN_NAME ->
-                FilterQuerySyntax.creatorOrContributorClause("givenName", value);
-            case ProductFilterKeys.CONTRIBUTIONS_BY_NAME ->
-                FilterQuerySyntax.creatorOrContributorClause("name", value);
+            case CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME -> FilterQuerySyntax.schemeOnlyFilter(value, "orcid",
+                    NO_MATCH_CLAUSE);
+            case CONTRIBUTIONS_BY_FAMILY_NAME -> FilterQuerySyntax.creatorOrContributorClause("familyName", value);
+            case CONTRIBUTIONS_BY_GIVEN_NAME -> FilterQuerySyntax.creatorOrContributorClause("givenName", value);
+            case CONTRIBUTIONS_BY_NAME -> FilterQuerySyntax.creatorOrContributorClause("name", value);
 
             // contributions.declared_affiliations.* - same creators[]/contributors[] duality.
-            case ProductFilterKeys.CONTRIBUTIONS_DECLARED_AFFILIATIONS_LOCAL_IDENTIFIER ->
+            case CONTRIBUTIONS_DECLARED_AFFILIATIONS_LOCAL_IDENTIFIER ->
                 // Mirrors by.local_identifier above: already a full https://ror.org/... URL
                 // when known, matching DataCite's own stored affiliationIdentifier format
                 // (confirmed live: 15166 matches for the full-URL form vs. 2 for bare).
                 FilterQuerySyntax.creatorOrContributorClause("affiliation.affiliationIdentifier", value);
-            case ProductFilterKeys.CONTRIBUTIONS_DECLARED_AFFILIATIONS_IDENTIFIERS_ID,
-                    ProductFilterKeys.CF_CONTRIBUTIONS_AFF_ROR -> rorClause(value);
+            case CONTRIBUTIONS_DECLARED_AFFILIATIONS_IDENTIFIERS_ID, CF_CONTRIBUTIONS_AFF_ROR -> rorClause(value);
             // We only ever emit "ror" as the scheme for declared_affiliations.identifiers.
-            case ProductFilterKeys.CONTRIBUTIONS_DECLARED_AFFILIATIONS_IDENTIFIERS_SCHEME ->
-                FilterQuerySyntax.schemeOnlyFilter(value, "ror", NO_MATCH_CLAUSE);
-            case ProductFilterKeys.CONTRIBUTIONS_DECLARED_AFFILIATIONS_NAME ->
+            case CONTRIBUTIONS_DECLARED_AFFILIATIONS_IDENTIFIERS_SCHEME -> FilterQuerySyntax.schemeOnlyFilter(value,
+                    "ror", NO_MATCH_CLAUSE);
+            case CONTRIBUTIONS_DECLARED_AFFILIATIONS_NAME ->
                 FilterQuerySyntax.creatorOrContributorClause("affiliation.name", value);
 
-            case ProductFilterKeys.FUNDING_GRANT_NUMBER -> "fundingReferences.awardNumber:\"" + escape(value) + "\"";
+            case FUNDING_GRANT_NUMBER -> "fundingReferences.awardNumber:\"" + escape(value) + "\"";
 
-            case ProductFilterKeys.CF_SEARCH_TITLE, ProductFilterKeys.CF_SEARCH_TITLE_ABSTRACT -> escape(value);
+            case CF_SEARCH_TITLE, CF_SEARCH_TITLE_ABSTRACT -> escape(value);
             // "a local_identifier" per spec, which for our products is DOI-based in bare-or-
             // full-URL form - normalize first so both work. cf.cites/cf.cited_by produce the
             // same clause as cites_doi/cited_by_doi (relationType direction isn't reliably
             // scopable to the same relatedIdentifiers array element in a flat query string -
             // a pre-existing simplification, not something introduced here).
-            case ProductFilterKeys.CF_CITES, ProductFilterKeys.CF_CITED_BY, ProductFilterKeys.CF_CITES_DOI,
-                    ProductFilterKeys.CF_CITED_BY_DOI ->
-                "relatedIdentifiers.relatedIdentifier:\"" + escape(FilterQuerySyntax.stripDoiUrl(value)) + "\"";
-            default -> null;
+            case CF_CITES, CF_CITED_BY, CF_CITES_DOI, CF_CITED_BY_DOI ->
+                "relatedIdentifiers.relatedIdentifier:\"" + escape(ExternalIdentifierUrls.stripDoiUrl(value)) + "\"";
         };
     }
 

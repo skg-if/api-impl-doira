@@ -61,7 +61,7 @@ final class CrossrefRelatedProductMapper {
                     // own products and every other DOI-identified entity.
                     cites.add(new ProductsRelatedItem()
                             .localIdentifier(localIdentifiers.toFullLocalIdentifier(reference.doi()))
-                            .entityType(EntityTypes.PRODUCT)
+                            .entityType(EntityTypes.PRODUCT.value())
                             .identifiers(
                                     List.of(new EntityIdentifiersInner().scheme(SCHEME_DOI).value(reference.doi()))));
                     continue;
@@ -69,7 +69,7 @@ final class CrossrefRelatedProductMapper {
                 String label = reference.unstructured() != null ? reference.unstructured() : reference.key();
                 cites.add(new ProductsRelatedItem()
                         .localIdentifier(MapperTextUtils.otf(work.doi(), label))
-                        .entityType(EntityTypes.PRODUCT));
+                        .entityType(EntityTypes.PRODUCT.value()));
             }
         }
         List<ProductsRelatedCitesInner> isSupplementedBy = relatedByRelationType(work, "is-supplemented-by");
@@ -111,12 +111,12 @@ final class CrossrefRelatedProductMapper {
             if (SCHEME_DOI.equalsIgnoreCase(entry.idType())) {
                 result.add(new ProductsRelatedItem()
                         .localIdentifier(localIdentifiers.toFullLocalIdentifier(entry.id()))
-                        .entityType(EntityTypes.PRODUCT)
+                        .entityType(EntityTypes.PRODUCT.value())
                         .identifiers(List.of(new EntityIdentifiersInner().scheme(SCHEME_DOI).value(entry.id()))));
             } else {
                 result.add(new ProductsRelatedItem()
                         .localIdentifier(MapperTextUtils.otf(work.doi(), entry.id()))
-                        .entityType(EntityTypes.PRODUCT));
+                        .entityType(EntityTypes.PRODUCT.value()));
             }
         }
         return result;

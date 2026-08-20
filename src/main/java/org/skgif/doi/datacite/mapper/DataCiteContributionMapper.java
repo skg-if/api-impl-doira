@@ -14,7 +14,6 @@ import org.skgif.doi.generated.model.ProductContribution;
 import org.skgif.doi.generated.model.ProductContributionBy;
 import org.skgif.doi.util.EntityRefs;
 import org.skgif.doi.util.ExternalIdentifierUrls;
-import org.skgif.doi.util.MapperTextUtils;
 
 /**
  * Maps a DataCite record's creator/contributor/publisher fields onto {@code
@@ -94,9 +93,7 @@ final class DataCiteContributionMapper {
         }
         return nameIdentifiers.stream()
                 .filter(ni -> "ORCID".equalsIgnoreCase(ni.nameIdentifierScheme()) && ni.nameIdentifier() != null)
-                .map(ni -> ni.nameIdentifier().startsWith(ExternalIdentifierUrls.ORCID_BASE_URL) ?
-                        ni.nameIdentifier().substring(ExternalIdentifierUrls.ORCID_BASE_URL.length()) :
-                        ni.nameIdentifier())
+                .map(ni -> ExternalIdentifierUrls.stripOrcidUrl(ni.nameIdentifier()))
                 .findFirst();
     }
 
@@ -110,8 +107,8 @@ final class DataCiteContributionMapper {
                 continue;
             }
             String orcid = ni.nameIdentifier();
-            if (orcid != null && orcid.startsWith(ExternalIdentifierUrls.ORCID_BASE_URL)) {
-                orcid = orcid.substring(ExternalIdentifierUrls.ORCID_BASE_URL.length());
+            if (orcid != null) {
+                orcid = ExternalIdentifierUrls.stripOrcidUrl(orcid);
             }
             identifiers.add(new PersonLiteAllOfIdentifiers()
                     .scheme("orcid")
@@ -131,7 +128,7 @@ final class DataCiteContributionMapper {
             }
             boolean hasRor = affiliation.affiliationIdentifier() != null &&
                     SCHEME_ROR_UPPER.equalsIgnoreCase(affiliation.affiliationIdentifierScheme());
-            String bareRor = hasRor ? MapperTextUtils.stripRorUrl(affiliation.affiliationIdentifier()) : null;
+            String bareRor = hasRor ? ExternalIdentifierUrls.stripRorUrl(affiliation.affiliationIdentifier()) : null;
             result.add(EntityRefs.organisationRef(doi, affiliation.name(), bareRor));
         }
         return result;
@@ -144,7 +141,7 @@ final class DataCiteContributionMapper {
         return nameIdentifiers.stream()
                 .filter(ni -> SCHEME_ROR_UPPER.equalsIgnoreCase(ni.nameIdentifierScheme()) &&
                         ni.nameIdentifier() != null)
-                .map(ni -> MapperTextUtils.stripRorUrl(ni.nameIdentifier()))
+                .map(ni -> ExternalIdentifierUrls.stripRorUrl(ni.nameIdentifier()))
                 .findFirst();
     }
 }

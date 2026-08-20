@@ -123,7 +123,7 @@ final class CrossrefBiblioMapper {
         VenueLite venue = new VenueLite()
                 .localIdentifier(journalDoi != null ? localIdentifiers.toFullLocalIdentifier(journalDoi) :
                         MapperTextUtils.otf(work.doi(), name))
-                .entityType(EntityTypes.VENUE)
+                .entityType(EntityTypes.VENUE.value())
                 .name(name);
 
         List<VenueLiteAllOfIdentifiers> identifiers = journalArticleVenueIdentifiers(journalDoi, issns);
@@ -157,7 +157,7 @@ final class CrossrefBiblioMapper {
         VenueLite venue = new VenueLite()
                 .localIdentifier(containerDoi != null ? localIdentifiers.toFullLocalIdentifier(containerDoi) :
                         MapperTextUtils.otf(doi, name))
-                .entityType(EntityTypes.VENUE)
+                .entityType(EntityTypes.VENUE.value())
                 .name(name);
 
         List<VenueLiteAllOfIdentifiers> identifiers = new ArrayList<>();

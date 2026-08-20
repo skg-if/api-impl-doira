@@ -69,12 +69,20 @@
     -->
     <exclude name="LawOfDemeter"/>
     <!--
-      DataClass disabled: fires once per plain-data DTO class (CrossrefContributor,
-      CrossrefFunder, CrossrefProject, etc.) - those are intentionally field-only holders for
-      Jackson (de)serialization, the same DTOs checkstyle.xml's VisibilityModifier was already
-      disabled for.
+      DataClass previously excluded here: it fired on 4 "single source of truth" constant-holder
+      classes (EntityTypes, GrantFilterKeys, ProductFilterKeys, ExternalIdentifierUrls), each a
+      public-static-final-String-constants class with no real methods. Fixed instead of excluded:
+      EntityTypes/GrantFilterKeys/ProductFilterKeys became enums (an enum constant isn't an
+      ASTFieldDeclaration, so it can't contribute to PMD's NOPA metric, and each gained exactly one
+      real accessor method total - keeps nopa+noam under the rule's threshold regardless of how
+      many constants exist); ExternalIdentifierUrls instead gained real stripOrcidUrl/stripDoiUrl/
+      stripRorUrl behavior methods (raising WOC above the rule's threshold). Not the Jackson DTO
+      records (CrossrefContributor, CrossrefFunder, CrossrefProject, etc.) - a real `mvn pmd:check`
+      run confirmed those never triggered DataClass in the first place: PMD's NOAM/accessor-
+      counting metric only recognizes JavaBean-style getX()/isX() methods, which record canonical
+      accessors (e.g. `given()`, not `getGiven()`) don't match, so a record's nopa+noam metric total
+      stays at 0 regardless of how many components it has.
     -->
-    <exclude name="DataClass"/>
     <!--
       AvoidCatchingGenericException disabled: all 5 violations found are the same "best-effort
       enrichment/parse, never fail the whole response over it" pattern, each with an existing
@@ -97,7 +105,9 @@
       CrossrefContributionMapper, CrossrefManifestationMapper, CrossrefBiblioMapper,
       CrossrefFundingMapper, CrossrefRelatedProductMapper, CrossrefGrantMapper,
       CrossrefGrantContributionMapper, and the DataCite/Medra equivalents), plus a shared
-      MapperTextUtils for the otf/slug/stripRorUrl logic duplicated across all three. Helpers stay
+      MapperTextUtils for the otf/slug logic duplicated across all three (stripRorUrl also moved
+      there at the time, but has since moved again to ExternalIdentifierUrls - see the DataClass
+      note above). Helpers stay
       in the same package as their facade (not a new subpackage) specifically to avoid trading
       this exclusion for a LoosePackageCoupling one. CouplingBetweenObjects and CognitiveComplexity
       are fully clean now and no longer excluded below - the mapper split alone was enough for
@@ -116,9 +126,9 @@
     <exclude name="TooManyMethods"/>
     <!--
       TooManyFields: only CrossrefWork/DataCiteAttributes - the top-level Jackson DTOs for an
-      entire work/DOI record, which necessarily has many independent optional fields. Same
-      rationale as the DataClass exclusion above; a field-only holder isn't fixed by splitting it,
-      since Jackson needs one class matching the source JSON's shape.
+      entire work/DOI record, which necessarily has many independent optional fields. A field-only
+      holder isn't fixed by splitting it, since Jackson needs one class matching the source JSON's
+      shape.
     -->
     <exclude name="TooManyFields"/>
     <!--

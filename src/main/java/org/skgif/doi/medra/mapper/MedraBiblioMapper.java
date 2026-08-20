@@ -46,7 +46,7 @@ final class MedraBiblioMapper {
         }
         VenueLite venue = new VenueLite()
                 .localIdentifier(MapperTextUtils.otf(work.doi(), work.journalTitle()))
-                .entityType(EntityTypes.VENUE)
+                .entityType(EntityTypes.VENUE.value())
                 .name(work.journalTitle());
         if (work.issns() != null && !work.issns().isEmpty()) {
             venue.identifiers(work.issns().stream()

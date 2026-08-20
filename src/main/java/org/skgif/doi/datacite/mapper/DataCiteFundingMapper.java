@@ -78,7 +78,7 @@ final class DataCiteFundingMapper {
         }
         boolean hasRor = fundingReference.funderIdentifier() != null &&
                 SCHEME_ROR_UPPER.equalsIgnoreCase(fundingReference.funderIdentifierType());
-        String bareRor = hasRor ? MapperTextUtils.stripRorUrl(fundingReference.funderIdentifier()) : null;
+        String bareRor = hasRor ? ExternalIdentifierUrls.stripRorUrl(fundingReference.funderIdentifier()) : null;
         String funderDoi = hasRor ? null : extractDoi(fundingReference.funderIdentifier()).orElse(null);
         String doiLocalIdentifier = funderDoi != null ? localIdentifiers.toFullLocalIdentifier(funderDoi) : null;
         return Optional.of(
@@ -98,12 +98,7 @@ final class DataCiteFundingMapper {
         if (identifier == null) {
             return Optional.empty();
         }
-        String candidate = identifier;
-        if (candidate.startsWith(ExternalIdentifierUrls.DOI_BASE_URL)) {
-            candidate = candidate.substring(ExternalIdentifierUrls.DOI_BASE_URL.length());
-        } else if (candidate.startsWith(ExternalIdentifierUrls.DOI_HTTP_BASE_URL)) {
-            candidate = candidate.substring(ExternalIdentifierUrls.DOI_HTTP_BASE_URL.length());
-        }
+        String candidate = ExternalIdentifierUrls.stripDoiUrl(identifier);
         return Optional.ofNullable(DOI_SHAPE.matcher(candidate).matches() ? candidate : null);
     }
 }

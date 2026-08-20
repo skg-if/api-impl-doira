@@ -33,15 +33,4 @@ class MapperTextUtilsTest {
     void otf_combinesSluggedDoiAndLabel() {
         assertThat(MapperTextUtils.otf("10.1234/abc", "Jane Doe")).isEqualTo("otf___10-1234-abc___jane-doe");
     }
-
-    @Test
-    void stripRorUrl_stripsRorBaseUrlPrefix() {
-        assertThat(MapperTextUtils.stripRorUrl(ExternalIdentifierUrls.ROR_BASE_URL + "02550n020"))
-                .isEqualTo("02550n020");
-    }
-
-    @Test
-    void stripRorUrl_passesBareRorThrough() {
-        assertThat(MapperTextUtils.stripRorUrl("02550n020")).isEqualTo("02550n020");
-    }
 }
