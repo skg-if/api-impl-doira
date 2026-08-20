@@ -31,6 +31,8 @@ import org.skgif.doi.util.ExternalIdentifierUrls;
  */
 final class CrossrefFilters {
 
+    // Unquoted, unlike FilterQuerySyntax.NO_MATCH_CLAUSE - Crossref's filter= syntax has no Lucene
+    // quoting to escape, so a bare sentinel value is enough to guarantee zero matches.
     private static final String NO_MATCH_CLAUSE = "doi:__no_match__";
 
     // Package-private (not private) so CrossrefFiltersTest can assert PRODUCT_CLAUSE_BUILDERS
