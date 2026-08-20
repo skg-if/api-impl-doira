@@ -42,14 +42,14 @@ class CrossrefJournalDoiResolverTest {
 
     @Test
     void resolvesToNullIssnList() {
-        assertThat(resolver.resolveJournalDoi(null)).isEqualTo(Optional.empty());
+        assertThat(resolver.resolveJournalDoi(null)).isEmpty();
         verifyNoInteractions(crossrefClient);
     }
 
     @Test
     void resolvesToEmptyForBlankOrEmptyIssns() {
-        assertThat(resolver.resolveJournalDoi(List.of())).isEqualTo(Optional.empty());
-        assertThat(resolver.resolveJournalDoi(List.of(" ", ""))).isEqualTo(Optional.empty());
+        assertThat(resolver.resolveJournalDoi(List.of())).isEmpty();
+        assertThat(resolver.resolveJournalDoi(List.of(" ", ""))).isEmpty();
         verifyNoInteractions(crossrefClient);
     }
 
@@ -62,7 +62,7 @@ class CrossrefJournalDoiResolverTest {
 
         Optional<String> resolved = resolver.resolveJournalDoi(List.of("0028-0836", "1476-4687"));
 
-        assertThat(resolved).isEqualTo(Optional.of("10.1038/print-doi"));
+        assertThat(resolved).contains("10.1038/print-doi");
     }
 
     @Test
@@ -74,7 +74,7 @@ class CrossrefJournalDoiResolverTest {
 
         Optional<String> resolved = resolver.resolveJournalDoi(List.of("0028-0836", "1476-4687"));
 
-        assertThat(resolved).isEqualTo(Optional.of("10.1038/electronic-doi"));
+        assertThat(resolved).contains("10.1038/electronic-doi");
     }
 
     /**
@@ -104,7 +104,7 @@ class CrossrefJournalDoiResolverTest {
         Optional<String> resolved = assertTimeoutPreemptively(Duration.ofSeconds(TEST_TIMEOUT_SECONDS),
                 () -> resolver.resolveJournalDoi(List.of("0028-0836", "1476-4687")));
 
-        assertThat(resolved).isEqualTo(Optional.of("10.1038/electronic-doi"));
+        assertThat(resolved).contains("10.1038/electronic-doi");
     }
 
     // Restoring the interrupt flag on a test-helper thread (mirrors CrossrefJournalDoiResolver's

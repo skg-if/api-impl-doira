@@ -49,7 +49,7 @@ class DataCiteToSkgIfMapperTest {
         assertThat(product.getLocalIdentifier()).isEqualTo("https://doi.org/10.15151/esrf-dc-2493599001");
         assertThat(product.getEntityType()).isEqualTo("product");
         assertThat(product.getProductType()).isEqualTo(Product.ProductTypeEnum.RESEARCH_DATA);
-        assertThat(product.getIdentifiers().size()).isEqualTo(1);
+        assertThat(product.getIdentifiers()).hasSize(1);
         assertThat(product.getIdentifiers().getFirst().getScheme()).isEqualTo("doi");
         assertThat(product.getIdentifiers().getFirst().getValue()).isEqualTo("10.15151/esrf-dc-2493599001");
     }
@@ -157,7 +157,7 @@ class DataCiteToSkgIfMapperTest {
 
         // 1 creator + 2 contributors (DataCollector, ProjectManager) + 1 publisher
         final int expectedContributionCount = 4;
-        assertThat(product.getContributions().size()).isEqualTo(expectedContributionCount);
+        assertThat(product.getContributions()).hasSize(expectedContributionCount);
 
         ProductContribution dataCollector = product.getContributions().stream()
                 .filter(c -> "De Sanctis".equals(((PersonLite) c.getBy()).getFamilyName()))
@@ -174,7 +174,7 @@ class DataCiteToSkgIfMapperTest {
     void mapsFundingReferenceWithNormalizedRorOnFundingAgency() throws IOException {
         Product product = mapFixture("datacite-esrf-es-2210534378.json");
 
-        assertThat(product.getFunding().size()).isEqualTo(1);
+        assertThat(product.getFunding()).hasSize(1);
         GrantLite grant = (GrantLite) product.getFunding().getFirst();
         assertThat(grant.getGrantNumber()).isEqualTo("MX-2738");
         assertThat(((Map<String, String>) grant.getTitles()).get("en")).contains("Swiss consortium");
@@ -197,9 +197,9 @@ class DataCiteToSkgIfMapperTest {
     void mapsFundingAgencyToDoiWhenFunderIdentifierIsDoiShapedRegardlessOfType() throws IOException {
         Product product = mapFixture("datacite-thesis-crossref-funder-id-4342.json");
 
-        assertThat(product.getFunding().size()).isEqualTo(1);
+        assertThat(product.getFunding()).hasSize(1);
         GrantLite grant = (GrantLite) product.getFunding().getFirst();
-        assertThat(((Map<String, String>) grant.getTitles()).get("en")).isEqualTo("UWTSD");
+        assertThat((Map<String, String>) grant.getTitles()).containsEntry("en", "UWTSD");
         assertThat(grant.getFundingAgency().getName()).isEqualTo("University of Wales Trinity Saint David");
         assertThat(grant.getFundingAgency().getLocalIdentifier())
                 .isEqualTo("https://doi.org/10.13039/100010038");
@@ -236,7 +236,7 @@ class DataCiteToSkgIfMapperTest {
         Product product = mapFixture("datacite-dataset-funder-no-identifier-e449e75a.json");
 
         final int expectedFundingCount = 3;
-        assertThat(product.getFunding().size()).isEqualTo(expectedFundingCount);
+        assertThat(product.getFunding()).hasSize(expectedFundingCount);
         var epsrc1 = ((GrantLite) product.getFunding().getFirst()).getFundingAgency();
         var epsrc2 = ((GrantLite) product.getFunding().get(1)).getFundingAgency();
         var ukri = ((GrantLite) product.getFunding().get(2)).getFundingAgency();
@@ -260,7 +260,7 @@ class DataCiteToSkgIfMapperTest {
 
         // 1 creator (author) + 1 contributor (editor) + 1 publisher.
         final int expectedContributionCount = 3;
-        assertThat(product.getContributions().size()).isEqualTo(expectedContributionCount);
+        assertThat(product.getContributions()).hasSize(expectedContributionCount);
         ProductContribution editor = product.getContributions().stream()
                 .filter(c -> c.getRole() == ProductContribution.RoleEnum.EDITOR)
                 .findFirst()

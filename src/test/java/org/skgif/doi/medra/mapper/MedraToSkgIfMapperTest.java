@@ -37,7 +37,7 @@ class MedraToSkgIfMapperTest {
 
         assertThat(product.getLocalIdentifier()).isEqualTo("https://doi.org/10.19276/plinius.2019.01004");
         List<ProductContribution> contributions = product.getContributions();
-        assertThat(contributions.size()).isEqualTo(1);
+        assertThat(contributions).hasSize(1);
         PersonLite person = (PersonLite) contributions.getFirst().getBy();
         assertThat(person.getName()).isEqualTo("Daniela D'Alessio");
         assertThat(person.getGivenName()).isEqualTo("Daniela");
@@ -50,7 +50,7 @@ class MedraToSkgIfMapperTest {
         Product product = mapFixture("medra-version-message-book-series.xml");
 
         List<ProductContribution> contributions = product.getContributions();
-        assertThat(contributions.size()).isEqualTo(2);
+        assertThat(contributions).hasSize(2);
         PersonLite first = (PersonLite) contributions.getFirst().getBy();
         assertThat(first.getName()).isEqualTo("Cotte M.");
         assertThat(first.getGivenName()).isNull();
@@ -63,7 +63,7 @@ class MedraToSkgIfMapperTest {
         Product product = mapFixture("medra-personname-inverted-only.xml");
 
         List<ProductContribution> contributions = product.getContributions();
-        assertThat(contributions.size()).isEqualTo(1);
+        assertThat(contributions).hasSize(1);
         PersonLite person = (PersonLite) contributions.getFirst().getBy();
         assertThat(person.getName()).isEqualTo("Giovanna Fragneto");
         assertThat(person.getGivenName()).isEqualTo("Giovanna");
@@ -83,8 +83,8 @@ class MedraToSkgIfMapperTest {
 
         Object titles = product.getTitles();
         @SuppressWarnings("unchecked") var titlesMap = (java.util.Map<String, List<String>>) titles;
-        assertThat(titlesMap.get("en"))
-                .isEqualTo(List.of("Transverse THz dynamics of phospholipid membranes: A neutron scattering study"));
+        assertThat(titlesMap).containsEntry("en",
+                List.of("Transverse THz dynamics of phospholipid membranes: A neutron scattering study"));
     }
 
     @Test
@@ -106,7 +106,7 @@ class MedraToSkgIfMapperTest {
         Product product = mapFixture("medra-multiple-product-identifiers.xml");
 
         List<ProductContribution> contributions = product.getContributions();
-        assertThat(contributions.size()).isEqualTo(1);
+        assertThat(contributions).hasSize(1);
         PersonLite person = (PersonLite) contributions.getFirst().getBy();
         assertThat(person.getName()).isEqualTo("Maria Helena Camara Bastos");
         assertThat(person.getGivenName()).isEqualTo("Maria Helena");

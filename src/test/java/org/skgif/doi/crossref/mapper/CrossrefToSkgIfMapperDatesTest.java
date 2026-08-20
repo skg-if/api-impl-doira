@@ -63,7 +63,7 @@ class CrossrefToSkgIfMapperDatesTest {
         Product product = mapFixture("crossref-journal-article-with-update-to.json");
 
         var dates = product.getManifestations().getFirst().getDates();
-        assertThat(dates.getCorrection().size()).isEqualTo(1);
-        assertThat(dates.getRetraction().size()).isEqualTo(1);
+        assertThat(dates.getCorrection()).hasSize(1);
+        assertThat(dates.getRetraction()).hasSize(1);
     }
 }

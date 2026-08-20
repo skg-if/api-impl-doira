@@ -167,6 +167,160 @@ assertThat(actualPlugin)
     .isEqualTo(expectedPlugin);
 ```
 
+### Avoid redundant boolean/comparison chains (SonarQube S5838)
+
+[RSPEC-S5838](https://rules.sonarsource.com/java/RSPEC-5838/) flags an
+`assertThat(...)` call whose argument is itself a call to a boolean- or
+comparison-returning method, chained with `.isTrue()` / `.isFalse()` /
+`.isPositive()` / `.isNegative()` / `.isZero()` / `.isEqualTo(...)`, when
+AssertJ already ships a dedicated assertion for that exact check. The
+dedicated form reads better and produces a much more useful failure message
+(e.g. it shows the actual collection contents, not just `false`).
+
+```java
+// ❌ String
+assertThat("foo".equals("bar")).isTrue();
+assertThat(str.contains("x")).isTrue();
+assertThat(str.startsWith("x")).isFalse();
+assertThat(str.isEmpty()).isTrue();
+assertThat(str.length()).isEqualTo(3);
+
+// ✅ String
+assertThat("foo").isEqualTo("bar");
+assertThat(str).contains("x");
+assertThat(str).doesNotStartWith("x");
+assertThat(str).isEmpty();
+assertThat(str).hasSize(3);
+```
+
+```java
+// ❌ Collection
+assertThat(list.size()).isEqualTo(3);
+assertThat(list.isEmpty()).isTrue();
+assertThat(list.contains(x)).isTrue();
+
+// ✅ Collection
+assertThat(list).hasSize(3);
+assertThat(list).isEmpty();
+assertThat(list).contains(x);
+```
+
+```java
+// ❌ Map
+assertThat(map.size()).isEqualTo(2);
+assertThat(map.containsKey(k)).isTrue();
+assertThat(map.isEmpty()).isFalse();
+assertThat(map.get(k)).isEqualTo(v);
+
+// ✅ Map
+assertThat(map).hasSize(2);
+assertThat(map).containsKey(k);
+assertThat(map).isNotEmpty();
+assertThat(map).containsEntry(k, v);
+```
+
+```java
+// ❌ Optional
+assertThat(optional.isPresent()).isTrue();
+assertThat(optional.isEmpty()).isFalse();
+assertThat(optional.get()).isEqualTo(expected);
+assertThat(optional).isEqualTo(Optional.empty());
+assertThat(optional).isEqualTo(Optional.of(expected));
+
+// ✅ Optional
+assertThat(optional).isPresent();
+assertThat(optional).isNotEmpty();
+assertThat(optional).contains(expected);
+assertThat(optional).isEmpty(); // or .isNotPresent()
+assertThat(optional).contains(expected);
+```
+
+**Caveat**: `assertThat(optional).isEqualTo(Optional.ofNullable(expected))` — common in
+parameterized tests where `expected` may itself be `null` — is *not* safely
+simplifiable to `.contains(expected)`, since AssertJ's `contains` throws
+`IllegalArgumentException` on a `null` argument rather than treating it as
+"expect empty". Leave that shape as `isEqualTo(Optional.ofNullable(...))`
+unless every call site's `expected` is statically known to be non-null.
+
+```java
+// ❌ File / Path
+assertThat(file.exists()).isTrue();
+assertThat(file.isDirectory()).isTrue();
+assertThat(path.isAbsolute()).isFalse();
+
+// ✅ File / Path
+assertThat(file).exists();
+assertThat(file).isDirectory();
+assertThat(path).isRelative();
+```
+
+```java
+// ❌ Object / comparison
+assertThat(a.equals(b)).isTrue();
+assertThat(a.toString()).isEqualTo("foo");
+assertThat(a.compareTo(b)).isPositive();
+assertThat(a.compareTo(b)).isZero();
+
+// ✅ Object / comparison
+assertThat(a).isEqualTo(b);
+assertThat(a).hasToString("foo");
+assertThat(a).isGreaterThan(b);
+assertThat(a).isEqualByComparingTo(b);
+```
+
+**Automated fix**: OpenRewrite's
+[`SimplifyChainedAssertJAssertion`](https://docs.openrewrite.org/recipes/java/testing/assertj/simplifychainedassertjassertion)
+recipe (`org.openrewrite.recipe:rewrite-testing-frameworks:3.44.0`) implements
+every mapping above and maps 1:1 to S5838 — useful as a reference for the full
+sub-case list, or to run via `rewrite-maven-plugin` if a future sweep turns up
+many violations at once. This repo does not currently have the plugin wired
+into `pom.xml`.
+
+### Chain consecutive assertions on the same target (SonarQube S5853)
+
+[RSPEC-S5853](https://rules.sonarsource.com/java/RSPEC-5853/), "Consecutive
+AssertJ `assertThat` statements should be chained": when two or more
+`assertThat(x)` calls in a row assert against the *same* target expression `x`,
+join them into one fluent chain instead of repeating `assertThat(x)`. This cuts
+duplication and — since AssertJ's soft-assertion machinery aside — a single
+chain reads as one intent rather than several independent checks.
+
+```java
+// ❌
+assertThat(identifiers).hasSize(2);
+assertThat(identifiers).noneMatch(i -> "doi".equals(i.getScheme()));
+assertThat(identifiers).anyMatch(i -> "issn".equals(i.getScheme()));
+
+// ✅
+assertThat(identifiers).hasSize(2)
+        .noneMatch(i -> "doi".equals(i.getScheme()))
+        .anyMatch(i -> "issn".equals(i.getScheme()));
+```
+
+```java
+// ❌
+assertThat(abstractText).contains("Lissajous scanner");
+assertThat(abstractText).doesNotContain("<jats:p>");
+
+// ✅
+assertThat(abstractText).contains("Lissajous scanner").doesNotContain("<jats:p>");
+```
+
+Only merge when every call chains off the *identical* target expression
+(same variable, or the same method-call chain re-evaluated) — most AssertJ
+assertion methods (`hasSize`, `contains`, `anyMatch`, `noneMatch`, `isEqualTo`,
+`startsWith`, ...) return `this`/the same assert type, so they compose
+directly. Don't merge assertions against genuinely different targets just to
+reduce line count.
+
+**Known false positives** (per SonarSource community reports — don't force a
+merge into these shapes): chains that pivot through `.extracting(...)` or
+`.flatExtracting(...)` onto a *different* extracted value between statements,
+`.map(...)` on an `OptionalAssert`, and chains where an intermediate call like
+`.element(0)` narrows to a child assert type that can't carry the next
+top-level assertion. If IntelliJ/SonarLint flags one of these shapes, verify
+the merge actually compiles and still asserts the same thing before applying it.
+
 ### Soft assertions (multiple checks)
 ```java
 @Test
@@ -442,6 +596,12 @@ public class PluginInfo {
 // 2. Testing implementation details
 assertThat(plugin.internalState.flag).isTrue(); // Couples to internals
 
+// 2b. Chaining .isTrue()/.isFalse() after a boolean-returning call instead of
+// the dedicated AssertJ assertion (SonarQube S5838 — see "Avoid redundant
+// boolean/comparison chains" above). Note line below (`config.isEnabled()`)
+// has the same shape even though `isEnabled()` has no dedicated counterpart.
+assertThat(list.isEmpty()).isTrue(); // ❌ should be assertThat(list).isEmpty()
+
 // 3. Brittle assertions with timestamps
 assertThat(message).isEqualTo("Error at 2024-01-26 10:30:15");
 
@@ -559,6 +719,22 @@ assertThat(actual)
     .usingRecursiveComparison()
     .ignoringFields("timestamp", "id")
     .isEqualTo(expected);
+
+// ===== S5838: dedicated over chained =====
+assertThat(list.size()).isEqualTo(3);      // ❌
+assertThat(list).hasSize(3);               // ✅
+assertThat(optional.isPresent()).isTrue(); // ❌
+assertThat(optional).isPresent();          // ✅
+assertThat(list.isEmpty()).isTrue();       // ❌
+assertThat(list).isEmpty();                // ✅
+assertThat(a.equals(b)).isTrue();          // ❌
+assertThat(a).isEqualTo(b);                // ✅
+assertThat(opt).isEqualTo(Optional.empty()); // ❌
+assertThat(opt).isEmpty();                   // ✅
+assertThat(opt).isEqualTo(Optional.of(x));   // ❌
+assertThat(opt).contains(x);                 // ✅
+assertThat(map.get(k)).isEqualTo(v);          // ❌
+assertThat(map).containsEntry(k, v);         // ✅
 ```
 
 ## Best Practices Summary
@@ -578,3 +754,6 @@ assertThat(actual)
 
 - [AssertJ Documentation](https://assertj.github.io/doc/)
 - [JUnit 5 User Guide](https://junit.org/junit5/docs/current/user-guide/)
+- [SonarSource RSPEC-S5838](https://rules.sonarsource.com/java/RSPEC-5838/) — chained AssertJ assertions
+- [OpenRewrite `SimplifyChainedAssertJAssertion`](https://docs.openrewrite.org/recipes/java/testing/assertj/simplifychainedassertjassertion) — automates S5838 fixes
+- [SonarSource RSPEC-S5853](https://rules.sonarsource.com/java/RSPEC-5853/) — consecutive `assertThat` on the same target should be chained

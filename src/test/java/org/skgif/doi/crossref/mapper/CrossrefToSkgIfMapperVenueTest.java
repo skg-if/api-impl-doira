@@ -102,12 +102,11 @@ class CrossrefToSkgIfMapperVenueTest {
 
         List<VenueLiteAllOfIdentifiers> identifiers = venue.getIdentifiers();
         final int expectedIdentifierCount = 3;
-        assertThat(identifiers.size()).isEqualTo(expectedIdentifierCount);
+        assertThat(identifiers).hasSize(expectedIdentifierCount);
         assertThat(identifiers.getFirst().getScheme()).isEqualTo("doi");
         assertThat(identifiers.getFirst().getValue()).isEqualTo("10.1038/41586.1476-4687");
         assertThat(identifiers)
-                .anyMatch(i -> "issn".equals(i.getScheme()) && "0028-0836".equals(i.getValue()));
-        assertThat(identifiers)
+                .anyMatch(i -> "issn".equals(i.getScheme()) && "0028-0836".equals(i.getValue()))
                 .anyMatch(i -> "issn".equals(i.getScheme()) && "1476-4687".equals(i.getValue()));
     }
 
@@ -169,16 +168,13 @@ class CrossrefToSkgIfMapperVenueTest {
 
         List<VenueLiteAllOfIdentifiers> identifiers = venue.getIdentifiers();
         final int expectedIdentifierCount = 5;
-        assertThat(identifiers.size()).isEqualTo(expectedIdentifierCount);
+        assertThat(identifiers).hasSize(expectedIdentifierCount);
         assertThat(identifiers.getFirst().getScheme()).isEqualTo("doi");
         assertThat(identifiers.getFirst().getValue()).isEqualTo("10.1007/978-3-319-66787-4");
         assertThat(identifiers)
-                .anyMatch(i -> "issn".equals(i.getScheme()) && "0302-9743".equals(i.getValue()));
-        assertThat(identifiers)
-                .anyMatch(i -> "issn".equals(i.getScheme()) && "1611-3349".equals(i.getValue()));
-        assertThat(identifiers)
-                .anyMatch(i -> "isbn".equals(i.getScheme()) && "978-3-319-66786-7".equals(i.getValue()));
-        assertThat(identifiers)
+                .anyMatch(i -> "issn".equals(i.getScheme()) && "0302-9743".equals(i.getValue()))
+                .anyMatch(i -> "issn".equals(i.getScheme()) && "1611-3349".equals(i.getValue()))
+                .anyMatch(i -> "isbn".equals(i.getScheme()) && "978-3-319-66786-7".equals(i.getValue()))
                 .anyMatch(i -> "isbn".equals(i.getScheme()) && "978-3-319-66787-4".equals(i.getValue()));
 
         assertThat(product.getManifestations().getFirst().getBiblio().getVolume()).isEqualTo("10529");
@@ -199,13 +195,11 @@ class CrossrefToSkgIfMapperVenueTest {
 
         List<VenueLiteAllOfIdentifiers> identifiers = venue.getIdentifiers();
         final int expectedIdentifierCount = 3;
-        assertThat(identifiers.size()).isEqualTo(expectedIdentifierCount);
+        assertThat(identifiers).hasSize(expectedIdentifierCount);
         assertThat(identifiers.getFirst().getScheme()).isEqualTo("doi");
         assertThat(identifiers.getFirst().getValue()).isEqualTo("10.1007/978-1-4842-7310-4");
-        assertThat(identifiers).noneMatch(i -> "issn".equals(i.getScheme()));
-        assertThat(identifiers)
-                .anyMatch(i -> "isbn".equals(i.getScheme()) && "978-1-4842-7309-8".equals(i.getValue()));
-        assertThat(identifiers)
+        assertThat(identifiers).noneMatch(i -> "issn".equals(i.getScheme()))
+                .anyMatch(i -> "isbn".equals(i.getScheme()) && "978-1-4842-7309-8".equals(i.getValue()))
                 .anyMatch(i -> "isbn".equals(i.getScheme()) && "978-1-4842-7310-4".equals(i.getValue()));
 
         assertThat(product.getManifestations().getFirst().getBiblio().getVolume()).isNull();
@@ -230,11 +224,9 @@ class CrossrefToSkgIfMapperVenueTest {
         assertThat(venue.getLocalIdentifier()).startsWith("otf___");
 
         List<VenueLiteAllOfIdentifiers> identifiers = venue.getIdentifiers();
-        assertThat(identifiers.size()).isEqualTo(2);
-        assertThat(identifiers).noneMatch(i -> "doi".equals(i.getScheme()));
-        assertThat(identifiers)
-                .anyMatch(i -> "issn".equals(i.getScheme()) && "2352-5398".equals(i.getValue()));
-        assertThat(identifiers)
+        assertThat(identifiers).hasSize(2)
+                .noneMatch(i -> "doi".equals(i.getScheme()))
+                .anyMatch(i -> "issn".equals(i.getScheme()) && "2352-5398".equals(i.getValue()))
                 .anyMatch(i -> "isbn".equals(i.getScheme()) && "978-94-6239-490-2".equals(i.getValue()));
 
         assertThat(product.getManifestations().getFirst().getBiblio().getVolume()).isEqualTo("613");
@@ -256,7 +248,7 @@ class CrossrefToSkgIfMapperVenueTest {
         assertThat(venue.getLocalIdentifier()).startsWith("otf___");
 
         List<VenueLiteAllOfIdentifiers> identifiers = venue.getIdentifiers();
-        assertThat(identifiers.size()).isEqualTo(1);
+        assertThat(identifiers).hasSize(1);
         assertThat(identifiers.getFirst().getScheme()).isEqualTo("isbn");
         assertThat(identifiers.getFirst().getValue()).isEqualTo("0-7803-4373-5");
 

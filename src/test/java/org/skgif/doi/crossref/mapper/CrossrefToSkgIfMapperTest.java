@@ -56,7 +56,7 @@ class CrossrefToSkgIfMapperTest {
         assertThat(product.getLocalIdentifier()).isEqualTo("https://doi.org/10.1038/nature12373");
         assertThat(product.getEntityType()).isEqualTo("product");
         assertThat(product.getProductType()).isEqualTo(Product.ProductTypeEnum.LITERATURE);
-        assertThat(product.getIdentifiers().size()).isEqualTo(1);
+        assertThat(product.getIdentifiers()).hasSize(1);
         assertThat(product.getIdentifiers().getFirst().getScheme()).isEqualTo("doi");
         assertThat(product.getIdentifiers().getFirst().getValue()).isEqualTo("10.1038/nature12373");
     }
@@ -179,7 +179,7 @@ class CrossrefToSkgIfMapperTest {
         assertThat(((PersonLite) first.getBy()).getLocalIdentifier()).startsWith("otf___");
 
         Organisation affiliation = (Organisation) first.getDeclaredAffiliations().getFirst();
-        assertThat(first.getDeclaredAffiliations().size()).isEqualTo(2);
+        assertThat(first.getDeclaredAffiliations()).hasSize(2);
         assertThat(affiliation.getLocalIdentifier()).isEqualTo("https://ror.org/00tmb7y09");
         assertThat(affiliation.getIdentifiers().getFirst().getScheme()).isEqualTo("ror");
         assertThat(affiliation.getIdentifiers().getFirst().getValue()).isEqualTo("00tmb7y09");
@@ -193,14 +193,14 @@ class CrossrefToSkgIfMapperTest {
         // 4 funder entries in the fixture, two of which are the same "Horizon 2020" funder with
         // two different award numbers - each award must surface as its own funding entry.
         final int expectedFundingCount = 4;
-        assertThat(product.getFunding().size()).isEqualTo(expectedFundingCount);
+        assertThat(product.getFunding()).hasSize(expectedFundingCount);
         List<GrantLite> horizon2020Entries = product.getFunding().stream()
                 .map(f -> (GrantLite) f)
                 .filter(f -> "Horizon 2020".equals(f.getFundingAgency().getName()))
                 .toList();
-        assertThat(horizon2020Entries.size()).isEqualTo(2);
-        assertThat(horizon2020Entries).anyMatch(f -> "810367".equals(f.getGrantNumber()));
-        assertThat(horizon2020Entries).anyMatch(f -> "802533".equals(f.getGrantNumber()));
+        assertThat(horizon2020Entries).hasSize(2)
+                .anyMatch(f -> "810367".equals(f.getGrantNumber()))
+                .anyMatch(f -> "802533".equals(f.getGrantNumber()));
 
         // Unlike crossref-journal-article-with-funder.json's funder (no Funder Registry DOI at
         // all), this fixture's funders carry one directly on the top-level funder[] entry.
@@ -231,7 +231,7 @@ class CrossrefToSkgIfMapperTest {
         // ranked after every author.
         final int authorCount = 6;
         List<ProductContribution> contributions = product.getContributions();
-        assertThat(contributions.size()).isEqualTo(authorCount + 1);
+        assertThat(contributions).hasSize(authorCount + 1);
         ProductContribution publisherContribution = contributions.get(authorCount);
         assertThat(publisherContribution.getRole()).isEqualTo(ProductContribution.RoleEnum.PUBLISHER);
         assertThat(publisherContribution.getRank()).isEqualTo(authorCount + 1);
@@ -246,8 +246,7 @@ class CrossrefToSkgIfMapperTest {
 
         Map<String, List<String>> abstracts = (Map<String, List<String>>) product.getAbstracts();
         String abstractText = abstracts.get("en").getFirst();
-        assertThat(abstractText).contains("Lissajous scanner");
-        assertThat(abstractText).doesNotContain("<jats:p>");
+        assertThat(abstractText).contains("Lissajous scanner").doesNotContain("<jats:p>");
     }
 
     @Test
@@ -264,7 +263,7 @@ class CrossrefToSkgIfMapperTest {
     void mapsFunderWithoutAwardNumberOrFunderDoi() throws IOException {
         Product product = mapFixture("crossref-journal-article-with-funder.json");
 
-        assertThat(product.getFunding().size()).isEqualTo(1);
+        assertThat(product.getFunding()).hasSize(1);
         GrantLite grant = (GrantLite) product.getFunding().getFirst();
         assertThat(grant.getFundingAgency().getName())
                 .isEqualTo("Federal Ministries of Transport, Innovation and Technology");
@@ -278,7 +277,7 @@ class CrossrefToSkgIfMapperTest {
         Product product = mapFixture("crossref-journal-article-with-funder.json");
 
         var affiliations = product.getContributions().getFirst().getDeclaredAffiliations();
-        assertThat(affiliations.size()).isEqualTo(1);
+        assertThat(affiliations).hasSize(1);
         Organisation affiliation = (Organisation) affiliations.getFirst();
         // Unlike crossref-journal-article-with-ror-affiliation.json, this affiliation carries no
         // ROR at all - only a bare name - so it must fall back to an otf id instead.

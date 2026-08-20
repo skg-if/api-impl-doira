@@ -55,7 +55,7 @@ class CrossrefToSkgIfMapperRelatedProductsTest {
         // This fixture's reference[] has 30 entries, one of which (key BFnature12373_CR17)
         // carries no DOI - it must still surface as a cites entry, via an otf id, not be dropped.
         final int expectedReferenceCount = 30;
-        assertThat(product.getRelatedProducts().getCites().size()).isEqualTo(expectedReferenceCount);
+        assertThat(product.getRelatedProducts().getCites()).hasSize(expectedReferenceCount);
         assertThat(product.getRelatedProducts().getCites())
                 .anyMatch(c -> ((ProductsRelatedItem) c).getLocalIdentifier().startsWith("otf___"));
     }
@@ -71,7 +71,7 @@ class CrossrefToSkgIfMapperRelatedProductsTest {
 
         List<ProductsRelatedCitesInner> isSupplementedBy = product.getRelatedProducts().getIsSupplementedBy();
         final int expectedIsSupplementedByCount = 4;
-        assertThat(isSupplementedBy.size()).isEqualTo(expectedIsSupplementedByCount);
+        assertThat(isSupplementedBy).hasSize(expectedIsSupplementedByCount);
         ProductsRelatedItem first = (ProductsRelatedItem) isSupplementedBy.getFirst();
         assertThat(first.getLocalIdentifier()).isEqualTo("https://doi.org/10.1107/S2414314618016334/lh4040sup1.cif");
         assertThat(first.getIdentifiers().getFirst().getScheme()).isEqualTo("doi");
@@ -104,7 +104,7 @@ class CrossrefToSkgIfMapperRelatedProductsTest {
         // reference key "ref3" carries no DOI and no unstructured text - the otf id must
         // fall back to the reference key itself rather than being dropped.
         final int expectedCitesCount = 5;
-        assertThat(product.getRelatedProducts().getCites().size()).isEqualTo(expectedCitesCount);
+        assertThat(product.getRelatedProducts().getCites()).hasSize(expectedCitesCount);
         assertThat(product.getRelatedProducts().getCites())
                 .anyMatch(c -> "otf___10-17537-icmbb18-42___ref3"
                         .equals(((ProductsRelatedItem) c).getLocalIdentifier()));

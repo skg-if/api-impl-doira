@@ -41,7 +41,7 @@ class DataCiteToSkgIfMapperGrantTest {
         Grant grant = mapGrantFixture("datacite-award-r3sy-7371.json");
 
         assertThat(grant.getLocalIdentifier()).isEqualTo("https://doi.org/10.71707/r3sy-7371");
-        assertThat(grant.getEntityType().toString()).isEqualTo("grant");
+        assertThat(grant.getEntityType()).hasToString("grant");
         assertThat(grant.getIdentifiers()).hasSize(1);
         assertThat(grant.getIdentifiers().getFirst().getScheme()).isEqualTo("doi");
         assertThat(grant.getIdentifiers().getFirst().getValue()).isEqualTo("10.71707/r3sy-7371");

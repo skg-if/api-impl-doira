@@ -48,8 +48,8 @@ class CrossrefToSkgIfMapperGrantTest {
         Grant grant = mapGrantFixture("crossref-grant.json");
 
         assertThat(grant.getLocalIdentifier()).isEqualTo("https://doi.org/10.35802/218300");
-        assertThat(grant.getEntityType().toString()).isEqualTo("grant");
-        assertThat(grant.getIdentifiers().size()).isEqualTo(1);
+        assertThat(grant.getEntityType()).hasToString("grant");
+        assertThat(grant.getIdentifiers()).hasSize(1);
         assertThat(grant.getIdentifiers().getFirst().getScheme()).isEqualTo("doi");
         assertThat(grant.getIdentifiers().getFirst().getValue()).isEqualTo("10.35802/218300");
         assertThat(grant.getGrantNumber()).isEqualTo("218300");
@@ -90,7 +90,7 @@ class CrossrefToSkgIfMapperGrantTest {
         Grant grant = mapGrantFixture("crossref-grant.json");
 
         final int expectedInvestigatorCount = 9;
-        assertThat(grant.getContributions().size()).isEqualTo(expectedInvestigatorCount);
+        assertThat(grant.getContributions()).hasSize(expectedInvestigatorCount);
         GrantContribution lead = (GrantContribution) grant.getContributions().stream()
                 .filter(c -> "Halim".equals(((PersonLite) ((GrantContribution) c).getBy()).getFamilyName()))
                 .findFirst()
@@ -118,7 +118,7 @@ class CrossrefToSkgIfMapperGrantTest {
         // 3 distinct institutions appear across 9 investigators (University of Cambridge
         // repeats 6 times) - beneficiaries must be deduped by name.
         final int expectedDistinctInstitutionCount = 3;
-        assertThat(grant.getBeneficiaries().size()).isEqualTo(expectedDistinctInstitutionCount);
+        assertThat(grant.getBeneficiaries()).hasSize(expectedDistinctInstitutionCount);
         assertThat(grant.getBeneficiaries())
                 .anyMatch(b -> "University of Cambridge".equals(((Organisation) b).getName()));
     }
