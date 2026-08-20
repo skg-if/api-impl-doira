@@ -1,5 +1,6 @@
 package org.skgif.doi.datacite.mapper;
 
+import java.util.Optional;
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
 import org.skgif.doi.generated.model.ProductManifestationBiblio;
 import org.skgif.doi.generated.model.ProductManifestationBiblioHostingDataSource;
@@ -16,11 +17,11 @@ final class DataCiteBiblioMapper {
     private DataCiteBiblioMapper() {
     }
 
-    static ProductManifestationBiblio biblio(DataCiteAttributes attributes) {
+    static Optional<ProductManifestationBiblio> biblio(DataCiteAttributes attributes) {
         if (attributes.publisher() == null) {
-            return null;
+            return Optional.empty();
         }
-        return new ProductManifestationBiblio().hostingDataSource(hostingDataSource(attributes));
+        return Optional.of(new ProductManifestationBiblio().hostingDataSource(hostingDataSource(attributes)));
     }
 
     /**

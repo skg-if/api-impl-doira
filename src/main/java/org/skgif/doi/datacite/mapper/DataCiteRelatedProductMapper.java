@@ -3,6 +3,7 @@ package org.skgif.doi.datacite.mapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
 import org.skgif.doi.datacite.dto.DataCiteRelatedIdentifier;
@@ -31,14 +32,14 @@ final class DataCiteRelatedProductMapper {
         this.localIdentifiers = localIdentifiers;
     }
 
-    ProductsRelated relatedProducts(DataCiteAttributes attributes) {
+    Optional<ProductsRelated> relatedProducts(DataCiteAttributes attributes) {
         if (attributes.relatedIdentifiers() == null || attributes.relatedIdentifiers().isEmpty()) {
-            return null;
+            return Optional.empty();
         }
         return buildRelated(attributes);
     }
 
-    private ProductsRelated buildRelated(DataCiteAttributes attributes) {
+    private Optional<ProductsRelated> buildRelated(DataCiteAttributes attributes) {
         // DataCite's controlled vocabulary has both "Cites" and "References" for what SKG-IF
         // models as a single relation - real records use either (verified live against
         // 10.5281/zenodo.21914195, which has 12 "Cites" entries plus one separate "References"
@@ -57,9 +58,9 @@ final class DataCiteRelatedProductMapper {
         List<ProductsRelatedCitesInner> isPartOf = relatedByType(attributes, "IsPartOf");
         if (cites.isEmpty() && citedBy.isEmpty() && isSupplementedBy.isEmpty() && isDocumentedBy.isEmpty() &&
                 isNewVersionOf.isEmpty() && isPartOf.isEmpty()) {
-            return null;
+            return Optional.empty();
         }
-        return assembleRelated(cites, isSupplementedBy, isDocumentedBy, isNewVersionOf, isPartOf);
+        return Optional.of(assembleRelated(cites, isSupplementedBy, isDocumentedBy, isNewVersionOf, isPartOf));
     }
 
     private ProductsRelated assembleRelated(List<ProductsRelatedCitesInner> cites,

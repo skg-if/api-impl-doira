@@ -2,6 +2,7 @@ package org.skgif.doi.crossref.mapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.skgif.doi.crossref.dto.CrossrefIdEntry;
 import org.skgif.doi.crossref.dto.CrossrefReference;
 import org.skgif.doi.crossref.dto.CrossrefWork;
@@ -48,9 +49,10 @@ final class CrossrefRelatedProductMapper {
      * reference[]}.
      *
      * @param work the Crossref work record to derive related products from
-     * @return the mapped related products (cites/isSupplementedBy), or null if there are none
+     * @return the mapped related products (cites/isSupplementedBy), or Optional.empty() if there
+     *         are none
      */
-    ProductsRelated relatedProducts(CrossrefWork work) {
+    Optional<ProductsRelated> relatedProducts(CrossrefWork work) {
         List<ProductsRelatedCitesInner> cites = new ArrayList<>();
         if (work.reference() != null) {
             for (CrossrefReference reference : work.reference()) {
@@ -72,7 +74,7 @@ final class CrossrefRelatedProductMapper {
         }
         List<ProductsRelatedCitesInner> isSupplementedBy = relatedByRelationType(work, "is-supplemented-by");
         if (cites.isEmpty() && isSupplementedBy.isEmpty()) {
-            return null;
+            return Optional.empty();
         }
         ProductsRelated related = new ProductsRelated();
         if (!cites.isEmpty()) {
@@ -81,7 +83,7 @@ final class CrossrefRelatedProductMapper {
         if (!isSupplementedBy.isEmpty()) {
             related.isSupplementedBy(isSupplementedBy);
         }
-        return related;
+        return Optional.of(related);
     }
 
     /**

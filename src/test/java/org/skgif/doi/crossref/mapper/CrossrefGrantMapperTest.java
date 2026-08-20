@@ -65,8 +65,8 @@ class CrossrefGrantMapperTest {
         CrossrefFunding funding = new CrossrefFunding(null, new CrossrefAmount(2.0, "GBP"), null);
 
         final int expected = 2;
-        assertThat(mapper.fundedAmount(projectWithAmount, funding)).isEqualTo(expected);
-        assertThat(mapper.currency(projectWithAmount, funding)).isEqualTo("GBP");
+        assertThat(mapper.fundedAmount(projectWithAmount, funding)).contains(expected);
+        assertThat(mapper.currency(projectWithAmount, funding)).contains("GBP");
     }
 
     @Test
@@ -75,22 +75,22 @@ class CrossrefGrantMapperTest {
         final int expectedFundedAmount = 3;
         CrossrefProject projectWithAmount = amountProject(new CrossrefAmount(projectAwardAmount, "USD"));
 
-        assertThat(mapper.fundedAmount(projectWithAmount, null)).isEqualTo(expectedFundedAmount);
-        assertThat(mapper.currency(projectWithAmount, null)).isEqualTo("USD");
+        assertThat(mapper.fundedAmount(projectWithAmount, null)).contains(expectedFundedAmount);
+        assertThat(mapper.currency(projectWithAmount, null)).contains("USD");
     }
 
     @Test
     void fundedAmount_nullWhenNeitherProjectNorFundingHasAnAmount() {
         CrossrefProject projectWithoutAmount = amountProject(null);
 
-        assertThat(mapper.fundedAmount(projectWithoutAmount, null)).isNull();
-        assertThat(mapper.currency(projectWithoutAmount, null)).isNull();
+        assertThat(mapper.fundedAmount(projectWithoutAmount, null)).isEmpty();
+        assertThat(mapper.currency(projectWithoutAmount, null)).isEmpty();
     }
 
     @Test
     void fundedAmount_nullWhenProjectIsNullAndFundingIsNull() {
-        assertThat(mapper.fundedAmount(null, null)).isNull();
-        assertThat(mapper.currency(null, null)).isNull();
+        assertThat(mapper.fundedAmount(null, null)).isEmpty();
+        assertThat(mapper.currency(null, null)).isEmpty();
     }
 
     @Test
@@ -100,23 +100,23 @@ class CrossrefGrantMapperTest {
         CrossrefProject projectWithAmount = amountProject(new CrossrefAmount(projectAwardAmount, "USD"));
         CrossrefFunding fundingWithoutAmount = new CrossrefFunding("scheme-x", null, null);
 
-        assertThat(mapper.fundedAmount(projectWithAmount, fundingWithoutAmount)).isEqualTo(expectedFundedAmount);
-        assertThat(mapper.currency(projectWithAmount, fundingWithoutAmount)).isEqualTo("USD");
+        assertThat(mapper.fundedAmount(projectWithAmount, fundingWithoutAmount)).contains(expectedFundedAmount);
+        assertThat(mapper.currency(projectWithAmount, fundingWithoutAmount)).contains("USD");
     }
 
     @Test
     void duration_nullWhenProjectIsNull() {
-        assertThat(mapper.duration(null)).isNull();
+        assertThat(mapper.duration(null)).isEmpty();
     }
 
     @Test
     void duration_nullWhenNeitherStartNorEndIsPresent() {
-        assertThat(mapper.duration(durationProject(null, null))).isNull();
+        assertThat(mapper.duration(durationProject(null, null))).isEmpty();
     }
 
     @Test
     void duration_onlyStartPresent() {
-        GrantAllOfDuration duration = mapper.duration(durationProject(isoDate("2019-11-01"), null));
+        GrantAllOfDuration duration = mapper.duration(durationProject(isoDate("2019-11-01"), null)).orElseThrow();
 
         assertThat(duration.getStart()).isEqualTo("2019-11-01");
         assertThat(duration.getEnd()).isNull();
@@ -124,7 +124,7 @@ class CrossrefGrantMapperTest {
 
     @Test
     void duration_onlyEndPresent() {
-        GrantAllOfDuration duration = mapper.duration(durationProject(null, isoDate("2024-10-31")));
+        GrantAllOfDuration duration = mapper.duration(durationProject(null, isoDate("2024-10-31"))).orElseThrow();
 
         assertThat(duration.getStart()).isNull();
         assertThat(duration.getEnd()).isEqualTo("2024-10-31");
@@ -133,7 +133,7 @@ class CrossrefGrantMapperTest {
     @Test
     void duration_bothStartAndEndPresent() {
         GrantAllOfDuration duration =
-                mapper.duration(durationProject(isoDate("2019-11-01"), isoDate("2024-10-31")));
+                mapper.duration(durationProject(isoDate("2019-11-01"), isoDate("2024-10-31"))).orElseThrow();
 
         assertThat(duration.getStart()).isEqualTo("2019-11-01");
         assertThat(duration.getEnd()).isEqualTo("2024-10-31");
@@ -141,19 +141,19 @@ class CrossrefGrantMapperTest {
 
     @Test
     void website_nullWhenWorkHasNoResource() {
-        assertThat(mapper.website(workWithResource(null))).isNull();
+        assertThat(mapper.website(workWithResource(null))).isEmpty();
     }
 
     @Test
     void website_nullWhenResourceHasNoPrimary() {
-        assertThat(mapper.website(workWithResource(new CrossrefResource(null)))).isNull();
+        assertThat(mapper.website(workWithResource(new CrossrefResource(null)))).isEmpty();
     }
 
     @Test
     void website_returnsPrimaryResourceUrl() {
         CrossrefResource resource = new CrossrefResource(new CrossrefResource.Primary("https://example.org/grant"));
 
-        assertThat(mapper.website(workWithResource(resource))).isEqualTo("https://example.org/grant");
+        assertThat(mapper.website(workWithResource(resource))).contains("https://example.org/grant");
     }
 
     private static CrossrefProject project(List<CrossrefProjectTitle> titles,

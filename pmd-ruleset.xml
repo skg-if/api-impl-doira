@@ -40,13 +40,6 @@
 
   <rule ref="category/java/errorprone.xml">
     <!--
-      NullAssignment disabled: every violation found is the same `x = cond ? y : null`
-      null-safe-accessor idiom (e.g. resource getById methods extracting a possibly-absent field,
-      MedraToSkgIfMapper#personRef) - null is a deliberate, legitimate sentinel here, not a code
-      smell to refactor away.
-    -->
-    <exclude name="NullAssignment"/>
-    <!--
       CompareObjectsWithEquals disabled: both violations found (DataCiteToSkgIfMapper#otherRecordDays,
       #grantContributions) are intentional reference-identity checks - excluding one specific
       object instance while iterating the same list it came from (e.g. `date != excluding`) -
@@ -158,6 +151,17 @@
       package-coupling limits ever comes up.
     -->
     <exclude name="LoosePackageCoupling"/>
+    <!--
+      CouplingBetweenObjects: only CrossrefProductsResource (value 21, threshold 20) - the same
+      "already-cohesive-but-branchy REST resource" shape as the CyclomaticComplexity/
+      NPathComplexity/ExcessiveImports exclusions above on this same class family, tipped over the
+      threshold specifically by converting fetchVenueMetadata to Optional<CrossrefVenueMetadata>
+      (the ReturnNullConsiderOptional refactor below) - Optional/CrossrefVenueMetadata were both
+      already referenced elsewhere in the class, so this isn't new "real" design coupling, just the
+      metric's count of a generic type argument. Not worth restructuring this one already-excluded
+      class further over a single-point metric trip.
+    -->
+    <exclude name="CouplingBetweenObjects"/>
   </rule>
 
   <rule ref="category/java/multithreading.xml">
@@ -485,6 +489,51 @@
       ])
     ])
   ) > 1
+]
+          ]]>
+        </value>
+      </property>
+    </properties>
+  </rule>
+
+  <rule name="ReturnNullConsiderOptional"
+        language="java"
+        message="Method returns null - consider returning Optional&lt;T&gt; instead"
+        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <description>
+      Matches the "avoid returning null, prefer Optional" guideline (Effective Java Item 55), which
+      has no build-time equivalent otherwise, since this repo runs no Sonar server. Flags a
+      `return null;` statement, and a ternary `return cond ? x : null;` / `return cond ? null : x;`.
+      No explicit void/primitive-return-type exclusion is needed: a void method's only return
+      statements are bare `return;` with no expression, and a primitive return type can never
+      legally hold `null` (a compile error), so both are already excluded by construction rather
+      than by a predicate - validated against a real `mvn pmd:check` run (see below), unlike an
+      earlier draft of this rule that guessed at a `ResultType`/`@Void` attribute shape that turned
+      out not to exist in PMD 7's grammar and silently matched nothing. Deliberately does not
+      attempt full type resolution (same rationale as PreferSequencedCollectionAccessors above) -
+      matches the ReturnStatement/ConditionalExpression shape directly, requiring the null literal
+      to be a direct child of the ConditionalExpression (its then/else branch) rather than merely a
+      descendant, so `return x == null ? a : b;` (null only in the condition) does not match. This
+      means it structurally cannot fire on a switch-expression `-> null` arm or a `yield null;`
+      statement (those aren't ReturnStatement nodes) - intentional: this codebase's
+      filter-clause-builder methods (FilterQuerySyntax#schemeOnlyFilter,
+      DataCiteProductFilters/DataCiteGrantFilters#toClause, CrossrefFilters#toProductClause/
+      #toGrantClause) rely on exactly that shape and are marked
+      @SuppressWarnings("PMD.ReturnNullConsiderOptional") rather than needing a separate carve-out.
+      Known limitation: a block-bodied lambda's own `return null;` would be mis-attributed to the
+      nearest enclosing method rather than being correctly scoped to the lambda - not worth the
+      extra XPath complexity since this codebase has no block-bodied lambdas with a null return
+      today; exclude that call site if one is introduced.
+    </description>
+    <priority>3</priority>
+    <properties>
+      <property name="xpath">
+        <value>
+          <![CDATA[
+//ReturnStatement[
+  NullLiteral
+  or
+  ConditionalExpression[*[self::NullLiteral]]
 ]
           ]]>
         </value>

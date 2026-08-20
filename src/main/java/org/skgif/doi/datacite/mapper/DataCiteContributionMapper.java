@@ -2,6 +2,7 @@ package org.skgif.doi.datacite.mapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.skgif.doi.datacite.dto.DataCiteAffiliation;
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
 import org.skgif.doi.datacite.dto.DataCiteContributor;
@@ -70,7 +71,7 @@ final class DataCiteContributionMapper {
 
     static ProductContributionBy personRef(String doi, String name, String givenName, String familyName,
             List<DataCiteNameIdentifier> nameIdentifiers) {
-        return EntityRefs.personRef(doi, name, givenName, familyName, firstOrcid(nameIdentifiers),
+        return EntityRefs.personRef(doi, name, givenName, familyName, firstOrcid(nameIdentifiers).orElse(null),
                 orcidIdentifiers(nameIdentifiers));
     }
 
@@ -87,17 +88,16 @@ final class DataCiteContributionMapper {
         return EntityRefs.organisationRef(doi, name, null);
     }
 
-    static String firstOrcid(List<DataCiteNameIdentifier> nameIdentifiers) {
+    static Optional<String> firstOrcid(List<DataCiteNameIdentifier> nameIdentifiers) {
         if (nameIdentifiers == null) {
-            return null;
+            return Optional.empty();
         }
         return nameIdentifiers.stream()
                 .filter(ni -> "ORCID".equalsIgnoreCase(ni.nameIdentifierScheme()) && ni.nameIdentifier() != null)
                 .map(ni -> ni.nameIdentifier().startsWith(ExternalIdentifierUrls.ORCID_BASE_URL) ?
                         ni.nameIdentifier().substring(ExternalIdentifierUrls.ORCID_BASE_URL.length()) :
                         ni.nameIdentifier())
-                .findFirst()
-                .orElse(null);
+                .findFirst();
     }
 
     static List<PersonLiteAllOfIdentifiers> orcidIdentifiers(List<DataCiteNameIdentifier> nameIdentifiers) {
@@ -137,15 +137,14 @@ final class DataCiteContributionMapper {
         return result;
     }
 
-    static String firstRor(List<DataCiteNameIdentifier> nameIdentifiers) {
+    static Optional<String> firstRor(List<DataCiteNameIdentifier> nameIdentifiers) {
         if (nameIdentifiers == null) {
-            return null;
+            return Optional.empty();
         }
         return nameIdentifiers.stream()
                 .filter(ni -> SCHEME_ROR_UPPER.equalsIgnoreCase(ni.nameIdentifierScheme()) &&
                         ni.nameIdentifier() != null)
                 .map(ni -> MapperTextUtils.stripRorUrl(ni.nameIdentifier()))
-                .findFirst()
-                .orElse(null);
+                .findFirst();
     }
 }

@@ -69,6 +69,7 @@ public class DataCiteProductsResource {
     // Optional<String>, not String: SmallRye Config treats a blank configured value as "no
     // value" for a plain String property, which throws at startup unless it's Optional (or
     // has a defaultValue) - and blank is exactly this property's own documented default.
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType") //ok https://quarkus.io/guides/config-reference
     @ConfigProperty(name = "datacite.prefix")
     Optional<String> dataCitePrefix;
 
@@ -122,10 +123,12 @@ public class DataCiteProductsResource {
             @Context UriInfo uriInfo) {
         String doi = localIdentifiers.toDoi(localIdentifierParam);
 
-        DataCiteDoiData data;
+        DataCiteDoiData data = null;
         try {
             DataCiteDoiResponse response = dataCiteClient.getDoi(doi);
-            data = response != null ? response.data() : null;
+            if (response != null) {
+                data = response.data();
+            }
         } catch (WebApplicationException e) {
             if (e.getResponse().getStatus() == Response.Status.NOT_FOUND.getStatusCode()) {
                 return notFound(localIdentifierParam);
@@ -173,7 +176,7 @@ public class DataCiteProductsResource {
             @QueryParam("page_size") Integer pageSize,
             @Context UriInfo uriInfo) {
 
-        String query;
+        Optional<String> query;
         try {
             query = DataCiteProductFilters.toDataCiteQuery(filter);
         } catch (FilterQuerySyntax.UnsupportedFilterException e) {
@@ -181,13 +184,13 @@ public class DataCiteProductsResource {
         }
         // Awards are grants, not products - never let them leak into /datacite/products results.
         String awardExclusion = "NOT types.resourceTypeGeneral:" + ResourceTypeMapping.AWARD;
-        query = query == null ? awardExclusion : query + " AND " + awardExclusion;
+        String finalQuery = query.map(q -> q + " AND " + awardExclusion).orElse(awardExclusion);
 
         int pageNumber = parsePage(page);
         int size = pageSize != null && pageSize > 0 ? pageSize : defaultPageSize;
         String prefix = dataCitePrefix.filter(p -> !p.isBlank()).orElse(null);
 
-        DataCiteDoiListResponse response = dataCiteClient.listDois(prefix, query, size, pageNumber);
+        DataCiteDoiListResponse response = dataCiteClient.listDois(prefix, finalQuery, size, pageNumber);
 
         List<Product> products = new ArrayList<>();
         List<ApiItem> apiItems = new ArrayList<>();

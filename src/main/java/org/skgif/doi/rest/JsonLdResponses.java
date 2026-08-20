@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import org.skgif.doi.datacite.dto.DataCiteDoiData;
 import org.skgif.doi.generated.model.ApiItem;
@@ -59,8 +58,7 @@ final class JsonLdResponses {
      * @return the namespaced {@code @base}, or fallbackContextBase if data carries no client id
      */
     static String contextBaseFor(DataCiteDoiData data, String sandboxBaseUrl, String fallbackContextBase) {
-        String clientId = clientId(data);
-        return clientId != null ? sandboxBaseUrl + clientId + "/" : fallbackContextBase;
+        return clientId(data).map(id -> sandboxBaseUrl + id + "/").orElse(fallbackContextBase);
     }
 
     /**
@@ -80,7 +78,7 @@ final class JsonLdResponses {
         }
         return items.stream()
                 .map(JsonLdResponses::clientId)
-                .filter(Objects::nonNull)
+                .flatMap(Optional::stream)
                 .findFirst()
                 .map(id -> sandboxBaseUrl + id + "/")
                 .orElse(fallbackContextBase);
@@ -104,13 +102,13 @@ final class JsonLdResponses {
                 .orElse(fallbackContextBase);
     }
 
-    private static String clientId(DataCiteDoiData data) {
+    private static Optional<String> clientId(DataCiteDoiData data) {
         if (data == null || data.relationships() == null || data.relationships().client() == null ||
                 data.relationships().client().data() == null) {
-            return null;
+            return Optional.empty();
         }
         String id = data.relationships().client().data().id();
-        return id != null && !id.isBlank() ? id : null;
+        return Optional.ofNullable(id != null && !id.isBlank() ? id : null);
     }
 
     static String selfLink(UriInfo uriInfo, String resourcePath, String doi) {

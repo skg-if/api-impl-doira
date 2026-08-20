@@ -1,6 +1,7 @@
 package org.skgif.doi.rest;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import org.skgif.doi.spec.GrantFilterKeys;
 import org.skgif.doi.util.ExternalIdentifierUrls;
@@ -55,12 +56,12 @@ final class DataCiteGrantFilters {
     private DataCiteGrantFilters() {
     }
 
-    static String toDataCiteQuery(String filter) {
+    static Optional<String> toDataCiteQuery(String filter) {
         if (filter == null || filter.isBlank()) {
-            return null;
+            return Optional.empty();
         }
         List<String> clauses = FilterQuerySyntax.parseClauses(filter, SUPPORTED, DataCiteGrantFilters::toClause);
-        return clauses.isEmpty() ? null : String.join(" AND ", clauses);
+        return clauses.isEmpty() ? Optional.empty() : Optional.of(String.join(" AND ", clauses));
     }
 
     private static String toClause(String key, String value) {

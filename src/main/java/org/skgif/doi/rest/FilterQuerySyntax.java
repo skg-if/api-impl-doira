@@ -87,6 +87,10 @@ final class FilterQuerySyntax {
      * @param noMatchClause  the clause to return when value doesn't match expectedScheme
      * @return null (no-op) if value matches expectedScheme, else noMatchClause
      */
+    // Bound as a BinaryOperator<String>/ClauseBuilder method reference inside a switch expression
+    // - null means "no clause"; converting to Optional<String> is a separate, larger refactor of
+    // that shared functional interface, out of scope here.
+    @SuppressWarnings("PMD.ReturnNullConsiderOptional")
     static String schemeOnlyFilter(String value, String expectedScheme, String noMatchClause) {
         return expectedScheme.equalsIgnoreCase(value) ? null : noMatchClause;
     }

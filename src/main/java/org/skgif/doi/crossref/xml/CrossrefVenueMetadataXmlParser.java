@@ -70,29 +70,33 @@ public final class CrossrefVenueMetadataXmlParser {
 
             // Book-shaped titles live in a titles/title wrapper; proceedings-shaped titles are a
             // flat proceedings_title element - try the wrapper first, then the flat element.
-            String containerTitle = text(xpath, containerNode, "*[local-name()='titles']/*[local-name()='title']");
+            String containerTitle =
+                    text(xpath, containerNode, "*[local-name()='titles']/*[local-name()='title']").orElse(null);
             if (containerTitle == null) {
-                containerTitle = text(xpath, containerNode, "*[local-name()='proceedings_title']");
+                containerTitle = text(xpath, containerNode, "*[local-name()='proceedings_title']").orElse(null);
             }
             if (containerTitle == null) {
                 // Nothing usable to enrich the venue with - caller falls back to the REST JSON.
                 return Optional.empty();
             }
-            String containerDoi = text(xpath, containerNode, "*[local-name()='doi_data']/*[local-name()='doi']");
+            String containerDoi =
+                    text(xpath, containerNode, "*[local-name()='doi_data']/*[local-name()='doi']").orElse(null);
 
             Node seriesMetadata =
                     (Node) xpath.evaluate("*[local-name()='series_metadata']", containerNode, XPathConstants.NODE);
             String seriesTitle = seriesMetadata == null ? null :
-                    text(xpath, seriesMetadata, "*[local-name()='titles']/*[local-name()='title']");
+                    text(xpath, seriesMetadata, "*[local-name()='titles']/*[local-name()='title']").orElse(null);
             List<String> seriesIssns =
                     seriesMetadata == null ? List.of() : textList(xpath, seriesMetadata, "*[local-name()='issn']");
-            String volume = text(xpath, containerNode, "*[local-name()='volume']");
+            String volume = text(xpath, containerNode, "*[local-name()='volume']").orElse(null);
 
             List<String> isbns = textList(xpath, containerNode, "*[local-name()='isbn']");
             String publisherName =
-                    text(xpath, containerNode, "*[local-name()='publisher']/*[local-name()='publisher_name']");
+                    text(xpath, containerNode, "*[local-name()='publisher']/*[local-name()='publisher_name']")
+                            .orElse(null);
             String publisherPlace =
-                    text(xpath, containerNode, "*[local-name()='publisher']/*[local-name()='publisher_place']");
+                    text(xpath, containerNode, "*[local-name()='publisher']/*[local-name()='publisher_place']")
+                            .orElse(null);
 
             return Optional.of(new CrossrefVenueMetadata(containerTitle, containerDoi, seriesTitle, seriesIssns,
                     volume, isbns, publisherName, publisherPlace));
@@ -116,9 +120,9 @@ public final class CrossrefVenueMetadataXmlParser {
         return builder.parse(new InputSource(new StringReader(xml)));
     }
 
-    private static String text(XPath xpath, Node context, String expression) throws XPathExpressionException {
+    private static Optional<String> text(XPath xpath, Node context, String expression) throws XPathExpressionException {
         String value = (String) xpath.evaluate(expression, context, XPathConstants.STRING);
-        return value == null || value.isBlank() ? null : value.trim();
+        return Optional.ofNullable(value == null || value.isBlank() ? null : value.trim());
     }
 
     private static List<String> textList(XPath xpath, Node context, String expression) throws XPathExpressionException {

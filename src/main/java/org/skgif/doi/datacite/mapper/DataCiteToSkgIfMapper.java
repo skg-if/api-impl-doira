@@ -70,7 +70,7 @@ public class DataCiteToSkgIfMapper implements GrantCapableMapper<DataCiteAttribu
                 // identifier URL as local_identifier whenever we have a real one.
                 .localIdentifier(localIdentifiers.toFullLocalIdentifier(attributes.doi()))
                 .productType(ResourceTypeMapping.productType(
-                        DataCiteManifestationMapper.resourceTypeGeneral(attributes)))
+                        DataCiteManifestationMapper.resourceTypeGeneral(attributes).orElse(null)))
                 .identifiers(List.of(new ProductAllOfIdentifiers().scheme(SCHEME_DOI).value(attributes.doi())))
                 .titles(DataCiteTitleMapper.titles(attributes))
                 .abstracts(DataCiteTitleMapper.abstracts(attributes))
@@ -78,7 +78,7 @@ public class DataCiteToSkgIfMapper implements GrantCapableMapper<DataCiteAttribu
                 .contributions(DataCiteContributionMapper.contributions(attributes))
                 .manifestations(List.of(DataCiteManifestationMapper.manifestation(attributes)))
                 .funding(fundingMapper.funding(attributes))
-                .relatedProducts(relatedProductMapper.relatedProducts(attributes));
+                .relatedProducts(relatedProductMapper.relatedProducts(attributes).orElse(null));
     }
 
     /**
@@ -101,7 +101,7 @@ public class DataCiteToSkgIfMapper implements GrantCapableMapper<DataCiteAttribu
                 attributes.contributors() :
                 List.of();
         Optional<DataCiteCreator> fundingAgencyCreator = creators.stream()
-                .filter(c -> DataCiteContributionMapper.firstRor(c.nameIdentifiers()) != null)
+                .filter(c -> DataCiteContributionMapper.firstRor(c.nameIdentifiers()).isPresent())
                 .findFirst();
 
         return new Grant()
@@ -111,7 +111,7 @@ public class DataCiteToSkgIfMapper implements GrantCapableMapper<DataCiteAttribu
                 .titles(DataCiteTitleMapper.grantTitles(attributes))
                 .abstracts(DataCiteTitleMapper.grantAbstracts(attributes))
                 .fundingAgency(DataCiteGrantMapper.grantFundingAgency(
-                        attributes.doi(), fundingAgencyCreator, attributes.publisher()))
+                        attributes.doi(), fundingAgencyCreator, attributes.publisher()).orElse(null))
                 .contributions(DataCiteGrantMapper.grantContributions(
                         attributes.doi(), creators, contributors, fundingAgencyCreator))
                 .beneficiaries(DataCiteGrantMapper.grantBeneficiaries(attributes.doi(), contributors));

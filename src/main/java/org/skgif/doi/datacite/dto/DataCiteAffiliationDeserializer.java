@@ -14,6 +14,8 @@ import java.io.IOException;
  */
 class DataCiteAffiliationDeserializer extends JsonDeserializer<DataCiteAffiliation> {
 
+    // Fixed Jackson JsonDeserializer<T> contract - must return T (or throw), never Optional<T>.
+    @SuppressWarnings("PMD.ReturnNullConsiderOptional")
     @Override
     public DataCiteAffiliation deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
         JsonNode node = p.readValueAsTree();

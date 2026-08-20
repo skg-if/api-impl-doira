@@ -32,9 +32,9 @@ class LicenceMapperTest {
     @MethodSource("accessRightsCases")
     void accessRights(String label, List<String> licences, boolean expectNullResult, StatusEnum expectedStatus) {
         if (expectNullResult) {
-            assertThat(LicenceMapper.accessRights(licences)).isNull();
+            assertThat(LicenceMapper.accessRights(licences)).isEmpty();
         } else {
-            ProductManifestationAccessRights accessRights = LicenceMapper.accessRights(licences);
+            ProductManifestationAccessRights accessRights = LicenceMapper.accessRights(licences).get();
             if (expectedStatus == null) {
                 assertThat(accessRights.getStatus()).isNull();
             } else {
@@ -61,9 +61,9 @@ class LicenceMapperTest {
     @MethodSource("licenceCases")
     void licence(String label, List<String> licences, String expected) {
         if (expected == null) {
-            assertThat(LicenceMapper.licence(licences)).isNull();
+            assertThat(LicenceMapper.licence(licences)).isEmpty();
         } else {
-            assertThat(LicenceMapper.licence(licences)).isEqualTo(expected);
+            assertThat(LicenceMapper.licence(licences)).contains(expected);
         }
     }
 }

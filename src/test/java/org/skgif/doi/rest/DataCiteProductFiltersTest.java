@@ -3,6 +3,7 @@ package org.skgif.doi.rest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -14,7 +15,7 @@ class DataCiteProductFiltersTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("equalityCases")
     void toDataCiteQuery_matchesExpectedOrNull(String label, String input, String expected) {
-        assertThat(DataCiteProductFilters.toDataCiteQuery(input)).isEqualTo(expected);
+        assertThat(DataCiteProductFilters.toDataCiteQuery(input)).isEqualTo(Optional.ofNullable(expected));
     }
 
     static Stream<Arguments> equalityCases() {
@@ -123,8 +124,8 @@ class DataCiteProductFiltersTest {
 
     @Test
     void toDataCiteQuery_productType_researchData_includesDataset() {
-        String query = DataCiteProductFilters.toDataCiteQuery("product_type:research data");
-        assertThat(query).contains("types.resourceTypeGeneral:\"Dataset\"");
+        Optional<String> query = DataCiteProductFilters.toDataCiteQuery("product_type:research data");
+        assertThat(query.orElseThrow()).contains("types.resourceTypeGeneral:\"Dataset\"");
     }
 
     @ParameterizedTest(name = "{0}")

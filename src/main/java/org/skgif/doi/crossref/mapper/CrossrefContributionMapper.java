@@ -2,6 +2,7 @@ package org.skgif.doi.crossref.mapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.skgif.doi.crossref.dto.CrossrefAffiliation;
 import org.skgif.doi.crossref.dto.CrossrefContributor;
 import org.skgif.doi.crossref.dto.CrossrefIdEntry;
@@ -56,12 +57,12 @@ final class CrossrefContributionMapper {
     }
 
     static ProductContributionBy personRef(String doi, String given, String family, String rawOrcid) {
-        String bareOrcid = bareOrcid(rawOrcid);
+        Optional<String> bareOrcid = bareOrcid(rawOrcid);
         String name = displayName(given, family);
-        List<PersonLiteAllOfIdentifiers> orcidIdentifiers = bareOrcid != null ?
-                List.of(new PersonLiteAllOfIdentifiers().scheme("orcid").value(bareOrcid)) :
-                null;
-        return EntityRefs.personRef(doi, name, given, family, bareOrcid, orcidIdentifiers);
+        List<PersonLiteAllOfIdentifiers> orcidIdentifiers = bareOrcid
+                .map(orcid -> List.of(new PersonLiteAllOfIdentifiers().scheme("orcid").value(orcid)))
+                .orElse(null);
+        return EntityRefs.personRef(doi, name, given, family, bareOrcid.orElse(null), orcidIdentifiers);
     }
 
     /**
@@ -81,19 +82,19 @@ final class CrossrefContributionMapper {
      * Crossref's ORCID field is already a full URL (http or https) - normalize both to bare.
      *
      * @param orcidUrl the full ORCID URL (http or https), or null
-     * @return the bare ORCID id, or null if orcidUrl is null
+     * @return the bare ORCID id, or Optional.empty() if orcidUrl is null
      */
-    static String bareOrcid(String orcidUrl) {
+    static Optional<String> bareOrcid(String orcidUrl) {
         if (orcidUrl == null) {
-            return null;
+            return Optional.empty();
         }
         if (orcidUrl.startsWith(ExternalIdentifierUrls.ORCID_BASE_URL)) {
-            return orcidUrl.substring(ExternalIdentifierUrls.ORCID_BASE_URL.length());
+            return Optional.of(orcidUrl.substring(ExternalIdentifierUrls.ORCID_BASE_URL.length()));
         }
         if (orcidUrl.startsWith(ExternalIdentifierUrls.ORCID_HTTP_BASE_URL)) {
-            return orcidUrl.substring(ExternalIdentifierUrls.ORCID_HTTP_BASE_URL.length());
+            return Optional.of(orcidUrl.substring(ExternalIdentifierUrls.ORCID_HTTP_BASE_URL.length()));
         }
-        return orcidUrl;
+        return Optional.of(orcidUrl);
     }
 
     static String displayName(String given, String family) {
@@ -124,19 +125,18 @@ final class CrossrefContributionMapper {
             if (affiliation.name() == null) {
                 continue;
             }
-            result.add(EntityRefs.organisationRef(doi, affiliation.name(), firstRor(affiliation.id())));
+            result.add(EntityRefs.organisationRef(doi, affiliation.name(), firstRor(affiliation.id()).orElse(null)));
         }
         return result;
     }
 
-    static String firstRor(List<CrossrefIdEntry> ids) {
+    static Optional<String> firstRor(List<CrossrefIdEntry> ids) {
         if (ids == null) {
-            return null;
+            return Optional.empty();
         }
         return ids.stream()
                 .filter(entry -> "ROR".equalsIgnoreCase(entry.idType()) && entry.id() != null)
                 .map(entry -> MapperTextUtils.stripRorUrl(entry.id()))
-                .findFirst()
-                .orElse(null);
+                .findFirst();
     }
 }

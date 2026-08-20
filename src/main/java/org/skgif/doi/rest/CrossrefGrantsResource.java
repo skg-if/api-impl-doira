@@ -58,9 +58,11 @@ public class CrossrefGrantsResource {
     @ConfigProperty(name = "skgif.context.base")
     String fallbackContextBase;
 
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType") //ok https://quarkus.io/guides/config-reference
     @ConfigProperty(name = "crossref.prefix")
     Optional<String> crossrefPrefix;
 
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     @ConfigProperty(name = "crossref.mailto")
     Optional<String> crossrefMailto;
 
@@ -98,10 +100,12 @@ public class CrossrefGrantsResource {
             @Context UriInfo uriInfo) {
         String doi = localIdentifiers.toDoi(localIdentifierParam);
 
-        CrossrefWork work;
+        CrossrefWork work = null;
         try {
             CrossrefWorkResponse response = crossrefClient.getWork(doi);
-            work = response != null ? response.message() : null;
+            if (response != null) {
+                work = response.message();
+            }
         } catch (WebApplicationException e) {
             if (e.getResponse().getStatus() == Response.Status.NOT_FOUND.getStatusCode()) {
                 return notFound(localIdentifierParam);

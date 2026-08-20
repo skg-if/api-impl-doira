@@ -100,10 +100,12 @@ public class DataCiteGrantsResource {
             @Context UriInfo uriInfo) {
         String doi = localIdentifiers.toDoi(localIdentifierParam);
 
-        DataCiteDoiData data;
+        DataCiteDoiData data = null;
         try {
             DataCiteDoiResponse response = dataCiteClient.getDoi(doi);
-            data = response != null ? response.data() : null;
+            if (response != null) {
+                data = response.data();
+            }
         } catch (WebApplicationException e) {
             if (e.getResponse().getStatus() == Response.Status.NOT_FOUND.getStatusCode()) {
                 return notFound(localIdentifierParam);
@@ -151,7 +153,7 @@ public class DataCiteGrantsResource {
             @QueryParam("page_size") Integer pageSize,
             @Context UriInfo uriInfo) {
 
-        String query;
+        Optional<String> query;
         try {
             query = DataCiteGrantFilters.toDataCiteQuery(filter);
         } catch (FilterQuerySyntax.UnsupportedFilterException e) {
@@ -159,13 +161,13 @@ public class DataCiteGrantsResource {
         }
         // /datacite/grants only ever serves Award-type DOIs.
         String awardInclusion = "types.resourceTypeGeneral:" + ResourceTypeMapping.AWARD;
-        query = query == null ? awardInclusion : query + " AND " + awardInclusion;
+        String finalQuery = query.map(q -> q + " AND " + awardInclusion).orElse(awardInclusion);
 
         int pageNumber = parsePage(page);
         int size = pageSize != null && pageSize > 0 ? pageSize : defaultPageSize;
         String prefix = dataCitePrefix.filter(p -> !p.isBlank()).orElse(null);
 
-        DataCiteDoiListResponse response = dataCiteClient.listDois(prefix, query, size, pageNumber);
+        DataCiteDoiListResponse response = dataCiteClient.listDois(prefix, finalQuery, size, pageNumber);
 
         List<Grant> grants = new ArrayList<>();
         List<ApiItem> apiItems = new ArrayList<>();

@@ -3,6 +3,7 @@ package org.skgif.doi.crossref.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Crossref dates are structured {@code {date-parts: [[y,m,d]]}} objects, unlike DataCite's
@@ -18,15 +19,16 @@ public record CrossrefDate(
 
     /**
      * @return this date's {@code date-parts} rendered as an ISO date string (year, year-month,
-     *         or full date depending on how many parts are present), or null if dateParts is empty
+     *         or full date depending on how many parts are present), or Optional.empty() if
+     *         dateParts is empty
      */
-    public String toIsoDate() {
+    public Optional<String> toIsoDate() {
         if (dateParts == null || dateParts.isEmpty()) {
-            return null;
+            return Optional.empty();
         }
         List<Integer> parts = dateParts.getFirst();
         if (parts == null || parts.isEmpty() || parts.getFirst() == null) {
-            return null;
+            return Optional.empty();
         }
         StringBuilder iso = new StringBuilder(String.format("%04d", parts.getFirst()));
         if (parts.size() > 1 && parts.get(1) != null) {
@@ -35,6 +37,6 @@ public record CrossrefDate(
                 iso.append('-').append(String.format("%02d", parts.get(2)));
             }
         }
-        return iso.toString();
+        return Optional.of(iso.toString());
     }
 }

@@ -58,14 +58,15 @@ public final class MedraOnixXmlParser {
             Document document = parseDocument(xml);
             XPath xpath = XPathFactory.newInstance().newXPath();
 
-            String doi = text(xpath, document, "//*[local-name()='DOI']");
+            String doi = text(xpath, document, "//*[local-name()='DOI']").orElse(null);
             if (doi == null) {
                 return Optional.empty();
             }
             // The element that directly wraps DOI (DOISerialArticleWork/...Version) - read via
             // local-name() rather than hardcoding either variant's name, so an unfamiliar future
             // one still produces a truthful label (see MedraWork#workElementName's javadoc).
-            String workElementName = text(xpath, document, "local-name(//*[local-name()='DOI']/parent::*)");
+            String workElementName =
+                    text(xpath, document, "local-name(//*[local-name()='DOI']/parent::*)").orElse(null);
 
             Node contentItem =
                     (Node) xpath.evaluate("//*[local-name()='ContentItem']", document, XPathConstants.NODE);
@@ -74,15 +75,17 @@ public final class MedraOnixXmlParser {
             }
 
             String abstractText = text(xpath, contentItem,
-                    "*[local-name()='OtherText'][*[local-name()='TextTypeCode']='01']/*[local-name()='Text']");
-            String publicationDate = text(xpath, contentItem, "*[local-name()='PublicationDate']");
+                    "*[local-name()='OtherText'][*[local-name()='TextTypeCode']='01']/*[local-name()='Text']")
+                    .orElse(null);
+            String publicationDate = text(xpath, contentItem, "*[local-name()='PublicationDate']").orElse(null);
 
             Node serialWork =
                     (Node) xpath.evaluate("//*[local-name()='SerialWork']", document, XPathConstants.NODE);
             String journalTitle = serialWork == null ? null : journalTitle(xpath, serialWork);
             String publisherName = serialWork == null ? null :
-                    text(xpath, serialWork, "*[local-name()='Publisher']/*[local-name()='PublisherName']");
-            String registrantName = text(xpath, document, "//*[local-name()='RegistrantName']");
+                    text(xpath, serialWork, "*[local-name()='Publisher']/*[local-name()='PublisherName']")
+                            .orElse(null);
+            String registrantName = text(xpath, document, "//*[local-name()='RegistrantName']").orElse(null);
 
             List<String> issns = textList(xpath, document,
                     "//*[local-name()='SerialVersion']/*[local-name()='ProductIdentifier']" +
@@ -110,12 +113,12 @@ public final class MedraOnixXmlParser {
         List<MedraTitle> titles = new ArrayList<>();
         for (int i = 0; i < nodes.getLength(); i++) {
             Node titleNode = nodes.item(i);
-            String text = text(xpath, titleNode, "*[local-name()='TitleText']");
+            String text = text(xpath, titleNode, "*[local-name()='TitleText']").orElse(null);
             if (text == null) {
                 continue;
             }
-            titles.add(new MedraTitle(text(xpath, titleNode, "*[local-name()='TitleType']"),
-                    attribute(titleNode, "language"), text));
+            titles.add(new MedraTitle(text(xpath, titleNode, "*[local-name()='TitleType']").orElse(null),
+                    attribute(titleNode, "language").orElse(null), text));
         }
         return titles;
     }
@@ -139,14 +142,14 @@ public final class MedraOnixXmlParser {
         String firstAny = null;
         for (int i = 0; i < nodes.getLength(); i++) {
             Node titleNode = nodes.item(i);
-            String text = text(xpath, titleNode, "*[local-name()='TitleText']");
+            String text = text(xpath, titleNode, "*[local-name()='TitleText']").orElse(null);
             if (text == null) {
                 continue;
             }
             if (firstAny == null) {
                 firstAny = text;
             }
-            if (TITLE_TYPE_FULL.equals(text(xpath, titleNode, "*[local-name()='TitleType']"))) {
+            if (TITLE_TYPE_FULL.equals(text(xpath, titleNode, "*[local-name()='TitleType']").orElse(null))) {
                 return text;
             }
         }
@@ -160,11 +163,11 @@ public final class MedraOnixXmlParser {
         for (int i = 0; i < nodes.getLength(); i++) {
             Node contributorNode = nodes.item(i);
             contributors.add(new MedraContributor(
-                    text(xpath, contributorNode, "*[local-name()='ContributorRole']"),
-                    text(xpath, contributorNode, "*[local-name()='NamesBeforeKey']"),
-                    text(xpath, contributorNode, "*[local-name()='KeyNames']"),
-                    text(xpath, contributorNode, "*[local-name()='PersonName']"),
-                    text(xpath, contributorNode, "*[local-name()='PersonNameInverted']")));
+                    text(xpath, contributorNode, "*[local-name()='ContributorRole']").orElse(null),
+                    text(xpath, contributorNode, "*[local-name()='NamesBeforeKey']").orElse(null),
+                    text(xpath, contributorNode, "*[local-name()='KeyNames']").orElse(null),
+                    text(xpath, contributorNode, "*[local-name()='PersonName']").orElse(null),
+                    text(xpath, contributorNode, "*[local-name()='PersonNameInverted']").orElse(null)));
         }
         return contributors;
     }
@@ -181,9 +184,9 @@ public final class MedraOnixXmlParser {
         return builder.parse(new InputSource(new StringReader(xml)));
     }
 
-    private static String text(XPath xpath, Node context, String expression) throws XPathExpressionException {
+    private static Optional<String> text(XPath xpath, Node context, String expression) throws XPathExpressionException {
         String value = (String) xpath.evaluate(expression, context, XPathConstants.STRING);
-        return value == null || value.isBlank() ? null : value.trim();
+        return Optional.ofNullable(value == null || value.isBlank() ? null : value.trim());
     }
 
     private static List<String> textList(XPath xpath, Node context, String expression) throws XPathExpressionException {
@@ -198,11 +201,11 @@ public final class MedraOnixXmlParser {
         return values;
     }
 
-    private static String attribute(Node node, String name) {
+    private static Optional<String> attribute(Node node, String name) {
         if (node.getAttributes() == null) {
-            return null;
+            return Optional.empty();
         }
         Node attr = node.getAttributes().getNamedItem(name);
-        return attr == null || attr.getNodeValue().isBlank() ? null : attr.getNodeValue().trim();
+        return Optional.ofNullable(attr == null || attr.getNodeValue().isBlank() ? null : attr.getNodeValue().trim());
     }
 }

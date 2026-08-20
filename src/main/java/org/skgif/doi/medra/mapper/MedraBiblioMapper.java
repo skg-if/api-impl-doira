@@ -1,5 +1,6 @@
 package org.skgif.doi.medra.mapper;
 
+import java.util.Optional;
 import org.skgif.doi.generated.model.ProductManifestationBiblio;
 import org.skgif.doi.generated.model.ProductManifestationBiblioIn;
 import org.skgif.doi.generated.model.VenueLite;
@@ -19,16 +20,16 @@ final class MedraBiblioMapper {
     private MedraBiblioMapper() {
     }
 
-    static ProductManifestationBiblio biblio(MedraWork work) {
+    static Optional<ProductManifestationBiblio> biblio(MedraWork work) {
         String hostingName = work.publisherName() != null ? work.publisherName() : work.registrantName();
         if (work.journalTitle() == null && hostingName == null) {
-            return null;
+            return Optional.empty();
         }
-        ProductManifestationBiblio biblio = new ProductManifestationBiblio().in(venue(work));
+        ProductManifestationBiblio biblio = new ProductManifestationBiblio().in(venue(work).orElse(null));
         if (hostingName != null) {
             biblio.hostingDataSource(EntityRefs.hostingDataSource(work.doi(), hostingName));
         }
-        return biblio;
+        return Optional.of(biblio);
     }
 
     /**
@@ -37,11 +38,11 @@ final class MedraBiblioMapper {
      * own ISSN(s) as its {@code identifiers[]}.
      *
      * @param work the mEDRA record to derive a venue from
-     * @return the mapped Venue, or null if work.journalTitle() is null
+     * @return the mapped Venue, or Optional.empty() if work.journalTitle() is null
      */
-    private static ProductManifestationBiblioIn venue(MedraWork work) {
+    private static Optional<ProductManifestationBiblioIn> venue(MedraWork work) {
         if (work.journalTitle() == null) {
-            return null;
+            return Optional.empty();
         }
         VenueLite venue = new VenueLite()
                 .localIdentifier(MapperTextUtils.otf(work.doi(), work.journalTitle()))
@@ -52,6 +53,6 @@ final class MedraBiblioMapper {
                     .map(issn -> new VenueLiteAllOfIdentifiers().scheme("issn").value(issn))
                     .toList());
         }
-        return venue;
+        return Optional.of(venue);
     }
 }

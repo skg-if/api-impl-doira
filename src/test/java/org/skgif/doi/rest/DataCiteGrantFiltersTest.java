@@ -3,6 +3,7 @@ package org.skgif.doi.rest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -14,7 +15,7 @@ class DataCiteGrantFiltersTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("equalityAndNullCases")
     void toDataCiteQuery_returnsExpectedOrNull(String label, String input, String expected) {
-        assertThat(DataCiteGrantFilters.toDataCiteQuery(input)).isEqualTo(expected);
+        assertThat(DataCiteGrantFilters.toDataCiteQuery(input)).isEqualTo(Optional.ofNullable(expected));
     }
 
     private static Stream<Arguments> equalityAndNullCases() {

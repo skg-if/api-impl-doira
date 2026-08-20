@@ -1,6 +1,7 @@
 package org.skgif.doi.medra.mapper;
 
 import java.util.Map;
+import java.util.Optional;
 import org.skgif.doi.generated.model.ProductManifestation;
 import org.skgif.doi.generated.model.ProductManifestationDates;
 import org.skgif.doi.generated.model.ProductManifestationType;
@@ -24,9 +25,9 @@ final class MedraManifestationMapper {
 
     static ProductManifestation manifestation(MedraWork work) {
         return new ProductManifestation()
-                .type(manifestationType(work))
-                .dates(dates(work))
-                .biblio(MedraBiblioMapper.biblio(work));
+                .type(manifestationType(work).orElse(null))
+                .dates(dates(work).orElse(null))
+                .biblio(MedraBiblioMapper.biblio(work).orElse(null));
     }
 
     /**
@@ -36,20 +37,20 @@ final class MedraManifestationMapper {
      * product_type} (always {@code literature}, since only this one schema family is handled).
      *
      * @param work the mEDRA record to read the manifestation type label from
-     * @return the mapped ProductManifestationType, or null if work.workElementName() is null
+     * @return the mapped ProductManifestationType, or Optional.empty() if work.workElementName()
+     *         is null
      */
-    private static ProductManifestationType manifestationType(MedraWork work) {
+    private static Optional<ProductManifestationType> manifestationType(MedraWork work) {
         if (work.workElementName() == null) {
-            return null;
+            return Optional.empty();
         }
-        return new ProductManifestationType()
+        return Optional.of(new ProductManifestationType()
                 .definedIn(ONIX_SERIAL_ARTICLE_SPEC_URL)
-                .labels(Map.of("en", work.workElementName()));
+                .labels(Map.of("en", work.workElementName())));
     }
 
-    private static ProductManifestationDates dates(MedraWork work) {
-        String iso = isoDate(work.publicationDate());
-        return iso == null ? null : new ProductManifestationDates().addPublicationItem(iso);
+    private static Optional<ProductManifestationDates> dates(MedraWork work) {
+        return isoDate(work.publicationDate()).map(iso -> new ProductManifestationDates().addPublicationItem(iso));
     }
 
     /**
@@ -60,13 +61,14 @@ final class MedraManifestationMapper {
      * across all 6 fixtures.
      *
      * @param raw the raw mEDRA PublicationDate digit string, or null
-     * @return the ISO-normalized date (year, year-month, or full date), or null if unrecognized
+     * @return the ISO-normalized date (year, year-month, or full date), or Optional.empty() if
+     *         unrecognized
      */
-    private static String isoDate(String raw) {
+    private static Optional<String> isoDate(String raw) {
         if (raw == null) {
-            return null;
+            return Optional.empty();
         }
-        return switch (raw.length()) {
+        String normalized = switch (raw.length()) {
             case YEAR_LENGTH -> raw;
             case YEAR_MONTH_LENGTH ->
                 raw.substring(0, YEAR_LENGTH) + "-" + raw.substring(YEAR_LENGTH, YEAR_MONTH_LENGTH);
@@ -75,5 +77,6 @@ final class MedraManifestationMapper {
                         "-" + raw.substring(YEAR_MONTH_LENGTH, FULL_DATE_LENGTH);
             default -> null;
         };
+        return Optional.ofNullable(normalized);
     }
 }

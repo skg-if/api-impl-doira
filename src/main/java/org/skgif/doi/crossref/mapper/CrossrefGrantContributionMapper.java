@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.skgif.doi.crossref.dto.CrossrefAffiliation;
 import org.skgif.doi.crossref.dto.CrossrefInvestigator;
 import org.skgif.doi.crossref.dto.CrossrefProject;
@@ -46,13 +47,13 @@ final class CrossrefGrantContributionMapper {
 
     private static GrantAllOfContributions investigatorContribution(String doi, CrossrefInvestigator investigator,
             GrantContribution.RolesEnum role) {
-        String bareOrcid = CrossrefContributionMapper.bareOrcid(investigator.orcid());
+        Optional<String> bareOrcid = CrossrefContributionMapper.bareOrcid(investigator.orcid());
         String name = CrossrefContributionMapper.displayName(investigator.given(), investigator.family());
-        List<PersonLiteAllOfIdentifiers> orcidIdentifiers = bareOrcid != null ?
-                List.of(new PersonLiteAllOfIdentifiers().scheme("orcid").value(bareOrcid)) :
-                null;
-        PersonLite by = EntityRefs.personRef(doi, name, investigator.given(), investigator.family(), bareOrcid,
-                orcidIdentifiers);
+        List<PersonLiteAllOfIdentifiers> orcidIdentifiers = bareOrcid
+                .map(orcid -> List.of(new PersonLiteAllOfIdentifiers().scheme("orcid").value(orcid)))
+                .orElse(null);
+        PersonLite by = EntityRefs.personRef(doi, name, investigator.given(), investigator.family(),
+                bareOrcid.orElse(null), orcidIdentifiers);
         return new GrantContribution()
                 .by(by)
                 .declaredAffiliations(grantAffiliations(doi, investigator.affiliation()))
@@ -68,7 +69,7 @@ final class CrossrefGrantContributionMapper {
             if (affiliation.name() == null) {
                 continue;
             }
-            String ror = CrossrefContributionMapper.firstRor(affiliation.id());
+            String ror = CrossrefContributionMapper.firstRor(affiliation.id()).orElse(null);
             result.add(EntityRefs.organisationRef(doi, affiliation.name(), ror));
         }
         return result;

@@ -35,26 +35,26 @@ final class DataCiteGrantMapper {
     private DataCiteGrantMapper() {
     }
 
-    static Organisation grantFundingAgency(String doi, Optional<DataCiteCreator> fundingAgencyCreator,
+    static Optional<Organisation> grantFundingAgency(String doi, Optional<DataCiteCreator> fundingAgencyCreator,
             String publisher) {
         if (fundingAgencyCreator.isPresent()) {
             DataCiteCreator creator = fundingAgencyCreator.get();
-            String ror = DataCiteContributionMapper.firstRor(creator.nameIdentifiers());
-            return new Organisation()
+            String ror = DataCiteContributionMapper.firstRor(creator.nameIdentifiers()).orElse(null);
+            return Optional.of(new Organisation()
                     .localIdentifier(ExternalIdentifierUrls.ROR_BASE_URL + ror)
                     .name(creator.name())
                     .entityType(EntityTypes.ORGANISATION)
-                    .identifiers(List.of(new AgentAllOfIdentifiers().scheme(SCHEME_ROR).value(ror)));
+                    .identifiers(List.of(new AgentAllOfIdentifiers().scheme(SCHEME_ROR).value(ror))));
         }
         // No ROR-bearing creator to identify the funder - fall back to the record's own
         // publisher, same convention used for Product.manifestations[].biblio.hosting_data_source.
         if (publisher == null) {
-            return null;
+            return Optional.empty();
         }
-        return new Organisation()
+        return Optional.of(new Organisation()
                 .localIdentifier(MapperTextUtils.otf(doi, publisher))
                 .name(publisher)
-                .entityType(EntityTypes.ORGANISATION);
+                .entityType(EntityTypes.ORGANISATION));
     }
 
     static List<GrantAllOfContributions> grantContributions(String doi, List<DataCiteCreator> creators,
@@ -84,7 +84,7 @@ final class DataCiteGrantMapper {
             String familyName, List<DataCiteNameIdentifier> nameIdentifiers,
             boolean organizational) {
         if (organizational) {
-            String ror = DataCiteContributionMapper.firstRor(nameIdentifiers);
+            String ror = DataCiteContributionMapper.firstRor(nameIdentifiers).orElse(null);
             Organisation by = new Organisation()
                     .localIdentifier(ror != null ?
                             ExternalIdentifierUrls.ROR_BASE_URL + ror :
@@ -96,7 +96,7 @@ final class DataCiteGrantMapper {
             }
             return by;
         }
-        String orcid = DataCiteContributionMapper.firstOrcid(nameIdentifiers);
+        String orcid = DataCiteContributionMapper.firstOrcid(nameIdentifiers).orElse(null);
         List<PersonLiteAllOfIdentifiers> identifiers = DataCiteContributionMapper.orcidIdentifiers(nameIdentifiers);
         return EntityRefs.personRef(doi, name, givenName, familyName, orcid, identifiers);
     }
@@ -135,7 +135,7 @@ final class DataCiteGrantMapper {
             if (!NAME_TYPE_ORGANIZATIONAL.equals(contributor.nameType()) || contributor.name() == null) {
                 continue;
             }
-            String ror = DataCiteContributionMapper.firstRor(contributor.nameIdentifiers());
+            String ror = DataCiteContributionMapper.firstRor(contributor.nameIdentifiers()).orElse(null);
             DataCiteAffiliation asAffiliation = ror != null ?
                     new DataCiteAffiliation(contributor.name(), ExternalIdentifierUrls.ROR_BASE_URL + ror,
                             SCHEME_ROR_UPPER) :

@@ -2,6 +2,7 @@ package org.skgif.doi.crossref.mapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.skgif.doi.crossref.dto.CrossrefFunder;
 import org.skgif.doi.crossref.dto.CrossrefFunding;
 import org.skgif.doi.crossref.dto.CrossrefIdEntry;
@@ -71,9 +72,9 @@ final class CrossrefFundingMapper {
      * @return an Organisation for funder, identified by its Funder Registry DOI when present
      */
     Organisation fundingAgencyOrg(String doi, CrossrefFunder funder) {
-        String funderDoi = funderDoi(funder);
-        String doiLocalIdentifier = funderDoi != null ? localIdentifiers.toFullLocalIdentifier(funderDoi) : null;
-        return EntityRefs.organisationRef(doi, funder.name(), null, doiLocalIdentifier, funderDoi);
+        Optional<String> funderDoi = funderDoi(funder);
+        String doiLocalIdentifier = funderDoi.map(localIdentifiers::toFullLocalIdentifier).orElse(null);
+        return EntityRefs.organisationRef(doi, funder.name(), null, doiLocalIdentifier, funderDoi.orElse(null));
     }
 
     /**
@@ -82,20 +83,19 @@ final class CrossrefFundingMapper {
      * (verified live against a real grant record) - check both.
      *
      * @param funder the Crossref funder record to read a Funder Registry DOI from
-     * @return the funder's Funder Registry DOI, or null if it has none
+     * @return the funder's Funder Registry DOI, or Optional.empty() if it has none
      */
-    private String funderDoi(CrossrefFunder funder) {
+    private Optional<String> funderDoi(CrossrefFunder funder) {
         if (funder.doi() != null) {
-            return funder.doi();
+            return Optional.of(funder.doi());
         }
         if (funder.id() == null) {
-            return null;
+            return Optional.empty();
         }
         return funder.id().stream()
                 .filter(entry -> "DOI".equalsIgnoreCase(entry.idType()) && entry.id() != null)
                 .map(CrossrefIdEntry::id)
-                .findFirst()
-                .orElse(null);
+                .findFirst();
     }
 
     /**
@@ -107,16 +107,17 @@ final class CrossrefFundingMapper {
      *                        Funder Registry DOI
      * @param primaryFunding  the grant's first project's first funding entry, or null
      * @param topLevelFunders the grant record's top-level funder[], or null
-     * @return the mapped Organisation, or null if no funder name is available
+     * @return the mapped Organisation, or Optional.empty() if no funder name is available
      */
-    Organisation grantFundingAgency(String doi, CrossrefFunding primaryFunding, List<CrossrefFunder> topLevelFunders) {
+    Optional<Organisation> grantFundingAgency(String doi, CrossrefFunding primaryFunding,
+            List<CrossrefFunder> topLevelFunders) {
         CrossrefFunder funder = primaryFunding != null ? primaryFunding.funder() : null;
         if (funder == null && topLevelFunders != null && !topLevelFunders.isEmpty()) {
             funder = topLevelFunders.getFirst();
         }
         if (funder == null || funder.name() == null) {
-            return null;
+            return Optional.empty();
         }
-        return fundingAgencyOrg(doi, funder);
+        return Optional.of(fundingAgencyOrg(doi, funder));
     }
 }

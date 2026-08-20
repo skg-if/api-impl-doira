@@ -97,7 +97,7 @@ public class CrossrefToSkgIfMapper implements GrantCapableMapper<CrossrefWork> {
                 .contributions(CrossrefContributionMapper.contributions(work))
                 .manifestations(List.of(manifestationMapper.manifestation(work, venueMetadata)))
                 .funding(fundingMapper.funding(work))
-                .relatedProducts(relatedProductMapper.relatedProducts(work));
+                .relatedProducts(relatedProductMapper.relatedProducts(work).orElse(null));
     }
 
     /**
@@ -131,12 +131,12 @@ public class CrossrefToSkgIfMapper implements GrantCapableMapper<CrossrefWork> {
                 .titles(grantMapper.grantTitles(projects))
                 .abstracts(grantMapper.grantAbstracts(projects))
                 .grantNumber(work.award())
-                .fundingAgency(grantMapper.grantFundingAgency(work.doi(), primaryFunding, work.funder()))
+                .fundingAgency(grantMapper.grantFundingAgency(work.doi(), primaryFunding, work.funder()).orElse(null))
                 .fundingStream(primaryFunding != null ? primaryFunding.scheme() : null)
-                .fundedAmount(grantMapper.fundedAmount(primaryProject, primaryFunding))
-                .currency(grantMapper.currency(primaryProject, primaryFunding))
-                .duration(grantMapper.duration(primaryProject))
-                .website(grantMapper.website(work))
+                .fundedAmount(grantMapper.fundedAmount(primaryProject, primaryFunding).orElse(null))
+                .currency(grantMapper.currency(primaryProject, primaryFunding).orElse(null))
+                .duration(grantMapper.duration(primaryProject).orElse(null))
+                .website(grantMapper.website(work).orElse(null))
                 .contributions(CrossrefGrantContributionMapper.grantContributions(work.doi(), projects))
                 .beneficiaries(CrossrefGrantContributionMapper.grantBeneficiaries(work.doi(), projects));
     }

@@ -64,9 +64,11 @@ public class CrossrefProductsResource {
     @ConfigProperty(name = "skgif.context.base")
     String fallbackContextBase;
 
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType") //ok https://quarkus.io/guides/config-reference
     @ConfigProperty(name = "crossref.prefix")
     Optional<String> crossrefPrefix;
 
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     @ConfigProperty(name = "crossref.mailto")
     Optional<String> crossrefMailto;
 
@@ -127,10 +129,12 @@ public class CrossrefProductsResource {
             @Context UriInfo uriInfo) {
         String doi = localIdentifiers.toDoi(localIdentifierParam);
 
-        CrossrefWork work;
+        CrossrefWork work = null;
         try {
             CrossrefWorkResponse response = crossrefClient.getWork(doi);
-            work = response != null ? response.message() : null;
+            if (response != null) {
+                work = response.message();
+            }
         } catch (WebApplicationException e) {
             if (e.getResponse().getStatus() == Response.Status.NOT_FOUND.getStatusCode()) {
                 return notFound(localIdentifierParam);
@@ -147,7 +151,7 @@ public class CrossrefProductsResource {
 
         CrossrefVenueMetadata venueMetadata = null;
         if (CrossrefTypeMapping.isXmlVenueEnrichable(work)) {
-            venueMetadata = fetchVenueMetadata(doi);
+            venueMetadata = fetchVenueMetadata(doi).orElse(null);
         }
         Product product = mapper.toProduct(work, venueMetadata);
         String selfHref = JsonLdResponses.selfLink(uriInfo, RESOURCE_PATH, doi);
@@ -284,16 +288,17 @@ public class CrossrefProductsResource {
      * response over an enrichment call.
      *
      * @param doi the DOI to fetch XML venue metadata for
-     * @return the parsed venue metadata, or null if the fetch/parse fails or finds nothing
+     * @return the parsed venue metadata, or Optional.empty() if the fetch/parse fails or finds
+     *         nothing
      */
-    private CrossrefVenueMetadata fetchVenueMetadata(String doi) {
+    private Optional<CrossrefVenueMetadata> fetchVenueMetadata(String doi) {
         try (Response response = crossrefXmlTransformClient.getXmlTransform(doi)) {
             if (response.getStatus() != Response.Status.OK.getStatusCode()) {
-                return null;
+                return Optional.empty();
             }
-            return CrossrefVenueMetadataXmlParser.parse(response.readEntity(String.class)).orElse(null);
+            return CrossrefVenueMetadataXmlParser.parse(response.readEntity(String.class));
         } catch (RuntimeException e) {
-            return null;
+            return Optional.empty();
         }
     }
 }

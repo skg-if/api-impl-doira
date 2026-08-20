@@ -2,6 +2,7 @@ package org.skgif.doi.medra.mapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.skgif.doi.generated.model.ProductContribution;
 import org.skgif.doi.generated.model.ProductContributionBy;
 import org.skgif.doi.medra.dto.MedraContributor;
@@ -14,6 +15,8 @@ import org.skgif.doi.util.EntityRefs;
  */
 final class MedraContributionMapper {
 
+    private static final int SPLIT_INVERTED_PARTS = 2;
+
     private MedraContributionMapper() {
     }
 
@@ -24,12 +27,12 @@ final class MedraContributionMapper {
         List<ProductContribution> contributions = new ArrayList<>();
         int rank = 1;
         for (MedraContributor contributor : work.contributors()) {
-            ProductContributionBy by = personRef(work.doi(), contributor);
-            if (by == null) {
+            Optional<ProductContributionBy> by = personRef(work.doi(), contributor);
+            if (by.isEmpty()) {
                 continue;
             }
             contributions.add(new ProductContribution()
-                    .by(by)
+                    .by(by.get())
                     .rank(rank++)
                     .role("A01".equals(contributor.role()) ? ProductContribution.RoleEnum.AUTHOR : null));
         }
@@ -52,11 +55,12 @@ final class MedraContributionMapper {
      *
      * @param doi         the owning record's DOI, used to build a deterministic otf id
      * @param contributor the ONIX-for-DOI contributor to derive a person reference from
-     * @return the mapped PersonLite, or null if contributor carries none of the three name shapes
+     * @return the mapped PersonLite, or Optional.empty() if contributor carries none of the three
+     *         name shapes
      */
-    private static ProductContributionBy personRef(String doi, MedraContributor contributor) {
-        String givenName;
-        String familyName;
+    private static Optional<ProductContributionBy> personRef(String doi, MedraContributor contributor) {
+        String givenName = null;
+        String familyName = null;
         String name;
         if (contributor.namesBeforeKey() != null && contributor.keyNames() != null) {
             givenName = contributor.namesBeforeKey();
@@ -65,17 +69,19 @@ final class MedraContributionMapper {
         } else if (contributor.personName() != null) {
             name = contributor.personName();
             String[] split = splitInverted(contributor.personNameInverted());
-            familyName = split.length == 2 ? split[0] : null;
-            givenName = split.length == 2 ? split[1] : null;
+            if (split.length == SPLIT_INVERTED_PARTS) {
+                familyName = split[0];
+                givenName = split[1];
+            }
         } else if (contributor.personNameInverted() != null) {
             String[] split = splitInverted(contributor.personNameInverted());
             familyName = split[0];
             givenName = split[1];
             name = displayName(givenName, familyName);
         } else {
-            return null;
+            return Optional.empty();
         }
-        return EntityRefs.personRef(doi, name, givenName, familyName, null, null);
+        return Optional.of(EntityRefs.personRef(doi, name, givenName, familyName, null, null));
     }
 
     private static String displayName(String given, String family) {
@@ -98,8 +104,8 @@ final class MedraContributionMapper {
         if (inverted == null) {
             return new String[0];
         }
-        String[] parts = inverted.split(",\\s*", 2);
-        return parts.length == 2 ? new String[]{parts[0].trim(), parts[1].trim()} :
+        String[] parts = inverted.split(",\\s*", SPLIT_INVERTED_PARTS);
+        return parts.length == SPLIT_INVERTED_PARTS ? new String[]{parts[0].trim(), parts[1].trim()} :
                 new String[]{parts[0].trim(), null};
     }
 }

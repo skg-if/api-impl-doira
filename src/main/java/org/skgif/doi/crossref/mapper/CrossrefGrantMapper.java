@@ -3,6 +3,7 @@ package org.skgif.doi.crossref.mapper;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import org.skgif.doi.crossref.dto.CrossrefAmount;
 import org.skgif.doi.crossref.dto.CrossrefFunder;
 import org.skgif.doi.crossref.dto.CrossrefFunding;
@@ -57,37 +58,41 @@ final class CrossrefGrantMapper {
         return values.isEmpty() ? Map.of() : Map.of("en", String.join("\n\n", values));
     }
 
-    Organisation grantFundingAgency(String doi, CrossrefFunding primaryFunding, List<CrossrefFunder> topLevelFunders) {
+    Optional<Organisation> grantFundingAgency(String doi, CrossrefFunding primaryFunding,
+            List<CrossrefFunder> topLevelFunders) {
         return fundingMapper.grantFundingAgency(doi, primaryFunding, topLevelFunders);
     }
 
-    Integer fundedAmount(CrossrefProject project, CrossrefFunding funding) {
-        CrossrefAmount amount = awardAmount(project, funding);
-        return amount != null && amount.amount() != null ? amount.amount().intValue() : null;
+    Optional<Integer> fundedAmount(CrossrefProject project, CrossrefFunding funding) {
+        return awardAmount(project, funding)
+                .filter(amount -> amount.amount() != null)
+                .map(amount -> amount.amount().intValue());
     }
 
-    String currency(CrossrefProject project, CrossrefFunding funding) {
-        CrossrefAmount amount = awardAmount(project, funding);
-        return amount != null ? amount.currency() : null;
+    Optional<String> currency(CrossrefProject project, CrossrefFunding funding) {
+        return awardAmount(project, funding).map(CrossrefAmount::currency);
     }
 
-    private CrossrefAmount awardAmount(CrossrefProject project, CrossrefFunding funding) {
+    private Optional<CrossrefAmount> awardAmount(CrossrefProject project, CrossrefFunding funding) {
         if (funding != null && funding.awardAmount() != null) {
-            return funding.awardAmount();
+            return Optional.of(funding.awardAmount());
         }
-        return project != null ? project.awardAmount() : null;
+        return Optional.ofNullable(project != null ? project.awardAmount() : null);
     }
 
-    GrantAllOfDuration duration(CrossrefProject project) {
+    Optional<GrantAllOfDuration> duration(CrossrefProject project) {
         if (project == null) {
-            return null;
+            return Optional.empty();
         }
-        String start = project.awardStart() != null ? project.awardStart().toIsoDate() : null;
-        String end = project.awardEnd() != null ? project.awardEnd().toIsoDate() : null;
-        return start == null && end == null ? null : new GrantAllOfDuration().start(start).end(end);
+        String start = project.awardStart() != null ? project.awardStart().toIsoDate().orElse(null) : null;
+        String end = project.awardEnd() != null ? project.awardEnd().toIsoDate().orElse(null) : null;
+        return start == null && end == null ? Optional.empty() : Optional.of(new GrantAllOfDuration()
+                .start(start).end(end));
     }
 
-    String website(CrossrefWork work) {
-        return work.resource() != null && work.resource().primary() != null ? work.resource().primary().url() : null;
+    Optional<String> website(CrossrefWork work) {
+        return Optional.ofNullable(
+                work.resource() != null && work.resource().primary() != null ? work.resource().primary().url() :
+                        null);
     }
 }

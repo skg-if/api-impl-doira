@@ -1,6 +1,7 @@
 package org.skgif.doi.util;
 
 import java.util.List;
+import java.util.Optional;
 import org.skgif.doi.generated.model.ProductManifestationAccessRights;
 
 /**
@@ -20,15 +21,15 @@ public final class LicenceMapper {
     /**
      * @param licenceUrls the record's licence/rights URLs, in provider order, or null
      * @return an OPEN access-rights status if any URL (nulls tolerated per-entry) is a Creative
-     *         Commons licence, else null
+     *         Commons licence, else Optional.empty() if licenceUrls is null/empty
      */
-    public static ProductManifestationAccessRights accessRights(List<String> licenceUrls) {
+    public static Optional<ProductManifestationAccessRights> accessRights(List<String> licenceUrls) {
         if (licenceUrls == null || licenceUrls.isEmpty()) {
-            return null;
+            return Optional.empty();
         }
         boolean open = licenceUrls.stream().anyMatch(LicenceMapper::isOpenLicence);
-        return new ProductManifestationAccessRights()
-                .status(open ? ProductManifestationAccessRights.StatusEnum.OPEN : null);
+        return Optional.of(new ProductManifestationAccessRights()
+                .status(open ? ProductManifestationAccessRights.StatusEnum.OPEN : null));
     }
 
     private static boolean isOpenLicence(String licenceUrl) {
@@ -37,14 +38,14 @@ public final class LicenceMapper {
 
     /**
      * @param licenceUrls the record's licence/rights URLs, in provider order, or null
-     * @return the first entry verbatim - which may itself be null - or null if licenceUrls is
-     *         null/empty. Deliberately does not skip forward to a later non-null entry: only the
-     *         first-listed licence is ever reported here.
+     * @return the first entry verbatim, or Optional.empty() if licenceUrls is null/empty, or if
+     *         its first entry is itself null. Deliberately does not skip forward to a later
+     *         non-null entry: only the first-listed licence is ever reported here.
      */
-    public static String licence(List<String> licenceUrls) {
+    public static Optional<String> licence(List<String> licenceUrls) {
         if (licenceUrls == null || licenceUrls.isEmpty()) {
-            return null;
+            return Optional.empty();
         }
-        return licenceUrls.getFirst();
+        return Optional.ofNullable(licenceUrls.getFirst());
     }
 }

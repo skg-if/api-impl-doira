@@ -3,6 +3,7 @@ package org.skgif.doi.datacite.mapper;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
 import org.skgif.doi.datacite.dto.DataCiteDate;
@@ -53,33 +54,29 @@ final class DataCiteManifestationMapper {
 
     static ProductManifestation manifestation(DataCiteAttributes attributes) {
         return new ProductManifestation()
-                .type(manifestationType(attributes))
-                .dates(dates(attributes))
-                .accessRights(accessRights(attributes))
-                .licence(licence(attributes))
+                .type(manifestationType(attributes).orElse(null))
+                .dates(dates(attributes).orElse(null))
+                .accessRights(accessRights(attributes).orElse(null))
+                .licence(licence(attributes).orElse(null))
                 .version(attributes.version())
-                .biblio(DataCiteBiblioMapper.biblio(attributes));
+                .biblio(DataCiteBiblioMapper.biblio(attributes).orElse(null));
     }
 
-    private static ProductManifestationType manifestationType(DataCiteAttributes attributes) {
-        String resourceType = resourceTypeGeneral(attributes);
-        if (resourceType == null) {
-            return null;
-        }
-        return new ProductManifestationType()
+    private static Optional<ProductManifestationType> manifestationType(DataCiteAttributes attributes) {
+        return resourceTypeGeneral(attributes).map(resourceType -> new ProductManifestationType()
                 .definedIn(DATACITE_RESOURCE_TYPE_SCHEMA_URL)
-                .labels(Map.of("en", resourceType));
+                .labels(Map.of("en", resourceType)));
     }
 
-    static String resourceTypeGeneral(DataCiteAttributes attributes) {
-        return attributes.types() != null ? attributes.types().resourceTypeGeneral() : null;
+    static Optional<String> resourceTypeGeneral(DataCiteAttributes attributes) {
+        return Optional.ofNullable(attributes.types() != null ? attributes.types().resourceTypeGeneral() : null);
     }
 
-    private static ProductManifestationDates dates(DataCiteAttributes attributes) {
+    private static Optional<ProductManifestationDates> dates(DataCiteAttributes attributes) {
         ProductManifestationDates dates = new ProductManifestationDates();
         boolean any = applyDatesArray(dates, attributes);
         any |= applyFallbackDates(dates, attributes);
-        return any ? dates : null;
+        return any ? Optional.of(dates) : Optional.empty();
     }
 
     private static boolean applyDatesArray(ProductManifestationDates dates, DataCiteAttributes attributes) {
@@ -182,11 +179,11 @@ final class DataCiteManifestationMapper {
         return date.length() >= DAY_LENGTH ? date.substring(0, DAY_LENGTH) : date;
     }
 
-    private static ProductManifestationAccessRights accessRights(DataCiteAttributes attributes) {
+    private static Optional<ProductManifestationAccessRights> accessRights(DataCiteAttributes attributes) {
         return LicenceMapper.accessRights(licenceUrls(attributes));
     }
 
-    private static String licence(DataCiteAttributes attributes) {
+    private static Optional<String> licence(DataCiteAttributes attributes) {
         return LicenceMapper.licence(licenceUrls(attributes));
     }
 

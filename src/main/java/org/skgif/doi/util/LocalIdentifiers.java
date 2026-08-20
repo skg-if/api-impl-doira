@@ -1,6 +1,7 @@
 package org.skgif.doi.util;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -31,7 +32,7 @@ public class LocalIdentifiers {
      * "http://" when the config says "https://") - only the exact configured scheme is ever
      * accepted, just with 1-or-more slashes instead of a hardcoded two.
      */
-    private final Pattern collapsedBaseUrlPrefix;
+    private final Optional<Pattern> collapsedBaseUrlPrefix;
 
     /**
      * @param baseUrl the configured local_identifier base URL (e.g. {@code https://doi.org/})
@@ -41,14 +42,14 @@ public class LocalIdentifiers {
         this.collapsedBaseUrlPrefix = buildCollapsedBaseUrlPrefix(baseUrl);
     }
 
-    private static Pattern buildCollapsedBaseUrlPrefix(String baseUrl) {
+    private static Optional<Pattern> buildCollapsedBaseUrlPrefix(String baseUrl) {
         int schemeEnd = baseUrl.indexOf(SCHEME_SEPARATOR);
         if (schemeEnd == -1) {
-            return null;
+            return Optional.empty();
         }
         String scheme = baseUrl.substring(0, schemeEnd + 1); // e.g. "https:"
         String afterAuthoritySlashes = baseUrl.substring(schemeEnd + SCHEME_SEPARATOR.length()); // e.g. "doi.org/"
-        return Pattern.compile(Pattern.quote(scheme) + "/{1,}" + Pattern.quote(afterAuthoritySlashes));
+        return Optional.of(Pattern.compile(Pattern.quote(scheme) + "/{1,}" + Pattern.quote(afterAuthoritySlashes)));
     }
 
     /**
@@ -63,8 +64,8 @@ public class LocalIdentifiers {
         if (pathParam.startsWith(baseUrl)) {
             return pathParam.substring(baseUrl.length());
         }
-        if (collapsedBaseUrlPrefix != null) {
-            Matcher matcher = collapsedBaseUrlPrefix.matcher(pathParam);
+        if (collapsedBaseUrlPrefix.isPresent()) {
+            Matcher matcher = collapsedBaseUrlPrefix.get().matcher(pathParam);
             if (matcher.lookingAt()) {
                 return pathParam.substring(matcher.end());
             }

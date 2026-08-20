@@ -2,6 +2,7 @@ package org.skgif.doi.crossref.mapper;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.skgif.doi.crossref.dto.CrossrefDate;
 import org.skgif.doi.crossref.dto.CrossrefLicense;
 import org.skgif.doi.crossref.dto.CrossrefUpdateTo;
@@ -40,23 +41,23 @@ final class CrossrefManifestationMapper {
 
     ProductManifestation manifestation(CrossrefWork work, CrossrefVenueMetadata venueMetadata) {
         return new ProductManifestation()
-                .type(manifestationType(work))
-                .dates(dates(work))
-                .accessRights(accessRights(work))
-                .licence(licence(work))
-                .biblio(biblioMapper.biblio(work, venueMetadata));
+                .type(manifestationType(work).orElse(null))
+                .dates(dates(work).orElse(null))
+                .accessRights(accessRights(work).orElse(null))
+                .licence(licence(work).orElse(null))
+                .biblio(biblioMapper.biblio(work, venueMetadata).orElse(null));
     }
 
-    private ProductManifestationType manifestationType(CrossrefWork work) {
-        return work.type() != null ?
+    private Optional<ProductManifestationType> manifestationType(CrossrefWork work) {
+        return Optional.ofNullable(work.type() != null ?
                 new ProductManifestationType()
                         .propertyClass(CROSSREF_TYPES_BASE_URL + work.type())
                         .definedIn(CROSSREF_TYPES_BASE_URL)
                         .labels(Map.of("en", work.type())) :
-                null;
+                null);
     }
 
-    private ProductManifestationDates dates(CrossrefWork work) {
+    private Optional<ProductManifestationDates> dates(CrossrefWork work) {
         ProductManifestationDates dates = new ProductManifestationDates();
         boolean any = false;
         any |= addDateItem(dates, ManifestationDateSetters.CREATION, work.created());
@@ -75,18 +76,18 @@ final class CrossrefManifestationMapper {
                 any |= addDateItem(dates, skgIfType, update.updated());
             }
         }
-        return any ? dates : null;
+        return any ? Optional.of(dates) : Optional.empty();
     }
 
     private boolean addDateItem(ProductManifestationDates dates, String type, CrossrefDate date) {
-        return date != null && ManifestationDateSetters.addDateItem(dates, type, date.toIsoDate());
+        return date != null && ManifestationDateSetters.addDateItem(dates, type, date.toIsoDate().orElse(null));
     }
 
-    private ProductManifestationAccessRights accessRights(CrossrefWork work) {
+    private Optional<ProductManifestationAccessRights> accessRights(CrossrefWork work) {
         return LicenceMapper.accessRights(licenceUrls(work));
     }
 
-    private String licence(CrossrefWork work) {
+    private Optional<String> licence(CrossrefWork work) {
         return LicenceMapper.licence(licenceUrls(work));
     }
 

@@ -79,10 +79,12 @@ public class CrossrefJournalDoiResolver {
             return Optional.empty();
         }
         // computeIfAbsent never stores a null mapping function result, so a miss/failure
-        // (fetchJournalDoi returning null) is naturally retried next time rather than cached.
+        // (fetchJournalDoi returning Optional.empty(), unwrapped to null right here at the
+        // computeIfAbsent boundary) is naturally retried next time rather than cached.
         try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
             List<Future<String>> futures = candidates.stream()
-                    .map(issn -> executor.submit(() -> cache.computeIfAbsent(issn, this::fetchJournalDoi)))
+                    .map(issn -> executor.submit(() -> cache.computeIfAbsent(issn,
+                            i -> fetchJournalDoi(i).orElse(null))))
                     .toList();
             for (Future<String> future : futures) {
                 try {
@@ -103,18 +105,18 @@ public class CrossrefJournalDoiResolver {
         }
     }
 
-    private String fetchJournalDoi(String issn) {
+    private Optional<String> fetchJournalDoi(String issn) {
         try {
             CrossrefWorkListResponse response = crossrefClient.listWorks(
                     "type:journal,issn:" + issn, null, null, 1, null, mailto);
             if (response == null || response.message() == null || response.message().items() == null ||
                     response.message().items().isEmpty()) {
-                return null;
+                return Optional.empty();
             }
             CrossrefWork journal = response.message().items().getFirst();
-            return journal.doi();
+            return Optional.ofNullable(journal.doi());
         } catch (RuntimeException e) {
-            return null;
+            return Optional.empty();
         }
     }
 }
