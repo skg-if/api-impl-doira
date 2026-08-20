@@ -43,8 +43,15 @@ final class CrossrefTitleMapper {
         return Optional.ofNullable(work.abstractText())
                 .map(text -> text.replaceAll("<[^>]+>", "").trim())
                 .filter(stripped -> !stripped.isEmpty())
-                .map(stripped -> Map.of("en", List.of(stripped)))
+                .map(CrossrefTitleMapper::toSingleEnglishValue)
                 .orElseGet(Map::of);
+    }
+
+    // Extracted to a named method (rather than a lambda) with an explicit String parameter -
+    // PMD 7.7.0's ConfusingArgumentToVarargsMethod check can't resolve the inferred type of a
+    // lambda parameter passed straight into List.of/Map.of, and flags a false positive.
+    private static Map<String, List<String>> toSingleEnglishValue(String value) {
+        return Map.of("en", List.of(value));
     }
 
     static List<ProductAllOfTopics> topics(CrossrefWork work) {

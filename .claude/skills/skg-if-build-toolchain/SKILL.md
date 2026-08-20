@@ -109,28 +109,41 @@ mvn -q -B test -Dtest=CrossrefToSkgIfMapperTest
 streams every stack trace straight into the command's captured output - which is
 read in full every time. For a build/test run that might fail with a lot of
 output (many broken tests, a cascading compile error), redirect to a log file and
-search it instead of capturing everything directly:
+search it instead of capturing everything directly.
+
+**Always write the log outside `target/`** - the session scratchpad dir, or the
+repo root - never a path under `target/` itself, `clean` or not. It costs
+nothing to get in this habit, and it structurally rules out the failure mode
+below rather than relying on remembering an exception for the `clean` case:
 
 ```powershell
-mvn -q -B test *> target\build.log
-Select-String -Path target\build.log -Pattern 'ERROR|BUILD FAILURE|FAILED|Tests run:.*Failures: [1-9]|Tests run:.*Errors: [1-9]'
+mvn -q -B test *> build.log
+Select-String -Path build.log -Pattern 'ERROR|BUILD FAILURE|FAILED|Tests run:.*Failures: [1-9]|Tests run:.*Errors: [1-9]'
 ```
 
-Only `Get-Content target\build.log` in full (or open the specific `.txt`/`.xml`
-report below) once the matched lines identify which class/line needs the full
-trace. On a clean build this adds one extra command but costs nothing; on a
-large failure it avoids paying for output that's mostly irrelevant duplication.
+(`build.log` here lands in the repo root, since `mvn` already runs from there;
+the session scratchpad directory works too - just never a path under `target/`).
+Only `Get-Content` the log in full (or open the specific
+`.txt`/`.xml` report below) once the matched lines identify which class/line
+needs the full trace. On a clean build this adds one extra command but costs
+nothing; on a large failure it avoids paying for output that's mostly
+irrelevant duplication.
 
-**Never redirect into a path under `target/` when the command includes
-`clean`** (e.g. don't turn this into `mvn ... clean test *> target\build.log`).
-`clean` deletes the entire `target/` directory early in the run, including the
-log file the shell already has open for writing - on Unix-like shells (git-bash)
-the process keeps writing to the now-unlinked file and `mvn` still exits `0`,
-but the directory entry is gone once `clean` finishes recreating `target/`. The
-symptom is confusing: the build genuinely passed (exit `0`), yet a later
-`tail`/`Get-Content` on that same path fails with "No such file or directory".
-If a clean run's output needs capturing, write the log outside `target/`
-(repo root, or the session scratchpad dir) instead.
+**Why it matters specifically when the command includes `clean`:** `clean`
+deletes the entire `target/` directory early in the run, including a log file
+under `target/` the shell already has open for writing - and each OS then fails
+in a different, equally-confusing direction. On Unix-like shells (git-bash) the
+process keeps writing to the now-unlinked file and `mvn` still exits `0`, but
+the directory entry is gone once `clean` finishes recreating `target/`: the
+build genuinely passed, yet a later `tail`/`Get-Content` on that same path
+fails with "No such file or directory". On PowerShell, Windows instead keeps a
+lock on the still-open file, so `maven-clean-plugin` can't delete it and the
+build **fails outright** with `[ERROR] Failed to execute goal
+...:maven-clean-plugin:...:clean (default-clean) ... Failed to delete
+C:\...\target\build.log -> [Help 1]` - a real non-zero exit that reads exactly
+like an unrelated build/PMD/test problem, when the actual code under test was
+never even reached. Writing the log outside `target/` (as above) avoids both
+failure modes entirely - there is no exception case to remember.
 
 ### Reading results afterward - use the `.txt` reports, not the `.xml` ones
 

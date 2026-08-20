@@ -45,6 +45,44 @@ record of what the skill used to get wrong.
 
 ---
 
+## `mvn clean test *> target\build.log` fails outright on PowerShell (not just silently loses the log)
+
+- Date: 2026-08-21
+- Skill: `skg-if-build-toolchain/SKILL.md`
+- Symptom: ran `mvn -q -B clean test *> C:\Puma\git\puma-skg-if-api\target\build-full.log`
+  in PowerShell after finishing an unrelated code change. The command exited 1
+  with `[ERROR] Failed to execute goal
+  org.apache.maven.plugins:maven-clean-plugin:3.2.0:clean (default-clean) on
+  project puma-skg-if-api: Failed to clean project: Failed to delete
+  C:\Puma\git\puma-skg-if-api\target\build-full.log -> [Help 1]`. This looked
+  like the build itself had failed, prompting a second full run before
+  realizing the actual code was never even compiled/tested.
+- Root cause: the skill already documents "never redirect into a path under
+  `target/` when the command includes `clean`", but only describes the
+  Unix/git-bash symptom (silent success, log file missing afterward). On
+  PowerShell/Windows the same mistake produces the opposite-looking but
+  equally misleading symptom: the OS holds a lock on the still-open log file,
+  so `maven-clean-plugin` can't delete it and `mvn` fails outright with a
+  `maven-clean-plugin`/"Failed to delete" error - which reads exactly like a
+  real build/PMD/test problem worth debugging, wasting a full extra
+  clean-test cycle (this repo's tests take several minutes) before the actual
+  cause (the redirect path, not the code change) was identified.
+- Fix: the original fix only added a PowerShell-specific paragraph describing
+  the symptom - reactive, not preventive: it still required hitting the
+  failure and recognizing it after the fact. Replaced that with a preventive
+  fix in [`skg-if-build-toolchain/SKILL.md`](skg-if-build-toolchain/SKILL.md):
+  the "Large failures: redirect to a file" section's own copyable example now
+  always writes the log outside `target/` (e.g. `mvn -q -B test *>
+  build.log` from the repo root) regardless of whether `clean` is in the
+  command, instead of showing a `target\build.log` example plus a separate
+  warning not to combine it with `clean`. Structurally ruling out ever
+  redirecting into `target/` removes the exception to remember - the
+  git-bash/PowerShell symptom explanation is kept, but only as the "why",
+  not as something to still watch for.
+- Status: Fixed
+
+---
+
 ## Unquoted `-Dgolden.regenerate=true` breaks the PowerShell parser
 
 - Date: 2026-08-20

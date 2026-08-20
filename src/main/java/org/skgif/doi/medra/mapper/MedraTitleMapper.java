@@ -38,7 +38,14 @@ final class MedraTitleMapper {
 
     static Map<String, List<String>> abstracts(MedraWork work) {
         return Optional.ofNullable(work.abstractText())
-                .map(text -> Map.of("en", List.of(text)))
+                .map(MedraTitleMapper::toSingleEnglishValue)
                 .orElseGet(Map::of);
+    }
+
+    // Extracted to a named method (rather than a lambda) with an explicit String parameter -
+    // PMD 7.7.0's ConfusingArgumentToVarargsMethod check can't resolve the inferred type of a
+    // lambda parameter passed straight into List.of/Map.of, and flags a false positive.
+    private static Map<String, List<String>> toSingleEnglishValue(String value) {
+        return Map.of("en", List.of(value));
     }
 }
