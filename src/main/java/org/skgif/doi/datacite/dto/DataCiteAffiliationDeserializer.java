@@ -14,8 +14,6 @@ import java.io.IOException;
  */
 class DataCiteAffiliationDeserializer extends JsonDeserializer<DataCiteAffiliation> {
 
-    // Fixed Jackson JsonDeserializer<T> contract - must return T (or throw), never Optional<T>.
-    @SuppressWarnings("PMD.ReturnNullConsiderOptional")
     @Override
     public DataCiteAffiliation deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
         JsonNode node = p.readValueAsTree();
@@ -26,6 +24,7 @@ class DataCiteAffiliationDeserializer extends JsonDeserializer<DataCiteAffiliati
                     node.path("name").asText(null), node.path("affiliationIdentifier").asText(null), node.path(
                             "affiliationIdentifierScheme").asText(null));
         }
-        return null;
+        return ctxt.reportInputMismatch(DataCiteAffiliation.class,
+                "Unsupported affiliation JSON shape: expected a string or object, got %s", node.getNodeType());
     }
 }
