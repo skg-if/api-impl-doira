@@ -125,13 +125,6 @@
     -->
     <exclude name="TooManyMethods"/>
     <!--
-      TooManyFields: only CrossrefWork/DataCiteAttributes - the top-level Jackson DTOs for an
-      entire work/DOI record, which necessarily has many independent optional fields. A field-only
-      holder isn't fixed by splitting it, since Jackson needs one class matching the source JSON's
-      shape.
-    -->
-    <exclude name="TooManyFields"/>
-    <!--
       CyclomaticComplexity/NPathComplexity: the remaining offenders are the REST resource classes'
       getProducts/getGrants (CrossrefProductsResource, DataCiteProductsResource,
       CrossrefGrantsResource, DataCiteGrantsResource - each a single method dispatching on which

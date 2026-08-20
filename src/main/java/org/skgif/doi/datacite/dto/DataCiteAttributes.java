@@ -3,6 +3,10 @@ package org.skgif.doi.datacite.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
 
+// Top-level Jackson DTO for an entire DataCite work/DOI record - necessarily has many
+// independent optional fields; splitting it wouldn't help since Jackson needs one class
+// matching the source JSON's shape.
+@SuppressWarnings("PMD.TooManyFields")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record DataCiteAttributes(
         String doi,

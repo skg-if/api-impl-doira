@@ -47,6 +47,10 @@ import java.util.Map;
  * @param project         the grant's project(s), for grant-type records only
  * @param resource        the work's primary resource, for grant-type records only
  */
+// Top-level Jackson DTO for an entire Crossref work/DOI record - necessarily has many
+// independent optional fields; splitting it wouldn't help since Jackson needs one class
+// matching the source JSON's shape.
+@SuppressWarnings("PMD.TooManyFields")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record CrossrefWork(
         @JsonProperty("DOI") String doi,
