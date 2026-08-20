@@ -155,6 +155,11 @@ After an intentional change to `DataCiteToSkgIfMapper` (or anything else that ch
 the response shape) - see README.md's Testing section for the full explanation:
 
 ```powershell
-mvn test -Dtest=DataCiteProductsResourceTest,DataCiteGrantsResourceTest -Dgolden.regenerate=true
+mvn test "-Dtest=DataCiteProductsResourceTest,DataCiteGrantsResourceTest" -Dgolden.regenerate=true
 git diff src/test/resources/expected/   # review before committing
 ```
+
+Quote any `-Dtest=A,B` value with more than one class name - PowerShell's parser
+can choke on the unquoted comma (`ParserError: Missing argument in parameter list`,
+raised before `mvn` even runs) even though the same string is a single native-command
+argument once quoted. A single `-Dtest=OneClass` (no comma) doesn't need quoting.

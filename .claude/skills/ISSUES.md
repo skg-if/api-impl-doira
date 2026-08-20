@@ -45,6 +45,30 @@ record of what the skill used to get wrong.
 
 ---
 
+## Unquoted multi-class `-Dtest=A,B` breaks the PowerShell parser
+
+- Date: 2026-08-20
+- Skill: `skg-if-build-toolchain/SKILL.md`
+- Symptom: `mvn -q -B test -Dtest=DataCiteGrantFiltersTest,DataCiteProductFiltersTest`
+  (copying the skill's own golden-fixture example shape) failed before `mvn` ran at
+  all: `ParserError: Missing argument in parameter list` /
+  `FullyQualifiedErrorId: MissingArgument`, pointing into the middle of the
+  `-Dtest=...` argument.
+- Root cause: PowerShell's tokenizer treats an unquoted comma in a bare argument as
+  starting an array literal in some contexts, so `-Dtest=ClassA,ClassB` unquoted can
+  fail to parse as one argument even though it's destined for a native exe (`mvn`)
+  that would happily take it as a single string. The skill's own "Regenerating
+  golden JSON-LD fixtures" example used exactly this unquoted comma-separated
+  `-Dtest=` shape under a ` ```powershell ` block, so following it literally hit the
+  same failure.
+- Fix: quoted the `-Dtest=...` value in that example and added a note in
+  [`skg-if-build-toolchain/SKILL.md`](skg-if-build-toolchain/SKILL.md) to always
+  quote a multi-class `-Dtest=A,B` value in PowerShell (a single-class value needs
+  no quoting).
+- Status: Fixed
+
+---
+
 ## `mvn clean test` redirected into `target/build.log` loses the log
 
 - Date: 2026-08-20
