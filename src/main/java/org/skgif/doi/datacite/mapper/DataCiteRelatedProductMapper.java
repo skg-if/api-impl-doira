@@ -1,9 +1,13 @@
 package org.skgif.doi.datacite.mapper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
 import org.skgif.doi.datacite.dto.DataCiteRelatedIdentifier;
@@ -24,7 +28,57 @@ import org.skgif.doi.util.MapperTextUtils;
  */
 final class DataCiteRelatedProductMapper {
 
-    private static final String SCHEME_DOI = "doi";
+    /**
+     * The {@code relatedIdentifierType} values documented in the DataCite Metadata Schema. DataCite
+     * has added values to this list before and may do so again - {@link #fromValue(String)} returns
+     * {@link Optional#empty()} rather than throwing for a value not yet in this enum, so a DataCite
+     * record using a newer value still falls back to a lowercased pass-through scheme (see {@link
+     * #relatedByType}) instead of failing the mapping.
+     */
+    private enum DataCiteRelatedIdentifierType {
+
+        ARK("ARK"),
+        ARXIV("arXiv"),
+        BIBCODE("bibcode"),
+        CSTR("CSTR"),
+        DOI("DOI"),
+        EAN13("EAN13"),
+        EISSN("EISSN"),
+        HANDLE("Handle"),
+        IGSN("IGSN"),
+        ISBN("ISBN"),
+        ISSN("ISSN"),
+        ISTC("ISTC"),
+        LISSN("LISSN"),
+        LSID("LSID"),
+        PMID("PMID"),
+        PURL("PURL"),
+        RAID("RAiD"),
+        RRID("RRID"),
+        SWHID("SWHID"),
+        UPC("UPC"),
+        URL("URL"),
+        URN("URN"),
+        W3ID("w3id");
+
+        private static final Map<String, DataCiteRelatedIdentifierType> BY_VALUE = Arrays.stream(values())
+                .collect(Collectors.toMap(DataCiteRelatedIdentifierType::value, Function.identity()));
+
+        @SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
+        private final String value;
+
+        DataCiteRelatedIdentifierType(String value) {
+            this.value = value;
+        }
+
+        String value() {
+            return value;
+        }
+
+        static Optional<DataCiteRelatedIdentifierType> fromValue(String value) {
+            return Optional.ofNullable(BY_VALUE.get(value));
+        }
+    }
 
     private final LocalIdentifiers localIdentifiers;
 
@@ -93,13 +147,15 @@ final class DataCiteRelatedProductMapper {
             if (!relationType.equals(related.relationType()) || related.relatedIdentifier() == null) {
                 continue;
             }
-            String scheme = related.relatedIdentifierType() != null ?
-                    related.relatedIdentifierType().toLowerCase(Locale.ROOT) :
-                    "url";
+            DataCiteRelatedIdentifierType type = DataCiteRelatedIdentifierType
+                    .fromValue(related.relatedIdentifierType())
+                    .orElse(null);
+            String scheme = type != null ? type.value().toLowerCase(Locale.ROOT) :
+                    unmappedScheme(related.relatedIdentifierType());
             // A related product with a DOI is identified by the full https://doi.org/... URL,
             // consistent with how this API identifies its own products; anything else falls
             // back to otf.
-            String localIdentifier = SCHEME_DOI.equals(scheme) ?
+            String localIdentifier = type == DataCiteRelatedIdentifierType.DOI ?
                     localIdentifiers.toFullLocalIdentifier(related.relatedIdentifier()) :
                     MapperTextUtils.otf(attributes.doi(), related.relatedIdentifier());
             result.add(new ProductsRelatedItem()
@@ -110,5 +166,9 @@ final class DataCiteRelatedProductMapper {
                             .value(related.relatedIdentifier()))));
         }
         return result;
+    }
+
+    private static String unmappedScheme(String relatedIdentifierType) {
+        return relatedIdentifierType != null ? relatedIdentifierType.toLowerCase(Locale.ROOT) : "url";
     }
 }

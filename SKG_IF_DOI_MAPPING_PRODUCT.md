@@ -49,6 +49,19 @@ this provider
 | `other` | `Event`, `Service`, `Project`, `Other`, `Sound`, `PhysicalObject`, `Model`, `Audiovisual`, `InteractiveResource`, `Standard`, and anything unrecognized |
 | *(routed to Grants, not a Product)* | `Award` |
 
+### DataCite relatedIdentifierType vocabulary
+
+**`relatedIdentifiers[].relatedIdentifierType` → SKG-IF `related_products.*[].identifiers[].scheme`:** [ℹ️](https://datacite-metadata-schema.readthedocs.io/en/4.7/properties/relatedidentifier/#a-relatedidentifiertype)
+
+Enumerated in `DataCiteRelatedProductMapper.DataCiteRelatedIdentifierType`. `DOI` alone gets the
+full `https://doi.org/...` URL `local_identifier` treatment (see `local_identifier` row above);
+every other value - recognized here or not - becomes an `otf` identifier with
+`scheme = lowercase(relatedIdentifierType)` (falling back to `"url"` when the field is absent).
+
+| DataCite `relatedIdentifierType` values |
+|---|
+| `ARK`, `arXiv`, `bibcode`, `CSTR`, `DOI`, `EAN13`, `EISSN`, `Handle`, `IGSN`, `ISBN`, `ISSN`, `ISTC`, `LISSN`, `LSID`, `PMID`, `PURL`, `RAiD`, `RRID`, `SWHID`, `UPC`, `URL`, `URN`, `w3id` |
+
 ## Crossref
 
 | SKG-IF field | Crossref source | Crossref tested | Notes |

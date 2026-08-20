@@ -155,11 +155,15 @@ After an intentional change to `DataCiteToSkgIfMapper` (or anything else that ch
 the response shape) - see README.md's Testing section for the full explanation:
 
 ```powershell
-mvn test "-Dtest=DataCiteProductsResourceTest,DataCiteGrantsResourceTest" -Dgolden.regenerate=true
+mvn test "-Dtest=DataCiteProductsResourceTest,DataCiteGrantsResourceTest" "-Dgolden.regenerate=true"
 git diff src/test/resources/expected/   # review before committing
 ```
 
-Quote any `-Dtest=A,B` value with more than one class name - PowerShell's parser
-can choke on the unquoted comma (`ParserError: Missing argument in parameter list`,
-raised before `mvn` even runs) even though the same string is a single native-command
-argument once quoted. A single `-Dtest=OneClass` (no comma) doesn't need quoting.
+Quote any `-Dtest=A,B` value with more than one class name, and quote any
+`-D<property.name>=value` where the property name itself contains a dot (like
+`-Dgolden.regenerate=true`) - PowerShell's parser can mis-split either shape
+before `mvn` ever runs (`ParserError: Missing argument in parameter list` for
+the comma case, or an unrelated-looking `Unknown lifecycle phase
+".regenerate=true"` from `mvn` itself for the dot case), even though each is a
+single native-command argument once quoted. A single `-Dtest=OneClass` (no
+comma) or a dot-free property (like `-Dskip=true`) needs no quoting.

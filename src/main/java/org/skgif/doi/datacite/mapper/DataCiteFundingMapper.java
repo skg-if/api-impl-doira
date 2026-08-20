@@ -1,9 +1,12 @@
 package org.skgif.doi.datacite.mapper;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
 import org.skgif.doi.datacite.dto.DataCiteFundingReference;
 import org.skgif.doi.generated.model.GrantLite;
@@ -24,7 +27,41 @@ import org.skgif.doi.util.MapperTextUtils;
 final class DataCiteFundingMapper {
 
     private static final Pattern DOI_SHAPE = Pattern.compile("10\\.\\d{4,9}/.+");
-    private static final String SCHEME_ROR_UPPER = "ROR";
+
+    /**
+     * The {@code funderIdentifierType} values documented in the DataCite Metadata Schema
+     * (https://datacite-metadata-schema.readthedocs.io/en/4.7/properties/fundingreference/#a-funderidentifiertype).
+     * DataCite has added values to this list before and may do so again - {@link
+     * #fromValue(String)} returns {@link Optional#empty()} rather than throwing for a value not
+     * yet in this enum, so an unrecognized type is treated the same as any other non-ROR type
+     * instead of failing the mapping.
+     */
+    private enum DataCiteFunderIdentifierType {
+
+        CROSSREF_FUNDER_ID("Crossref Funder ID"),
+        GRID("GRID"),
+        ISNI("ISNI"),
+        ROR("ROR"),
+        OTHER("Other");
+
+        private static final Map<String, DataCiteFunderIdentifierType> BY_VALUE = Arrays.stream(values())
+                .collect(Collectors.toMap(DataCiteFunderIdentifierType::value, Function.identity()));
+
+        @SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
+        private final String value;
+
+        DataCiteFunderIdentifierType(String value) {
+            this.value = value;
+        }
+
+        String value() {
+            return value;
+        }
+
+        static Optional<DataCiteFunderIdentifierType> fromValue(String value) {
+            return Optional.ofNullable(BY_VALUE.get(value));
+        }
+    }
 
     private final LocalIdentifiers localIdentifiers;
 
@@ -76,7 +113,9 @@ final class DataCiteFundingMapper {
             return Optional.empty();
         }
         boolean hasRor = fundingReference.funderIdentifier() != null &&
-                SCHEME_ROR_UPPER.equalsIgnoreCase(fundingReference.funderIdentifierType());
+                DataCiteFunderIdentifierType.fromValue(fundingReference.funderIdentifierType())
+                        .filter(type -> type == DataCiteFunderIdentifierType.ROR)
+                        .isPresent();
         String bareRor = hasRor ? ExternalIdentifierUrls.stripRorUrl(fundingReference.funderIdentifier()) : null;
         String funderDoi = hasRor ? null : extractDoi(fundingReference.funderIdentifier()).orElse(null);
         String doiLocalIdentifier = funderDoi != null ? localIdentifiers.toFullLocalIdentifier(funderDoi) : null;

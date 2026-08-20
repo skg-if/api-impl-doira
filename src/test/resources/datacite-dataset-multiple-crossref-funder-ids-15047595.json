@@ -1,0 +1,193 @@
+{
+  "data": {
+    "id": "10.5281/zenodo.15047595",
+    "type": "dois",
+    "attributes": {
+      "doi": "10.5281/zenodo.15047595",
+      "prefix": "10.5281",
+      "suffix": "zenodo.15047595",
+      "identifiers": [],
+      "alternateIdentifiers": [],
+      "creators": [
+        {
+          "name": "Cronin, Dylan",
+          "nameType": "Personal",
+          "givenName": "Dylan",
+          "familyName": "Cronin",
+          "affiliation": [
+            "The Ohio State University"
+          ],
+          "nameIdentifiers": []
+        },
+        {
+          "name": "Rich, Virginia",
+          "nameType": "Personal",
+          "givenName": "Virginia",
+          "familyName": "Rich",
+          "affiliation": [
+            "The Ohio State University"
+          ],
+          "nameIdentifiers": [
+            {
+              "nameIdentifier": "0000-0003-0558-102X",
+              "nameIdentifierScheme": "ORCID"
+            }
+          ]
+        }
+      ],
+      "titles": [
+        {
+          "title": "Stordalen Mire mire-wide survey: Microbial ASV table and taxonomy"
+        }
+      ],
+      "publisher": "Zenodo",
+      "container": {},
+      "publicationYear": 2025,
+      "subjects": [
+        {
+          "subject": "EMERGE Biology Integration Institute"
+        },
+        {
+          "subject": "Stordalen Mire"
+        }
+      ],
+      "contributors": [],
+      "dates": [
+        {
+          "date": "2025-03-18",
+          "dateType": "Issued"
+        }
+      ],
+      "language": null,
+      "types": {
+        "ris": "DATA",
+        "bibtex": "misc",
+        "citeproc": "dataset",
+        "schemaOrg": "Dataset",
+        "resourceType": "",
+        "resourceTypeGeneral": "Dataset"
+      },
+      "relatedIdentifiers": [
+        {
+          "relationType": "IsDerivedFrom",
+          "relatedIdentifier": "https://www.ncbi.nlm.nih.gov/bioproject/1236848",
+          "resourceTypeGeneral": "Dataset",
+          "relatedIdentifierType": "URL"
+        },
+        {
+          "relationType": "HasMetadata",
+          "relatedIdentifier": "10.5281/zenodo.15047156",
+          "resourceTypeGeneral": "Dataset",
+          "relatedIdentifierType": "DOI"
+        },
+        {
+          "relationType": "HasVersion",
+          "relatedIdentifier": "10.5281/zenodo.15047596",
+          "relatedIdentifierType": "DOI"
+        }
+      ],
+      "relatedItems": [],
+      "sizes": [],
+      "formats": [],
+      "version": "0.0.0",
+      "rightsList": [
+        {
+          "rights": "Creative Commons Attribution 4.0 International",
+          "rightsUri": "https://creativecommons.org/licenses/by/4.0/legalcode",
+          "schemeUri": "https://spdx.org/licenses/",
+          "rightsIdentifier": "cc-by-4.0",
+          "rightsIdentifierScheme": "SPDX"
+        }
+      ],
+      "descriptions": [
+        {
+          "description": "Stordalen Mire microbial ASV table (mire-wide_ASV_table.tsv) and taxonomy (mire-wide_taxonomy.tsv), based on 16S rRNA amplicon sequencing data from a mire-wide survey (2015) and co-analyzed autochamber site samples (2014-2015).\n\nThe 16S rRNA amplicon sequencing data is available under NCBI BioProject PRJNA1236848. The sample metadata and SRA accessions are available at https://doi.org/10.5281/zenodo.15047156.\n\nFUNDING:\n\n\n\nNational Aeronautics and Space Administration, Interdisciplinary Science program: From Archaea to the Atmosphere (award # NNX17AK10G).\n\nNational Science Foundation, Biology Integration Institutes Program: EMERGE Biology Integration Institute (award # 2022070).\n\nUnited States Department of Energy Office of Biological and Environmental Research, Genomic Science Program: The IsoGenie Project (grant #s DE-SC0004632, DE-SC0010580, and DE-SC0016440).\n\nSequencing was performed using startup funding from the University of Arizona to Virginia Rich.\n\nWe thank the Swedish Polar Research Secretariat and the Swedish Infrastructure for Ecosystem Science (SITES) for the support of the work done at the Abisko Scientific Research Station. SITES is supported by the Swedish Research Council's grant 4.3-2021-00164.",
+          "descriptionType": "Abstract"
+        }
+      ],
+      "geoLocations": [],
+      "fundingReferences": [
+        {
+          "awardTitle": "BII-Implementation: The EMERGE Institute: Identifying EMergent Ecosystem Responses through Genes-to-Ecosystems Integration",
+          "funderName": "U.S. National Science Foundation",
+          "awardNumber": "2022070",
+          "funderIdentifier": "10.13039/100000001",
+          "funderIdentifierType": "Crossref Funder ID"
+        },
+        {
+          "awardTitle": "From Archaea to the Atmosphere: Integrating Microbial, Isotopic and Landscape-Scale Observations to Quantify Methane Emissions from Global High-Latitude Ecosystems",
+          "funderName": "National Aeronautics and Space Administration",
+          "awardNumber": "NNX17AK10G",
+          "funderIdentifier": "10.13039/100000104",
+          "funderIdentifierType": "Crossref Funder ID"
+        }
+      ],
+      "url": "https://zenodo.org/doi/10.5281/zenodo.15047595",
+      "contentUrl": null,
+      "metadataVersion": 2,
+      "schemaVersion": "http://datacite.org/schema/kernel-4",
+      "source": "api",
+      "isActive": true,
+      "state": "findable",
+      "reason": null,
+      "viewCount": 0,
+      "viewsOverTime": [],
+      "downloadCount": 0,
+      "downloadsOverTime": [],
+      "referenceCount": 0,
+      "citationCount": 0,
+      "citationsOverTime": [],
+      "partCount": 0,
+      "partOfCount": 0,
+      "versionCount": 1,
+      "versionOfCount": 0,
+      "created": "2025-03-18T19:22:22.000Z",
+      "registered": "2025-03-18T19:22:22.000Z",
+      "published": "2025",
+      "updated": "2026-08-20T21:21:37.000Z"
+    },
+    "relationships": {
+      "client": {
+        "data": {
+          "id": "cern.zenodo",
+          "type": "clients"
+        }
+      },
+      "provider": {
+        "data": {
+          "id": "cern",
+          "type": "providers"
+        }
+      },
+      "media": {
+        "data": {
+          "id": "10.5281/zenodo.15047595",
+          "type": "media"
+        }
+      },
+      "references": {
+        "data": []
+      },
+      "citations": {
+        "data": []
+      },
+      "parts": {
+        "data": []
+      },
+      "partOf": {
+        "data": []
+      },
+      "versions": {
+        "data": [
+          {
+            "id": "10.5281/zenodo.15047596",
+            "type": "dois"
+          }
+        ]
+      },
+      "versionOf": {
+        "data": []
+      }
+    }
+  }
+}

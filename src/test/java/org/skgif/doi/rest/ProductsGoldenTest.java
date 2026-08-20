@@ -224,6 +224,22 @@ class ProductsGoldenTest {
     }
 
     /**
+     * DOI 10.5281/zenodo.15047595 - a real Zenodo dataset with two funding references, both
+     * typed "Crossref Funder ID", one carrying a bare (unprefixed) Funder Registry DOI rather
+     * than a full {@code https://doi.org/...} URL, proving both funding entries resolve to
+     * distinct {@code doi}-scheme funding agencies at the golden-output level (see {@code
+     * DataCiteToSkgIfMapperTest.mapsMultipleFundingReferencesWithBareDoiCrossrefFunderIds}).
+     *
+     * @throws IOException if a fixture resource cannot be read
+     */
+    @Test
+    void getProductById_matchesExpectedJsonLd_zenodoMultipleCrossrefFunderIds15047595() throws IOException {
+        assertMatchesExpectedDataCiteJsonLd("10.5281/zenodo.15047595",
+                "datacite-dataset-multiple-crossref-funder-ids-15047595.json",
+                "expected/datacite-dataset-multiple-crossref-funder-ids-15047595-out.json");
+    }
+
+    /**
      * Full JSON-LD regression test for the DataCite search/list endpoint with multiple,
      * heterogeneous @graph items and full pagination metadata (both prev_page and next_page
      * present, unlike a single-item, single-page response). Reuses the two DOI fixtures already

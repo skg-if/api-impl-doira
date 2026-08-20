@@ -22,7 +22,15 @@
   controlled vocabulary, so `funding_agency` detects a Funder Registry DOI by checking whether
   `funderIdentifier` itself is DOI-shaped, regardless of what the type label says (covers
   `"Crossref Funder ID"` and any other/unlabeled DOI in practice - see
-  [`datacite-thesis-crossref-funder-id-4342.json`](src/test/resources/datacite-thesis-crossref-funder-id-4342.json)).
+  [`datacite-thesis-crossref-funder-id-4342.json`](src/test/resources/datacite-thesis-crossref-funder-id-4342.json),
+  where `funderIdentifier` is a full `https://doi.org/...` URL, and
+  [`datacite-dataset-multiple-crossref-funder-ids-15047595.json`](src/test/resources/datacite-dataset-multiple-crossref-funder-ids-15047595.json),
+  where two funding references both typed `"Crossref Funder ID"` carry a bare
+  (unprefixed) DOI instead). `funderIdentifierType` itself is recognized via a small
+  `DataCiteFunderIdentifierType` enum in `DataCiteFundingMapper` covering DataCite's documented
+  vocabulary (`Crossref Funder ID`, `GRID`, `ISNI`, `ROR`, `Other`) - only `ROR` changes mapper
+  behavior, and an unrecognized/future value falls back to this same DOI-shape check rather than
+  failing the mapping.
   Genuinely non-DOI schemes (ISNI, GRID, Wikidata) still have no home here and fall back to an
   otf id, same as an entirely absent `funderIdentifier` (see
   [`datacite-dataset-funder-no-identifier-e449e75a.json`](src/test/resources/datacite-dataset-funder-no-identifier-e449e75a.json),

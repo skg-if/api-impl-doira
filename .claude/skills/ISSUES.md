@@ -45,6 +45,29 @@ record of what the skill used to get wrong.
 
 ---
 
+## Unquoted `-Dgolden.regenerate=true` breaks the PowerShell parser
+
+- Date: 2026-08-20
+- Skill: `skg-if-build-toolchain/SKILL.md`
+- Symptom: `mvn -q -B test -Dtest=ProductsGoldenTest -Dgolden.regenerate=true`
+  (following the skill's own "Regenerating golden JSON-LD fixtures" example,
+  which itself leaves this value unquoted) failed before running any tests:
+  `[ERROR] Unknown lifecycle phase ".regenerate=true". You must specify a
+  valid lifecycle phase or a goal...`
+- Root cause: the skill's existing quoting note only covered the
+  comma-separated `-Dtest=A,B` case; it didn't call out that a `-D<property>`
+  value whose property name itself contains a dot (`-Dgolden.regenerate=true`)
+  can be similarly mis-split by PowerShell before it reaches `mvn` as one
+  argument, and the section's own example command wasn't quoted, so following
+  it literally hit the exact bug the neighboring note (partially) warned about.
+- Fix: quoted `-Dgolden.regenerate=true` in the example in
+  [`skg-if-build-toolchain/SKILL.md`](skg-if-build-toolchain/SKILL.md) and
+  broadened the quoting note to cover any `-D` value containing a comma or a
+  dot in the property name, not just multi-class `-Dtest=A,B`.
+- Status: Fixed
+
+---
+
 ## Unquoted multi-class `-Dtest=A,B` breaks the PowerShell parser
 
 - Date: 2026-08-20

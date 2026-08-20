@@ -207,6 +207,38 @@ class DataCiteToSkgIfMapperTest {
         assertThat(grant.getFundingAgency().getIdentifiers().getFirst().getValue()).isEqualTo("10.13039/100010038");
     }
 
+    // datacite-dataset-multiple-crossref-funder-ids-15047595.json: a real Zenodo dataset (DOI
+    // 10.5281/zenodo.15047595) with two funding references, both typed "Crossref Funder ID" -
+    // unlike datacite-thesis-crossref-funder-id-4342.json above, funderIdentifier here is a bare
+    // DOI ("10.13039/100000001") with no "https://doi.org/" prefix, and there are two distinct
+    // funders on the same record rather than one.
+    @Test
+    @SuppressWarnings("unchecked")
+    void mapsMultipleFundingReferencesWithBareDoiCrossrefFunderIds() throws IOException {
+        Product product = mapFixture("datacite-dataset-multiple-crossref-funder-ids-15047595.json");
+
+        assertThat(product.getFunding()).hasSize(2);
+        GrantLite nsfGrant = (GrantLite) product.getFunding().getFirst();
+        assertThat(nsfGrant.getGrantNumber()).isEqualTo("2022070");
+        assertThat((Map<String, String>) nsfGrant.getTitles())
+                .containsEntry("en", "BII-Implementation: The EMERGE Institute: Identifying EMergent Ecosystem " +
+                        "Responses through Genes-to-Ecosystems Integration");
+        assertThat(nsfGrant.getFundingAgency().getName()).isEqualTo("U.S. National Science Foundation");
+        assertThat(nsfGrant.getFundingAgency().getLocalIdentifier()).isEqualTo("https://doi.org/10.13039/100000001");
+        assertThat(nsfGrant.getFundingAgency().getIdentifiers().getFirst().getScheme()).isEqualTo("doi");
+        assertThat(nsfGrant.getFundingAgency().getIdentifiers().getFirst().getValue())
+                .isEqualTo("10.13039/100000001");
+
+        GrantLite nasaGrant = (GrantLite) product.getFunding().get(1);
+        assertThat(nasaGrant.getGrantNumber()).isEqualTo("NNX17AK10G");
+        assertThat(nasaGrant.getFundingAgency().getName()).isEqualTo("National Aeronautics and Space Administration");
+        assertThat(nasaGrant.getFundingAgency().getLocalIdentifier())
+                .isEqualTo("https://doi.org/10.13039/100000104");
+        assertThat(nasaGrant.getFundingAgency().getIdentifiers().getFirst().getScheme()).isEqualTo("doi");
+        assertThat(nasaGrant.getFundingAgency().getIdentifiers().getFirst().getValue())
+                .isEqualTo("10.13039/100000104");
+    }
+
     @Test
     void doesNotExtractDoiFromNonDoiShapedFunderIdentifier() throws IOException {
         // A funderIdentifier that isn't ROR and isn't DOI-shaped (e.g. a bare GRID id) must still
@@ -215,6 +247,25 @@ class DataCiteToSkgIfMapperTest {
         DataCiteFundingReference original = attributes.fundingReferences().getFirst();
         attributes.fundingReferences().set(0, new DataCiteFundingReference(
                 original.funderName(), "grid.451003.6", "GRID",
+                original.awardNumber(), original.awardTitle(), original.awardUri()));
+
+        Product product = mapper.toProduct(attributes);
+
+        GrantLite funding = (GrantLite) product.getFunding().getFirst();
+        assertThat(funding.getFundingAgency().getIdentifiers()).isNull();
+        assertThat(funding.getFundingAgency().getLocalIdentifier()).startsWith("otf___");
+    }
+
+    @Test
+    void fallsBackToOtfForFunderIdentifierTypeNotInDataCitesDocumentedVocabulary() throws IOException {
+        // DataCite has added values to its funderIdentifierType controlled vocabulary before and
+        // may do so again - an unrecognized type (simulated here as "Wikidata", not part of the
+        // documented Crossref Funder ID/GRID/ISNI/ROR/Other list) must be treated like any other
+        // non-ROR type rather than making the mapping fail.
+        var attributes = readFixture("datacite-thesis-crossref-funder-id-4342.json");
+        DataCiteFundingReference original = attributes.fundingReferences().getFirst();
+        attributes.fundingReferences().set(0, new DataCiteFundingReference(
+                original.funderName(), "Q1234567", "Wikidata",
                 original.awardNumber(), original.awardTitle(), original.awardUri()));
 
         Product product = mapper.toProduct(attributes);
