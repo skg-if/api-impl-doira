@@ -1,6 +1,8 @@
 package org.skgif.doi.rest;
 
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.skgif.doi.crossref.CrossrefTypeMapping;
@@ -31,7 +33,9 @@ final class CrossrefFilters {
 
     private static final String NO_MATCH_CLAUSE = "doi:__no_match__";
 
-    private static final Set<String> PRODUCT_SUPPORTED = Set.of(
+    // Package-private (not private) so CrossrefFiltersTest can assert PRODUCT_CLAUSE_BUILDERS
+    // covers exactly these keys.
+    static final Set<String> PRODUCT_SUPPORTED = Set.of(
             ProductFilterKeys.PRODUCT_TYPE.key(),
             ProductFilterKeys.IDENTIFIERS_ID.key(),
             ProductFilterKeys.IDENTIFIERS_SCHEME.key(),
@@ -42,7 +46,9 @@ final class CrossrefFilters {
             ProductFilterKeys.CF_SEARCH_TITLE.key(),
             ProductFilterKeys.CF_SEARCH_TITLE_ABSTRACT.key());
 
-    private static final Set<String> GRANT_SUPPORTED = Set.of(
+    // Package-private (not private) so CrossrefFiltersTest can assert GRANT_CLAUSE_BUILDERS
+    // covers exactly these keys.
+    static final Set<String> GRANT_SUPPORTED = Set.of(
             GrantFilterKeys.IDENTIFIERS_VALUE.key(),
             GrantFilterKeys.IDENTIFIERS_SCHEME.key(),
             GrantFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_VALUE.key(),
@@ -66,6 +72,15 @@ final class CrossrefFilters {
         String clause(String key, String value, ParsedFilter.Builder builder);
     }
 
+    /**
+     * The per-filter-key clause builders held in {@link #PRODUCT_CLAUSE_BUILDERS}/
+     * {@link #GRANT_CLAUSE_BUILDERS} - unlike {@link ClauseBuilder}, the key itself is already
+     * baked into which builder got looked up, so it isn't passed again here.
+     */
+    private interface ValueClauseBuilder {
+        String clause(String value, ParsedFilter.Builder builder);
+    }
+
     private static ParsedFilter parse(String filter, Set<String> supported, ClauseBuilder clauseBuilder) {
         ParsedFilter.Builder result = new ParsedFilter.Builder();
         if (filter == null || filter.isBlank()) {
@@ -77,48 +92,76 @@ final class CrossrefFilters {
         return result.build();
     }
 
+    /**
+     * Maps every supported Product filter key to its clause builder - see {@link #toProductClause}.
+     * Package-private (not private) so {@code CrossrefFiltersTest} can assert it covers every key
+     * {@code PRODUCT_SUPPORTED} declares.
+     */
+    static final Map<ProductFilterKeys, ValueClauseBuilder> PRODUCT_CLAUSE_BUILDERS =
+            new EnumMap<>(ProductFilterKeys.class);
+
+    /**
+     * Maps every supported Grant filter key to its clause builder - see {@link #toGrantClause}.
+     * Package-private (not private) so {@code CrossrefFiltersTest} can assert it covers every key
+     * {@code GRANT_SUPPORTED} declares.
+     */
+    static final Map<GrantFilterKeys, ValueClauseBuilder> GRANT_CLAUSE_BUILDERS =
+            new EnumMap<>(GrantFilterKeys.class);
+
+    static {
+        PRODUCT_CLAUSE_BUILDERS.put(ProductFilterKeys.PRODUCT_TYPE, (value, builder) -> productTypeClause(value));
+        PRODUCT_CLAUSE_BUILDERS.put(ProductFilterKeys.IDENTIFIERS_ID,
+                (value, builder) -> "doi:" + ExternalIdentifierUrls.stripDoiUrl(value));
+        PRODUCT_CLAUSE_BUILDERS.put(ProductFilterKeys.IDENTIFIERS_SCHEME,
+                (value, builder) -> FilterQuerySyntax.schemeOnlyFilter(value, "doi", NO_MATCH_CLAUSE));
+        ValueClauseBuilder orcidClause = (value, builder) -> "orcid:" + ExternalIdentifierUrls.stripOrcidUrl(value);
+        PRODUCT_CLAUSE_BUILDERS.put(ProductFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_ID, orcidClause);
+        PRODUCT_CLAUSE_BUILDERS.put(ProductFilterKeys.CF_CONTRIBUTIONS_ORCID, orcidClause);
+        PRODUCT_CLAUSE_BUILDERS.put(ProductFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME,
+                (value, builder) -> FilterQuerySyntax.schemeOnlyFilter(value, "orcid", NO_MATCH_CLAUSE));
+        PRODUCT_CLAUSE_BUILDERS.put(ProductFilterKeys.FUNDING_GRANT_NUMBER,
+                (value, builder) -> "award.number:" + value);
+        PRODUCT_CLAUSE_BUILDERS.put(ProductFilterKeys.CF_SEARCH_TITLE, CrossrefFilters::queryTitleClause);
+        PRODUCT_CLAUSE_BUILDERS.put(ProductFilterKeys.CF_SEARCH_TITLE_ABSTRACT,
+                CrossrefFilters::queryBibliographicClause);
+
+        GRANT_CLAUSE_BUILDERS.put(GrantFilterKeys.IDENTIFIERS_VALUE,
+                (value, builder) -> "doi:" + ExternalIdentifierUrls.stripDoiUrl(value));
+        GRANT_CLAUSE_BUILDERS.put(GrantFilterKeys.IDENTIFIERS_SCHEME,
+                (value, builder) -> FilterQuerySyntax.schemeOnlyFilter(value, "doi", NO_MATCH_CLAUSE));
+        GRANT_CLAUSE_BUILDERS.put(GrantFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_VALUE,
+                (value, builder) -> "orcid:" + ExternalIdentifierUrls.stripOrcidUrl(value));
+        // Grant contributions can be organisational (ror) too, but Crossref's "orcid" filter
+        // only ever matches a person - a ror-scoped value harmlessly never matches.
+        GRANT_CLAUSE_BUILDERS.put(GrantFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME,
+                (value, builder) -> ("orcid".equalsIgnoreCase(value) || "ror".equalsIgnoreCase(value)) ? null :
+                        NO_MATCH_CLAUSE);
+        GRANT_CLAUSE_BUILDERS.put(GrantFilterKeys.FUNDING_AGENCY_IDENTIFIERS_VALUE,
+                (value, builder) -> "award.funder:" + value);
+        GRANT_CLAUSE_BUILDERS.put(GrantFilterKeys.CF_SEARCH_TITLE, CrossrefFilters::queryTitleClause);
+        GRANT_CLAUSE_BUILDERS.put(GrantFilterKeys.CF_SEARCH_TITLE_ABSTRACT, CrossrefFilters::queryBibliographicClause);
+    }
+
     private static String toProductClause(String key, String value, ParsedFilter.Builder builder) {
-        return switch (ProductFilterKeys.fromKey(key)) {
-            case PRODUCT_TYPE -> productTypeClause(value);
-            case IDENTIFIERS_ID -> "doi:" + ExternalIdentifierUrls.stripDoiUrl(value);
-            case IDENTIFIERS_SCHEME -> FilterQuerySyntax.schemeOnlyFilter(value, "doi", NO_MATCH_CLAUSE);
-            case CONTRIBUTIONS_BY_IDENTIFIERS_ID, CF_CONTRIBUTIONS_ORCID ->
-                "orcid:" + ExternalIdentifierUrls.stripOrcidUrl(value);
-            case CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME -> FilterQuerySyntax.schemeOnlyFilter(value, "orcid",
-                    NO_MATCH_CLAUSE);
-            case FUNDING_GRANT_NUMBER -> "award.number:" + value;
-            case CF_SEARCH_TITLE -> {
-                builder.queryTitle(value);
-                yield null;
-            }
-            case CF_SEARCH_TITLE_ABSTRACT -> {
-                builder.queryBibliographic(value);
-                yield null;
-            }
-            default -> null;
-        };
+        return PRODUCT_CLAUSE_BUILDERS.getOrDefault(ProductFilterKeys.fromKey(key), (v, b) -> null)
+                .clause(value, builder);
     }
 
     private static String toGrantClause(String key, String value, ParsedFilter.Builder builder) {
-        return switch (GrantFilterKeys.fromKey(key)) {
-            case IDENTIFIERS_VALUE -> "doi:" + ExternalIdentifierUrls.stripDoiUrl(value);
-            case IDENTIFIERS_SCHEME -> FilterQuerySyntax.schemeOnlyFilter(value, "doi", NO_MATCH_CLAUSE);
-            case CONTRIBUTIONS_BY_IDENTIFIERS_VALUE -> "orcid:" + ExternalIdentifierUrls.stripOrcidUrl(value);
-            // Grant contributions can be organisational (ror) too, but Crossref's "orcid" filter
-            // only ever matches a person - a ror-scoped value harmlessly never matches.
-            case CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME ->
-                ("orcid".equalsIgnoreCase(value) || "ror".equalsIgnoreCase(value)) ? null : NO_MATCH_CLAUSE;
-            case FUNDING_AGENCY_IDENTIFIERS_VALUE -> "award.funder:" + value;
-            case CF_SEARCH_TITLE -> {
-                builder.queryTitle(value);
-                yield null;
-            }
-            case CF_SEARCH_TITLE_ABSTRACT -> {
-                builder.queryBibliographic(value);
-                yield null;
-            }
-            default -> null;
-        };
+        return GRANT_CLAUSE_BUILDERS.getOrDefault(GrantFilterKeys.fromKey(key), (v, b) -> null)
+                .clause(value, builder);
+    }
+
+    @SuppressWarnings("PMD.ReturnNullConsiderOptional")
+    private static String queryTitleClause(String value, ParsedFilter.Builder builder) {
+        builder.queryTitle(value);
+        return null;
+    }
+
+    @SuppressWarnings("PMD.ReturnNullConsiderOptional")
+    private static String queryBibliographicClause(String value, ParsedFilter.Builder builder) {
+        builder.queryBibliographic(value);
+        return null;
     }
 
     /**

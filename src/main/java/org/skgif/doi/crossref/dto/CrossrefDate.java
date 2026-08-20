@@ -23,6 +23,14 @@ public record CrossrefDate(
      *         dateParts is empty
      */
     public Optional<String> toIsoDate() {
+        return firstValidParts().map(parts -> {
+            StringBuilder iso = new StringBuilder(String.format("%04d", parts.getFirst()));
+            appendMonthAndDay(iso, parts);
+            return iso.toString();
+        });
+    }
+
+    private Optional<List<Integer>> firstValidParts() {
         if (dateParts == null || dateParts.isEmpty()) {
             return Optional.empty();
         }
@@ -30,13 +38,16 @@ public record CrossrefDate(
         if (parts == null || parts.isEmpty() || parts.getFirst() == null) {
             return Optional.empty();
         }
-        StringBuilder iso = new StringBuilder(String.format("%04d", parts.getFirst()));
-        if (parts.size() > 1 && parts.get(1) != null) {
-            iso.append('-').append(String.format("%02d", parts.get(1)));
-            if (parts.size() > 2 && parts.get(2) != null) {
-                iso.append('-').append(String.format("%02d", parts.get(2)));
-            }
+        return Optional.of(parts);
+    }
+
+    private static void appendMonthAndDay(StringBuilder iso, List<Integer> parts) {
+        if (parts.size() <= 1 || parts.get(1) == null) {
+            return;
         }
-        return Optional.of(iso.toString());
+        iso.append('-').append(String.format("%02d", parts.get(1)));
+        if (parts.size() > 2 && parts.get(2) != null) {
+            iso.append('-').append(String.format("%02d", parts.get(2)));
+        }
     }
 }

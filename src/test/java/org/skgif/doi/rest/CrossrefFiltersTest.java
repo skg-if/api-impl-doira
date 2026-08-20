@@ -3,6 +3,8 @@ package org.skgif.doi.rest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -153,5 +155,23 @@ class CrossrefFiltersTest {
                 () -> CrossrefFilters.toGrantsQuery(GrantFilterKeys.BENEFICIARIES_NAME.key() + ":Cambridge"))
                 .isInstanceOf(FilterQuerySyntax.UnsupportedFilterException.class)
                 .hasMessageContaining(GrantFilterKeys.BENEFICIARIES_NAME.key());
+    }
+
+    @Test
+    void productClauseBuilders_matchSupportedProductFilterKeys() {
+        Set<ProductFilterKeys> expected = CrossrefFilters.PRODUCT_SUPPORTED.stream()
+                .map(ProductFilterKeys::fromKey)
+                .collect(Collectors.toSet());
+
+        assertThat(CrossrefFilters.PRODUCT_CLAUSE_BUILDERS.keySet()).containsExactlyInAnyOrderElementsOf(expected);
+    }
+
+    @Test
+    void grantClauseBuilders_matchSupportedGrantFilterKeys() {
+        Set<GrantFilterKeys> expected = CrossrefFilters.GRANT_SUPPORTED.stream()
+                .map(GrantFilterKeys::fromKey)
+                .collect(Collectors.toSet());
+
+        assertThat(CrossrefFilters.GRANT_CLAUSE_BUILDERS.keySet()).containsExactlyInAnyOrderElementsOf(expected);
     }
 }
