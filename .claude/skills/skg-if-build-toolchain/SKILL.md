@@ -121,6 +121,17 @@ report below) once the matched lines identify which class/line needs the full
 trace. On a clean build this adds one extra command but costs nothing; on a
 large failure it avoids paying for output that's mostly irrelevant duplication.
 
+**Never redirect into a path under `target/` when the command includes
+`clean`** (e.g. don't turn this into `mvn ... clean test *> target\build.log`).
+`clean` deletes the entire `target/` directory early in the run, including the
+log file the shell already has open for writing - on Unix-like shells (git-bash)
+the process keeps writing to the now-unlinked file and `mvn` still exits `0`,
+but the directory entry is gone once `clean` finishes recreating `target/`. The
+symptom is confusing: the build genuinely passed (exit `0`), yet a later
+`tail`/`Get-Content` on that same path fails with "No such file or directory".
+If a clean run's output needs capturing, write the log outside `target/`
+(repo root, or the session scratchpad dir) instead.
+
 ### Reading results afterward - use the `.txt` reports, not the `.xml` ones
 
 Every run writes two report files per test class under `target/surefire-reports/`:

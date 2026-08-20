@@ -30,6 +30,15 @@ matching `TEST-*.xml` report - see the `skg-if-build-toolchain` skill for the me
 (~180x smaller for the same pass/fail information), and for the `-q`/`-B`/`-Dtest=` flags that
 keep `mvn` output itself from being noisy.
 
+## Log tool-run issues that reveal skill gaps
+
+Whenever a tool run in this repo fails, behaves confusingly, or wastes turns in a way that traces
+back to a `.claude/skills/*/SKILL.md` being incomplete, wrong, or ambiguous, append an entry to
+[`.claude/skills/ISSUES.md`](.claude/skills/ISSUES.md) in the same session - automatically,
+without waiting to be asked - following the template and process documented at the top of that
+file. Do this even when you also patch the `SKILL.md` directly in the same turn: log it as
+`Fixed` rather than skipping the log entry just because it's already resolved.
+
 ## Keep SKG_IF_DOI_MAPPING*.md in sync
 
 [`SKG_IF_DOI_MAPPING.md`](SKG_IF_DOI_MAPPING.md) is a short index into four files that together
