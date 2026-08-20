@@ -9,10 +9,6 @@ import org.skgif.doi.crossref.dto.CrossrefWorkResponse;
 import org.skgif.doi.crossref.mapper.CrossrefToSkgIfMapper;
 import org.skgif.doi.generated.model.ApiItem;
 import org.skgif.doi.generated.model.Grant;
-import org.skgif.doi.generated.model.MetaSearch;
-import org.skgif.doi.generated.model.MetaSearchPartOf;
-import org.skgif.doi.generated.model.MetaSingleEntity;
-import org.skgif.doi.generated.model.SearchResultPage;
 import org.skgif.doi.util.LocalIdentifiers;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
@@ -43,7 +39,6 @@ import java.util.Optional;
 public class CrossrefGrantsResource {
 
     private static final String RESOURCE_PATH = "/crossref/grants";
-    private static final int FIRST_PAGE_NUMBER = 1;
 
     private final CrossrefClient crossrefClient;
     private final CrossrefToSkgIfMapper mapper;
@@ -121,13 +116,10 @@ public class CrossrefGrantsResource {
         Grant grant = mapper.toGrant(work);
         String selfHref = JsonLdResponses.selfLink(uriInfo, RESOURCE_PATH, doi);
 
-        MetaSingleEntity meta = new MetaSingleEntity()
-                .localIdentifier(selfHref)
-                .entityType(MetaSingleEntity.EntityTypeEnum.SINGLE_ENTITY);
-
         String contextBase = JsonLdResponses.contextBaseFor(Optional.<String>empty(), sandboxBaseUrl,
                 fallbackContextBase);
-        return JsonLdResponses.singleEntityResponse(objectMapper, contextBase, meta, grant);
+        return JsonLdResponses.singleEntityResponse(objectMapper, contextBase,
+                JsonLdResponses.singleEntityMeta(selfHref), grant);
     }
 
     /**
@@ -180,30 +172,13 @@ public class CrossrefGrantsResource {
             }
         }
 
-        String selfPageHref = JsonLdResponses.pageLink(uriInfo, RESOURCE_PATH, filter, pageNumber, size);
-
-        MetaSearch meta = new MetaSearch()
-                .localIdentifier(selfPageHref)
-                .entityType(MetaSearch.EntityTypeEnum.SEARCH_RESULT_PAGE)
-                .apiItems(apiItems);
-        if (offset + size < totalResults) {
-            meta.nextPage(new SearchResultPage()
-                    .localIdentifier(JsonLdResponses.pageLink(uriInfo, RESOURCE_PATH, filter, pageNumber + 1, size))
-                    .entityType(SearchResultPage.EntityTypeEnum.SEARCH_RESULT_PAGE));
-        }
-        if (pageNumber > FIRST_PAGE_NUMBER) {
-            meta.prevPage(new SearchResultPage()
-                    .localIdentifier(JsonLdResponses.pageLink(uriInfo, RESOURCE_PATH, filter, pageNumber - 1, size))
-                    .entityType(SearchResultPage.EntityTypeEnum.SEARCH_RESULT_PAGE));
-        }
-        meta.partOf(new MetaSearchPartOf()
-                .localIdentifier(JsonLdResponses.collectionLink(uriInfo, RESOURCE_PATH, filter))
-                .entityType(MetaSearchPartOf.EntityTypeEnum.SEARCH_RESULT)
-                .totalItems((int) totalResults));
-
+        boolean hasNext = offset + size < totalResults;
         String contextBase = JsonLdResponses.contextBaseFor(Optional.<String>empty(), sandboxBaseUrl,
                 fallbackContextBase);
-        return JsonLdResponses.searchResultsResponse(objectMapper, contextBase, meta, grants);
+        return JsonLdResponses.searchResultsResponse(objectMapper, contextBase,
+                JsonLdResponses.searchMeta(new JsonLdResponses.SearchPage(uriInfo, RESOURCE_PATH, filter, pageNumber,
+                        size), totalResults, hasNext, apiItems),
+                grants);
     }
 
     private String withGrantType(String filter) {

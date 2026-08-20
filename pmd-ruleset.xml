@@ -111,9 +111,11 @@
       in the same package as their facade (not a new subpackage) specifically to avoid trading
       this exclusion for a LoosePackageCoupling one. CouplingBetweenObjects and CognitiveComplexity
       are fully clean now and no longer excluded below - the mapper split alone was enough for
-      those two. The other seven rules still have real, but now entirely different and unrelated,
-      offenders - none of them mapper classes - so each stays excluded individually with its own
-      current rationale instead of one blanket comment:
+      those two. TooManyFields, NPathComplexity, and ExcessiveImports have since been fixed and
+      removed from this list too (see git history), leaving GodClass, TooManyMethods,
+      CyclomaticComplexity, and LoosePackageCoupling - each with real, but now entirely different
+      and unrelated, offenders, none of them mapper classes, so each stays excluded individually
+      with its own current rationale instead of one blanket comment:
     -->
     <!--
       GodClass: only JsonLdResponses (a REST-layer response-builder, not a format mapper) - out of
@@ -125,27 +127,24 @@
     -->
     <exclude name="TooManyMethods"/>
     <!--
-      CyclomaticComplexity/NPathComplexity: the remaining offenders are the REST resource classes'
-      getProducts/getGrants (CrossrefProductsResource, DataCiteProductsResource,
-      CrossrefGrantsResource, DataCiteGrantsResource - each a single method dispatching on which
-      optional query filters were supplied) and the *Filters#toClause/toProductClause/
-      toGrantClause methods (CrossrefFilters, DataCiteProductFilters, DataCiteGrantFilters - each
-      a single method mapping every supported filter key to its query clause). Both are a
-      different shape of problem from the mapper classes above: one already-cohesive method
-      with many independent optional branches, not a class doing too many unrelated things - so
-      splitting into more classes doesn't apply the way it did to the mappers. Left disabled
-      pending a decision on whether/how to restructure that dispatch (e.g. a filter-key-to-clause
-      lookup table).
+      CyclomaticComplexity: the remaining offenders are CrossrefDate#toIsoDate (renders Crossref's
+      {date-parts: [[y,m,d]]} structure down to an ISO date string, with each of month/day
+      optionally absent - a cascade of null-checks for an otherwise simple partial-date-to-string
+      conversion) and the *Filters#toClause/toProductClause/toGrantClause methods (CrossrefFilters,
+      DataCiteProductFilters, DataCiteGrantFilters - each a single method mapping every supported
+      filter key to its query clause). The REST resource classes' getProducts/getGrants
+      (CrossrefProductsResource, DataCiteProductsResource, CrossrefGrantsResource,
+      DataCiteGrantsResource) used to be offenders here too, until the pagination-meta branching
+      they shared with ExcessiveImports (see JsonLdResponses#searchMeta) moved out into
+      JsonLdResponses, which dropped all four below the threshold - this exclusion is no longer
+      needed for them. The remaining offenders are a different shape of problem from the mapper
+      classes above: one already-cohesive method with many independent branches (date-format
+      dispatch or filter-key dispatch), not a class doing too many unrelated things - so splitting
+      into more classes doesn't apply the way it did to the mappers. Left disabled pending a
+      decision on whether/how to restructure that dispatch (e.g. a filter-key-to-clause lookup
+      table). NPathComplexity is no longer excluded - it now has zero offenders in this codebase.
     -->
     <exclude name="CyclomaticComplexity"/>
-    <exclude name="NPathComplexity"/>
-    <!--
-      ExcessiveImports: only the four REST resource classes above, driven by importing every DTO/
-      generated-model type their getProducts/getGrants touch - a symptom of the same
-      already-cohesive-but-branchy methods CyclomaticComplexity/NPathComplexity flag on the same
-      classes, not a separate problem.
-    -->
-    <exclude name="ExcessiveImports"/>
     <!--
       LoosePackageCoupling errors out (not a violation - a PMD configerror, "No packages or
       classes specified") because it requires an explicit allow-list of packages/classes in its

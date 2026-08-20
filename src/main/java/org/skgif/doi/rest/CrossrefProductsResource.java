@@ -3,19 +3,12 @@ package org.skgif.doi.rest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.skgif.doi.crossref.CrossrefClient;
 import org.skgif.doi.crossref.CrossrefTypeMapping;
-import org.skgif.doi.crossref.CrossrefXmlTransformClient;
 import org.skgif.doi.crossref.dto.CrossrefWork;
 import org.skgif.doi.crossref.dto.CrossrefWorkListResponse;
 import org.skgif.doi.crossref.dto.CrossrefWorkResponse;
 import org.skgif.doi.crossref.mapper.CrossrefToSkgIfMapper;
-import org.skgif.doi.crossref.xml.CrossrefVenueMetadata;
-import org.skgif.doi.crossref.xml.CrossrefVenueMetadataXmlParser;
 import org.skgif.doi.generated.model.ApiItem;
-import org.skgif.doi.generated.model.MetaSearch;
-import org.skgif.doi.generated.model.MetaSearchPartOf;
-import org.skgif.doi.generated.model.MetaSingleEntity;
 import org.skgif.doi.generated.model.Product;
-import org.skgif.doi.generated.model.SearchResultPage;
 import org.skgif.doi.util.LocalIdentifiers;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
@@ -48,10 +41,9 @@ import java.util.Optional;
 public class CrossrefProductsResource {
 
     private static final String RESOURCE_PATH = "/crossref/products";
-    private static final int FIRST_PAGE_NUMBER = 1;
 
     private final CrossrefClient crossrefClient;
-    private final CrossrefXmlTransformClient crossrefXmlTransformClient;
+    private final CrossrefVenueEnricher venueEnricher;
     private final CrossrefToSkgIfMapper mapper;
     private final LocalIdentifiers localIdentifiers;
     private final ObjectMapper objectMapper;
@@ -74,19 +66,18 @@ public class CrossrefProductsResource {
     int defaultPageSize;
 
     /**
-     * @param crossrefClient             the Crossref REST client used to fetch works by DOI
-     * @param crossrefXmlTransformClient the Crossref XML-transform REST client used for venue enrichment
-     * @param mapper                     maps Crossref works to SKG-IF Product records
-     * @param localIdentifiers           resolves local identifiers to/from DOIs
-     * @param objectMapper               used to assemble the JSON-LD response envelope
+     * @param crossrefClient   the Crossref REST client used to fetch works by DOI
+     * @param venueEnricher    fetches XML venue metadata to enrich single-product responses
+     * @param mapper           maps Crossref works to SKG-IF Product records
+     * @param localIdentifiers resolves local identifiers to/from DOIs
+     * @param objectMapper     used to assemble the JSON-LD response envelope
      */
     @Inject
-    public CrossrefProductsResource(@RestClient CrossrefClient crossrefClient,
-            @RestClient CrossrefXmlTransformClient crossrefXmlTransformClient,
+    public CrossrefProductsResource(@RestClient CrossrefClient crossrefClient, CrossrefVenueEnricher venueEnricher,
             CrossrefToSkgIfMapper mapper, LocalIdentifiers localIdentifiers,
             ObjectMapper objectMapper) {
         this.crossrefClient = crossrefClient;
-        this.crossrefXmlTransformClient = crossrefXmlTransformClient;
+        this.venueEnricher = venueEnricher;
         this.mapper = mapper;
         this.localIdentifiers = localIdentifiers;
         this.objectMapper = objectMapper;
@@ -147,20 +138,15 @@ public class CrossrefProductsResource {
                     "' - this DOI is a grant, see /crossref/grants/" + localIdentifierParam);
         }
 
-        CrossrefVenueMetadata venueMetadata = null;
-        if (CrossrefTypeMapping.isXmlVenueEnrichable(work)) {
-            venueMetadata = fetchVenueMetadata(doi).orElse(null);
-        }
-        Product product = mapper.toProduct(work, venueMetadata);
+        Product product = mapper.toProduct(work,
+                CrossrefTypeMapping.isXmlVenueEnrichable(work) ? venueEnricher.fetchVenueMetadata(doi).orElse(null) :
+                        null);
         String selfHref = JsonLdResponses.selfLink(uriInfo, RESOURCE_PATH, doi);
-
-        MetaSingleEntity meta = new MetaSingleEntity()
-                .localIdentifier(selfHref)
-                .entityType(MetaSingleEntity.EntityTypeEnum.SINGLE_ENTITY);
 
         String contextBase = JsonLdResponses.contextBaseFor(Optional.<String>empty(), sandboxBaseUrl,
                 fallbackContextBase);
-        return JsonLdResponses.singleEntityResponse(objectMapper, contextBase, meta, product);
+        return JsonLdResponses.singleEntityResponse(objectMapper, contextBase,
+                JsonLdResponses.singleEntityMeta(selfHref), product);
     }
 
     /**
@@ -212,30 +198,13 @@ public class CrossrefProductsResource {
             }
         }
 
-        String selfPageHref = JsonLdResponses.pageLink(uriInfo, RESOURCE_PATH, filter, pageNumber, size);
-
-        MetaSearch meta = new MetaSearch()
-                .localIdentifier(selfPageHref)
-                .entityType(MetaSearch.EntityTypeEnum.SEARCH_RESULT_PAGE)
-                .apiItems(apiItems);
-        if (offset + size < totalResults) {
-            meta.nextPage(new SearchResultPage()
-                    .localIdentifier(JsonLdResponses.pageLink(uriInfo, RESOURCE_PATH, filter, pageNumber + 1, size))
-                    .entityType(SearchResultPage.EntityTypeEnum.SEARCH_RESULT_PAGE));
-        }
-        if (pageNumber > FIRST_PAGE_NUMBER) {
-            meta.prevPage(new SearchResultPage()
-                    .localIdentifier(JsonLdResponses.pageLink(uriInfo, RESOURCE_PATH, filter, pageNumber - 1, size))
-                    .entityType(SearchResultPage.EntityTypeEnum.SEARCH_RESULT_PAGE));
-        }
-        meta.partOf(new MetaSearchPartOf()
-                .localIdentifier(JsonLdResponses.collectionLink(uriInfo, RESOURCE_PATH, filter))
-                .entityType(MetaSearchPartOf.EntityTypeEnum.SEARCH_RESULT)
-                .totalItems((int) totalResults));
-
+        boolean hasNext = offset + size < totalResults;
         String contextBase = JsonLdResponses.contextBaseFor(Optional.<String>empty(), sandboxBaseUrl,
                 fallbackContextBase);
-        return JsonLdResponses.searchResultsResponse(objectMapper, contextBase, meta, products);
+        return JsonLdResponses.searchResultsResponse(objectMapper, contextBase,
+                JsonLdResponses.searchMeta(new JsonLdResponses.SearchPage(uriInfo, RESOURCE_PATH, filter, pageNumber,
+                        size), totalResults, hasNext, apiItems),
+                products);
     }
 
     private String withPrefix(String filter) {
@@ -261,30 +230,5 @@ public class CrossrefProductsResource {
 
     private Response notFound(String requestedId) {
         return JsonLdResponses.notFound("No product found for local_identifier '" + requestedId + "'");
-    }
-
-    /**
-     * Fetches and parses Crossref's XML transform for a chapter-in-a-book or paper-in-proceedings
-     * record (see {@code CrossrefTypeMapping#isXmlVenueEnrichable}), used to build an accurate
-     * Venue - see {@code CrossrefBiblioMapper#venue}. Only called from the single-item {@code
-     * getProductById} endpoint, not the list endpoint below (which would otherwise mean N extra
-     * Crossref HTTP calls per page). Any failure - non-200 response, network/timeout error, or a
-     * shape the parser doesn't recognize - degrades to {@code null}, so the caller falls back to
-     * the existing {@code container-title[0]} venue rather than failing the whole product
-     * response over an enrichment call.
-     *
-     * @param doi the DOI to fetch XML venue metadata for
-     * @return the parsed venue metadata, or Optional.empty() if the fetch/parse fails or finds
-     *         nothing
-     */
-    private Optional<CrossrefVenueMetadata> fetchVenueMetadata(String doi) {
-        try (Response response = crossrefXmlTransformClient.getXmlTransform(doi)) {
-            if (response.getStatus() != Response.Status.OK.getStatusCode()) {
-                return Optional.empty();
-            }
-            return CrossrefVenueMetadataXmlParser.parse(response.readEntity(String.class));
-        } catch (RuntimeException e) {
-            return Optional.empty();
-        }
     }
 }

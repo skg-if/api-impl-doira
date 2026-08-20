@@ -9,10 +9,6 @@ import org.skgif.doi.datacite.dto.DataCiteDoiResponse;
 import org.skgif.doi.datacite.mapper.DataCiteToSkgIfMapper;
 import org.skgif.doi.generated.model.ApiItem;
 import org.skgif.doi.generated.model.Grant;
-import org.skgif.doi.generated.model.MetaSearch;
-import org.skgif.doi.generated.model.MetaSearchPartOf;
-import org.skgif.doi.generated.model.MetaSingleEntity;
-import org.skgif.doi.generated.model.SearchResultPage;
 import org.skgif.doi.util.LocalIdentifiers;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
@@ -45,7 +41,6 @@ import java.util.Optional;
 public class DataCiteGrantsResource {
 
     private static final String RESOURCE_PATH = "/datacite/grants";
-    private static final int FIRST_PAGE_NUMBER = 1;
 
     private final DataCiteClient dataCiteClient;
     private final DataCiteToSkgIfMapper mapper;
@@ -121,12 +116,9 @@ public class DataCiteGrantsResource {
         Grant grant = mapper.toGrant(data.attributes());
         String selfHref = JsonLdResponses.selfLink(uriInfo, RESOURCE_PATH, doi);
 
-        MetaSingleEntity meta = new MetaSingleEntity()
-                .localIdentifier(selfHref)
-                .entityType(MetaSingleEntity.EntityTypeEnum.SINGLE_ENTITY);
-
         String contextBase = JsonLdResponses.contextBaseFor(data, sandboxBaseUrl, fallbackContextBase);
-        return JsonLdResponses.singleEntityResponse(objectMapper, contextBase, meta, grant);
+        return JsonLdResponses.singleEntityResponse(objectMapper, contextBase,
+                JsonLdResponses.singleEntityMeta(selfHref), grant);
     }
 
     /**
@@ -175,29 +167,12 @@ public class DataCiteGrantsResource {
         }
 
         long total = response.meta() != null ? response.meta().total() : grants.size();
-        String selfPageHref = JsonLdResponses.pageLink(uriInfo, RESOURCE_PATH, filter, pageNumber, size);
-
-        MetaSearch meta = new MetaSearch()
-                .localIdentifier(selfPageHref)
-                .entityType(MetaSearch.EntityTypeEnum.SEARCH_RESULT_PAGE)
-                .apiItems(apiItems);
-        if (hasMorePages(response, pageNumber)) {
-            meta.nextPage(new SearchResultPage()
-                    .localIdentifier(JsonLdResponses.pageLink(uriInfo, RESOURCE_PATH, filter, pageNumber + 1, size))
-                    .entityType(SearchResultPage.EntityTypeEnum.SEARCH_RESULT_PAGE));
-        }
-        if (pageNumber > FIRST_PAGE_NUMBER) {
-            meta.prevPage(new SearchResultPage()
-                    .localIdentifier(JsonLdResponses.pageLink(uriInfo, RESOURCE_PATH, filter, pageNumber - 1, size))
-                    .entityType(SearchResultPage.EntityTypeEnum.SEARCH_RESULT_PAGE));
-        }
-        meta.partOf(new MetaSearchPartOf()
-                .localIdentifier(JsonLdResponses.collectionLink(uriInfo, RESOURCE_PATH, filter))
-                .entityType(MetaSearchPartOf.EntityTypeEnum.SEARCH_RESULT)
-                .totalItems((int) total));
-
+        boolean hasNext = hasMorePages(response, pageNumber);
         String contextBase = JsonLdResponses.contextBaseFor(response.data(), sandboxBaseUrl, fallbackContextBase);
-        return JsonLdResponses.searchResultsResponse(objectMapper, contextBase, meta, grants);
+        return JsonLdResponses.searchResultsResponse(objectMapper, contextBase,
+                JsonLdResponses.searchMeta(new JsonLdResponses.SearchPage(uriInfo, RESOURCE_PATH, filter, pageNumber,
+                        size), total, hasNext, apiItems),
+                grants);
     }
 
     private boolean hasMorePages(DataCiteDoiListResponse response, int currentPage) {
