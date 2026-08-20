@@ -17,6 +17,7 @@
     <openapi-generator.version>7.24.0</openapi-generator.version>
     <jackson-databind-nullable.version>0.2.6</jackson-databind-nullable.version>
     <surefire-plugin.version>3.5.2</surefire-plugin.version>
+    <jacoco-maven-plugin.version>0.8.15</jacoco-maven-plugin.version>
   </properties>
 
   <dependencyManagement>
@@ -157,6 +158,34 @@
             <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
           </systemPropertyVariables>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>${jacoco-maven-plugin.version}</version>
+        <configuration>
+          <skip>${skipTests}</skip>
+          <excludes>
+            <!-- OpenAPI-generated DTOs (getters/setters/builders/equals/hashCode) - not
+                 hand-written, so coverage on them isn't meaningful. -->
+            <exclude>org/skgif/doi/generated/model/**</exclude>
+          </excludes>
+        </configuration>
+        <executions>
+          <execution>
+            <id>jacoco-prepare-agent</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>jacoco-report</id>
+            <phase>test</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <!--
