@@ -32,6 +32,11 @@ public final class LicenceMapper {
                 .status(open ? ProductManifestationAccessRights.StatusEnum.OPEN : null));
     }
 
+    // Sole call site is accessRights' `licenceUrls.stream().anyMatch(LicenceMapper::isOpenLicence)`
+    // above - PMD's symbol table doesn't reliably trace a private method through a method
+    // reference passed as a Predicate<String> argument once the generated OpenAPI sources are on
+    // the compile classpath, so it misreports this method as unused.
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
     private static boolean isOpenLicence(String licenceUrl) {
         return licenceUrl != null && licenceUrl.contains(CREATIVE_COMMONS_MARKER);
     }

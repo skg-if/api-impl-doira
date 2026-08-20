@@ -142,11 +142,21 @@ final class CrossrefFilters {
         GRANT_CLAUSE_BUILDERS.put(GrantFilterKeys.CF_SEARCH_TITLE_ABSTRACT, CrossrefFilters::queryBibliographicClause);
     }
 
+    // Sole call site is toProductsQuery's `parse(filter, PRODUCT_SUPPORTED,
+    // CrossrefFilters::toProductClause)` above - PMD's symbol table doesn't reliably trace a
+    // private method through a method reference passed as the ClauseBuilder argument once the
+    // generated OpenAPI sources are on the compile classpath, so it misreports this method as
+    // unused.
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
     private static String toProductClause(String key, String value, ParsedFilter.Builder builder) {
         return PRODUCT_CLAUSE_BUILDERS.getOrDefault(ProductFilterKeys.fromKey(key), (v, b) -> null)
                 .clause(value, builder);
     }
 
+    // Sole call site is toGrantsQuery's `parse(filter, GRANT_SUPPORTED,
+    // CrossrefFilters::toGrantClause)` above - same method-reference blind spot as
+    // toProductClause above.
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
     private static String toGrantClause(String key, String value, ParsedFilter.Builder builder) {
         return GRANT_CLAUSE_BUILDERS.getOrDefault(GrantFilterKeys.fromKey(key), (v, b) -> null)
                 .clause(value, builder);

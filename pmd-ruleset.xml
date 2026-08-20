@@ -25,19 +25,6 @@
   -->
   <exclude-pattern>.*[/\\]src[/\\]test[/\\]java[/\\].*</exclude-pattern>
 
-  <rule ref="category/java/bestpractices.xml">
-    <!--
-      UnusedPrivateMethod disabled: only ever fired on methods whose sole call site is a method
-      reference (e.g. `this::isOpenLicence` in a stream().anyMatch(), `DataCiteGrantFilters::toClause`
-      passed as a ClauseBuilder) - PMD's symbol table doesn't reliably trace usage through method
-      references once the generated OpenAPI sources are on the compile classpath (these 4
-      violations only appeared in a full `mvn clean test` run, not a standalone `pmd:check`).
-      All 4 methods are genuinely called; rewriting them into explicit lambdas just to satisfy a
-      buggy analysis isn't worth the churn.
-    -->
-    <exclude name="UnusedPrivateMethod"/>
-  </rule>
-
   <rule ref="category/java/errorprone.xml">
     <!--
       AvoidDuplicateLiterals disabled here so its maxDuplicateLiterals property can be overridden
@@ -238,8 +225,10 @@
       SequencedCollection, so `list.get(0)` and `list.get(list.size() - 1)` should be
       `list.getFirst()`/`list.getLast()` - clearer intent and O(1) regardless of the underlying
       List implementation. Deliberately does not attempt full type resolution (PMD's symbol table
-      is unreliable on generated-source-heavy compile classpaths per this ruleset's
-      UnusedPrivateMethod exclusion above) - instead matches the syntactic `get(0)` /
+      is unreliable on generated-source-heavy compile classpaths - see the per-method
+      @SuppressWarnings("PMD.UnusedPrivateMethod") call sites in LicenceMapper, DataCiteGrantFilters,
+      DataCiteProductFilters, and CrossrefFilters for the same symbol-table limitation showing up
+      as a different rule) - instead matches the syntactic `get(0)` /
       `get(same-receiver.size() - 1)` shape directly. This means it can, in principle, also fire
       on a non-List custom type with a `get(int)` method (e.g. a hand-rolled `Row`/`Tuple` class) -
       no such type exists in this codebase today, but if one is introduced, exclude that call site
