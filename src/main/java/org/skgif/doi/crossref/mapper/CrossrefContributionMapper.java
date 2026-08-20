@@ -107,17 +107,13 @@ final class CrossrefContributionMapper {
      * @return the mapped affiliations, or an empty list if affiliations is null/empty
      */
     static List<ProductAllOfRelevantOrganisations> affiliations(String doi, List<CrossrefAffiliation> affiliations) {
-        if (affiliations == null || affiliations.isEmpty()) {
-            return List.of();
-        }
-        List<ProductAllOfRelevantOrganisations> result = new ArrayList<>();
-        for (CrossrefAffiliation affiliation : affiliations) {
-            if (affiliation.name() == null) {
-                continue;
-            }
-            result.add(EntityRefs.organisationRef(doi, affiliation.name(), firstRor(affiliation.id()).orElse(null)));
-        }
-        return result;
+        return Optional.ofNullable(affiliations)
+                .orElseGet(List::of)
+                .stream()
+                .filter(affiliation -> affiliation.name() != null)
+                .<ProductAllOfRelevantOrganisations>map(affiliation -> EntityRefs.organisationRef(doi,
+                        affiliation.name(), firstRor(affiliation.id()).orElse(null)))
+                .toList();
     }
 
     static Optional<String> firstRor(List<CrossrefIdEntry> ids) {

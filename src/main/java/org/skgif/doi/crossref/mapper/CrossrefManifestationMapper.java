@@ -92,6 +92,6 @@ final class CrossrefManifestationMapper {
     }
 
     private List<String> licenceUrls(CrossrefWork work) {
-        return work.license() == null ? List.of() : work.license().stream().map(CrossrefLicense::url).toList();
+        return Optional.ofNullable(work.license()).orElseGet(List::of).stream().map(CrossrefLicense::url).toList();
     }
 }

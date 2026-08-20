@@ -1,13 +1,11 @@
 package org.skgif.doi.datacite.mapper;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
 import org.skgif.doi.datacite.dto.DataCiteDescription;
-import org.skgif.doi.datacite.dto.DataCiteSubject;
-import org.skgif.doi.generated.model.ProductAllOfTerm;
 import org.skgif.doi.generated.model.ProductAllOfTopics;
 import org.skgif.doi.generated.model.Topic;
 import org.skgif.doi.util.MapperTextUtils;
@@ -53,17 +51,18 @@ final class DataCiteTitleMapper {
     }
 
     private static List<String> titleValues(DataCiteAttributes attributes) {
-        if (attributes.titles() == null || attributes.titles().isEmpty()) {
-            return List.of();
-        }
-        return attributes.titles().stream().map(DataCiteAttributes.Title::title).filter(Objects::nonNull).toList();
+        return Optional.ofNullable(attributes.titles())
+                .orElseGet(List::of)
+                .stream()
+                .map(DataCiteAttributes.Title::title)
+                .filter(Objects::nonNull)
+                .toList();
     }
 
     private static List<String> abstractValues(DataCiteAttributes attributes) {
-        if (attributes.descriptions() == null) {
-            return List.of();
-        }
-        return attributes.descriptions().stream()
+        return Optional.ofNullable(attributes.descriptions())
+                .orElseGet(List::of)
+                .stream()
                 .filter(d -> "Abstract".equals(d.descriptionType()))
                 .map(DataCiteDescription::description)
                 .filter(Objects::nonNull)
@@ -71,23 +70,17 @@ final class DataCiteTitleMapper {
     }
 
     static List<ProductAllOfTopics> topics(DataCiteAttributes attributes) {
-        if (attributes.subjects() == null || attributes.subjects().isEmpty()) {
-            return List.of();
-        }
-        List<ProductAllOfTopics> topics = new ArrayList<>();
-        for (DataCiteSubject subject : attributes.subjects()) {
-            if (subject.subject() == null) {
-                continue;
-            }
-            String lang = subject.lang() != null ? subject.lang() : "none";
-            // DataCite subjects have no external identifier system behind them, so this is
-            // always an otf id - there's nothing more stable to hang it off.
-            ProductAllOfTerm term = new Topic()
-                    .localIdentifier(MapperTextUtils.otf(attributes.doi(), subject.subject()))
-                    .entityType(Topic.EntityTypeEnum.TOPIC)
-                    .labels(Map.of(lang, subject.subject()));
-            topics.add(new ProductAllOfTopics().term(term));
-        }
-        return topics;
+        return Optional.ofNullable(attributes.subjects()).orElseGet(List::of).stream()
+                .filter(subject -> subject.subject() != null)
+                .map(subject -> {
+                    String lang = subject.lang() != null ? subject.lang() : "none";
+                    // DataCite subjects have no external identifier system behind them, so this
+                    // is always an otf id - there's nothing more stable to hang it off.
+                    return new ProductAllOfTopics().term(new Topic()
+                            .localIdentifier(MapperTextUtils.otf(attributes.doi(), subject.subject()))
+                            .entityType(Topic.EntityTypeEnum.TOPIC)
+                            .labels(Map.of(lang, subject.subject())));
+                })
+                .toList();
     }
 }

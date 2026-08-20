@@ -96,10 +96,8 @@ public class DataCiteToSkgIfMapper implements GrantCapableMapper<DataCiteAttribu
     public Grant toGrant(DataCiteAttributes attributes) {
         Objects.requireNonNull(attributes.doi(), "DataCite record has no DOI");
 
-        List<DataCiteCreator> creators = attributes.creators() != null ? attributes.creators() : List.of();
-        List<DataCiteContributor> contributors = attributes.contributors() != null ?
-                attributes.contributors() :
-                List.of();
+        List<DataCiteCreator> creators = Optional.ofNullable(attributes.creators()).orElseGet(List::of);
+        List<DataCiteContributor> contributors = Optional.ofNullable(attributes.contributors()).orElseGet(List::of);
         Optional<DataCiteCreator> fundingAgencyCreator = creators.stream()
                 .filter(c -> DataCiteContributionMapper.firstRor(c.nameIdentifiers()).isPresent())
                 .findFirst();

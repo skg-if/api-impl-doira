@@ -3,6 +3,7 @@ package org.skgif.doi.crossref.mapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import org.skgif.doi.crossref.CrossrefJournalDoiResolver;
 import org.skgif.doi.crossref.CrossrefTypeMapping;
 import org.skgif.doi.crossref.dto.CrossrefFunding;
@@ -119,7 +120,7 @@ public class CrossrefToSkgIfMapper implements GrantCapableMapper<CrossrefWork> {
     public Grant toGrant(CrossrefWork work) {
         Objects.requireNonNull(work.doi(), "Crossref record has no DOI");
 
-        List<CrossrefProject> projects = work.project() != null ? work.project() : List.of();
+        List<CrossrefProject> projects = Optional.ofNullable(work.project()).orElseGet(List::of);
         CrossrefProject primaryProject = projects.isEmpty() ? null : projects.getFirst();
         CrossrefFunding primaryFunding = primaryProject != null && primaryProject.funding() != null &&
                 !primaryProject.funding().isEmpty() ? primaryProject.funding().getFirst() : null;

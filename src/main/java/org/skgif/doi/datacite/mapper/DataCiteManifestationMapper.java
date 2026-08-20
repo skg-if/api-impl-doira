@@ -53,8 +53,10 @@ final class DataCiteManifestationMapper {
     }
 
     private static List<String> licenceUrls(DataCiteAttributes attributes) {
-        return attributes.rightsList() == null ?
-                List.of() :
-                attributes.rightsList().stream().map(DataCiteRights::rightsUri).toList();
+        return Optional.ofNullable(attributes.rightsList())
+                .orElseGet(List::of)
+                .stream()
+                .map(DataCiteRights::rightsUri)
+                .toList();
     }
 }

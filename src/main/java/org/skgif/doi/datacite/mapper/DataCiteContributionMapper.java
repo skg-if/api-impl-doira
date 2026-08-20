@@ -98,40 +98,30 @@ final class DataCiteContributionMapper {
     }
 
     static List<PersonLiteAllOfIdentifiers> orcidIdentifiers(List<DataCiteNameIdentifier> nameIdentifiers) {
-        if (nameIdentifiers == null || nameIdentifiers.isEmpty()) {
-            return List.of();
-        }
-        List<PersonLiteAllOfIdentifiers> identifiers = new ArrayList<>();
-        for (DataCiteNameIdentifier ni : nameIdentifiers) {
-            if (!"ORCID".equalsIgnoreCase(ni.nameIdentifierScheme())) {
-                continue;
-            }
-            String orcid = ni.nameIdentifier();
-            if (orcid != null) {
-                orcid = ExternalIdentifierUrls.stripOrcidUrl(orcid);
-            }
-            identifiers.add(new PersonLiteAllOfIdentifiers()
-                    .scheme("orcid")
-                    .value(orcid));
-        }
-        return identifiers;
+        return Optional.ofNullable(nameIdentifiers)
+                .orElseGet(List::of)
+                .stream()
+                .filter(ni -> "ORCID".equalsIgnoreCase(ni.nameIdentifierScheme()))
+                .map(ni -> new PersonLiteAllOfIdentifiers()
+                        .scheme("orcid")
+                        .value(ni.nameIdentifier() != null ? ExternalIdentifierUrls.stripOrcidUrl(ni.nameIdentifier()) :
+                                null))
+                .toList();
     }
 
     static List<ProductAllOfRelevantOrganisations> affiliations(String doi, List<DataCiteAffiliation> affiliations) {
-        if (affiliations == null || affiliations.isEmpty()) {
-            return List.of();
-        }
-        List<ProductAllOfRelevantOrganisations> result = new ArrayList<>();
-        for (DataCiteAffiliation affiliation : affiliations) {
-            if (affiliation.name() == null) {
-                continue;
-            }
-            boolean hasRor = affiliation.affiliationIdentifier() != null &&
-                    SCHEME_ROR_UPPER.equalsIgnoreCase(affiliation.affiliationIdentifierScheme());
-            String bareRor = hasRor ? ExternalIdentifierUrls.stripRorUrl(affiliation.affiliationIdentifier()) : null;
-            result.add(EntityRefs.organisationRef(doi, affiliation.name(), bareRor));
-        }
-        return result;
+        return Optional.ofNullable(affiliations)
+                .orElseGet(List::of)
+                .stream()
+                .filter(affiliation -> affiliation.name() != null)
+                .<ProductAllOfRelevantOrganisations>map(affiliation -> {
+                    boolean hasRor = affiliation.affiliationIdentifier() != null &&
+                            SCHEME_ROR_UPPER.equalsIgnoreCase(affiliation.affiliationIdentifierScheme());
+                    String bareRor =
+                            hasRor ? ExternalIdentifierUrls.stripRorUrl(affiliation.affiliationIdentifier()) : null;
+                    return EntityRefs.organisationRef(doi, affiliation.name(), bareRor);
+                })
+                .toList();
     }
 
     static Optional<String> firstRor(List<DataCiteNameIdentifier> nameIdentifiers) {

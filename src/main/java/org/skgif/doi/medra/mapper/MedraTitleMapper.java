@@ -1,9 +1,10 @@
 package org.skgif.doi.medra.mapper;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.skgif.doi.medra.dto.MedraTitle;
 import org.skgif.doi.medra.dto.MedraWork;
 
@@ -26,18 +27,18 @@ final class MedraTitleMapper {
      * @return the titles grouped by language, or an empty map if work has none
      */
     static Map<String, List<String>> titles(MedraWork work) {
-        if (work.titles() == null || work.titles().isEmpty()) {
-            return Map.of();
-        }
-        Map<String, List<String>> titles = new LinkedHashMap<>();
-        for (MedraTitle title : work.titles()) {
-            String language = title.language() != null ? title.language() : "en";
-            titles.computeIfAbsent(language, key -> new ArrayList<>()).add(title.text());
-        }
-        return titles;
+        return Optional.ofNullable(work.titles())
+                .orElseGet(List::of)
+                .stream()
+                .collect(Collectors.groupingBy(
+                        title -> title.language() != null ? title.language() : "en",
+                        LinkedHashMap::new,
+                        Collectors.mapping(MedraTitle::text, Collectors.toList())));
     }
 
     static Map<String, List<String>> abstracts(MedraWork work) {
-        return work.abstractText() == null ? Map.of() : Map.of("en", List.of(work.abstractText()));
+        return Optional.ofNullable(work.abstractText())
+                .map(text -> Map.of("en", List.of(text)))
+                .orElseGet(Map::of);
     }
 }

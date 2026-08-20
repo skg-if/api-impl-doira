@@ -61,18 +61,13 @@ final class CrossrefGrantContributionMapper {
     }
 
     static List<GrantAllOfBeneficiaries> grantAffiliations(String doi, List<CrossrefAffiliation> affiliations) {
-        if (affiliations == null || affiliations.isEmpty()) {
-            return List.of();
-        }
-        List<GrantAllOfBeneficiaries> result = new ArrayList<>();
-        for (CrossrefAffiliation affiliation : affiliations) {
-            if (affiliation.name() == null) {
-                continue;
-            }
-            String ror = CrossrefContributionMapper.firstRor(affiliation.id()).orElse(null);
-            result.add(EntityRefs.organisationRef(doi, affiliation.name(), ror));
-        }
-        return result;
+        return Optional.ofNullable(affiliations)
+                .orElseGet(List::of)
+                .stream()
+                .filter(affiliation -> affiliation.name() != null)
+                .<GrantAllOfBeneficiaries>map(affiliation -> EntityRefs.organisationRef(doi, affiliation.name(),
+                        CrossrefContributionMapper.firstRor(affiliation.id()).orElse(null)))
+                .toList();
     }
 
     /**

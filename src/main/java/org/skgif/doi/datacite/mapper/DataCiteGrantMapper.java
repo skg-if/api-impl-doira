@@ -107,20 +107,18 @@ final class DataCiteGrantMapper {
     }
 
     static List<GrantAllOfBeneficiaries> grantAffiliations(String doi, List<DataCiteAffiliation> affiliations) {
-        if (affiliations == null || affiliations.isEmpty()) {
-            return List.of();
-        }
-        List<GrantAllOfBeneficiaries> result = new ArrayList<>();
-        for (DataCiteAffiliation affiliation : affiliations) {
-            if (affiliation.name() == null) {
-                continue;
-            }
-            boolean hasRor = affiliation.affiliationIdentifier() != null &&
-                    SCHEME_ROR_UPPER.equalsIgnoreCase(affiliation.affiliationIdentifierScheme());
-            String bareRor = hasRor ? ExternalIdentifierUrls.stripRorUrl(affiliation.affiliationIdentifier()) : null;
-            result.add(EntityRefs.organisationRef(doi, affiliation.name(), bareRor));
-        }
-        return result;
+        return Optional.ofNullable(affiliations)
+                .orElseGet(List::of)
+                .stream()
+                .filter(affiliation -> affiliation.name() != null)
+                .<GrantAllOfBeneficiaries>map(affiliation -> {
+                    boolean hasRor = affiliation.affiliationIdentifier() != null &&
+                            SCHEME_ROR_UPPER.equalsIgnoreCase(affiliation.affiliationIdentifierScheme());
+                    String bareRor =
+                            hasRor ? ExternalIdentifierUrls.stripRorUrl(affiliation.affiliationIdentifier()) : null;
+                    return EntityRefs.organisationRef(doi, affiliation.name(), bareRor);
+                })
+                .toList();
     }
 
     /**

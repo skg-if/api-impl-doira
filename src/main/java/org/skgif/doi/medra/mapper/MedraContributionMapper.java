@@ -21,12 +21,9 @@ final class MedraContributionMapper {
     }
 
     static List<ProductContribution> contributions(MedraWork work) {
-        if (work.contributors() == null || work.contributors().isEmpty()) {
-            return List.of();
-        }
         List<ProductContribution> contributions = new ArrayList<>();
         int rank = 1;
-        for (MedraContributor contributor : work.contributors()) {
+        for (MedraContributor contributor : Optional.ofNullable(work.contributors()).orElseGet(List::of)) {
             Optional<ProductContributionBy> by = personRef(work.doi(), contributor);
             if (by.isEmpty()) {
                 continue;

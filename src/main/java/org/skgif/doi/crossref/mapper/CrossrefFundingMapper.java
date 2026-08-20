@@ -32,15 +32,12 @@ final class CrossrefFundingMapper {
     }
 
     List<ProductAllOfFunding> funding(CrossrefWork work) {
-        if (work.funder() == null || work.funder().isEmpty()) {
-            return List.of();
-        }
         List<ProductAllOfFunding> result = new ArrayList<>();
-        for (CrossrefFunder funder : work.funder()) {
+        for (CrossrefFunder funder : Optional.ofNullable(work.funder()).orElseGet(List::of)) {
             if (funder.name() == null) {
                 continue;
             }
-            List<String> awards = funder.award() != null ? funder.award() : List.of();
+            List<String> awards = Optional.ofNullable(funder.award()).orElseGet(List::of);
             if (awards.isEmpty()) {
                 result.add(fundingEntry(work.doi(), funder, null));
             } else {

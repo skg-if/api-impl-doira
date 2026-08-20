@@ -1,12 +1,11 @@
 package org.skgif.doi.crossref.mapper;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.skgif.doi.crossref.dto.CrossrefWork;
-import org.skgif.doi.generated.model.ProductAllOfTerm;
 import org.skgif.doi.generated.model.ProductAllOfTopics;
 import org.skgif.doi.generated.model.Topic;
 import org.skgif.doi.util.MapperTextUtils;
@@ -22,10 +21,12 @@ final class CrossrefTitleMapper {
     }
 
     static Map<String, List<String>> titles(CrossrefWork work) {
-        if (work.title() == null || work.title().isEmpty()) {
-            return Map.of();
-        }
-        List<String> values = work.title().stream().filter(Objects::nonNull).toList();
+        List<String> values = Optional.ofNullable(work.title())
+                .orElseGet(List::of)
+                .stream()
+                .filter(t -> t != null && !t.isBlank())
+                .toList();
+
         return values.isEmpty() ? Map.of() : Map.of("en", values);
     }
 
@@ -39,30 +40,23 @@ final class CrossrefTitleMapper {
      * @return the abstract, plain-text and tag-stripped, keyed by "en"; empty map if absent/empty
      */
     static Map<String, List<String>> abstracts(CrossrefWork work) {
-        if (work.abstractText() == null) {
-            return Map.of();
-        }
-        String stripped = work.abstractText().replaceAll("<[^>]+>", "").trim();
-        return stripped.isEmpty() ? Map.of() : Map.of("en", List.of(stripped));
+        return Optional.ofNullable(work.abstractText())
+                .map(text -> text.replaceAll("<[^>]+>", "").trim())
+                .filter(stripped -> !stripped.isEmpty())
+                .map(stripped -> Map.of("en", List.of(stripped)))
+                .orElseGet(Map::of);
     }
 
     static List<ProductAllOfTopics> topics(CrossrefWork work) {
-        if (work.subject() == null || work.subject().isEmpty()) {
-            return List.of();
-        }
-        List<ProductAllOfTopics> topics = new ArrayList<>();
-        for (String subject : work.subject()) {
-            if (subject == null) {
-                continue;
-            }
-            // Crossref subjects (Sci-Val controlled vocabulary) have no external identifier
-            // system behind them, so this is always an otf id - same as DataCite subjects.
-            ProductAllOfTerm term = new Topic()
-                    .localIdentifier(MapperTextUtils.otf(work.doi(), subject))
-                    .entityType(Topic.EntityTypeEnum.TOPIC)
-                    .labels(Map.of("en", subject));
-            topics.add(new ProductAllOfTopics().term(term));
-        }
-        return topics;
+        return Optional.ofNullable(work.subject()).orElseGet(List::of).stream()
+                .filter(Objects::nonNull)
+                // Crossref subjects (Sci-Val controlled vocabulary) have no external identifier
+                // system behind them, so this is always an otf id - same as DataCite subjects.
+                .map(subject -> new ProductAllOfTopics()
+                        .term(new Topic()
+                                .localIdentifier(MapperTextUtils.otf(work.doi(), subject))
+                                .entityType(Topic.EntityTypeEnum.TOPIC)
+                                .labels(Map.of("en", subject))))
+                .toList();
     }
 }

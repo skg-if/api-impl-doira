@@ -1,6 +1,5 @@
 package org.skgif.doi.datacite.mapper;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -34,26 +33,26 @@ final class DataCiteFundingMapper {
     }
 
     List<ProductAllOfFunding> funding(DataCiteAttributes attributes) {
-        if (attributes.fundingReferences() == null || attributes.fundingReferences().isEmpty()) {
-            return List.of();
-        }
-        List<ProductAllOfFunding> result = new ArrayList<>();
-        for (DataCiteFundingReference fundingReference : attributes.fundingReferences()) {
-            // DataCite funding references carry no stable identifier for the grant itself
-            // (unlike the funder, which often has a ROR) - the award number/title is the
-            // closest thing to a natural key, so that's what the otf id is built from.
-            String label = fundingReference.awardNumber() != null ?
-                    fundingReference.awardNumber() :
-                    fundingReference.awardTitle();
-            GrantLite grant = new GrantLite()
-                    .localIdentifier(MapperTextUtils.otf(attributes.doi(), label))
-                    .entityType(GrantLite.EntityTypeEnum.GRANT)
-                    .grantNumber(fundingReference.awardNumber())
-                    .titles(fundingReference.awardTitle() != null ? Map.of("en", fundingReference.awardTitle()) : null)
-                    .fundingAgency(fundingAgency(attributes.doi(), fundingReference).orElse(null));
-            result.add(grant);
-        }
-        return result;
+        return Optional.ofNullable(attributes.fundingReferences())
+                .orElseGet(List::of)
+                .stream()
+                .<ProductAllOfFunding>map(fundingReference -> {
+                    // DataCite funding references carry no stable identifier for the grant
+                    // itself (unlike the funder, which often has a ROR) - the award
+                    // number/title is the closest thing to a natural key, so that's what the
+                    // otf id is built from.
+                    String label = fundingReference.awardNumber() != null ?
+                            fundingReference.awardNumber() :
+                            fundingReference.awardTitle();
+                    return new GrantLite()
+                            .localIdentifier(MapperTextUtils.otf(attributes.doi(), label))
+                            .entityType(GrantLite.EntityTypeEnum.GRANT)
+                            .grantNumber(fundingReference.awardNumber())
+                            .titles(fundingReference.awardTitle() != null ?
+                                    Map.of("en", fundingReference.awardTitle()) : null)
+                            .fundingAgency(fundingAgency(attributes.doi(), fundingReference).orElse(null));
+                })
+                .toList();
     }
 
     /**
