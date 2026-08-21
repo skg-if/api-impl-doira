@@ -147,11 +147,10 @@ public class DataCiteProductsResource {
         }
 
         Product product = mapper.toProduct(data.attributes());
-        String selfHref = JsonLdLinks.selfLink(uriInfo, RESOURCE_PATH, doi);
 
         String contextBase = JsonLdContextBase.contextBaseFor(data, sandboxBaseUrl, fallbackContextBase);
         return JsonLdEnvelopes.singleEntityResponse(objectMapper, contextBase,
-                JsonLdMeta.singleEntityMeta(selfHref), product);
+                JsonLdMeta.singleEntityMeta(uriInfo, RESOURCE_PATH, doi), product);
     }
 
     /**

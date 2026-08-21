@@ -15,7 +15,6 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.openapi.annotations.media.ExampleObject;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.skgif.doi.generated.model.MetaSingleEntity;
 import org.skgif.doi.generated.model.Product;
 import org.skgif.doi.medra.MedraClient;
 import org.skgif.doi.medra.dto.MedraWork;
@@ -24,7 +23,7 @@ import org.skgif.doi.medra.xml.MedraOnixXmlParser;
 import org.skgif.doi.rest.JsonLdContextBase;
 import org.skgif.doi.rest.JsonLdEnvelopes;
 import org.skgif.doi.rest.JsonLdErrors;
-import org.skgif.doi.rest.JsonLdLinks;
+import org.skgif.doi.rest.JsonLdMeta;
 import org.skgif.doi.util.LocalIdentifiers;
 
 /**
@@ -121,15 +120,11 @@ public class MedraProductsResource {
         }
 
         Product product = mapper.toProduct(work.get());
-        String selfHref = JsonLdLinks.selfLink(uriInfo, RESOURCE_PATH, doi);
-
-        MetaSingleEntity meta = new MetaSingleEntity()
-                .localIdentifier(selfHref)
-                .entityType(MetaSingleEntity.EntityTypeEnum.SINGLE_ENTITY);
 
         String contextBase =
                 JsonLdContextBase.contextBaseFor(Optional.<String>empty(), sandboxBaseUrl, fallbackContextBase);
-        return JsonLdEnvelopes.singleEntityResponse(objectMapper, contextBase, meta, product);
+        return JsonLdEnvelopes.singleEntityResponse(objectMapper, contextBase,
+                JsonLdMeta.singleEntityMeta(uriInfo, RESOURCE_PATH, doi), product);
     }
 
     private Response notFound(String requestedId) {

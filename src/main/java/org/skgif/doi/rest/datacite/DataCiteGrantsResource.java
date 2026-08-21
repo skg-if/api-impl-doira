@@ -124,11 +124,10 @@ public class DataCiteGrantsResource {
         }
 
         Grant grant = mapper.toGrant(data.attributes());
-        String selfHref = JsonLdLinks.selfLink(uriInfo, RESOURCE_PATH, doi);
 
         String contextBase = JsonLdContextBase.contextBaseFor(data, sandboxBaseUrl, fallbackContextBase);
         return JsonLdEnvelopes.singleEntityResponse(objectMapper, contextBase,
-                JsonLdMeta.singleEntityMeta(selfHref), grant);
+                JsonLdMeta.singleEntityMeta(uriInfo, RESOURCE_PATH, doi), grant);
     }
 
     /**

@@ -12,7 +12,6 @@ import org.skgif.doi.rest.FilterQuerySyntax;
 import org.skgif.doi.rest.JsonLdContextBase;
 import org.skgif.doi.rest.JsonLdEnvelopes;
 import org.skgif.doi.rest.JsonLdErrors;
-import org.skgif.doi.rest.JsonLdLinks;
 import org.skgif.doi.rest.JsonLdMeta;
 import org.skgif.doi.rest.RequestPagination;
 import org.skgif.doi.util.LocalIdentifiers;
@@ -150,12 +149,11 @@ public class CrossrefProductsResource {
         Product product = mapper.toProduct(work,
                 CrossrefTypeMapping.isXmlVenueEnrichable(work) ? venueEnricher.fetchVenueMetadata(doi).orElse(null) :
                         null);
-        String selfHref = JsonLdLinks.selfLink(uriInfo, RESOURCE_PATH, doi);
 
         String contextBase = JsonLdContextBase.contextBaseFor(Optional.<String>empty(), sandboxBaseUrl,
                 fallbackContextBase);
         return JsonLdEnvelopes.singleEntityResponse(objectMapper, contextBase,
-                JsonLdMeta.singleEntityMeta(selfHref), product);
+                JsonLdMeta.singleEntityMeta(uriInfo, RESOURCE_PATH, doi), product);
     }
 
     /**

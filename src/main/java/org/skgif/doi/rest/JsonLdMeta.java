@@ -50,6 +50,19 @@ public final class JsonLdMeta {
     }
 
     /**
+     * Builds the single-entity meta block, computing this API's self link from the request
+     * context - the shared shape of every provider's {@code get*ById} endpoint.
+     *
+     * @param uriInfo      the current request URI, used to derive this API's base URL
+     * @param resourcePath the resource's own base path (e.g. {@code /datacite/products})
+     * @param doi          the entity's DOI
+     * @return the single-entity meta block
+     */
+    public static MetaSingleEntity singleEntityMeta(UriInfo uriInfo, String resourcePath, String doi) {
+        return singleEntityMeta(JsonLdLinks.selfLink(uriInfo, resourcePath, doi));
+    }
+
+    /**
      * The page-identifying context a search-results meta block is built from - bundled into one
      * record since {@link #searchMeta} would otherwise take more parameters than checkstyle's
      * ParameterNumber limit allows.

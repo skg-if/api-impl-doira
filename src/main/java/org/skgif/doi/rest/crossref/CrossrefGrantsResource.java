@@ -12,7 +12,6 @@ import org.skgif.doi.rest.FilterQuerySyntax;
 import org.skgif.doi.rest.JsonLdContextBase;
 import org.skgif.doi.rest.JsonLdEnvelopes;
 import org.skgif.doi.rest.JsonLdErrors;
-import org.skgif.doi.rest.JsonLdLinks;
 import org.skgif.doi.rest.JsonLdMeta;
 import org.skgif.doi.rest.RequestPagination;
 import org.skgif.doi.util.LocalIdentifiers;
@@ -122,12 +121,11 @@ public class CrossrefGrantsResource {
         }
 
         Grant grant = mapper.toGrant(work);
-        String selfHref = JsonLdLinks.selfLink(uriInfo, RESOURCE_PATH, doi);
 
         String contextBase = JsonLdContextBase.contextBaseFor(Optional.<String>empty(), sandboxBaseUrl,
                 fallbackContextBase);
         return JsonLdEnvelopes.singleEntityResponse(objectMapper, contextBase,
-                JsonLdMeta.singleEntityMeta(selfHref), grant);
+                JsonLdMeta.singleEntityMeta(uriInfo, RESOURCE_PATH, doi), grant);
     }
 
     /**
