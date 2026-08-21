@@ -45,6 +45,35 @@ record of what the skill used to get wrong.
 
 ---
 
+## `skg-if-format` claims Spotless doesn't run automatically, but it does
+
+- Date: 2026-08-21
+- Skill: `skg-if-format/SKILL.md`
+- Symptom: while building/verifying the `openrewrite-refactor-toolbox` skill,
+  a plain `mvn -q -B compile test-compile` (no spotless goal invoked
+  explicitly) failed with `[ERROR] Failed to execute goal
+  com.diffplug.spotless:spotless-maven-plugin:2.46.1:check
+  (spotless-check)...` - contradicting `skg-if-format/SKILL.md`'s opening
+  paragraph, which says the plugin's `process-sources` binding "is currently
+  commented out in `pom.xml`... so right now Spotless does **not** run
+  automatically on `mvn compile`/`test`/`package`."
+- Root cause: `pom.xml` (around line 197-240) currently has an *active*
+  `spotless-check` execution bound to `process-sources`, positioned before
+  `pmd-check` and the checkstyle executions (also `process-sources`) via POM
+  declaration order - the plugin's own inline comment explains this ordering
+  is deliberate. The skill doc's claim that this binding is commented out is
+  stale relative to the current `pom.xml` - the doc does say to "re-check
+  `pom.xml` before relying on this if that comment is ever removed," but
+  didn't catch that it already had been.
+- Fix: not yet fixed in `skg-if-format/SKILL.md` itself (out of scope for the
+  session that found it - it was authoring a different skill). Whoever next
+  touches `skg-if-format` should update the opening paragraph to match
+  current `pom.xml`, or reconsider whether to keep asserting the binding's
+  state at all given it's already drifted once.
+- Status: Open
+
+---
+
 ## `*> build.log` / `Select-String` example runs in Bash, `*` glob-expands into `mvn`'s arguments
 
 - Date: 2026-08-21
