@@ -71,7 +71,7 @@ final class DataCiteProductFilters {
     static {
         CLAUSE_BUILDERS.put(ProductFilterKeys.PRODUCT_TYPE, DataCiteProductFilters::productTypeClause);
         CLAUSE_BUILDERS.put(ProductFilterKeys.IDENTIFIERS_ID,
-                value -> IdentifierScheme.DOI.value() + ":\"" + escape(value) + "\"");
+                value -> FilterQuerySyntax.quotedFieldClause(IdentifierScheme.DOI.value(), value));
         // We only ever expose doi identifiers, so any other requested scheme never matches.
         CLAUSE_BUILDERS.put(ProductFilterKeys.IDENTIFIERS_SCHEME,
                 value -> FilterQuerySyntax.schemeOnlyFilter(value, IdentifierScheme.DOI.value(), NO_MATCH_CLAUSE));
@@ -83,7 +83,10 @@ final class DataCiteProductFilters {
                 // by.local_identifier is already the full https://orcid.org/... URL when
                 // known (or an unguessable otf id otherwise, which harmlessly never
                 // matches) - DataCite stores nameIdentifier in that same full-URL form.
-                value -> FilterQuerySyntax.creatorOrContributorClause("nameIdentifiers.nameIdentifier", value));
+                value -> FilterQuerySyntax.creatorOrContributorClause(
+                        DataCiteQueryField.DATACITE_FILTER_CREATORS_NAME_IDENTIFIERS_NAME_IDENTIFIER.value(),
+                        DataCiteQueryField.DATACITE_FILTER_CONTRIBUTORS_NAME_IDENTIFIERS_NAME_IDENTIFIER.value(),
+                        value));
         UnaryOperator<String> orcidClauseBuilder = DataCiteProductFilters::orcidClause;
         CLAUSE_BUILDERS.put(ProductFilterKeys.CF_CONTRIBUTIONS_ORCID, orcidClauseBuilder);
         CLAUSE_BUILDERS.put(ProductFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_ID, orcidClauseBuilder);
@@ -91,18 +94,27 @@ final class DataCiteProductFilters {
         CLAUSE_BUILDERS.put(ProductFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME,
                 value -> FilterQuerySyntax.schemeOnlyFilter(value, IdentifierScheme.ORCID.value(), NO_MATCH_CLAUSE));
         CLAUSE_BUILDERS.put(ProductFilterKeys.CONTRIBUTIONS_BY_FAMILY_NAME,
-                value -> FilterQuerySyntax.creatorOrContributorClause("familyName", value));
+                value -> FilterQuerySyntax.creatorOrContributorClause(
+                        DataCiteQueryField.DATACITE_FILTER_CREATORS_FAMILY_NAME.value(),
+                        DataCiteQueryField.DATACITE_FILTER_CONTRIBUTORS_FAMILY_NAME.value(), value));
         CLAUSE_BUILDERS.put(ProductFilterKeys.CONTRIBUTIONS_BY_GIVEN_NAME,
-                value -> FilterQuerySyntax.creatorOrContributorClause("givenName", value));
+                value -> FilterQuerySyntax.creatorOrContributorClause(
+                        DataCiteQueryField.DATACITE_FILTER_CREATORS_GIVEN_NAME.value(),
+                        DataCiteQueryField.DATACITE_FILTER_CONTRIBUTORS_GIVEN_NAME.value(), value));
         CLAUSE_BUILDERS.put(ProductFilterKeys.CONTRIBUTIONS_BY_NAME,
-                value -> FilterQuerySyntax.creatorOrContributorClause("name", value));
+                value -> FilterQuerySyntax.creatorOrContributorClause(
+                        DataCiteQueryField.DATACITE_FILTER_CREATORS_NAME.value(),
+                        DataCiteQueryField.DATACITE_FILTER_CONTRIBUTORS_NAME.value(), value));
 
         // contributions.declared_affiliations.* - same creators[]/contributors[] duality.
         CLAUSE_BUILDERS.put(ProductFilterKeys.CONTRIBUTIONS_DECLARED_AFFILIATIONS_LOCAL_IDENTIFIER,
                 // Mirrors by.local_identifier above: already a full https://ror.org/... URL
                 // when known, matching DataCite's own stored affiliationIdentifier format
                 // (confirmed live: 15166 matches for the full-URL form vs. 2 for bare).
-                value -> FilterQuerySyntax.creatorOrContributorClause("affiliation.affiliationIdentifier", value));
+                value -> FilterQuerySyntax.creatorOrContributorClause(
+                        DataCiteQueryField.DATACITE_FILTER_CREATORS_AFFILIATION_AFFILIATION_IDENTIFIER.value(),
+                        DataCiteQueryField.DATACITE_FILTER_CONTRIBUTORS_AFFILIATION_AFFILIATION_IDENTIFIER.value(),
+                        value));
         UnaryOperator<String> rorClauseBuilder = DataCiteProductFilters::rorClause;
         CLAUSE_BUILDERS.put(ProductFilterKeys.CONTRIBUTIONS_DECLARED_AFFILIATIONS_IDENTIFIERS_ID, rorClauseBuilder);
         CLAUSE_BUILDERS.put(ProductFilterKeys.CF_CONTRIBUTIONS_AFF_ROR, rorClauseBuilder);
@@ -110,10 +122,13 @@ final class DataCiteProductFilters {
         CLAUSE_BUILDERS.put(ProductFilterKeys.CONTRIBUTIONS_DECLARED_AFFILIATIONS_IDENTIFIERS_SCHEME,
                 value -> FilterQuerySyntax.schemeOnlyFilter(value, IdentifierScheme.ROR.value(), NO_MATCH_CLAUSE));
         CLAUSE_BUILDERS.put(ProductFilterKeys.CONTRIBUTIONS_DECLARED_AFFILIATIONS_NAME,
-                value -> FilterQuerySyntax.creatorOrContributorClause("affiliation.name", value));
+                value -> FilterQuerySyntax.creatorOrContributorClause(
+                        DataCiteQueryField.DATACITE_FILTER_CREATORS_AFFILIATION_NAME.value(),
+                        DataCiteQueryField.DATACITE_FILTER_CONTRIBUTORS_AFFILIATION_NAME.value(), value));
 
         CLAUSE_BUILDERS.put(ProductFilterKeys.FUNDING_GRANT_NUMBER,
-                value -> "fundingReferences.awardNumber:\"" + escape(value) + "\"");
+                value -> FilterQuerySyntax.quotedFieldClause(
+                        DataCiteQueryField.DATACITE_FILTER_FUNDING_REFERENCES_AWARD_NUMBER.value(), value));
 
         UnaryOperator<String> searchClauseBuilder = DataCiteProductFilters::escape;
         CLAUSE_BUILDERS.put(ProductFilterKeys.CF_SEARCH_TITLE, searchClauseBuilder);
@@ -123,8 +138,9 @@ final class DataCiteProductFilters {
         // same clause as cites_doi/cited_by_doi (relationType direction isn't reliably
         // scopable to the same relatedIdentifiers array element in a flat query string -
         // a pre-existing simplification, not something introduced here).
-        UnaryOperator<String> citesClauseBuilder = value -> "relatedIdentifiers.relatedIdentifier:\"" +
-                escape(ExternalIdentifierUrls.stripDoiUrl(value)) + "\"";
+        UnaryOperator<String> citesClauseBuilder = value -> FilterQuerySyntax.quotedFieldClause(
+                DataCiteQueryField.DATACITE_FILTER_RELATED_IDENTIFIERS_RELATED_IDENTIFIER.value(),
+                ExternalIdentifierUrls.stripDoiUrl(value));
         CLAUSE_BUILDERS.put(ProductFilterKeys.CF_CITES, citesClauseBuilder);
         CLAUSE_BUILDERS.put(ProductFilterKeys.CF_CITED_BY, citesClauseBuilder);
         CLAUSE_BUILDERS.put(ProductFilterKeys.CF_CITES_DOI, citesClauseBuilder);
@@ -161,8 +177,9 @@ final class DataCiteProductFilters {
         if (resourceTypes.isEmpty()) {
             return NO_MATCH_CLAUSE;
         }
+        String field = DataCiteQueryField.DATACITE_FILTER_TYPES_RESOURCE_TYPE_GENERAL.value();
         return "(" + resourceTypes.stream()
-                .map(resourceType -> "types.resourceTypeGeneral:\"" + resourceType + "\"")
+                .map(resourceType -> FilterQuerySyntax.quotedFieldClause(field, resourceType))
                 .collect(Collectors.joining(" OR ")) + ")";
     }
 
@@ -173,7 +190,9 @@ final class DataCiteProductFilters {
      * @return a Lucene clause matching bareOrcid as a full ORCID URL, on either role
      */
     private static String orcidClause(String bareOrcid) {
-        return FilterQuerySyntax.creatorOrContributorClause("nameIdentifiers.nameIdentifier",
+        return FilterQuerySyntax.creatorOrContributorClause(
+                DataCiteQueryField.DATACITE_FILTER_CREATORS_NAME_IDENTIFIERS_NAME_IDENTIFIER.value(),
+                DataCiteQueryField.DATACITE_FILTER_CONTRIBUTORS_NAME_IDENTIFIERS_NAME_IDENTIFIER.value(),
                 ExternalIdentifierUrls.ORCID_BASE_URL + bareOrcid);
     }
 
@@ -184,7 +203,9 @@ final class DataCiteProductFilters {
      * @return a Lucene clause matching bareRor as a full ROR URL, on either role's affiliation
      */
     private static String rorClause(String bareRor) {
-        return FilterQuerySyntax.creatorOrContributorClause("affiliation.affiliationIdentifier",
+        return FilterQuerySyntax.creatorOrContributorClause(
+                DataCiteQueryField.DATACITE_FILTER_CREATORS_AFFILIATION_AFFILIATION_IDENTIFIER.value(),
+                DataCiteQueryField.DATACITE_FILTER_CONTRIBUTORS_AFFILIATION_AFFILIATION_IDENTIFIER.value(),
                 ExternalIdentifierUrls.ROR_BASE_URL + bareRor);
     }
 

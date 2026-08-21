@@ -176,7 +176,8 @@ public class DataCiteProductsResource {
             return JsonLdErrors.invalidFilter(uriInfo, e.getMessage());
         }
         // Awards are grants, not products - never let them leak into /datacite/products results.
-        String awardExclusion = "NOT types.resourceTypeGeneral:" + ResourceTypeMapping.AWARD;
+        String awardExclusion = "NOT " + DataCiteQueryField.DATACITE_FILTER_TYPES_RESOURCE_TYPE_GENERAL.value() +
+                ":" + ResourceTypeMapping.AWARD;
         String finalQuery = query.map(q -> q + " AND " + awardExclusion).orElse(awardExclusion);
 
         int pageNumber = parsePage(page);

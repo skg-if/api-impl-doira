@@ -153,7 +153,8 @@ public class DataCiteGrantsResource {
             return JsonLdErrors.invalidFilter(uriInfo, e.getMessage());
         }
         // /datacite/grants only ever serves Award-type DOIs.
-        String awardInclusion = "types.resourceTypeGeneral:" + ResourceTypeMapping.AWARD;
+        String awardInclusion = DataCiteQueryField.DATACITE_FILTER_TYPES_RESOURCE_TYPE_GENERAL.value() + ":" +
+                ResourceTypeMapping.AWARD;
         String finalQuery = query.map(q -> q + " AND " + awardInclusion).orElse(awardInclusion);
 
         int pageNumber = parsePage(page);

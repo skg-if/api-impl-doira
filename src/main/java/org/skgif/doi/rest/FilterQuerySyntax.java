@@ -60,17 +60,31 @@ final class FilterQuerySyntax {
     }
 
     /**
-     * Builds {@code "(creators.<field>:\"value\" OR contributors.<field>:\"value\")"} - the
-     * recurring shape for DataCite by/declared_affiliations filters, which must match against
-     * either {@code creators[]} or {@code contributors[]} (see {@code DataCiteToSkgIfMapper}).
+     * Builds {@code field:"escapedValue"} - the single-field-equals-value shape recurring across
+     * every provider's clause builders.
      *
-     * @param field the DataCite field to match against (without the creators./contributors. prefix)
-     * @param value the filter value to match
-     * @return an OR'd Lucene clause matching field on either creators or contributors
+     * @param field the DataCite field to match against
+     * @param value the filter value to match (escaped internally)
+     * @return the Lucene clause {@code field:"escapedValue"}
      */
-    static String creatorOrContributorClause(String field, String value) {
-        String escaped = escape(value);
-        return "(creators." + field + ":\"" + escaped + "\" OR contributors." + field + ":\"" + escaped + "\")";
+    static String quotedFieldClause(String field, String value) {
+        return field + ":\"" + escape(value) + "\"";
+    }
+
+    /**
+     * Builds {@code "(creatorsField:\"value\" OR contributorsField:\"value\")"} - the recurring
+     * shape for DataCite by/declared_affiliations filters, which must match against either a
+     * {@code creators[]} field or the equivalent {@code contributors[]} field (see {@code
+     * DataCiteToSkgIfMapper}).
+     *
+     * @param creatorsField     the complete DataCite field path to match on creators[]
+     * @param contributorsField the complete DataCite field path to match on contributors[]
+     * @param value             the filter value to match
+     * @return an OR'd Lucene clause matching value on either field
+     */
+    static String creatorOrContributorClause(String creatorsField, String contributorsField, String value) {
+        return "(" + quotedFieldClause(creatorsField, value) + " OR " + quotedFieldClause(contributorsField, value) +
+                ")";
     }
 
     /**
