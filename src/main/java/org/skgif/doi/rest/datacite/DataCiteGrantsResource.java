@@ -7,14 +7,13 @@ import org.skgif.doi.datacite.ResourceTypeMapping;
 import org.skgif.doi.datacite.dto.DataCiteDoiData;
 import org.skgif.doi.datacite.dto.DataCiteDoiListResponse;
 import org.skgif.doi.datacite.mapper.DataCiteToSkgIfMapper;
-import org.skgif.doi.generated.model.ApiItem;
 import org.skgif.doi.generated.model.Grant;
 import org.skgif.doi.rest.FilterQuerySyntax;
 import org.skgif.doi.rest.JsonLdContextBase;
 import org.skgif.doi.rest.JsonLdEnvelopes;
 import org.skgif.doi.rest.JsonLdErrors;
-import org.skgif.doi.rest.JsonLdLinks;
 import org.skgif.doi.rest.JsonLdMeta;
+import org.skgif.doi.rest.JsonLdSearchResponses;
 import org.skgif.doi.rest.RequestPagination;
 import org.skgif.doi.util.LocalIdentifiers;
 import jakarta.inject.Inject;
@@ -32,8 +31,6 @@ import org.eclipse.microprofile.openapi.annotations.media.ExampleObject;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -163,30 +160,11 @@ public class DataCiteGrantsResource {
 
         DataCiteDoiListResponse response = dataCiteClient.listDois(prefix, finalQuery, size, pageNumber);
 
-        List<Grant> grants = new ArrayList<>();
-        List<ApiItem> apiItems = new ArrayList<>();
-        if (response.data() != null) {
-            for (DataCiteDoiData item : response.data()) {
-                if (item.attributes() == null) {
-                    continue;
-                }
-                grants.add(mapper.toGrant(item.attributes()));
-                apiItems.add(JsonLdMeta.apiItem(localIdentifiers.toFullLocalIdentifier(item.attributes().doi()),
-                        JsonLdLinks.selfLink(uriInfo, RESOURCE_PATH, item.attributes().doi())));
-            }
-        }
-
-        long total = response.meta() != null ? response.meta().total() : grants.size();
-        boolean hasNext = hasMorePages(response, pageNumber);
-        String contextBase = JsonLdContextBase.contextBaseFor(response.data(), sandboxBaseUrl, fallbackContextBase);
-        return JsonLdEnvelopes.searchResultsResponse(objectMapper, contextBase,
-                JsonLdMeta.searchMeta(new JsonLdMeta.SearchPage(uriInfo, RESOURCE_PATH, filter, pageNumber,
-                        size), total, hasNext, apiItems),
-                grants);
-    }
-
-    private boolean hasMorePages(DataCiteDoiListResponse response, int currentPage) {
-        return response.meta() != null && currentPage < response.meta().totalPages();
+        return DataCiteSearchResponses.build(
+                new JsonLdSearchResponses.EnvelopeContext(objectMapper, sandboxBaseUrl, fallbackContextBase,
+                        localIdentifiers),
+                new JsonLdSearchResponses.ListRequest(uriInfo, RESOURCE_PATH, filter, pageNumber, size),
+                response, mapper::toGrant);
     }
 
     private Response notFound(String requestedId) {

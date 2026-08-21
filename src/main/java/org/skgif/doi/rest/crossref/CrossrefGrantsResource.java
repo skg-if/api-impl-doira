@@ -13,6 +13,7 @@ import org.skgif.doi.rest.JsonLdContextBase;
 import org.skgif.doi.rest.JsonLdEnvelopes;
 import org.skgif.doi.rest.JsonLdErrors;
 import org.skgif.doi.rest.JsonLdMeta;
+import org.skgif.doi.rest.JsonLdSearchResponses;
 import org.skgif.doi.rest.RequestPagination;
 import org.skgif.doi.util.LocalIdentifiers;
 import jakarta.inject.Inject;
@@ -164,9 +165,9 @@ public class CrossrefGrantsResource {
                 parsed.queryBibliographic(), size, offset, mailto);
 
         return CrossrefSearchResponses.build(
-                new CrossrefSearchResponses.EnvelopeContext(objectMapper, sandboxBaseUrl, fallbackContextBase,
+                new JsonLdSearchResponses.EnvelopeContext(objectMapper, sandboxBaseUrl, fallbackContextBase,
                         localIdentifiers),
-                new CrossrefSearchResponses.ListRequest(uriInfo, RESOURCE_PATH, filter, pageNumber, size, offset),
+                new JsonLdSearchResponses.ListRequest(uriInfo, RESOURCE_PATH, filter, pageNumber, size), offset,
                 response, CrossrefTypeMapping::isGrant, mapper::toGrant);
     }
 
