@@ -46,6 +46,14 @@
   trimming), which can violate the SKG-IF OpenAPI schema's `titles`/`abstracts` key pattern
   (`^([a-z]{2}|none)$`) for such records - see
   `DataCiteToSkgIfMapperTest.mapsMixedTwoAndThreeLetterLanguageCodesSeparately`.
+- **DataCite's `publisher` always maps to an otf id** (see
+  [`manifestations[].biblio.hosting_data_source` row](SKG_IF_DOI_MAPPING_PRODUCT.md#datacite)
+  in the Product mapping) because the ROR (Research Organization Registry) identifier is available
+  *only* in DataCite's `application/vnd.datacite.datacite+json` format
+  ([example](https://api.datacite.org/application/vnd.datacite.datacite+json/10.34847/nkl.d585g6lv)),
+  not in the standard JSON REST API format that the mapper consumes. Mapping the publisher to a
+  ROR would require an enrichment step (fetching the datacite+json variant) that isn't practical
+  at REST response time, so `hosting_data_source` remains otf-only.
 - **`DataCiteRelatedProductMapper`'s `relatedIdentifierType` → `identifiers[].scheme` mapping**
   (see the [DataCite relatedIdentifierType vocabulary table](SKG_IF_DOI_MAPPING_PRODUCT.md#datacite-relatedidentifiertype-vocabulary))
   is a straight `lowercase(relatedIdentifierType)` pass-through, not validated against SKG-IF's own
