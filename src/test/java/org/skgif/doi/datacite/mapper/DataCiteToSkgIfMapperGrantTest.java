@@ -50,9 +50,9 @@ class DataCiteToSkgIfMapperGrantTest extends DataCiteToSkgIfMapperTestBase {
         Grant grant = mapGrantFixture("datacite-french-titles-16o9y.json");
 
         Map<String, String> titles = (Map<String, String>) grant.getTitles();
-        assertThat(titles).doesNotContainKey("en");
-        assertThat(titles.get("fr"))
-                .isEqualTo("Doctorants, panels et données d'enquêtes en sciences sociales Rencontre annuelle ELIPSS#3");
+        assertThat(titles).doesNotContainKey("en")
+                .containsEntry("fr",
+                        "Doctorants, panels et données d'enquêtes en sciences sociales Rencontre annuelle ELIPSS#3");
     }
 
     @Test
