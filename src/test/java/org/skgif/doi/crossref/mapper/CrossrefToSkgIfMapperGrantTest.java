@@ -1,45 +1,20 @@
 package org.skgif.doi.crossref.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.skgif.doi.crossref.CrossrefClient;
-import org.skgif.doi.crossref.CrossrefJournalDoiResolver;
-import org.skgif.doi.crossref.dto.CrossrefWork;
-import org.skgif.doi.crossref.dto.CrossrefWorkResponse;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Map;
+import org.junit.jupiter.api.Test;
 import org.skgif.doi.generated.model.Grant;
 import org.skgif.doi.generated.model.GrantContribution;
 import org.skgif.doi.generated.model.Organisation;
 import org.skgif.doi.generated.model.PersonLite;
-import org.skgif.doi.util.LocalIdentifiers;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
-import org.junit.jupiter.api.Test;
 
-class CrossrefToSkgIfMapperGrantTest {
-
-    /** Used to read the JSON fixture files this test maps. */
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
-    /** Mocked Crossref REST client, unused directly but required by {@link #mapper}'s dependencies. */
-    private final CrossrefClient crossrefClient = mock(CrossrefClient.class);
-    /** The mapper under test. */
-    private final CrossrefToSkgIfMapper mapper = new CrossrefToSkgIfMapper(new LocalIdentifiers("https://doi.org/"),
-            new CrossrefJournalDoiResolver(crossrefClient, Optional.empty()));
+class CrossrefToSkgIfMapperGrantTest extends CrossrefToSkgIfMapperTestBase {
 
     private Grant mapGrantFixture(String resourceName) throws IOException {
         return mapper.toGrant(readFixture(resourceName));
-    }
-
-    private CrossrefWork readFixture(String resourceName) throws IOException {
-        try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
-            CrossrefWorkResponse response = objectMapper.readValue(in, CrossrefWorkResponse.class);
-            return response.message();
-        }
     }
 
     // crossref-grant.json: a real Crossref grant record (type: "grant") - a Wellcome Trust

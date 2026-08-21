@@ -1,13 +1,15 @@
 package org.skgif.doi.crossref.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.skgif.doi.crossref.CrossrefClient;
-import org.skgif.doi.crossref.CrossrefJournalDoiResolver;
-import org.skgif.doi.crossref.dto.CrossrefWork;
-import org.skgif.doi.crossref.dto.CrossrefWorkResponse;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.skgif.doi.generated.model.GrantLite;
 import org.skgif.doi.generated.model.Organisation;
 import org.skgif.doi.generated.model.PersonLite;
@@ -15,42 +17,8 @@ import org.skgif.doi.generated.model.Product;
 import org.skgif.doi.generated.model.ProductContribution;
 import org.skgif.doi.generated.model.ProductManifestation;
 import org.skgif.doi.generated.model.ProductManifestationAccessRights;
-import org.skgif.doi.util.LocalIdentifiers;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Stream;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 
-class CrossrefToSkgIfMapperTest {
-
-    /** Used to read the JSON fixture files this test maps. */
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
-    // Left entirely unstubbed by default: listWorks(...) returns null, so the resolver degrades
-    // to Optional.empty() for every ISSN - see CrossrefToSkgIfMapperVenueTest for the
-    // resolver-hit/resolver-failure paths that actually stub this.
-    /** Mocked Crossref REST client, unstubbed by default (see comment above). */
-    private final CrossrefClient crossrefClient = mock(CrossrefClient.class);
-    /** The mapper under test. */
-    private final CrossrefToSkgIfMapper mapper = new CrossrefToSkgIfMapper(new LocalIdentifiers("https://doi.org/"),
-            new CrossrefJournalDoiResolver(crossrefClient, Optional.empty()));
-
-    private Product mapFixture(String resourceName) throws IOException {
-        return mapper.toProduct(readFixture(resourceName));
-    }
-
-    private CrossrefWork readFixture(String resourceName) throws IOException {
-        try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
-            CrossrefWorkResponse response = objectMapper.readValue(in, CrossrefWorkResponse.class);
-            return response.message();
-        }
-    }
+class CrossrefToSkgIfMapperTest extends CrossrefToSkgIfMapperTestBase {
 
     @Test
     void mapsCoreFieldsFromRealJournalArticle() throws IOException {

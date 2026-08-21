@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -16,7 +15,6 @@ import jakarta.ws.rs.core.Response;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.Test;
 import org.skgif.doi.crossref.CrossrefClient;
@@ -99,27 +97,8 @@ class ProductsGoldenTest {
         }
     }
 
-    private String loadRawResource(String resourceName) throws IOException {
-        try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
-            return new String(in.readAllBytes(), StandardCharsets.UTF_8);
-        }
-    }
-
-    /**
-     * A 200 {@link Response} mock wrapping the given XML fixture's raw content. Must be built as
-     * its own statement, assigned to a local variable, before being passed to {@code
-     * when(...).thenReturn(...)} elsewhere - see {@code CrossrefProductsResourceTest}'s copy of
-     * this helper for why inlining it corrupts Mockito's stubbing state.
-     *
-     * @param xmlResourceName classpath resource name of the XML fixture to load
-     * @return a mocked 200 {@code Response} whose body is the fixture's raw XML
-     * @throws IOException if the fixture resource cannot be read
-     */
     private Response okXmlResponse(String xmlResourceName) throws IOException {
-        Response response = mock(Response.class);
-        when(response.getStatus()).thenReturn(HTTP_OK);
-        when(response.readEntity(String.class)).thenReturn(loadRawResource(xmlResourceName));
-        return response;
+        return XmlFixtureResponses.okXmlResponse(getClass(), xmlResourceName);
     }
 
     @Test

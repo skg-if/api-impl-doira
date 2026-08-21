@@ -45,6 +45,68 @@ record of what the skill used to get wrong.
 
 ---
 
+## `C:/...`-style JAVA_HOME/PATH silently breaks `mvn` resolution in Bash (git-bash)
+
+- Date: 2026-08-21
+- Skill: `skg-if-build-toolchain/SKILL.md`
+- Symptom: inside a git worktree, a Bash command did
+  `export JAVA_HOME="C:/Puma/git/puma-skg-if-api/.tools/jdk-21" && export
+  PATH="C:/Puma/git/puma-skg-if-api/.tools/jdk-21/bin:C:/Puma/git/puma-skg-if-api/.tools/apache-maven-3.9.16/bin:$PATH"`
+  then `mvn -v`, which failed with `/usr/bin/bash: line 8: mvn: command not
+  found` (exit 127) - even though the toolchain was already set up and working
+  fine from PowerShell in the same repo. Looked like the worktree itself was
+  missing the toolchain or a symlink to it wasn't set up correctly.
+- Root cause: reproduced directly (not worktree-specific at all - fails the
+  same way from the main repo root). `:` is Bash's `PATH`-separator character.
+  A Windows drive-letter path like `C:/Puma/git/.../bin` embeds a colon right
+  after the drive letter, so Bash's `PATH`-splitting logic breaks that one
+  intended entry into two garbage entries (`C` and `/Puma/git/...`, which is
+  missing its drive root and doesn't exist) - `echo $PATH | tr ':' '\n'`
+  confirmed the split. Neither fragment resolves to a real directory, so `mvn`
+  is never found, and the resulting `command not found` gives no hint the
+  actual problem is the path format rather than a missing/broken toolchain.
+  The skill's "Invoking java/mvn" section only ever showed the PowerShell form
+  (backslash + semicolon, e.g. `$dest\jdk-21\bin;...`), with no Bash-equivalent
+  example to copy from - so constructing one from scratch defaulted to the
+  same `C:/...` drive-letter notation that looks natural but silently breaks
+  in Bash specifically because of the colon.
+- Fix: added a Bash-specific example right under the existing PowerShell one
+  in [`skg-if-build-toolchain/SKILL.md`](skg-if-build-toolchain/SKILL.md)'s
+  "Invoking java/mvn" section, using MSYS-style `/c/...` paths (no colon after
+  the drive letter), plus a paragraph explaining the colon/PATH-separator
+  collision concretely so the failure is recognizable next time even if the
+  example itself isn't at hand.
+- Status: Fixed
+
+---
+
+## Multi-class `-Dtest=A,B` quoting fix from 2026-08-20 didn't prevent a repeat on 2026-08-21
+
+- Date: 2026-08-21
+- Skill: `skg-if-build-toolchain/SKILL.md`
+- Symptom: after a multi-file boilerplate-extraction refactor, ran
+  `mvn -q -B test -Dtest=CrossrefToSkgIfMapperDatesTest,CrossrefToSkgIfMapperGrantTest,...`
+  (12 classes, unquoted) via the PowerShell tool to verify every affected test class at once.
+  Failed before `mvn` even started: `ParserError: Missing argument in parameter list` /
+  `FullyQualifiedErrorId: MissingArgument` - the exact same failure already logged and marked
+  `Fixed` below on 2026-08-20 ("Unquoted multi-class `-Dtest=A,B` breaks the PowerShell parser").
+- Root cause: the 2026-08-20 fix only quoted the `-Dtest=` value in the one example it lived
+  next to - the "Regenerating golden JSON-LD fixtures" section's golden-regen command - and added
+  the general quoting rule as prose underneath that unrelated example. The "scope the run"
+  section higher up (where a multi-class `-Dtest=A,B` is actually most likely to get typed, e.g.
+  verifying several classes touched by one refactor) still only showed a single-class example
+  with no quoting note nearby, so the general rule never surfaced when constructing this
+  particular command - despite technically being documented elsewhere in the same file.
+- Fix: added a second example directly under the "scope the run" section's existing
+  single-class example in
+  [`skg-if-build-toolchain/SKILL.md`](skg-if-build-toolchain/SKILL.md), showing a quoted
+  multi-class `-Dtest=A,B` and pointing at the existing general-rule prose instead of duplicating
+  it, so the quoting reminder appears at the point of use rather than only under the unrelated
+  golden-regen example.
+- Status: Fixed
+
+---
+
 ## `skg-if-format` claims Spotless doesn't run automatically, but it does
 
 - Date: 2026-08-21

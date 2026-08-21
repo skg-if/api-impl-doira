@@ -1,22 +1,13 @@
 package org.skgif.doi.crossref.xml;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import org.skgif.doi.util.XmlParsingUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 /**
  * Parses Crossref's XML "transform" representation ({@code application/vnd.crossref.unixsd+xml})
@@ -57,7 +48,7 @@ public final class CrossrefVenueMetadataXmlParser {
             return Optional.empty();
         }
         try {
-            Document document = parseDocument(xml);
+            Document document = XmlParsingUtils.parseDocument(xml);
             XPath xpath = XPathFactory.newInstance().newXPath();
             Node containerNode = (Node) xpath.evaluate(
                     "//*[local-name()='book' or local-name()='conference']" +
@@ -71,31 +62,37 @@ public final class CrossrefVenueMetadataXmlParser {
             // Book-shaped titles live in a titles/title wrapper; proceedings-shaped titles are a
             // flat proceedings_title element - try the wrapper first, then the flat element.
             String containerTitle =
-                    text(xpath, containerNode, "*[local-name()='titles']/*[local-name()='title']").orElse(null);
+                    XmlParsingUtils.text(xpath, containerNode, "*[local-name()='titles']/*[local-name()='title']")
+                            .orElse(null);
             if (containerTitle == null) {
-                containerTitle = text(xpath, containerNode, "*[local-name()='proceedings_title']").orElse(null);
+                containerTitle = XmlParsingUtils.text(xpath, containerNode, "*[local-name()='proceedings_title']")
+                        .orElse(null);
             }
             if (containerTitle == null) {
                 // Nothing usable to enrich the venue with - caller falls back to the REST JSON.
                 return Optional.empty();
             }
             String containerDoi =
-                    text(xpath, containerNode, "*[local-name()='doi_data']/*[local-name()='doi']").orElse(null);
+                    XmlParsingUtils.text(xpath, containerNode, "*[local-name()='doi_data']/*[local-name()='doi']")
+                            .orElse(null);
 
             Node seriesMetadata =
                     (Node) xpath.evaluate("*[local-name()='series_metadata']", containerNode, XPathConstants.NODE);
             String seriesTitle = seriesMetadata == null ? null :
-                    text(xpath, seriesMetadata, "*[local-name()='titles']/*[local-name()='title']").orElse(null);
-            List<String> seriesIssns =
-                    seriesMetadata == null ? List.of() : textList(xpath, seriesMetadata, "*[local-name()='issn']");
-            String volume = text(xpath, containerNode, "*[local-name()='volume']").orElse(null);
+                    XmlParsingUtils.text(xpath, seriesMetadata, "*[local-name()='titles']/*[local-name()='title']")
+                            .orElse(null);
+            List<String> seriesIssns = seriesMetadata == null ? List.of() :
+                    XmlParsingUtils.textList(xpath, seriesMetadata, "*[local-name()='issn']");
+            String volume = XmlParsingUtils.text(xpath, containerNode, "*[local-name()='volume']").orElse(null);
 
-            List<String> isbns = textList(xpath, containerNode, "*[local-name()='isbn']");
+            List<String> isbns = XmlParsingUtils.textList(xpath, containerNode, "*[local-name()='isbn']");
             String publisherName =
-                    text(xpath, containerNode, "*[local-name()='publisher']/*[local-name()='publisher_name']")
+                    XmlParsingUtils.text(xpath, containerNode,
+                            "*[local-name()='publisher']/*[local-name()='publisher_name']")
                             .orElse(null);
             String publisherPlace =
-                    text(xpath, containerNode, "*[local-name()='publisher']/*[local-name()='publisher_place']")
+                    XmlParsingUtils.text(xpath, containerNode,
+                            "*[local-name()='publisher']/*[local-name()='publisher_place']")
                             .orElse(null);
 
             return Optional.of(new CrossrefVenueMetadata(containerTitle, containerDoi, seriesTitle, seriesIssns,
@@ -108,32 +105,4 @@ public final class CrossrefVenueMetadataXmlParser {
         }
     }
 
-    private static Document parseDocument(String xml) throws ParserConfigurationException, SAXException, IOException {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        // XXE hardening - this parses content fetched live from the network.
-        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-        factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
-        factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-        factory.setXIncludeAware(false);
-        factory.setExpandEntityReferences(false);
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        return builder.parse(new InputSource(new StringReader(xml)));
-    }
-
-    private static Optional<String> text(XPath xpath, Node context, String expression) throws XPathExpressionException {
-        String value = (String) xpath.evaluate(expression, context, XPathConstants.STRING);
-        return Optional.ofNullable(value == null || value.isBlank() ? null : value.trim());
-    }
-
-    private static List<String> textList(XPath xpath, Node context, String expression) throws XPathExpressionException {
-        NodeList nodes = (NodeList) xpath.evaluate(expression, context, XPathConstants.NODESET);
-        List<String> values = new ArrayList<>();
-        for (int i = 0; i < nodes.getLength(); i++) {
-            String value = nodes.item(i).getTextContent();
-            if (value != null && !value.isBlank()) {
-                values.add(value.trim());
-            }
-        }
-        return values;
-    }
 }

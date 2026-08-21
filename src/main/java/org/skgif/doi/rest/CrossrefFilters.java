@@ -3,6 +3,7 @@ package org.skgif.doi.rest;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.skgif.doi.crossref.CrossrefTypeMapping;
@@ -72,6 +73,23 @@ final class CrossrefFilters {
 
     static ParsedFilter toGrantsQuery(String filter) {
         return parse(filter, GRANT_SUPPORTED, CrossrefFilters::toGrantClause);
+    }
+
+    /**
+     * Appends a {@code prefix:<prefix>} clause restricting results to a deployment-configured
+     * Crossref DOI prefix, shared by {@link CrossrefGrantsResource}/{@link CrossrefProductsResource}.
+     *
+     * @param prefix the configured Crossref DOI prefix, if any
+     * @param filter the filter clause built so far, or null
+     * @return {@code filter} with the prefix clause appended, or unchanged if no prefix is configured
+     */
+    static String withPrefix(Optional<String> prefix, String filter) {
+        String prefixValue = prefix.filter(p -> !p.isBlank()).orElse(null);
+        if (prefixValue == null) {
+            return filter;
+        }
+        String prefixClause = "prefix:" + prefixValue;
+        return filter == null ? prefixClause : filter + "," + prefixClause;
     }
 
     private interface ClauseBuilder {

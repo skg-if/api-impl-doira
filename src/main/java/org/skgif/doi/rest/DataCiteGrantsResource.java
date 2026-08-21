@@ -2,10 +2,10 @@ package org.skgif.doi.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.skgif.doi.datacite.DataCiteClient;
+import org.skgif.doi.datacite.DataCiteDoiFetcher;
 import org.skgif.doi.datacite.ResourceTypeMapping;
 import org.skgif.doi.datacite.dto.DataCiteDoiData;
 import org.skgif.doi.datacite.dto.DataCiteDoiListResponse;
-import org.skgif.doi.datacite.dto.DataCiteDoiResponse;
 import org.skgif.doi.datacite.mapper.DataCiteToSkgIfMapper;
 import org.skgif.doi.generated.model.ApiItem;
 import org.skgif.doi.generated.model.Grant;
@@ -16,7 +16,6 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -102,21 +101,11 @@ public class DataCiteGrantsResource {
             @Context UriInfo uriInfo) {
         String doi = localIdentifiers.toDoi(localIdentifierParam);
 
-        DataCiteDoiData data = null;
-        try {
-            DataCiteDoiResponse response = dataCiteClient.getDoi(doi);
-            if (response != null) {
-                data = response.data();
-            }
-        } catch (WebApplicationException e) {
-            if (e.getResponse().getStatus() == Response.Status.NOT_FOUND.getStatusCode()) {
-                return notFound(localIdentifierParam);
-            }
-            throw e;
-        }
-        if (data == null || data.attributes() == null) {
+        Optional<DataCiteDoiData> dataOpt = DataCiteDoiFetcher.fetchByDoi(dataCiteClient, doi);
+        if (dataOpt.isEmpty()) {
             return notFound(localIdentifierParam);
         }
+        DataCiteDoiData data = dataOpt.get();
         if (!ResourceTypeMapping.isAward(data.attributes())) {
             return JsonLdErrors.notFound("No grant found for local_identifier '" + localIdentifierParam +
                     "' - this DOI is a product, see /datacite/products/" + localIdentifierParam);
@@ -157,7 +146,7 @@ public class DataCiteGrantsResource {
                 ResourceTypeMapping.AWARD;
         String finalQuery = query.map(q -> q + " AND " + awardInclusion).orElse(awardInclusion);
 
-        int pageNumber = parsePage(page);
+        int pageNumber = RequestPagination.parsePage(page);
         int size = pageSize != null && pageSize > 0 ? pageSize : defaultPageSize;
         String prefix = dataCitePrefix.filter(p -> !p.isBlank()).orElse(null);
 
@@ -187,18 +176,6 @@ public class DataCiteGrantsResource {
 
     private boolean hasMorePages(DataCiteDoiListResponse response, int currentPage) {
         return response.meta() != null && currentPage < response.meta().totalPages();
-    }
-
-    private int parsePage(String page) {
-        if (page == null) {
-            return 1;
-        }
-        try {
-            int parsed = Integer.parseInt(page);
-            return parsed > 0 ? parsed : 1;
-        } catch (NumberFormatException e) {
-            return 1;
-        }
     }
 
     private Response notFound(String requestedId) {

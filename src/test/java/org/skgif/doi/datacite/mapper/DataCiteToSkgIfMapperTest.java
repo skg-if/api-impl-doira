@@ -2,9 +2,14 @@ package org.skgif.doi.datacite.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.skgif.doi.datacite.dto.DataCiteAttributes;
-import org.skgif.doi.datacite.dto.DataCiteDoiResponse;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.skgif.doi.datacite.dto.DataCiteFundingReference;
 import org.skgif.doi.generated.model.DataSourceLite;
 import org.skgif.doi.generated.model.GrantLite;
@@ -15,34 +20,8 @@ import org.skgif.doi.generated.model.ProductContribution;
 import org.skgif.doi.generated.model.ProductManifestation;
 import org.skgif.doi.generated.model.ProductManifestationAccessRights;
 import org.skgif.doi.generated.model.Topic;
-import org.skgif.doi.util.LocalIdentifiers;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 
-class DataCiteToSkgIfMapperTest {
-
-    /** Used to read the JSON fixture files this test maps. */
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    /** The mapper under test. */
-    private final DataCiteToSkgIfMapper mapper = new DataCiteToSkgIfMapper(new LocalIdentifiers("https://doi.org/"));
-
-    private Product mapFixture(String resourceName) throws IOException {
-        return mapper.toProduct(readFixture(resourceName));
-    }
-
-    private DataCiteAttributes readFixture(String resourceName) throws IOException {
-        try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
-            DataCiteDoiResponse response = objectMapper.readValue(in, DataCiteDoiResponse.class);
-            return response.data().attributes();
-        }
-    }
+class DataCiteToSkgIfMapperTest extends DataCiteToSkgIfMapperTestBase {
 
     @Test
     void mapsCoreFieldsFromRealEsrfDataciteRecord() throws IOException {

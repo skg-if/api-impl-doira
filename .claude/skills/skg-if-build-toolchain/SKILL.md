@@ -47,6 +47,23 @@ $env:PATH = "$dest\jdk-21\bin;$dest\apache-maven-3.9.16\bin;$env:PATH"
 mvn -version   # confirm: Java 21, Maven 3.9.16
 ```
 
+**In Bash (git-bash/MSYS), use MSYS-style `/c/...` paths, never `C:/...`:**
+
+```bash
+dest="/c/<repo-root>/.tools"
+export JAVA_HOME="$dest/jdk-21"
+export PATH="$dest/jdk-21/bin:$dest/apache-maven-3.9.16/bin:$PATH"
+mvn -version   # confirm: Java 21, Maven 3.9.16
+```
+
+A Windows drive-letter path (`C:/repo/.tools/...`) breaks silently in Bash: `:` is
+Bash's `PATH`-separator, so `C:/repo/...` gets split at the colon right after `C`
+into two useless entries (`C` and `/repo/...`, missing its drive root) - `mvn`
+then fails with a plain `command not found` (exit 127) that gives no hint the
+problem is the path format, not a missing/broken toolchain. Always convert the
+drive letter to `/c/...` (lowercase, no colon) before putting a Windows path into
+`PATH`/`JAVA_HOME` in Bash.
+
 Set `JAVA_HOME`/`PATH` this way in every command/tool invocation that needs them (each
 Bash/PowerShell tool call starts a fresh process) - do not attempt to persist them to
 the user or machine environment.
@@ -102,6 +119,16 @@ is localized to one mapper/resource, not just when a full run already failed:
 ```powershell
 mvn -q -B test -Dtest=CrossrefToSkgIfMapperTest
 ```
+
+Naming more than one class at once (e.g. to run every test class touched by a
+multi-file change)? Quote the whole `-Dtest=` value:
+
+```powershell
+mvn -q -B test "-Dtest=CrossrefToSkgIfMapperTest,DataCiteToSkgIfMapperTest"
+```
+
+See the quoting note under "Regenerating golden JSON-LD fixtures" below for why -
+it applies to any multi-class `-Dtest=A,B`, not just that one command.
 
 ### Large failures: redirect to a file and grep before reading
 

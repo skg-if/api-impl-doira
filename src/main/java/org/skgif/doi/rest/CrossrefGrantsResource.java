@@ -3,11 +3,10 @@ package org.skgif.doi.rest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.skgif.doi.crossref.CrossrefClient;
 import org.skgif.doi.crossref.CrossrefTypeMapping;
+import org.skgif.doi.crossref.CrossrefWorkFetcher;
 import org.skgif.doi.crossref.dto.CrossrefWork;
 import org.skgif.doi.crossref.dto.CrossrefWorkListResponse;
-import org.skgif.doi.crossref.dto.CrossrefWorkResponse;
 import org.skgif.doi.crossref.mapper.CrossrefToSkgIfMapper;
-import org.skgif.doi.generated.model.ApiItem;
 import org.skgif.doi.generated.model.Grant;
 import org.skgif.doi.util.LocalIdentifiers;
 import jakarta.inject.Inject;
@@ -16,7 +15,6 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -26,8 +24,6 @@ import org.eclipse.microprofile.openapi.annotations.media.ExampleObject;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -103,21 +99,11 @@ public class CrossrefGrantsResource {
             @Context UriInfo uriInfo) {
         String doi = localIdentifiers.toDoi(localIdentifierParam);
 
-        CrossrefWork work = null;
-        try {
-            CrossrefWorkResponse response = crossrefClient.getWork(doi);
-            if (response != null) {
-                work = response.message();
-            }
-        } catch (WebApplicationException e) {
-            if (e.getResponse().getStatus() == Response.Status.NOT_FOUND.getStatusCode()) {
-                return notFound(localIdentifierParam);
-            }
-            throw e;
-        }
-        if (work == null || work.doi() == null) {
+        Optional<CrossrefWork> workOpt = CrossrefWorkFetcher.fetchByDoi(crossrefClient, doi);
+        if (workOpt.isEmpty()) {
             return notFound(localIdentifierParam);
         }
+        CrossrefWork work = workOpt.get();
         if (!CrossrefTypeMapping.isGrant(work)) {
             return JsonLdErrors.notFound("No grant found for local_identifier '" + localIdentifierParam +
                     "' - this DOI is a product, see /crossref/products/" + localIdentifierParam);
@@ -155,66 +141,28 @@ public class CrossrefGrantsResource {
             return JsonLdErrors.invalidFilter(uriInfo, e.getMessage());
         }
 
-        int pageNumber = parsePage(page);
+        int pageNumber = RequestPagination.parsePage(page);
         int size = pageSize != null && pageSize > 0 ? pageSize : defaultPageSize;
         int offset = (pageNumber - 1) * size;
         String mailto = crossrefMailto.filter(m -> !m.isBlank()).orElse(null);
 
         // /crossref/grants only ever serves type:grant records - Crossref's own filter=, unlike
         // DataCite's Lucene query, has no negation operator, but a positive AND is trivial.
-        String crossrefFilter = withPrefix(withGrantType(parsed.filter()));
+        String crossrefFilter = CrossrefFilters.withPrefix(crossrefPrefix, withGrantType(parsed.filter()));
 
         CrossrefWorkListResponse response = crossrefClient.listWorks(crossrefFilter, parsed.queryTitle(),
                 parsed.queryBibliographic(), size, offset, mailto);
 
-        List<Grant> grants = new ArrayList<>();
-        List<ApiItem> apiItems = new ArrayList<>();
-        long totalResults = 0;
-        if (response.message() != null) {
-            totalResults = response.message().totalResults();
-            for (CrossrefWork work : Optional.ofNullable(response.message().items()).orElse(List.of())) {
-                if (work.doi() == null || !CrossrefTypeMapping.isGrant(work)) {
-                    continue;
-                }
-                grants.add(mapper.toGrant(work));
-                apiItems.add(JsonLdMeta.apiItem(localIdentifiers.toFullLocalIdentifier(work.doi()),
-                        JsonLdLinks.selfLink(uriInfo, RESOURCE_PATH, work.doi())));
-            }
-        }
-
-        boolean hasNext = offset + size < totalResults;
-        String contextBase = JsonLdContextBase.contextBaseFor(Optional.<String>empty(), sandboxBaseUrl,
-                fallbackContextBase);
-        return JsonLdEnvelopes.searchResultsResponse(objectMapper, contextBase,
-                JsonLdMeta.searchMeta(new JsonLdMeta.SearchPage(uriInfo, RESOURCE_PATH, filter, pageNumber,
-                        size), totalResults, hasNext, apiItems),
-                grants);
+        return CrossrefSearchResponses.build(
+                new CrossrefSearchResponses.EnvelopeContext(objectMapper, sandboxBaseUrl, fallbackContextBase,
+                        localIdentifiers),
+                new CrossrefSearchResponses.ListRequest(uriInfo, RESOURCE_PATH, filter, pageNumber, size, offset),
+                response, CrossrefTypeMapping::isGrant, mapper::toGrant);
     }
 
     private String withGrantType(String filter) {
         String clause = "type:" + CrossrefTypeMapping.GRANT;
         return filter == null ? clause : filter + "," + clause;
-    }
-
-    private String withPrefix(String filter) {
-        String prefix = crossrefPrefix.filter(p -> !p.isBlank()).orElse(null);
-        if (prefix == null) {
-            return filter;
-        }
-        String prefixClause = "prefix:" + prefix;
-        return filter == null ? prefixClause : filter + "," + prefixClause;
-    }
-
-    private int parsePage(String page) {
-        if (page == null) {
-            return 1;
-        }
-        try {
-            int parsed = Integer.parseInt(page);
-            return parsed > 0 ? parsed : 1;
-        } catch (NumberFormatException e) {
-            return 1;
-        }
     }
 
     private Response notFound(String requestedId) {

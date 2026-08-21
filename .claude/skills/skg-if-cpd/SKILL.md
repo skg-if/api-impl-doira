@@ -38,36 +38,68 @@ failure as a regression.
 
 ## Generating a report without failing the build
 
+Prefer CSV over the default XML - it's ~30x smaller (around 1KB vs ~30KB for this repo's current
+duplication count) because it drops the full scanned-file listing and the duplicated-code text
+that XML embeds in every block, keeping just the numbers and locations:
+
 ```powershell
 $dest = "<repo-root>\.tools"
 $env:JAVA_HOME = "$dest\jdk-21"
 $env:PATH = "$dest\jdk-21\bin;$dest\apache-maven-3.9.16\bin;$env:PATH"
-mvn -q -B pmd:cpd
+mvn -q -B pmd:cpd "-Dformat=csv"
 ```
 
-Always exits 0 regardless of what it finds. The XML report lands at `target/cpd.xml` (confirmed
-by running it in this repo - `targetDirectory` defaults to `project.build.directory`, i.e.
-`target/`, not `target/reports/` where the HTML copy goes for site generation).
+Always exits 0 regardless of what it finds. The report lands at `target/cpd.csv` (confirmed by
+running it in this repo - `targetDirectory` defaults to `project.build.directory`, i.e.
+`target/`, not `target/reports/` where the HTML copy goes for site generation). **`target/cpd.xml`
+is written too, every time, regardless of `-Dformat`** - confirmed empirically (same timestamp,
+every run) - it's not something `-Dformat=csv` avoids paying for at the `mvn` level, just a file
+you don't need to open afterward.
 
 The plugin-level `<configuration>` on the existing `pmd-check` execution in `pom.xml`
 (`compileSourceRoots`/`testSourceRoots`/`excludeRoots` for the generated OpenAPI sources under
 `target/generated-sources/`, `includeTests=true`) applies as defaults to `cpd`/`cpd-check` too -
-confirmed empirically: `target/cpd.xml` paths cover both `src/main/java` and `src/test/java`, and
-none point into `target/generated-sources/`.
+confirmed empirically: the report's paths cover both `src/main/java` and `src/test/java`, and none
+point into `target/generated-sources/`.
 
 ## Reading the report
 
-`target/cpd.xml` can be large - grep for `<duplication` first (each match's `lines="N"
-tokens="M"` attributes tell you the size) rather than reading the whole file, per the repo's
-"grep before reading large files" convention:
+`target/cpd.csv` is small enough to read in full directly - no grep-first ceremony needed. One
+header row, then one row per duplication:
+
+```
+lines,tokens,occurrences
+30,255,2,109,C:\...\CrossrefVenueMetadataXmlParser.java,174,C:\...\MedraOnixXmlParser.java
+```
+
+`lines`/`tokens` give the duplication's size (same meaning as XML's `<duplication lines=""
+tokens="">` attributes), `occurrences` is how many places it appears, followed by that many
+`<line>,<file>` pairs - one per occurrence.
+
+Unlike XML, CSV has no embedded code snippet - if you need to see the actual duplicated text, Read
+the source file directly at `<line>` (through roughly `<line> + lines - 1`) for one of the listed
+occurrences, rather than opening `target/cpd.xml` for its `<codefragment>`.
+
+If you do need the XML version for some other reason (e.g. the embedded snippet without opening
+source files, or scripting against a stricter schema), it's already sitting at `target/cpd.xml`
+from the same run - grep for `<duplication` first per the repo's "grep before reading large files"
+convention, since it's much larger:
 
 ```powershell
 Select-String -Path target\cpd.xml -Pattern '<duplication'
 ```
 
-Then read just the `<duplication>...</duplication>` block(s) that matter (each contains one
-`<file path="..." line="..."/>` entry per duplicate occurrence, followed by the shared
-`<codefragment>`).
+**For a report that names the duplicated *methods*, prefer CSV + targeted source reads over
+XML anyway** - checked empirically against this repo's current 5 duplications: only 2 of the 5
+`<codefragment>` blocks happen to start right at a method signature; the other 3 start mid-body
+(one begins at an `@ExampleObject(...)` parameter annotation), so the enclosing method's name
+isn't in the fragment at all and opening the real source file is still required. Since that
+source lookup is usually unavoidable regardless of format, and XML's per-occurrence attributes
+(`begintoken`/`column`/`endcolumn`/`endline`/`endtoken`/`line`/`path`, times two occurrences, times
+every duplication) plus the full duplicated-code CDATA cost noticeably more tokens than the CSV's
+one compact row per duplication, read the CSV first and open just the handful of distinct files it
+names (grouped by file, not by duplication, since the same file often recurs across duplications)
+to read off the real method signature.
 
 ## Tuning sensitivity
 
@@ -78,7 +110,9 @@ Confirmed via `mvn help:describe -Dplugin=org.apache.maven.plugins:maven-pmd-plu
 - `-DminimumTokens=<n>` - user property `minimumTokens`, default `100`. Lower it to catch smaller
   duplicated blocks, raise it to reduce noise.
 - `-Dcpd.skip=true` - skip CPD entirely for one invocation.
-- `-Dformat=<xml|csv|txt>` - report format; XML is always produced too since `cpd-check` needs it.
+- `-Dformat=<xml|csv|txt>` - which *additional* report format(s) to render; `target/cpd.xml`
+  itself is always written regardless of this flag (`cpd-check`'s failure message always names
+  `cpd.xml` specifically, even when invoked with `-Dformat=csv` - confirmed empirically).
 
 ## Known limitation
 

@@ -1,42 +1,13 @@
 package org.skgif.doi.crossref.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.skgif.doi.crossref.CrossrefClient;
-import org.skgif.doi.crossref.CrossrefJournalDoiResolver;
-import org.skgif.doi.crossref.dto.CrossrefWork;
-import org.skgif.doi.crossref.dto.CrossrefWorkResponse;
-import org.skgif.doi.generated.model.Product;
-import org.skgif.doi.util.LocalIdentifiers;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import org.skgif.doi.generated.model.Product;
 
-class CrossrefToSkgIfMapperDatesTest {
-
-    /** Used to read the JSON fixture files this test maps. */
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
-    /** Mocked Crossref REST client, unused directly but required by {@link #mapper}'s dependencies. */
-    private final CrossrefClient crossrefClient = mock(CrossrefClient.class);
-    /** The mapper under test. */
-    private final CrossrefToSkgIfMapper mapper = new CrossrefToSkgIfMapper(new LocalIdentifiers("https://doi.org/"),
-            new CrossrefJournalDoiResolver(crossrefClient, Optional.empty()));
-
-    private Product mapFixture(String resourceName) throws IOException {
-        return mapper.toProduct(readFixture(resourceName));
-    }
-
-    private CrossrefWork readFixture(String resourceName) throws IOException {
-        try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
-            CrossrefWorkResponse response = objectMapper.readValue(in, CrossrefWorkResponse.class);
-            return response.message();
-        }
-    }
+class CrossrefToSkgIfMapperDatesTest extends CrossrefToSkgIfMapperTestBase {
 
     @Test
     void mapsDepositedIntoBothDepositAndModified() throws IOException {

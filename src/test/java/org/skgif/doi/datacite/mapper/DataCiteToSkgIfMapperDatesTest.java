@@ -2,34 +2,14 @@ package org.skgif.doi.datacite.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.skgif.doi.datacite.dto.DataCiteAttributes;
-import org.skgif.doi.datacite.dto.DataCiteDate;
-import org.skgif.doi.datacite.dto.DataCiteDoiResponse;
-import org.skgif.doi.generated.model.Product;
-import org.skgif.doi.util.LocalIdentifiers;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.skgif.doi.datacite.dto.DataCiteAttributes;
+import org.skgif.doi.datacite.dto.DataCiteDate;
+import org.skgif.doi.generated.model.Product;
 
-class DataCiteToSkgIfMapperDatesTest {
-
-    /** Used to read the JSON fixture files this test maps. */
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    /** The mapper under test. */
-    private final DataCiteToSkgIfMapper mapper = new DataCiteToSkgIfMapper(new LocalIdentifiers("https://doi.org/"));
-
-    private Product mapFixture(String resourceName) throws IOException {
-        return mapper.toProduct(readFixture(resourceName));
-    }
-
-    private DataCiteAttributes readFixture(String resourceName) throws IOException {
-        try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
-            DataCiteDoiResponse response = objectMapper.readValue(in, DataCiteDoiResponse.class);
-            return response.data().attributes();
-        }
-    }
+class DataCiteToSkgIfMapperDatesTest extends DataCiteToSkgIfMapperTestBase {
 
     private static DataCiteAttributes withLifecycleDates(DataCiteAttributes attributes, String created,
             String registered, String updated, String published) {

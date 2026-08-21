@@ -2,35 +2,18 @@ package org.skgif.doi.datacite.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.skgif.doi.datacite.dto.DataCiteAttributes;
-import org.skgif.doi.datacite.dto.DataCiteDoiResponse;
+import java.io.IOException;
+import java.util.Map;
+import org.junit.jupiter.api.Test;
 import org.skgif.doi.generated.model.Grant;
 import org.skgif.doi.generated.model.GrantContribution;
 import org.skgif.doi.generated.model.Organisation;
 import org.skgif.doi.generated.model.PersonLite;
-import org.skgif.doi.util.LocalIdentifiers;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Map;
-import org.junit.jupiter.api.Test;
 
-class DataCiteToSkgIfMapperGrantTest {
-
-    /** Used to read the JSON fixture files this test maps. */
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    /** The mapper under test. */
-    private final DataCiteToSkgIfMapper mapper = new DataCiteToSkgIfMapper(new LocalIdentifiers("https://doi.org/"));
+class DataCiteToSkgIfMapperGrantTest extends DataCiteToSkgIfMapperTestBase {
 
     private Grant mapGrantFixture(String resourceName) throws IOException {
         return mapper.toGrant(readFixture(resourceName));
-    }
-
-    private DataCiteAttributes readFixture(String resourceName) throws IOException {
-        try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
-            DataCiteDoiResponse response = objectMapper.readValue(in, DataCiteDoiResponse.class);
-            return response.data().attributes();
-        }
     }
 
     // datacite-award-r3sy-7371.json: a real DataCite Award record (resourceTypeGeneral: "Award")

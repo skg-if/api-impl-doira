@@ -4,7 +4,6 @@ import static io.restassured.RestAssured.given;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,7 +13,6 @@ import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.hamcrest.Matchers;
@@ -69,29 +67,8 @@ class CrossrefProductsResourceTest {
         }
     }
 
-    private String loadRawResource(String resourceName) throws IOException {
-        try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
-            return new String(in.readAllBytes(), StandardCharsets.UTF_8);
-        }
-    }
-
-    /**
-     * A 200 {@link Response} mock wrapping the given XML fixture's raw content. Must be built as
-     * its own statement, assigned to a local variable, before being passed to {@code
-     * when(...).thenReturn(...)} elsewhere - it opens its own when()/thenReturn() stubs
-     * internally, and evaluating it inline as another still-open when(...).thenReturn(...)'s
-     * argument corrupts Mockito's single ongoing-stubbing state
-     * ({@code UnfinishedStubbingException}).
-     *
-     * @param xmlResourceName classpath resource name of the XML fixture to load
-     * @return a mocked 200 {@code Response} whose body is the fixture's raw XML
-     * @throws IOException if the fixture resource cannot be read
-     */
     private Response okXmlResponse(String xmlResourceName) throws IOException {
-        Response response = mock(Response.class);
-        when(response.getStatus()).thenReturn(HTTP_OK);
-        when(response.readEntity(String.class)).thenReturn(loadRawResource(xmlResourceName));
-        return response;
+        return XmlFixtureResponses.okXmlResponse(getClass(), xmlResourceName);
     }
 
     @Test

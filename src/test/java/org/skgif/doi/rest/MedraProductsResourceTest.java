@@ -8,8 +8,6 @@ import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.ws.rs.core.Response;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -39,25 +37,8 @@ class MedraProductsResourceTest {
     @RestClient
     MedraClient medraClient;
 
-    private String loadRawResource(String resourceName) throws IOException {
-        try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
-            return new String(in.readAllBytes(), StandardCharsets.UTF_8);
-        }
-    }
-
-    /**
-     * See {@code CrossrefProductsResourceTest#okXmlResponse}'s javadoc for why this must be
-     * built as its own statement.
-     *
-     * @param xmlResourceName classpath resource name of the XML fixture to load
-     * @return a mocked 200 {@code Response} whose body is the fixture's raw XML
-     * @throws IOException if the fixture resource cannot be read
-     */
     private Response okXmlResponse(String xmlResourceName) throws IOException {
-        Response response = mock(Response.class);
-        when(response.getStatus()).thenReturn(HTTP_OK);
-        when(response.readEntity(String.class)).thenReturn(loadRawResource(xmlResourceName));
-        return response;
+        return XmlFixtureResponses.okXmlResponse(getClass(), xmlResourceName);
     }
 
     @Test
