@@ -168,7 +168,7 @@ After an intentional change to `DataCiteToSkgIfMapper` (or anything else that ch
 the response shape) - see README.md's Testing section for the full explanation:
 
 ```powershell
-mvn test "-Dtest=DataCiteProductsResourceTest,DataCiteGrantsResourceTest" "-Dgolden.regenerate=true"
+mvn test "-Dtest=ProductsGoldenTest,GrantsGoldenTest" "-Dgolden.regenerate=true"
 git diff src/test/resources/expected/   # review before committing
 ```
 

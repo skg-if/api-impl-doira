@@ -45,6 +45,26 @@ record of what the skill used to get wrong.
 
 ---
 
+## Golden-regen example cites test classes that no longer exist
+
+- Date: 2026-08-21
+- Skill: `skg-if-build-toolchain/SKILL.md` (also `README.md`'s Testing section, same content)
+- Symptom: the "Regenerating golden JSON-LD fixtures" section's example command was
+  `mvn test "-Dtest=DataCiteProductsResourceTest,DataCiteGrantsResourceTest" "-Dgolden.regenerate=true"`.
+  `DataCiteProductsResourceTest` exists but is unrelated to golden regeneration;
+  `DataCiteGrantsResourceTest`/`CrossrefProductsResourceTest`/`CrossrefGrantsResourceTest` don't
+  exist at all. Caught only because `ProductsGoldenTest`'s own class javadoc gave the correct
+  command, which was cross-checked against this skill/README before trusting either.
+- Root cause: the golden-test classes were consolidated at some point into
+  `ProductsGoldenTest` (covers DataCite + Crossref + mEDRA products) and `GrantsGoldenTest`
+  (covers DataCite + Crossref grants), but the skill doc and README's Testing section were never
+  updated to match - both still described the pre-consolidation per-provider-per-entity class
+  names.
+- Fix: updated both `skg-if-build-toolchain/SKILL.md` and `README.md` to
+  `mvn test -Dtest=ProductsGoldenTest,GrantsGoldenTest -Dgolden.regenerate=true`, with a note that
+  each class already covers every provider so there's no need for separate per-provider commands.
+- Status: Fixed
+
 ## `mvn clean test *> target\build.log` fails outright on PowerShell (not just silently loses the log)
 
 - Date: 2026-08-21

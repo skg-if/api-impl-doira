@@ -124,11 +124,11 @@ mvn test
 Includes golden-file tests that compare the API's full JSON-LD response against committed
 reference documents in `src/test/resources/expected/`. After an intentional change to
 `DataCiteToSkgIfMapper`/`CrossrefToSkgIfMapper` (or anything else that changes the response
-shape), regenerate the relevant provider's fixtures:
+shape), regenerate the fixtures via `ProductsGoldenTest`/`GrantsGoldenTest` (each covers every
+provider - DataCite, Crossref, and, for products, mEDRA):
 
 ```bash
-mvn test -Dtest=DataCiteProductsResourceTest,DataCiteGrantsResourceTest -Dgolden.regenerate=true          # DataCite
-mvn test -Dtest=CrossrefProductsResourceTest,CrossrefGrantsResourceTest -Dgolden.regenerate=true  # Crossref
+mvn test -Dtest=ProductsGoldenTest,GrantsGoldenTest -Dgolden.regenerate=true
 git diff src/test/resources/expected/   # review before committing
 ```
 
