@@ -1,7 +1,7 @@
 package org.skgif.doi.datacite;
 
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -98,7 +98,7 @@ public final class ResourceTypeMapping {
     }
 
     private static Map<DataCiteResourceType, Product.ProductTypeEnum> buildMap() {
-        Map<DataCiteResourceType, Product.ProductTypeEnum> map = new HashMap<>();
+        Map<DataCiteResourceType, Product.ProductTypeEnum> map = new EnumMap<>(DataCiteResourceType.class);
         putAll(map, Product.ProductTypeEnum.RESEARCH_SOFTWARE, DataCiteResourceType.SOFTWARE,
                 DataCiteResourceType.COMPUTATIONAL_NOTEBOOK, DataCiteResourceType.WORKFLOW);
         putAll(map, Product.ProductTypeEnum.LITERATURE, DataCiteResourceType.BOOK, DataCiteResourceType.BOOK_CHAPTER,

@@ -165,6 +165,17 @@
   <rule ref="category/java/codestyle.xml/UnnecessaryLocalBeforeReturn"/>
 
   <!--
+    UseEnumCollections mirrors SonarQube rule S1640 ("Maps with keys that are Enum type should be
+    replaced with EnumMap") - HashMap/HashSet with an enum key/element type is less space- and
+    time-efficient than the specialized EnumMap/EnumSet. It lives in PMD's bestpractices.xml
+    category, which (unlike errorprone/design/multithreading/performance/security above) is not
+    included wholesale here - referenced individually, same pattern as UnnecessaryLocalBeforeReturn
+    above pulled out of codestyle.xml. One real hit found on a trial run, fixed rather than excluded -
+    see ResourceTypeMapping#buildMap.
+  -->
+  <rule ref="category/java/bestpractices.xml/UseEnumCollections"/>
+
+  <!--
     ============================================================================================
     Custom XPath rules mirroring additional SonarQube/SonarLint findings with no other build-time
     equivalent, following the same pattern as NoNestedTernaryOperators/SeveralBreakOrContinuePerLoop
