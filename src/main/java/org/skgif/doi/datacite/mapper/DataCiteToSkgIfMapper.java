@@ -42,9 +42,6 @@ import org.skgif.doi.util.LocalIdentifiers;
 @ApplicationScoped
 public class DataCiteToSkgIfMapper implements GrantCapableMapper<DataCiteAttributes> {
 
-    /** SKG-IF identifier scheme name for a DOI. */
-    private static final String SCHEME_DOI = IdentifierScheme.DOI.value();
-
     /** Builds full/otf local_identifier values for mapped entities. */
     private final LocalIdentifiers localIdentifiers;
     /** Maps a record's funding references onto {@code Product.funding}. */
@@ -76,7 +73,8 @@ public class DataCiteToSkgIfMapper implements GrantCapableMapper<DataCiteAttribu
                 .localIdentifier(localIdentifiers.toFullLocalIdentifier(attributes.doi()))
                 .productType(ResourceTypeMapping.productType(
                         DataCiteManifestationMapper.resourceTypeGeneral(attributes).orElse(null)))
-                .identifiers(List.of(new ProductAllOfIdentifiers().scheme(SCHEME_DOI).value(attributes.doi())))
+                .identifiers(List.of(
+                        new ProductAllOfIdentifiers().scheme(IdentifierScheme.DOI.value()).value(attributes.doi())))
                 .titles(DataCiteTitleMapper.titles(attributes))
                 .abstracts(DataCiteTitleMapper.abstracts(attributes))
                 .topics(DataCiteTitleMapper.topics(attributes))
@@ -110,7 +108,8 @@ public class DataCiteToSkgIfMapper implements GrantCapableMapper<DataCiteAttribu
         return new Grant()
                 .localIdentifier(localIdentifiers.toFullLocalIdentifier(attributes.doi()))
                 .entityType(Grant.EntityTypeEnum.GRANT)
-                .identifiers(List.of(new GrantLiteAllOfIdentifiers().scheme(SCHEME_DOI).value(attributes.doi())))
+                .identifiers(List.of(
+                        new GrantLiteAllOfIdentifiers().scheme(IdentifierScheme.DOI.value()).value(attributes.doi())))
                 .titles(DataCiteTitleMapper.grantTitles(attributes))
                 .abstracts(DataCiteTitleMapper.grantAbstracts(attributes))
                 .fundingAgency(DataCiteGrantMapper.grantFundingAgency(

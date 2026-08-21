@@ -46,6 +46,19 @@
   trimming), which can violate the SKG-IF OpenAPI schema's `titles`/`abstracts` key pattern
   (`^([a-z]{2}|none)$`) for such records - see
   `DataCiteToSkgIfMapperTest.mapsMixedTwoAndThreeLetterLanguageCodesSeparately`.
+- **`DataCiteRelatedProductMapper`'s `relatedIdentifierType` → `identifiers[].scheme` mapping**
+  (see the [DataCite relatedIdentifierType vocabulary table](SKG_IF_DOI_MAPPING_PRODUCT.md#datacite-relatedidentifiertype-vocabulary))
+  is a straight `lowercase(relatedIdentifierType)` pass-through, not validated against SKG-IF's own
+  [external identifiers vocabulary](https://skg-if.github.io/interoperability-framework/#external-identifiers-of-entities)
+  (`arxiv`, `bibcode`, `crossref`, `doi`, `eissn`, `handle`, `isbn`, `issn`, `ivoid`, `lissn`,
+  `omid`, `openalex`, `opendoar`, `orcid`, `pmcid`, `pmid`, `ror`, `spase`, `url`, `urn`, `viaf`,
+  `w3id` - now enumerated in `org.skgif.doi.spec.IdentifierScheme`). 11 of the 23
+  `DataCiteRelatedIdentifierType` values - `ARK`, `CSTR`, `EAN13`, `IGSN`, `ISTC`, `LSID`, `PURL`,
+  `RAiD`, `RRID`, `SWHID`, `UPC` - have no SKG-IF equivalent at all, so a related product typed
+  with one of those currently gets a `scheme` value (e.g. `scheme: "ark"`) that isn't part of the
+  SKG-IF controlled vocabulary. This is a pre-existing gap, not something introduced by adding
+  `IdentifierScheme` - fixing it means picking a policy (fall back to `url`? drop the identifier
+  entirely? extend `IdentifierScheme` beyond the spec's documented list?) that hasn't been decided.
 
 ## Crossref
 

@@ -39,9 +39,6 @@ import org.skgif.doi.util.LocalIdentifiers;
 @ApplicationScoped
 public class CrossrefToSkgIfMapper implements GrantCapableMapper<CrossrefWork> {
 
-    /** SKG-IF identifier scheme name for a DOI. */
-    private static final String SCHEME_DOI = IdentifierScheme.DOI.value();
-
     /** Builds full/otf local_identifier values for mapped entities. */
     private final LocalIdentifiers localIdentifiers;
     /** Maps the record's type/date/access-rights/licence/biblio fields onto {@code manifestations[]}. */
@@ -98,7 +95,8 @@ public class CrossrefToSkgIfMapper implements GrantCapableMapper<CrossrefWork> {
         return new Product()
                 .localIdentifier(localIdentifiers.toFullLocalIdentifier(work.doi()))
                 .productType(CrossrefTypeMapping.productType(work.type()))
-                .identifiers(List.of(new ProductAllOfIdentifiers().scheme(SCHEME_DOI).value(work.doi())))
+                .identifiers(List.of(new ProductAllOfIdentifiers().scheme(IdentifierScheme.DOI.value()).value(work
+                        .doi())))
                 .titles(CrossrefTitleMapper.titles(work))
                 .abstracts(CrossrefTitleMapper.abstracts(work))
                 .topics(CrossrefTitleMapper.topics(work))
@@ -135,7 +133,8 @@ public class CrossrefToSkgIfMapper implements GrantCapableMapper<CrossrefWork> {
         return new Grant()
                 .localIdentifier(localIdentifiers.toFullLocalIdentifier(work.doi()))
                 .entityType(Grant.EntityTypeEnum.GRANT)
-                .identifiers(List.of(new GrantLiteAllOfIdentifiers().scheme(SCHEME_DOI).value(work.doi())))
+                .identifiers(List.of(new GrantLiteAllOfIdentifiers().scheme(IdentifierScheme.DOI.value()).value(work
+                        .doi())))
                 .titles(grantMapper.grantTitles(projects))
                 .abstracts(grantMapper.grantAbstracts(projects))
                 .grantNumber(work.award())

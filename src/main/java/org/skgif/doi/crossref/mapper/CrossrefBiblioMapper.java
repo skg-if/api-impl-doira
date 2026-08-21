@@ -28,8 +28,6 @@ import org.skgif.doi.util.MapperTextUtils;
  */
 final class CrossrefBiblioMapper {
 
-    /** SKG-IF identifier scheme name for a DOI. */
-    private static final String SCHEME_DOI = IdentifierScheme.DOI.value();
     /** Number of parts a hyphen-split page range (e.g. {@code "12-34"}) splits into. */
     private static final int PAGE_RANGE_PARTS = 2;
 
@@ -150,7 +148,7 @@ final class CrossrefBiblioMapper {
     private List<VenueLiteAllOfIdentifiers> journalArticleVenueIdentifiers(String journalDoi, List<String> issns) {
         List<VenueLiteAllOfIdentifiers> identifiers = new ArrayList<>();
         if (journalDoi != null) {
-            identifiers.add(new VenueLiteAllOfIdentifiers().scheme(SCHEME_DOI).value(journalDoi));
+            identifiers.add(new VenueLiteAllOfIdentifiers().scheme(IdentifierScheme.DOI.value()).value(journalDoi));
         }
         issns.forEach(issn -> identifiers.add(
                 new VenueLiteAllOfIdentifiers().scheme(IdentifierScheme.ISSN.value()).value(issn)));
@@ -168,7 +166,7 @@ final class CrossrefBiblioMapper {
 
         List<VenueLiteAllOfIdentifiers> identifiers = new ArrayList<>();
         if (containerDoi != null) {
-            identifiers.add(new VenueLiteAllOfIdentifiers().scheme(SCHEME_DOI).value(containerDoi));
+            identifiers.add(new VenueLiteAllOfIdentifiers().scheme(IdentifierScheme.DOI.value()).value(containerDoi));
         }
         if (venueMetadata.seriesIssns() != null) {
             venueMetadata.seriesIssns().stream()

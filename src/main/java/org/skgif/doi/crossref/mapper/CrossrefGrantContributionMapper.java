@@ -13,6 +13,7 @@ import org.skgif.doi.generated.model.GrantAllOfContributions;
 import org.skgif.doi.generated.model.GrantContribution;
 import org.skgif.doi.generated.model.PersonLite;
 import org.skgif.doi.generated.model.PersonLiteAllOfIdentifiers;
+import org.skgif.doi.spec.IdentifierScheme;
 import org.skgif.doi.util.EntityRefs;
 
 /**
@@ -50,7 +51,8 @@ final class CrossrefGrantContributionMapper {
         Optional<String> bareOrcid = CrossrefContributionMapper.bareOrcid(investigator.orcid());
         String name = CrossrefContributionMapper.displayName(investigator.given(), investigator.family());
         List<PersonLiteAllOfIdentifiers> orcidIdentifiers = bareOrcid
-                .map(orcid -> List.of(new PersonLiteAllOfIdentifiers().scheme("orcid").value(orcid)))
+                .map(orcid -> List.of(new PersonLiteAllOfIdentifiers().scheme(IdentifierScheme.ORCID.value()).value(
+                        orcid)))
                 .orElse(null);
         PersonLite by = EntityRefs.personRef(doi, name, investigator.given(), investigator.family(),
                 bareOrcid.orElse(null), orcidIdentifiers);

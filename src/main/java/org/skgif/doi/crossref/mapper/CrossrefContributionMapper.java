@@ -11,6 +11,7 @@ import org.skgif.doi.generated.model.PersonLiteAllOfIdentifiers;
 import org.skgif.doi.generated.model.ProductAllOfRelevantOrganisations;
 import org.skgif.doi.generated.model.ProductContribution;
 import org.skgif.doi.generated.model.ProductContributionBy;
+import org.skgif.doi.spec.IdentifierScheme;
 import org.skgif.doi.util.EntityRefs;
 import org.skgif.doi.util.ExternalIdentifierUrls;
 
@@ -59,7 +60,8 @@ final class CrossrefContributionMapper {
         Optional<String> bareOrcid = bareOrcid(rawOrcid);
         String name = displayName(given, family);
         List<PersonLiteAllOfIdentifiers> orcidIdentifiers = bareOrcid
-                .map(orcid -> List.of(new PersonLiteAllOfIdentifiers().scheme("orcid").value(orcid)))
+                .map(orcid -> List.of(new PersonLiteAllOfIdentifiers().scheme(IdentifierScheme.ORCID.value()).value(
+                        orcid)))
                 .orElse(null);
         return EntityRefs.personRef(doi, name, given, family, bareOrcid.orElse(null), orcidIdentifiers);
     }

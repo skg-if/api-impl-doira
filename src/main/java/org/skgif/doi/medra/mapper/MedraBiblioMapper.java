@@ -7,6 +7,7 @@ import org.skgif.doi.generated.model.VenueLite;
 import org.skgif.doi.generated.model.VenueLiteAllOfIdentifiers;
 import org.skgif.doi.medra.dto.MedraWork;
 import org.skgif.doi.spec.EntityTypes;
+import org.skgif.doi.spec.IdentifierScheme;
 import org.skgif.doi.util.EntityRefs;
 import org.skgif.doi.util.MapperTextUtils;
 
@@ -50,7 +51,7 @@ final class MedraBiblioMapper {
                 .name(work.journalTitle());
         if (work.issns() != null && !work.issns().isEmpty()) {
             venue.identifiers(work.issns().stream()
-                    .map(issn -> new VenueLiteAllOfIdentifiers().scheme("issn").value(issn))
+                    .map(issn -> new VenueLiteAllOfIdentifiers().scheme(IdentifierScheme.ISSN.value()).value(issn))
                     .toList());
         }
         return Optional.of(venue);

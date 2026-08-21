@@ -20,11 +20,6 @@ import org.skgif.doi.spec.IdentifierScheme;
  */
 public final class EntityRefs {
 
-    /** Identifier scheme name for a ROR id. */
-    private static final String SCHEME_ROR = IdentifierScheme.ROR.value();
-    /** Identifier scheme name for a DOI. */
-    private static final String SCHEME_DOI = IdentifierScheme.DOI.value();
-
     private EntityRefs() {
     }
 
@@ -50,7 +45,7 @@ public final class EntityRefs {
                 .name(name)
                 .entityType(EntityTypes.ORGANISATION.value());
         if (bareRor != null) {
-            org.identifiers(List.of(new AgentAllOfIdentifiers().scheme(SCHEME_ROR).value(bareRor)));
+            org.identifiers(List.of(new AgentAllOfIdentifiers().scheme(IdentifierScheme.ROR.value()).value(bareRor)));
         }
         return org;
     }
@@ -84,7 +79,8 @@ public final class EntityRefs {
                 .name(name)
                 .entityType(EntityTypes.ORGANISATION.value());
         if (bareDoiValue != null) {
-            agency.identifiers(List.of(new AgentAllOfIdentifiers().scheme(SCHEME_DOI).value(bareDoiValue)));
+            agency.identifiers(
+                    List.of(new AgentAllOfIdentifiers().scheme(IdentifierScheme.DOI.value()).value(bareDoiValue)));
         }
         return agency;
     }

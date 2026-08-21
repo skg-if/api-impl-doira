@@ -37,8 +37,6 @@ final class DataCiteGrantFilters {
 
     /** DataCite query clause guaranteed to match no record, for a filter that can't be satisfied. */
     private static final String NO_MATCH_CLAUSE = FilterQuerySyntax.NO_MATCH_CLAUSE;
-    /** SKG-IF identifier scheme name for a ROR id. */
-    private static final String SCHEME_ROR = IdentifierScheme.ROR.value();
 
     // Every GrantFilterKeys constant is implemented below, so supportedKeys is derived directly
     // from the enum rather than re-listed - a newly-added constant can't silently fall out of sync.
@@ -79,8 +77,8 @@ final class DataCiteGrantFilters {
         // Unlike Product contributions (always a person -> orcid only), Grant contributions
         // can be organisational (-> ror), so both schemes are valid here.
         CLAUSE_BUILDERS.put(GrantFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME,
-                value -> (IdentifierScheme.ORCID.value().equalsIgnoreCase(value) || SCHEME_ROR.equalsIgnoreCase(value)) ?
-                        null : NO_MATCH_CLAUSE);
+                value -> (IdentifierScheme.ORCID.value().equalsIgnoreCase(value) ||
+                        IdentifierScheme.ROR.value().equalsIgnoreCase(value)) ? null : NO_MATCH_CLAUSE);
         CLAUSE_BUILDERS.put(GrantFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_VALUE,
                 DataCiteGrantFilters::byIdentifierValueClause);
         CLAUSE_BUILDERS.put(GrantFilterKeys.CONTRIBUTIONS_BY_FAMILY_NAME,
@@ -98,7 +96,7 @@ final class DataCiteGrantFilters {
                 value -> FilterQuerySyntax.creatorOrContributorClause("affiliation.affiliationIdentifier",
                         ExternalIdentifierUrls.ROR_BASE_URL + value));
         CLAUSE_BUILDERS.put(GrantFilterKeys.CONTRIBUTIONS_DECLARED_AFFILIATIONS_IDENTIFIERS_SCHEME,
-                value -> FilterQuerySyntax.schemeOnlyFilter(value, SCHEME_ROR, NO_MATCH_CLAUSE));
+                value -> FilterQuerySyntax.schemeOnlyFilter(value, IdentifierScheme.ROR.value(), NO_MATCH_CLAUSE));
         CLAUSE_BUILDERS.put(GrantFilterKeys.CONTRIBUTIONS_DECLARED_AFFILIATIONS_NAME,
                 value -> FilterQuerySyntax.creatorOrContributorClause("affiliation.name", value));
 
@@ -106,7 +104,7 @@ final class DataCiteGrantFilters {
         // DataCiteToSkgIfMapper.grantBeneficiaries), but DataCite has no way to constrain a
         // flat query to just the organisational subset, so this matches all contributors.
         CLAUSE_BUILDERS.put(GrantFilterKeys.BENEFICIARIES_IDENTIFIERS_SCHEME,
-                value -> FilterQuerySyntax.schemeOnlyFilter(value, SCHEME_ROR, NO_MATCH_CLAUSE));
+                value -> FilterQuerySyntax.schemeOnlyFilter(value, IdentifierScheme.ROR.value(), NO_MATCH_CLAUSE));
         CLAUSE_BUILDERS.put(GrantFilterKeys.BENEFICIARIES_IDENTIFIERS_VALUE,
                 value -> rorClause("contributors.nameIdentifiers.nameIdentifier", value));
         CLAUSE_BUILDERS.put(GrantFilterKeys.BENEFICIARIES_NAME, value -> "contributors.name:\"" + escape(value) + "\"");
@@ -115,7 +113,7 @@ final class DataCiteGrantFilters {
         // has no separate DataCite field to filter on beyond the creator name/ROR itself).
         CLAUSE_BUILDERS.put(GrantFilterKeys.FUNDING_AGENCY_NAME, value -> "creators.name:\"" + escape(value) + "\"");
         CLAUSE_BUILDERS.put(GrantFilterKeys.FUNDING_AGENCY_IDENTIFIERS_SCHEME,
-                value -> FilterQuerySyntax.schemeOnlyFilter(value, SCHEME_ROR, NO_MATCH_CLAUSE));
+                value -> FilterQuerySyntax.schemeOnlyFilter(value, IdentifierScheme.ROR.value(), NO_MATCH_CLAUSE));
         CLAUSE_BUILDERS.put(GrantFilterKeys.FUNDING_AGENCY_IDENTIFIERS_VALUE,
                 value -> rorClause("creators.nameIdentifiers.nameIdentifier", value));
 

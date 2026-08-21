@@ -31,8 +31,6 @@ final class DataCiteGrantMapper {
 
     /** DataCite's uppercase spelling of the ROR scheme name (nameIdentifierScheme value). */
     private static final String SCHEME_ROR_UPPER = "ROR";
-    /** SKG-IF identifier scheme name for a ROR id. */
-    private static final String SCHEME_ROR = IdentifierScheme.ROR.value();
     /** DataCite's {@code nameType} value identifying an organizational creator/contributor. */
     private static final String NAME_TYPE_ORGANIZATIONAL = "Organizational";
 
@@ -48,7 +46,7 @@ final class DataCiteGrantMapper {
                     .localIdentifier(ExternalIdentifierUrls.ROR_BASE_URL + ror)
                     .name(creator.name())
                     .entityType(EntityTypes.ORGANISATION.value())
-                    .identifiers(List.of(new AgentAllOfIdentifiers().scheme(SCHEME_ROR).value(ror))));
+                    .identifiers(List.of(new AgentAllOfIdentifiers().scheme(IdentifierScheme.ROR.value()).value(ror))));
         }
         // No ROR-bearing creator to identify the funder - fall back to the record's own
         // publisher, same convention used for Product.manifestations[].biblio.hosting_data_source.
@@ -101,7 +99,7 @@ final class DataCiteGrantMapper {
                     .name(name)
                     .entityType(EntityTypes.ORGANISATION.value());
             if (ror != null) {
-                by.identifiers(List.of(new AgentAllOfIdentifiers().scheme(SCHEME_ROR).value(ror)));
+                by.identifiers(List.of(new AgentAllOfIdentifiers().scheme(IdentifierScheme.ROR.value()).value(ror)));
             }
             return by;
         }

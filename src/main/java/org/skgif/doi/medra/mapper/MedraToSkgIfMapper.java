@@ -53,7 +53,8 @@ public class MedraToSkgIfMapper implements RegistrationAgencyMapper<MedraWork> {
         return new Product()
                 .localIdentifier(localIdentifiers.toFullLocalIdentifier(work.doi()))
                 .productType(Product.ProductTypeEnum.LITERATURE)
-                .identifiers(List.of(new ProductAllOfIdentifiers().scheme(IdentifierScheme.DOI.value()).value(work.doi())))
+                .identifiers(List.of(new ProductAllOfIdentifiers().scheme(IdentifierScheme.DOI.value()).value(work
+                        .doi())))
                 .titles(MedraTitleMapper.titles(work))
                 .abstracts(MedraTitleMapper.abstracts(work))
                 .contributions(MedraContributionMapper.contributions(work))

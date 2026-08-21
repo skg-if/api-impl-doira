@@ -24,9 +24,6 @@ import org.skgif.doi.util.MapperTextUtils;
  */
 final class CrossrefRelatedProductMapper {
 
-    /** SKG-IF identifier scheme name for a DOI. */
-    private static final String SCHEME_DOI = IdentifierScheme.DOI.value();
-
     /** Builds a real local_identifier for DOI-bearing references. */
     private final LocalIdentifiers localIdentifiers;
 
@@ -66,7 +63,8 @@ final class CrossrefRelatedProductMapper {
                             .localIdentifier(localIdentifiers.toFullLocalIdentifier(reference.doi()))
                             .entityType(EntityTypes.PRODUCT.value())
                             .identifiers(
-                                    List.of(new EntityIdentifiersInner().scheme(SCHEME_DOI).value(reference.doi()))));
+                                    List.of(new EntityIdentifiersInner().scheme(IdentifierScheme.DOI.value()).value(
+                                            reference.doi()))));
                     continue;
                 }
                 String label = reference.unstructured() != null ? reference.unstructured() : reference.key();
@@ -111,11 +109,12 @@ final class CrossrefRelatedProductMapper {
             if (entry.id() == null) {
                 continue;
             }
-            if (SCHEME_DOI.equalsIgnoreCase(entry.idType())) {
+            if (IdentifierScheme.DOI.value().equalsIgnoreCase(entry.idType())) {
                 result.add(new ProductsRelatedItem()
                         .localIdentifier(localIdentifiers.toFullLocalIdentifier(entry.id()))
                         .entityType(EntityTypes.PRODUCT.value())
-                        .identifiers(List.of(new EntityIdentifiersInner().scheme(SCHEME_DOI).value(entry.id()))));
+                        .identifiers(List.of(new EntityIdentifiersInner().scheme(IdentifierScheme.DOI.value()).value(
+                                entry.id()))));
             } else {
                 result.add(new ProductsRelatedItem()
                         .localIdentifier(MapperTextUtils.otf(work.doi(), entry.id()))
