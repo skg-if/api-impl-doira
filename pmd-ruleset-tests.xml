@@ -69,6 +69,21 @@
       fixed for real production offenders and is no longer excluded there).
     -->
     <exclude name="TooManyMethods"/>
+    <!--
+      6 hits, all in ArchUnit test classes (ArchUnitTestSupport, CodingConventionArchTest,
+      LayeringArchTest, NamingConventionArchTest, ProviderIndependenceArchTest,
+      UtilityClassShapeArchTest) - ArchUnit's API requires using the concrete JavaClasses type
+      rather than an interface. This is an ArchUnit-specific constraint, not a production-code
+      coupling concern.
+    -->
+    <exclude name="LooseCoupling"/>
+    <!--
+      2 hits (CrossrefToSkgIfMapperTestBase, DataCiteToSkgIfMapperTestBase) - abstract test base
+      classes that hold shared test utilities and are meant to be subclassed, but don't define
+      abstract methods themselves. A legitimate pattern for test inheritance hierarchies that's
+      not the production-code smell this rule targets.
+    -->
+    <exclude name="AbstractClassWithoutAbstractMethod"/>
   </rule>
 
 </ruleset>

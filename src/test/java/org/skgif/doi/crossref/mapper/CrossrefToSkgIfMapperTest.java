@@ -56,6 +56,26 @@ class CrossrefToSkgIfMapperTest extends CrossrefToSkgIfMapperTestBase {
                 Arguments.of("crossref-dataset.json", Product.ProductTypeEnum.RESEARCH_DATA));
     }
 
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("coreFieldsFromRealRecordsFixtures")
+    void mapsCoreFieldsFromReal(String label, String fixtureName, String expectedDoi) throws IOException {
+        Product product = mapFixture(fixtureName);
+
+        assertThat(product.getLocalIdentifier()).isEqualTo("https://doi.org/" + expectedDoi);
+        assertThat(product.getProductType()).isEqualTo(Product.ProductTypeEnum.LITERATURE);
+        assertThat(product.getIdentifiers().getFirst().getValue()).isEqualTo(expectedDoi);
+    }
+
+    private static Stream<Arguments> coreFieldsFromRealRecordsFixtures() {
+        return Stream.of(
+                Arguments.of("Article with ORCID Authors",
+                        "crossref-journal-article-with-orcid.json", "10.1038/s41467-022-33468-6"),
+                Arguments.of("Book Chapter",
+                        "crossref-book-chapter.json", "10.1007/978-3-319-66787-4_9"),
+                Arguments.of("Proceedings Article",
+                        "crossref-proceedings-article.json", "10.17537/icmbb18.42"));
+    }
+
     @Test
     void mapsAuthorsAsAuthorContributionsWithoutOrcidWhenAbsent() throws IOException {
         Product product = mapFixture("crossref-journal-article.json");
@@ -79,19 +99,6 @@ class CrossrefToSkgIfMapperTest extends CrossrefToSkgIfMapperTestBase {
         assertThat(product.getManifestations().getFirst().getVersion()).isNull();
     }
 
-    // crossref-journal-article-with-orcid.json: a real Nature Communications article (DOI
-    // 10.1038/s41467-022-33468-6) - unlike crossref-journal-article.json, its authors carry
-    // ORCIDs and it has no "page" field (only "article-number"), so it exercises paths the
-    // other journal-article fixtures don't.
-
-    @Test
-    void mapsCoreFieldsFromRealArticleWithOrcidAuthors() throws IOException {
-        Product product = mapFixture("crossref-journal-article-with-orcid.json");
-
-        assertThat(product.getLocalIdentifier()).isEqualTo("https://doi.org/10.1038/s41467-022-33468-6");
-        assertThat(product.getProductType()).isEqualTo(Product.ProductTypeEnum.LITERATURE);
-        assertThat(product.getIdentifiers().getFirst().getValue()).isEqualTo("10.1038/s41467-022-33468-6");
-    }
 
     @Test
     void mapsAuthorsAsAuthorContributionsWithOrcidWhenPresent() throws IOException {
@@ -111,19 +118,6 @@ class CrossrefToSkgIfMapperTest extends CrossrefToSkgIfMapperTestBase {
                 .anyMatch(c -> ((PersonLite) c.getBy()).getLocalIdentifier().startsWith("otf___"));
     }
 
-    // crossref-proceedings-article.json: a real conference-proceedings record (DOI
-    // 10.17537/icmbb18.42, type: "proceedings-article") - no license, no funder, and one
-    // reference (key "ref3") with neither a DOI nor unstructured text, exercising the
-    // otf-id-from-key fallback that the other journal-article fixtures never hit.
-
-    @Test
-    void mapsCoreFieldsFromRealProceedingsArticle() throws IOException {
-        Product product = mapFixture("crossref-proceedings-article.json");
-
-        assertThat(product.getLocalIdentifier()).isEqualTo("https://doi.org/10.17537/icmbb18.42");
-        assertThat(product.getProductType()).isEqualTo(Product.ProductTypeEnum.LITERATURE);
-        assertThat(product.getIdentifiers().getFirst().getValue()).isEqualTo("10.17537/icmbb18.42");
-    }
 
     @Test
     void doesNotFabricateAccessRightsWhenNoLicensePresent() throws IOException {
@@ -180,19 +174,6 @@ class CrossrefToSkgIfMapperTest extends CrossrefToSkgIfMapperTestBase {
         assertThat(fundingAgency.getIdentifiers().getFirst().getValue()).isEqualTo("10.13039/501100007601");
     }
 
-    // crossref-book-chapter.json: a real book chapter (DOI 10.1007/978-3-319-66787-4_9,
-    // type: "book-chapter") - unlike every other fixture, its container-title[] has two
-    // entries (the LNCS series title, then the actual proceedings/book title), and it's the
-    // first fixture to exercise the mapper's new publisher-as-contribution behaviour.
-
-    @Test
-    void mapsCoreFieldsFromRealBookChapter() throws IOException {
-        Product product = mapFixture("crossref-book-chapter.json");
-
-        assertThat(product.getLocalIdentifier()).isEqualTo("https://doi.org/10.1007/978-3-319-66787-4_9");
-        assertThat(product.getProductType()).isEqualTo(Product.ProductTypeEnum.LITERATURE);
-        assertThat(product.getIdentifiers().getFirst().getValue()).isEqualTo("10.1007/978-3-319-66787-4_9");
-    }
 
     @Test
     void mapsPublisherAsTrailingPublisherRoleContribution() throws IOException {

@@ -98,10 +98,9 @@ public class CrossrefJournalDoiResolver {
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     return Optional.empty();
-                } catch (ExecutionException e) {
+                } catch (ExecutionException e) { //NOPMD
                     // fetchJournalDoi already swallows RuntimeException and returns null for this
                     // ISSN - this only guards an unexpected Error, so just move on to the next one.
-                    continue;
                 }
             }
             return Optional.empty();
