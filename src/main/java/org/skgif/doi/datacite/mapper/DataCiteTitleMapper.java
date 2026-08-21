@@ -4,8 +4,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
 import org.skgif.doi.datacite.dto.DataCiteDescription;
@@ -29,8 +29,7 @@ final class DataCiteTitleMapper {
     }
 
     static Map<String, List<String>> abstracts(DataCiteAttributes attributes) {
-        List<String> values = abstractValues(attributes);
-        return values.isEmpty() ? Map.of() : Map.of("en", values);
+        return abstractsByLanguage(attributes);
     }
 
     /**
@@ -49,9 +48,14 @@ final class DataCiteTitleMapper {
         return joined;
     }
 
+    /**
+     * @param attributes the DataCite record to read abstracts from
+     * @return the concatenated abstracts keyed by language, or an empty map if none carry one
+     */
     static Map<String, String> grantAbstracts(DataCiteAttributes attributes) {
-        List<String> values = abstractValues(attributes);
-        return values.isEmpty() ? Map.of() : Map.of("en", String.join("\n\n", values));
+        Map<String, String> joined = new LinkedHashMap<>();
+        abstractsByLanguage(attributes).forEach((lang, values) -> joined.put(lang, String.join("\n\n", values)));
+        return joined;
     }
 
     /**
@@ -65,29 +69,38 @@ final class DataCiteTitleMapper {
      * @return the titles keyed by language, or an empty map if none carry a title
      */
     private static Map<String, List<String>> titlesByLanguage(DataCiteAttributes attributes) {
-        return Optional.ofNullable(attributes.titles())
-                .orElseGet(List::of)
-                .stream()
-                .filter(title -> title.title() != null)
-                .collect(Collectors.groupingBy(
-                        DataCiteTitleMapper::titleLanguage,
-                        LinkedHashMap::new,
-                        Collectors.mapping(DataCiteAttributes.Title::title, Collectors.toList())));
+        return groupByLanguage(Optional.ofNullable(attributes.titles()).orElseGet(List::of),
+                DataCiteAttributes.Title::title, DataCiteAttributes.Title::lang);
     }
 
-    private static String titleLanguage(DataCiteAttributes.Title title) {
-        String lang = title.lang();
-        return (lang == null || lang.isBlank()) ? "en" : lang.strip().toLowerCase(Locale.ROOT);
-    }
-
-    private static List<String> abstractValues(DataCiteAttributes attributes) {
-        return Optional.ofNullable(attributes.descriptions())
+    /**
+     * Groups DataCite {@code descriptions[type=Abstract]} by {@code lang}, same defaulting rules
+     * as {@link #titlesByLanguage}.
+     *
+     * @param attributes the DataCite record to read abstracts from
+     * @return the abstracts keyed by language, or an empty map if none carry one
+     */
+    private static Map<String, List<String>> abstractsByLanguage(DataCiteAttributes attributes) {
+        List<DataCiteDescription> abstractDescriptions = Optional.ofNullable(attributes.descriptions())
                 .orElseGet(List::of)
                 .stream()
                 .filter(d -> "Abstract".equals(d.descriptionType()))
-                .map(DataCiteDescription::description)
-                .filter(Objects::nonNull)
                 .toList();
+        return groupByLanguage(abstractDescriptions, DataCiteDescription::description, DataCiteDescription::lang);
+    }
+
+    private static <T> Map<String, List<String>> groupByLanguage(List<T> items, Function<T, String> text,
+            Function<T, String> lang) {
+        return items.stream()
+                .filter(item -> text.apply(item) != null)
+                .collect(Collectors.groupingBy(
+                        item -> normalizeLanguage(lang.apply(item)),
+                        LinkedHashMap::new,
+                        Collectors.mapping(text, Collectors.toList())));
+    }
+
+    private static String normalizeLanguage(String lang) {
+        return (lang == null || lang.isBlank()) ? "en" : lang.strip().toLowerCase(Locale.ROOT);
     }
 
     static List<ProductAllOfTopics> topics(DataCiteAttributes attributes) {

@@ -71,6 +71,16 @@ class DataCiteToSkgIfMapperGrantTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
+    void toGrant_groupsAbstractsByLanguage() throws IOException {
+        Grant grant = mapGrantFixture("datacite-multilang-abstracts-swp-2026-29.json");
+
+        Map<String, String> abstracts = (Map<String, String>) grant.getAbstracts();
+        assertThat(abstracts.get("en")).contains("large heterogeneity in the cyclicality");
+        assertThat(abstracts.get("fr")).contains("grande hétérogénéité dans la cyclicité");
+    }
+
+    @Test
     void toGrant_derivesFundingAgencyFromRorBearingCreator() throws IOException {
         Grant grant = mapGrantFixture("datacite-award-r3sy-7371.json");
 

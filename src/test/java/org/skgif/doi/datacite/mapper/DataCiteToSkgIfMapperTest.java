@@ -93,6 +93,19 @@ class DataCiteToSkgIfMapperTest {
 
     @Test
     @SuppressWarnings("unchecked")
+    void mapsAbstractsInDifferentLanguagesUnderTheirOwnKeys() throws IOException {
+        Product product = mapFixture("datacite-multilang-abstracts-swp-2026-29.json");
+
+        Map<String, List<String>> titles = (Map<String, List<String>>) product.getTitles();
+        assertThat(titles.keySet()).containsExactly("en");
+
+        Map<String, List<String>> abstracts = (Map<String, List<String>>) product.getAbstracts();
+        assertThat(abstracts.get("en").getFirst()).contains("large heterogeneity in the cyclicality");
+        assertThat(abstracts.get("fr").getFirst()).contains("grande hétérogénéité dans la cyclicité");
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
     void mapsMixedTwoAndThreeLetterLanguageCodesSeparately() throws IOException {
         // DataCite's lang isn't restricted to ISO 639-1 two-letter codes - a real record can mix
         // a 3-letter ISO 639-2 code (e.g. "eng") with a 2-letter one. This is passed through

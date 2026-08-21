@@ -35,8 +35,9 @@
   otf id, same as an entirely absent `funderIdentifier` (see
   [`datacite-dataset-funder-no-identifier-e449e75a.json`](src/test/resources/datacite-dataset-funder-no-identifier-e449e75a.json),
   where the same funder name recurring across 2 grants resolves to the same otf id both times).
-- **DataCite's `titles[].lang`** is free text, not restricted to ISO 639-1 two-letter codes - some
-  real records use 3-letter ISO 639-2 codes instead (e.g. `"eng"` rather than `"en"`, see
+- **DataCite's `titles[].lang`/`descriptions[].lang`** are free text, not restricted to ISO 639-1
+  two-letter codes - some real records use 3-letter ISO 639-2 codes instead (e.g. `"eng"` rather
+  than `"en"`, see
   [`datacite-mixed-lang-titles-eng-fr.json`](src/test/resources/datacite-mixed-lang-titles-eng-fr.json),
   a real record mixing `"eng"` and `"fr"`). `DataCiteTitleMapper` does not normalize these to
   ISO 639-1 - there's no reliable ISO 639-2-to-639-1 conversion table in this codebase, and a

@@ -1,0 +1,145 @@
+{
+  "data": {
+    "id": "10.34989/swp-2026-29",
+    "type": "dois",
+    "attributes": {
+      "doi": "10.34989/swp-2026-29",
+      "prefix": "10.34989",
+      "suffix": "swp-2026-29",
+      "identifiers": [],
+      "alternateIdentifiers": [],
+      "creators": [
+        {
+          "name": "Hauser, Daniela",
+          "nameType": "Personal",
+          "givenName": "Daniela",
+          "familyName": "Hauser",
+          "affiliation": ["Bank of Canada"],
+          "nameIdentifiers": [
+            {
+              "schemeUri": "https://orcid.org",
+              "nameIdentifier": "https://orcid.org/0000-0002-3467-4324",
+              "nameIdentifierScheme": "ORCID"
+            }
+          ]
+        },
+        {
+          "name": "Gnocchi, Stefano",
+          "nameType": "Personal",
+          "givenName": "Stefano",
+          "familyName": "Gnocchi",
+          "affiliation": ["Bank of Canada"],
+          "nameIdentifiers": [
+            {
+              "schemeUri": "https://orcid.org",
+              "nameIdentifier": "https://orcid.org/0000-0002-4141-1004",
+              "nameIdentifierScheme": "ORCID"
+            }
+          ]
+        }
+      ],
+      "titles": [
+        {
+          "lang": "en",
+          "title": "Time Use and Consumption Expenditures"
+        }
+      ],
+      "publisher": "Bank of Canada",
+      "container": {},
+      "publicationYear": 2026,
+      "subjects": [],
+      "contributors": [],
+      "dates": [],
+      "language": null,
+      "types": {
+        "ris": "RPRT",
+        "bibtex": "article",
+        "citeproc": "article-journal",
+        "schemaOrg": "ScholarlyArticle",
+        "resourceType": "Staff Working Paper",
+        "resourceTypeGeneral": "Text"
+      },
+      "relatedIdentifiers": [],
+      "relatedItems": [],
+      "sizes": [],
+      "formats": [],
+      "version": null,
+      "rightsList": [],
+      "descriptions": [
+        {
+          "lang": "en",
+          "description": "This paper documents large heterogeneity in the cyclicality of expenditure items within aggregate consumption and shows that a substantial part of this heterogeneity can be explained by differences in the household time required to consume.",
+          "descriptionType": "Abstract"
+        },
+        {
+          "lang": "fr",
+          "description": "Cette étude met en évidence une grande hétérogénéité dans la cyclicité des dépenses au sein de la consommation globale et montre qu'une part importante de cette hétérogénéité peut s'expliquer par des différences dans le temps nécessaire aux ménages pour consommer.",
+          "descriptionType": "Abstract"
+        }
+      ],
+      "geoLocations": [],
+      "fundingReferences": [],
+      "url": "https://www.bankofcanada.ca/2026/swp-2026-29",
+      "contentUrl": null,
+      "metadataVersion": 1,
+      "schemaVersion": "http://datacite.org/schema/kernel-4",
+      "source": "mds",
+      "isActive": true,
+      "state": "findable",
+      "reason": null,
+      "viewCount": 0,
+      "viewsOverTime": [],
+      "downloadCount": 0,
+      "downloadsOverTime": [],
+      "referenceCount": 0,
+      "citationCount": 0,
+      "citationsOverTime": [],
+      "partCount": 0,
+      "partOfCount": 0,
+      "versionCount": 0,
+      "versionOfCount": 0,
+      "created": "2026-08-13T10:23:06.000Z",
+      "registered": "2026-08-13T10:23:59.000Z",
+      "published": "2026",
+      "updated": "2026-08-13T10:23:59.000Z"
+    },
+    "relationships": {
+      "client": {
+        "data": {
+          "id": "bankofcanada.repo",
+          "type": "clients"
+        }
+      },
+      "provider": {
+        "data": {
+          "id": "bankofcanada",
+          "type": "providers"
+        }
+      },
+      "media": {
+        "data": {
+          "id": "10.34989/swp-2026-29",
+          "type": "media"
+        }
+      },
+      "references": {
+        "data": []
+      },
+      "citations": {
+        "data": []
+      },
+      "parts": {
+        "data": []
+      },
+      "partOf": {
+        "data": []
+      },
+      "versions": {
+        "data": []
+      },
+      "versionOf": {
+        "data": []
+      }
+    }
+  }
+}

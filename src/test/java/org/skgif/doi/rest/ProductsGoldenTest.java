@@ -151,6 +151,20 @@ class ProductsGoldenTest {
     }
 
     /**
+     * DOI 10.34989/swp-2026-29 - a real Bank of Canada working paper with two {@code
+     * descriptions[type=Abstract]} entries, one {@code lang: "en"} and one {@code lang: "fr"},
+     * proving abstracts are grouped by their actual language rather than hardcoded under
+     * {@code "en"}, the same fix already applied to {@code titles}.
+     *
+     * @throws IOException if a fixture resource cannot be read
+     */
+    @Test
+    void getProductById_matchesExpectedJsonLd_multilangAbstractsSwp202629() throws IOException {
+        assertMatchesExpectedDataCiteJsonLd("10.34989/swp-2026-29", "datacite-multilang-abstracts-swp-2026-29.json",
+                "expected/datacite-multilang-abstracts-swp-2026-29-out.json");
+    }
+
+    /**
      * DOI 10.5281/zenodo.21826016 - a real Zenodo software deposit ({@code
      * resourceTypeGeneral: "Software"}), proving the {@code research software} product-type
      * mapping at the golden-output level.

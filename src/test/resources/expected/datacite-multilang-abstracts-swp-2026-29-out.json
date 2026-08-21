@@ -1,0 +1,93 @@
+{
+  "@context" : [ "https://w3id.org/skg-if/context/1.1.0/skg-if.json", "https://w3id.org/skg-if/context/1.0.0/skg-if-api.json", {
+    "@base" : "https://w3id.org/skg-if/sandbox/bankofcanada.repo/"
+  } ],
+  "meta" : {
+    "local_identifier" : "http://localhost:8081/skg-if/api/datacite/products/10.34989/swp-2026-29",
+    "entity_type" : "single_entity"
+  },
+  "@graph" : [ {
+    "entity_type" : "product",
+    "product_type" : "literature",
+    "local_identifier" : "https://doi.org/10.34989/swp-2026-29",
+    "identifiers" : [ {
+      "scheme" : "doi",
+      "value" : "10.34989/swp-2026-29"
+    } ],
+    "titles" : {
+      "en" : [ "Time Use and Consumption Expenditures" ]
+    },
+    "abstracts" : {
+      "en" : [ "This paper documents large heterogeneity in the cyclicality of expenditure items within aggregate consumption and shows that a substantial part of this heterogeneity can be explained by differences in the household time required to consume." ],
+      "fr" : [ "Cette étude met en évidence une grande hétérogénéité dans la cyclicité des dépenses au sein de la consommation globale et montre qu'une part importante de cette hétérogénéité peut s'expliquer par des différences dans le temps nécessaire aux ménages pour consommer." ]
+    },
+    "contributions" : [ {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "https://orcid.org/0000-0002-3467-4324",
+        "identifiers" : [ {
+          "scheme" : "orcid",
+          "value" : "0000-0002-3467-4324"
+        } ],
+        "given_name" : "Daniela",
+        "family_name" : "Hauser",
+        "name" : "Hauser, Daniela"
+      },
+      "declared_affiliations" : [ {
+        "entity_type" : "organisation",
+        "local_identifier" : "otf___10-34989-swp-2026-29___bank-of-canada",
+        "name" : "Bank of Canada"
+      } ],
+      "rank" : 1,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "person",
+        "local_identifier" : "https://orcid.org/0000-0002-4141-1004",
+        "identifiers" : [ {
+          "scheme" : "orcid",
+          "value" : "0000-0002-4141-1004"
+        } ],
+        "given_name" : "Stefano",
+        "family_name" : "Gnocchi",
+        "name" : "Gnocchi, Stefano"
+      },
+      "declared_affiliations" : [ {
+        "entity_type" : "organisation",
+        "local_identifier" : "otf___10-34989-swp-2026-29___bank-of-canada",
+        "name" : "Bank of Canada"
+      } ],
+      "rank" : 2,
+      "role" : "author"
+    }, {
+      "by" : {
+        "entity_type" : "organisation",
+        "local_identifier" : "otf___10-34989-swp-2026-29___bank-of-canada",
+        "name" : "Bank of Canada"
+      },
+      "rank" : 3,
+      "role" : "publisher"
+    } ],
+    "manifestations" : [ {
+      "type" : {
+        "defined_in" : "https://schema.datacite.org/meta/kernel-4.7/include/datacite-resourceType-v4.xsd",
+        "labels" : {
+          "en" : "Text"
+        }
+      },
+      "dates" : {
+        "creation" : [ "2026-08-13T10:23:06.000Z" ],
+        "deposit" : [ "2026-08-13T10:23:59.000Z" ],
+        "modified" : [ "2026-08-13T10:23:59.000Z" ],
+        "publication" : [ "2026" ]
+      },
+      "biblio" : {
+        "hosting_data_source" : {
+          "entity_type" : "datasource",
+          "local_identifier" : "otf___10-34989-swp-2026-29___bank-of-canada",
+          "name" : "Bank of Canada"
+        }
+      }
+    } ]
+  } ]
+}
