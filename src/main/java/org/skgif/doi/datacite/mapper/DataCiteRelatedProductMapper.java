@@ -61,9 +61,11 @@ final class DataCiteRelatedProductMapper {
         URN("URN"),
         W3ID("w3id");
 
+        /** Reverse lookup from {@link #value()} back to the enum constant. */
         private static final Map<String, DataCiteRelatedIdentifierType> BY_VALUE = Arrays.stream(values())
                 .collect(Collectors.toMap(DataCiteRelatedIdentifierType::value, Function.identity()));
 
+        /** The constant's underlying DataCite {@code relatedIdentifierType} value. */
         @SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
         private final String value;
 
@@ -80,6 +82,7 @@ final class DataCiteRelatedProductMapper {
         }
     }
 
+    /** Builds a real local_identifier for DOI-identified related products. */
     private final LocalIdentifiers localIdentifiers;
 
     DataCiteRelatedProductMapper(LocalIdentifiers localIdentifiers) {

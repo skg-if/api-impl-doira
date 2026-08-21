@@ -19,6 +19,7 @@ import org.skgif.doi.util.LocalIdentifiers;
 
 class CrossrefGrantMapperTest {
 
+    /** The mapper under test. */
     private final CrossrefGrantMapper mapper =
             new CrossrefGrantMapper(new CrossrefFundingMapper(new LocalIdentifiers("https://doi.org/")));
 

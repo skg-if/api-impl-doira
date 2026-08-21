@@ -15,6 +15,7 @@ import org.skgif.doi.generated.model.GrantLiteAllOfIdentifiers;
 import org.skgif.doi.generated.model.Product;
 import org.skgif.doi.generated.model.ProductAllOfIdentifiers;
 import org.skgif.doi.mapper.GrantCapableMapper;
+import org.skgif.doi.spec.IdentifierScheme;
 import org.skgif.doi.util.LocalIdentifiers;
 
 /**
@@ -38,12 +39,18 @@ import org.skgif.doi.util.LocalIdentifiers;
 @ApplicationScoped
 public class CrossrefToSkgIfMapper implements GrantCapableMapper<CrossrefWork> {
 
-    private static final String SCHEME_DOI = "doi";
+    /** SKG-IF identifier scheme name for a DOI. */
+    private static final String SCHEME_DOI = IdentifierScheme.DOI.value();
 
+    /** Builds full/otf local_identifier values for mapped entities. */
     private final LocalIdentifiers localIdentifiers;
+    /** Maps the record's type/date/access-rights/licence/biblio fields onto {@code manifestations[]}. */
     private final CrossrefManifestationMapper manifestationMapper;
+    /** Maps the record's funding references onto {@code Product.funding}. */
     private final CrossrefFundingMapper fundingMapper;
+    /** Maps the record's references/relations onto {@code Product.relatedProducts}. */
     private final CrossrefRelatedProductMapper relatedProductMapper;
+    /** Maps a {@code type: "grant"} record's project fields onto the SKG-IF {@code Grant} entity. */
     private final CrossrefGrantMapper grantMapper;
 
     /**

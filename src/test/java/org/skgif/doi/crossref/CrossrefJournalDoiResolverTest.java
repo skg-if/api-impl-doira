@@ -23,9 +23,12 @@ import org.junit.jupiter.api.Test;
  */
 class CrossrefJournalDoiResolverTest {
 
+    /** Timeout, in seconds, for tests asserting a call completes promptly. */
     private static final int TEST_TIMEOUT_SECONDS = 5;
 
+    /** Mocked Crossref REST client, stubbed per test case. */
     private final CrossrefClient crossrefClient = mock(CrossrefClient.class);
+    /** The resolver under test, backed by {@link #crossrefClient}. */
     private final CrossrefJournalDoiResolver resolver =
             new CrossrefJournalDoiResolver(crossrefClient, Optional.empty());
 

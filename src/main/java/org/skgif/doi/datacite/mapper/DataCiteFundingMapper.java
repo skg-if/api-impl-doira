@@ -26,6 +26,7 @@ import org.skgif.doi.util.MapperTextUtils;
  */
 final class DataCiteFundingMapper {
 
+    /** Pattern matching a bare DOI's {@code 10.<4-9 digits>/<suffix>} shape. */
     private static final Pattern DOI_SHAPE = Pattern.compile("10\\.\\d{4,9}/.+");
 
     /**
@@ -44,9 +45,11 @@ final class DataCiteFundingMapper {
         ROR("ROR"),
         OTHER("Other");
 
+        /** Reverse lookup from {@link #value()} back to the enum constant. */
         private static final Map<String, DataCiteFunderIdentifierType> BY_VALUE = Arrays.stream(values())
                 .collect(Collectors.toMap(DataCiteFunderIdentifierType::value, Function.identity()));
 
+        /** The constant's underlying DataCite {@code funderIdentifierType} value. */
         @SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
         private final String value;
 
@@ -63,6 +66,7 @@ final class DataCiteFundingMapper {
         }
     }
 
+    /** Resolves a funder's DOI-shaped identifier to a real local_identifier. */
     private final LocalIdentifiers localIdentifiers;
 
     DataCiteFundingMapper(LocalIdentifiers localIdentifiers) {

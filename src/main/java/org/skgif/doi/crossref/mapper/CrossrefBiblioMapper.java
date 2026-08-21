@@ -14,6 +14,7 @@ import org.skgif.doi.generated.model.ProductManifestationBiblioPages;
 import org.skgif.doi.generated.model.VenueLite;
 import org.skgif.doi.generated.model.VenueLiteAllOfIdentifiers;
 import org.skgif.doi.spec.EntityTypes;
+import org.skgif.doi.spec.IdentifierScheme;
 import org.skgif.doi.util.EntityRefs;
 import org.skgif.doi.util.LocalIdentifiers;
 import org.skgif.doi.util.MapperTextUtils;
@@ -27,10 +28,14 @@ import org.skgif.doi.util.MapperTextUtils;
  */
 final class CrossrefBiblioMapper {
 
-    private static final String SCHEME_DOI = "doi";
+    /** SKG-IF identifier scheme name for a DOI. */
+    private static final String SCHEME_DOI = IdentifierScheme.DOI.value();
+    /** Number of parts a hyphen-split page range (e.g. {@code "12-34"}) splits into. */
     private static final int PAGE_RANGE_PARTS = 2;
 
+    /** Builds full/otf local_identifier values for mapped entities. */
     private final LocalIdentifiers localIdentifiers;
+    /** Resolves a real journal-level DOI for a journal venue, given its ISSN(s). */
     private final CrossrefJournalDoiResolver journalDoiResolver;
 
     CrossrefBiblioMapper(LocalIdentifiers localIdentifiers, CrossrefJournalDoiResolver journalDoiResolver) {
@@ -147,7 +152,8 @@ final class CrossrefBiblioMapper {
         if (journalDoi != null) {
             identifiers.add(new VenueLiteAllOfIdentifiers().scheme(SCHEME_DOI).value(journalDoi));
         }
-        issns.forEach(issn -> identifiers.add(new VenueLiteAllOfIdentifiers().scheme("issn").value(issn)));
+        issns.forEach(issn -> identifiers.add(
+                new VenueLiteAllOfIdentifiers().scheme(IdentifierScheme.ISSN.value()).value(issn)));
         return identifiers;
     }
 
@@ -167,12 +173,14 @@ final class CrossrefBiblioMapper {
         if (venueMetadata.seriesIssns() != null) {
             venueMetadata.seriesIssns().stream()
                     .filter(Objects::nonNull)
-                    .forEach(issn -> identifiers.add(new VenueLiteAllOfIdentifiers().scheme("issn").value(issn)));
+                    .forEach(issn -> identifiers.add(
+                            new VenueLiteAllOfIdentifiers().scheme(IdentifierScheme.ISSN.value()).value(issn)));
         }
         if (venueMetadata.isbns() != null) {
             venueMetadata.isbns().stream()
                     .filter(Objects::nonNull)
-                    .forEach(isbn -> identifiers.add(new VenueLiteAllOfIdentifiers().scheme("isbn").value(isbn)));
+                    .forEach(isbn -> identifiers.add(
+                            new VenueLiteAllOfIdentifiers().scheme(IdentifierScheme.ISBN.value()).value(isbn)));
         }
         if (!identifiers.isEmpty()) {
             venue.identifiers(identifiers);

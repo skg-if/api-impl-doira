@@ -21,6 +21,7 @@ import java.util.function.BinaryOperator;
  */
 final class FilterQuerySyntax {
 
+    /** DataCite query clause guaranteed to match no record, for a filter that can't be satisfied. */
     static final String NO_MATCH_CLAUSE = "doi:\"__no_match__\"";
 
     private FilterQuerySyntax() {

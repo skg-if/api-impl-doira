@@ -10,6 +10,7 @@ import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import org.skgif.doi.spec.GrantFilterKeys;
+import org.skgif.doi.spec.IdentifierScheme;
 import org.skgif.doi.util.ExternalIdentifierUrls;
 
 /**
@@ -34,11 +35,14 @@ import org.skgif.doi.util.ExternalIdentifierUrls;
  */
 final class DataCiteGrantFilters {
 
+    /** DataCite query clause guaranteed to match no record, for a filter that can't be satisfied. */
     private static final String NO_MATCH_CLAUSE = FilterQuerySyntax.NO_MATCH_CLAUSE;
-    private static final String SCHEME_ROR = "ror";
+    /** SKG-IF identifier scheme name for a ROR id. */
+    private static final String SCHEME_ROR = IdentifierScheme.ROR.value();
 
     // Every GrantFilterKeys constant is implemented below, so supportedKeys is derived directly
     // from the enum rather than re-listed - a newly-added constant can't silently fall out of sync.
+    /** The {@link GrantFilterKeys} values this endpoint supports. */
     private static final Set<String> SUPPORTED = Arrays.stream(GrantFilterKeys.values())
             .map(GrantFilterKeys::key)
             .collect(Collectors.toUnmodifiableSet());
@@ -62,10 +66,11 @@ final class DataCiteGrantFilters {
     static final Map<GrantFilterKeys, Function<String, String>> CLAUSE_BUILDERS = new EnumMap<>(GrantFilterKeys.class);
 
     static {
-        CLAUSE_BUILDERS.put(GrantFilterKeys.IDENTIFIERS_VALUE, value -> "doi:\"" + escape(value) + "\"");
+        CLAUSE_BUILDERS.put(GrantFilterKeys.IDENTIFIERS_VALUE,
+                value -> IdentifierScheme.DOI.value() + ":\"" + escape(value) + "\"");
         // We only ever expose doi identifiers, so any other requested scheme never matches.
         CLAUSE_BUILDERS.put(GrantFilterKeys.IDENTIFIERS_SCHEME,
-                value -> FilterQuerySyntax.schemeOnlyFilter(value, "doi", NO_MATCH_CLAUSE));
+                value -> FilterQuerySyntax.schemeOnlyFilter(value, IdentifierScheme.DOI.value(), NO_MATCH_CLAUSE));
 
         // contributions.by.* - populated from remaining creators[] + all contributors[]
         // (see DataCiteToSkgIfMapper.toGrant), so every by-filter matches against either.
@@ -74,8 +79,8 @@ final class DataCiteGrantFilters {
         // Unlike Product contributions (always a person -> orcid only), Grant contributions
         // can be organisational (-> ror), so both schemes are valid here.
         CLAUSE_BUILDERS.put(GrantFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME,
-                value -> ("orcid".equalsIgnoreCase(value) || SCHEME_ROR.equalsIgnoreCase(value)) ? null :
-                        NO_MATCH_CLAUSE);
+                value -> (IdentifierScheme.ORCID.value().equalsIgnoreCase(value) || SCHEME_ROR.equalsIgnoreCase(value)) ?
+                        null : NO_MATCH_CLAUSE);
         CLAUSE_BUILDERS.put(GrantFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_VALUE,
                 DataCiteGrantFilters::byIdentifierValueClause);
         CLAUSE_BUILDERS.put(GrantFilterKeys.CONTRIBUTIONS_BY_FAMILY_NAME,

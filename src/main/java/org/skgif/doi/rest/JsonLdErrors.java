@@ -12,6 +12,7 @@ import org.skgif.doi.generated.model.Error;
 final class JsonLdErrors {
 
     // 422 Unprocessable Entity has no jakarta.ws.rs.core.Response.Status constant.
+    /** HTTP status code for 422 Unprocessable Entity. */
     private static final int UNPROCESSABLE_ENTITY_STATUS = 422;
 
     private JsonLdErrors() {

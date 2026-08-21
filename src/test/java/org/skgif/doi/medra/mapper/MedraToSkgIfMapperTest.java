@@ -17,6 +17,7 @@ import org.skgif.doi.util.LocalIdentifiers;
 
 class MedraToSkgIfMapperTest {
 
+    /** The mapper under test. */
     private final MedraToSkgIfMapper mapper = new MedraToSkgIfMapper(new LocalIdentifiers("https://doi.org/"));
 
     private Product mapFixture(String resourceName) throws IOException {

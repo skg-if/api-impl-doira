@@ -13,6 +13,7 @@ import org.skgif.doi.generated.model.GrantLiteAllOfIdentifiers;
 import org.skgif.doi.generated.model.Product;
 import org.skgif.doi.generated.model.ProductAllOfIdentifiers;
 import org.skgif.doi.mapper.GrantCapableMapper;
+import org.skgif.doi.spec.IdentifierScheme;
 import org.skgif.doi.util.LocalIdentifiers;
 
 /**
@@ -41,10 +42,14 @@ import org.skgif.doi.util.LocalIdentifiers;
 @ApplicationScoped
 public class DataCiteToSkgIfMapper implements GrantCapableMapper<DataCiteAttributes> {
 
-    private static final String SCHEME_DOI = "doi";
+    /** SKG-IF identifier scheme name for a DOI. */
+    private static final String SCHEME_DOI = IdentifierScheme.DOI.value();
 
+    /** Builds full/otf local_identifier values for mapped entities. */
     private final LocalIdentifiers localIdentifiers;
+    /** Maps a record's funding references onto {@code Product.funding}. */
     private final DataCiteFundingMapper fundingMapper;
+    /** Maps a record's related identifiers onto {@code Product.relatedProducts}. */
     private final DataCiteRelatedProductMapper relatedProductMapper;
 
     /**

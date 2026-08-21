@@ -41,6 +41,7 @@ import org.xml.sax.SAXException;
  */
 public final class MedraOnixXmlParser {
 
+    /** ONIX {@code TitleType} code for the record's full/main title. */
     private static final String TITLE_TYPE_FULL = "01";
 
     private MedraOnixXmlParser() {

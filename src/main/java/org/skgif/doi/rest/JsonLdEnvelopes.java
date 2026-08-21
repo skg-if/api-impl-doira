@@ -16,7 +16,9 @@ import org.skgif.doi.generated.model.MetaSingleEntity;
  */
 final class JsonLdEnvelopes {
 
+    /** {@code @context} entry for the SKG-IF data model vocabulary. */
     private static final String CTX_DATA_MODEL = "https://w3id.org/skg-if/context/1.1.0/skg-if.json";
+    /** {@code @context} entry for the SKG-IF API-specific vocabulary. */
     private static final String CTX_API = "https://w3id.org/skg-if/context/1.0.0/skg-if-api.json";
 
     private JsonLdEnvelopes() {

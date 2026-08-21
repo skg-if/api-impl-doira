@@ -22,9 +22,12 @@ import org.junit.jupiter.api.Test;
 
 class CrossrefToSkgIfMapperGrantTest {
 
+    /** Used to read the JSON fixture files this test maps. */
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    /** Mocked Crossref REST client, unused directly but required by {@link #mapper}'s dependencies. */
     private final CrossrefClient crossrefClient = mock(CrossrefClient.class);
+    /** The mapper under test. */
     private final CrossrefToSkgIfMapper mapper = new CrossrefToSkgIfMapper(new LocalIdentifiers("https://doi.org/"),
             new CrossrefJournalDoiResolver(crossrefClient, Optional.empty()));
 

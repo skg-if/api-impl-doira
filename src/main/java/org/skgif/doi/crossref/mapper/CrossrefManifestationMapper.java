@@ -22,17 +22,22 @@ import org.skgif.doi.util.ManifestationDateSetters;
  */
 final class CrossrefManifestationMapper {
 
+    /** Base URL Crossref's {@code type} controlled-vocabulary values are resolved against. */
     private static final String CROSSREF_TYPES_BASE_URL = "https://api.crossref.org/types/";
 
+    /** Crossref {@code update-to[].type} value for a correction notice. */
     private static final String CROSSREF_UPDATE_TYPE_CORRECTION = "correction";
+    /** Crossref {@code update-to[].type} value for a retraction notice. */
     private static final String CROSSREF_UPDATE_TYPE_RETRACTION = "retraction";
 
     // "correction"/"retraction" are the only type values Crossref's own docs give as examples
     // (no exhaustive enum is published) - any other value is ignored.
+    /** Maps a Crossref {@code update-to[].type} value to its {@link ManifestationDateSetters} key. */
     private static final Map<String, String> CROSSREF_UPDATE_TYPE_TO_SKGIF = Map.of(
             CROSSREF_UPDATE_TYPE_CORRECTION, ManifestationDateSetters.CORRECTION,
             CROSSREF_UPDATE_TYPE_RETRACTION, ManifestationDateSetters.RETRACTION);
 
+    /** Maps the record's publisher/container/page fields onto {@code Product.manifestations[].biblio}. */
     private final CrossrefBiblioMapper biblioMapper;
 
     CrossrefManifestationMapper(CrossrefBiblioMapper biblioMapper) {

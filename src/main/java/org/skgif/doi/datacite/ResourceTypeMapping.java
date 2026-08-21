@@ -22,8 +22,10 @@ import org.skgif.doi.generated.model.Product;
  */
 public final class ResourceTypeMapping {
 
+    /** DataCite's {@code resourceTypeGeneral} value routed to the Grants endpoint, not products. */
     public static final String AWARD = DataCiteResourceType.AWARD.value();
 
+    /** Reverse lookup from a {@link DataCiteResourceType} to its SKG-IF {@code product_type}. */
     private static final Map<DataCiteResourceType, Product.ProductTypeEnum> TO_PRODUCT_TYPE = buildMap();
 
     private ResourceTypeMapping() {
@@ -74,9 +76,11 @@ public final class ResourceTypeMapping {
         WORKFLOW("Workflow"),
         OTHER("Other");
 
+        /** Reverse lookup from {@link #value()} back to the enum constant. */
         private static final Map<String, DataCiteResourceType> BY_VALUE = Arrays.stream(values())
                 .collect(Collectors.toMap(DataCiteResourceType::value, Function.identity()));
 
+        /** The constant's underlying DataCite {@code resourceTypeGeneral} value. */
         @SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
         private final String value;
 

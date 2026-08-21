@@ -12,6 +12,7 @@ import org.skgif.doi.generated.model.PersonLiteAllOfIdentifiers;
 import org.skgif.doi.generated.model.ProductAllOfRelevantOrganisations;
 import org.skgif.doi.generated.model.ProductContribution;
 import org.skgif.doi.generated.model.ProductContributionBy;
+import org.skgif.doi.spec.IdentifierScheme;
 import org.skgif.doi.util.EntityRefs;
 import org.skgif.doi.util.ExternalIdentifierUrls;
 
@@ -23,7 +24,9 @@ import org.skgif.doi.util.ExternalIdentifierUrls;
  */
 final class DataCiteContributionMapper {
 
+    /** DataCite's uppercase spelling of the ROR scheme name (nameIdentifierScheme value). */
     private static final String SCHEME_ROR_UPPER = "ROR";
+    /** DataCite's {@code contributorType} value identifying an editor contribution. */
     private static final String CONTRIBUTOR_TYPE_EDITOR = "Editor";
 
     private DataCiteContributionMapper() {
@@ -103,7 +106,7 @@ final class DataCiteContributionMapper {
                 .stream()
                 .filter(ni -> "ORCID".equalsIgnoreCase(ni.nameIdentifierScheme()))
                 .map(ni -> new PersonLiteAllOfIdentifiers()
-                        .scheme("orcid")
+                        .scheme(IdentifierScheme.ORCID.value())
                         .value(ni.nameIdentifier() != null ? ExternalIdentifierUrls.stripOrcidUrl(ni.nameIdentifier()) :
                                 null))
                 .toList();

@@ -40,25 +40,34 @@ import java.util.Optional;
 @Path("/datacite/grants")
 public class DataCiteGrantsResource {
 
+    /** This resource's own base path, used to build pagination/context links. */
     private static final String RESOURCE_PATH = "/datacite/grants";
 
+    /** The DataCite REST client used to fetch DOI records. */
     private final DataCiteClient dataCiteClient;
+    /** Maps DataCite DOI records to SKG-IF Grant records. */
     private final DataCiteToSkgIfMapper mapper;
+    /** Resolves local identifiers to/from DOIs. */
     private final LocalIdentifiers localIdentifiers;
+    /** Used to assemble the JSON-LD response envelope. */
     private final ObjectMapper objectMapper;
 
+    /** Base URL of the sandbox environment, surfaced in error responses. */
     @ConfigProperty(name = "skgif.sandbox.base-url")
     String sandboxBaseUrl;
 
+    /** Fallback {@code @context} base URL used when not overridden per-request. */
     @ConfigProperty(name = "skgif.context.base")
     String fallbackContextBase;
 
     // Optional<String>, not String: SmallRye Config treats a blank configured value as "no
     // value" for a plain String property, which throws at startup unless it's Optional (or
     // has a defaultValue) - and blank is exactly this property's own documented default.
+    /** DataCite DOI prefix this deployment is restricted to, if configured. */
     @ConfigProperty(name = "datacite.prefix")
     Optional<String> dataCitePrefix;
 
+    /** Page size used when a list request doesn't specify one. */
     @ConfigProperty(name = "skgif.default-page-size")
     int defaultPageSize;
 

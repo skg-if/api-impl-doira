@@ -22,6 +22,7 @@ import org.skgif.doi.crossref.xml.CrossrefVenueMetadataXmlParser;
 @ApplicationScoped
 public class CrossrefVenueEnricher {
 
+    /** The Crossref XML-transform REST client used for venue enrichment. */
     private final CrossrefXmlTransformClient crossrefXmlTransformClient;
 
     /**

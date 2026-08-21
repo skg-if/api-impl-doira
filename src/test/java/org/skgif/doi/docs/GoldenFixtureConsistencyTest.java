@@ -21,9 +21,13 @@ import org.junit.jupiter.api.Test;
  */
 class GoldenFixtureConsistencyTest {
 
+    /** The repository's root directory. */
     private static final Path REPO_ROOT = Path.of("").toAbsolutePath();
+    /** Directory holding source fixtures and their expected golden outputs. */
     private static final Path FIXTURES_DIR = REPO_ROOT.resolve("src/test/resources");
+    /** Directory holding the golden JSON-LD outputs, one per source fixture. */
     private static final Path EXPECTED_DIR = FIXTURES_DIR.resolve("expected");
+    /** Matches a DataCite/Crossref/mEDRA source fixture file name. */
     private static final Pattern SOURCE_FIXTURE_PATTERN = Pattern.compile(
             "(datacite|crossref)-.*\\.json|medra-.*\\.xml");
 

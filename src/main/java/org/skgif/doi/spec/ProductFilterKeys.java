@@ -36,6 +36,7 @@ public enum ProductFilterKeys {
 
     // Field intentionally shares its name with its accessor below, same idiom
     // CrossrefFilters.ParsedFilter.Builder's fields already do this for.
+    /** The constant's underlying SKG-IF {@code filter} query key string. */
     @SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
     private final String key;
 

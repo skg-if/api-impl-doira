@@ -15,6 +15,7 @@ import org.skgif.doi.util.EntityRefs;
  */
 final class MedraContributionMapper {
 
+    /** Number of parts an "inverted name" (e.g. {@code "Doe, Jane"}) splits into on its comma. */
     private static final int SPLIT_INVERTED_PARTS = 2;
 
     private MedraContributionMapper() {

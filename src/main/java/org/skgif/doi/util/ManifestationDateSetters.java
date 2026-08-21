@@ -15,22 +15,38 @@ import org.skgif.doi.generated.model.ProductManifestationDates;
  */
 public final class ManifestationDateSetters {
 
+    /** SKG-IF date-type name dispatching to {@link ProductManifestationDates#addAcceptanceItem}. */
     public static final String ACCEPTANCE = "acceptance";
+    /** SKG-IF date-type name dispatching to {@link ProductManifestationDates#addAccessItem}. */
     public static final String ACCESS = "access";
+    /** SKG-IF date-type name dispatching to {@link ProductManifestationDates#addCollectedItem}. */
     public static final String COLLECTED = "collected";
+    /** SKG-IF date-type name dispatching to {@link ProductManifestationDates#addCopyrightItem}. */
     public static final String COPYRIGHT = "copyright";
+    /** SKG-IF date-type name dispatching to {@link ProductManifestationDates#addCorrectionItem}. */
     public static final String CORRECTION = "correction";
+    /** SKG-IF date-type name dispatching to {@link ProductManifestationDates#addCreationItem}. */
     public static final String CREATION = "creation";
+    /** SKG-IF date-type name dispatching to {@link ProductManifestationDates#addDecisionItem}. */
     public static final String DECISION = "decision";
+    /** SKG-IF date-type name dispatching to {@link ProductManifestationDates#addDepositItem}. */
     public static final String DEPOSIT = "deposit";
+    /** SKG-IF date-type name dispatching to {@link ProductManifestationDates#addDistributionItem}. */
     public static final String DISTRIBUTION = "distribution";
+    /** SKG-IF date-type name dispatching to {@link ProductManifestationDates#addEmbargoItem}. */
     public static final String EMBARGO = "embargo";
+    /** SKG-IF date-type name dispatching to {@link ProductManifestationDates#addModifiedItem}. */
     public static final String MODIFIED = "modified";
+    /** SKG-IF date-type name dispatching to {@link ProductManifestationDates#addPublicationItem}. */
     public static final String PUBLICATION = "publication";
+    /** SKG-IF date-type name dispatching to {@link ProductManifestationDates#addReceivedItem}. */
     public static final String RECEIVED = "received";
+    /** SKG-IF date-type name dispatching to {@link ProductManifestationDates#addRetractionItem}. */
     public static final String RETRACTION = "retraction";
+    /** SKG-IF date-type name dispatching to {@link ProductManifestationDates#addValidityItem}. */
     public static final String VALIDITY = "validity";
 
+    /** Dispatch table from an SKG-IF date-type name to its {@link ProductManifestationDates} setter. */
     private static final Map<String, BiConsumer<ProductManifestationDates, String>> SETTERS = Map.ofEntries(
             Map.entry(ACCEPTANCE, ProductManifestationDates::addAcceptanceItem),
             Map.entry(ACCESS, ProductManifestationDates::addAccessItem),

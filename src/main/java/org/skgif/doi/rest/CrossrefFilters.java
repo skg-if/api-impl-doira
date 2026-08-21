@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.skgif.doi.crossref.CrossrefTypeMapping;
 import org.skgif.doi.generated.model.Product;
 import org.skgif.doi.spec.GrantFilterKeys;
+import org.skgif.doi.spec.IdentifierScheme;
 import org.skgif.doi.spec.ProductFilterKeys;
 import org.skgif.doi.util.ExternalIdentifierUrls;
 
@@ -33,10 +34,12 @@ final class CrossrefFilters {
 
     // Unquoted, unlike FilterQuerySyntax.NO_MATCH_CLAUSE - Crossref's filter= syntax has no Lucene
     // quoting to escape, so a bare sentinel value is enough to guarantee zero matches.
+    /** Crossref query clause guaranteed to match no record, for a filter that can't be satisfied. */
     private static final String NO_MATCH_CLAUSE = "doi:__no_match__";
 
     // Package-private (not private) so CrossrefFiltersTest can assert PRODUCT_CLAUSE_BUILDERS
     // covers exactly these keys.
+    /** The {@link ProductFilterKeys} values the {@code /crossref/products} endpoint supports. */
     static final Set<String> PRODUCT_SUPPORTED = Set.of(
             ProductFilterKeys.PRODUCT_TYPE.key(),
             ProductFilterKeys.IDENTIFIERS_ID.key(),
@@ -50,6 +53,7 @@ final class CrossrefFilters {
 
     // Package-private (not private) so CrossrefFiltersTest can assert GRANT_CLAUSE_BUILDERS
     // covers exactly these keys.
+    /** The {@link GrantFilterKeys} values the {@code /crossref/grants} endpoint supports. */
     static final Set<String> GRANT_SUPPORTED = Set.of(
             GrantFilterKeys.IDENTIFIERS_VALUE.key(),
             GrantFilterKeys.IDENTIFIERS_SCHEME.key(),
@@ -115,12 +119,14 @@ final class CrossrefFilters {
         PRODUCT_CLAUSE_BUILDERS.put(ProductFilterKeys.IDENTIFIERS_ID,
                 (value, builder) -> "doi:" + ExternalIdentifierUrls.stripDoiUrl(value));
         PRODUCT_CLAUSE_BUILDERS.put(ProductFilterKeys.IDENTIFIERS_SCHEME,
-                (value, builder) -> FilterQuerySyntax.schemeOnlyFilter(value, "doi", NO_MATCH_CLAUSE));
+                (value, builder) -> FilterQuerySyntax.schemeOnlyFilter(value, IdentifierScheme.DOI.value(),
+                        NO_MATCH_CLAUSE));
         ValueClauseBuilder orcidClause = (value, builder) -> "orcid:" + ExternalIdentifierUrls.stripOrcidUrl(value);
         PRODUCT_CLAUSE_BUILDERS.put(ProductFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_ID, orcidClause);
         PRODUCT_CLAUSE_BUILDERS.put(ProductFilterKeys.CF_CONTRIBUTIONS_ORCID, orcidClause);
         PRODUCT_CLAUSE_BUILDERS.put(ProductFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME,
-                (value, builder) -> FilterQuerySyntax.schemeOnlyFilter(value, "orcid", NO_MATCH_CLAUSE));
+                (value, builder) -> FilterQuerySyntax.schemeOnlyFilter(value, IdentifierScheme.ORCID.value(),
+                        NO_MATCH_CLAUSE));
         PRODUCT_CLAUSE_BUILDERS.put(ProductFilterKeys.FUNDING_GRANT_NUMBER,
                 (value, builder) -> "award.number:" + value);
         PRODUCT_CLAUSE_BUILDERS.put(ProductFilterKeys.CF_SEARCH_TITLE, CrossrefFilters::queryTitleClause);
@@ -130,14 +136,15 @@ final class CrossrefFilters {
         GRANT_CLAUSE_BUILDERS.put(GrantFilterKeys.IDENTIFIERS_VALUE,
                 (value, builder) -> "doi:" + ExternalIdentifierUrls.stripDoiUrl(value));
         GRANT_CLAUSE_BUILDERS.put(GrantFilterKeys.IDENTIFIERS_SCHEME,
-                (value, builder) -> FilterQuerySyntax.schemeOnlyFilter(value, "doi", NO_MATCH_CLAUSE));
+                (value, builder) -> FilterQuerySyntax.schemeOnlyFilter(value, IdentifierScheme.DOI.value(),
+                        NO_MATCH_CLAUSE));
         GRANT_CLAUSE_BUILDERS.put(GrantFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_VALUE,
                 (value, builder) -> "orcid:" + ExternalIdentifierUrls.stripOrcidUrl(value));
         // Grant contributions can be organisational (ror) too, but Crossref's "orcid" filter
         // only ever matches a person - a ror-scoped value harmlessly never matches.
         GRANT_CLAUSE_BUILDERS.put(GrantFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME,
-                (value, builder) -> ("orcid".equalsIgnoreCase(value) || "ror".equalsIgnoreCase(value)) ? null :
-                        NO_MATCH_CLAUSE);
+                (value, builder) -> (IdentifierScheme.ORCID.value().equalsIgnoreCase(value) ||
+                        IdentifierScheme.ROR.value().equalsIgnoreCase(value)) ? null : NO_MATCH_CLAUSE);
         GRANT_CLAUSE_BUILDERS.put(GrantFilterKeys.FUNDING_AGENCY_IDENTIFIERS_VALUE,
                 (value, builder) -> "award.funder:" + value);
         GRANT_CLAUSE_BUILDERS.put(GrantFilterKeys.CF_SEARCH_TITLE, CrossrefFilters::queryTitleClause);
@@ -216,8 +223,11 @@ final class CrossrefFilters {
         // builder idiom checkstyle.xml's HiddenField already special-cases for this codebase.
         @SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
         private static final class Builder {
+            /** The {@code filter=} clause being assembled. */
             private String filter;
+            /** The {@code query.title} free-text search value being assembled. */
             private String queryTitle;
+            /** The {@code query.bibliographic} free-text search value being assembled. */
             private String queryBibliographic;
 
             void filter(String value) {

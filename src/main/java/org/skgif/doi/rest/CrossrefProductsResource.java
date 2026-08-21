@@ -40,28 +40,39 @@ import java.util.Optional;
 @Path("/crossref/products")
 public class CrossrefProductsResource {
 
+    /** This resource's own base path, used to build pagination/context links. */
     private static final String RESOURCE_PATH = "/crossref/products";
 
+    /** The Crossref REST client used to fetch works by DOI. */
     private final CrossrefClient crossrefClient;
+    /** Fetches XML venue metadata to enrich single-product responses. */
     private final CrossrefVenueEnricher venueEnricher;
+    /** Maps Crossref works to SKG-IF Product records. */
     private final CrossrefToSkgIfMapper mapper;
+    /** Resolves local identifiers to/from DOIs. */
     private final LocalIdentifiers localIdentifiers;
+    /** Used to assemble the JSON-LD response envelope. */
     private final ObjectMapper objectMapper;
 
+    /** Base URL of the sandbox environment, surfaced in error responses. */
     @ConfigProperty(name = "skgif.sandbox.base-url")
     String sandboxBaseUrl;
 
+    /** Fallback {@code @context} base URL used when not overridden per-request. */
     @ConfigProperty(name = "skgif.context.base")
     String fallbackContextBase;
 
+    /** Crossref DOI prefix this deployment is restricted to, if configured. */
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType") //ok https://quarkus.io/guides/config-reference
     @ConfigProperty(name = "crossref.prefix")
     Optional<String> crossrefPrefix;
 
+    /** Contact email for Crossref's polite-pool API access, if configured. */
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     @ConfigProperty(name = "crossref.mailto")
     Optional<String> crossrefMailto;
 
+    /** Page size used when a list request doesn't specify one. */
     @ConfigProperty(name = "skgif.default-page-size")
     int defaultPageSize;
 

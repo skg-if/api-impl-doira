@@ -13,6 +13,7 @@ import org.skgif.doi.generated.model.ProductManifestationAccessRights;
  */
 public final class LicenceMapper {
 
+    /** Substring identifying a licence URL as a Creative Commons licence. */
     private static final String CREATIVE_COMMONS_MARKER = "creativecommons.org";
 
     private LicenceMapper() {

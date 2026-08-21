@@ -14,10 +14,14 @@ import org.skgif.doi.medra.dto.MedraWork;
  */
 final class MedraManifestationMapper {
 
+    /** URL of the ONIX-for-DOI serial-article spec mEDRA's date fields follow. */
     private static final String ONIX_SERIAL_ARTICLE_SPEC_URL =
             "https://www.medra.org/stdoc/ONIX_DOI_Serial_Article_2.0_v.2.pdf";
+    /** Length of a bare-year (YYYY) ONIX date string. */
     private static final int YEAR_LENGTH = 4;
+    /** Length of a year-month (YYYYMM) ONIX date string. */
     private static final int YEAR_MONTH_LENGTH = 6;
+    /** Length of a full (YYYYMMDD) ONIX date string. */
     private static final int FULL_DATE_LENGTH = 8;
 
     private MedraManifestationMapper() {

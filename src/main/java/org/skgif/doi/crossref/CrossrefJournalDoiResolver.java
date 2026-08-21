@@ -37,8 +37,11 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 @RequestScoped
 public class CrossrefJournalDoiResolver {
 
+    /** The Crossref REST client used to look up journal-level DOIs. */
     private final CrossrefClient crossrefClient;
+    /** Contact email for Crossref's polite-pool API access, if configured. */
     private final String mailto;
+    /** Journal-level DOIs found so far this request, keyed by ISSN. */
     private final Map<String, String> cache = new ConcurrentHashMap<>();
 
     /**

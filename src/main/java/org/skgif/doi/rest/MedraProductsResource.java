@@ -39,16 +39,23 @@ import org.skgif.doi.util.LocalIdentifiers;
 @Path("/medra/products")
 public class MedraProductsResource {
 
+    /** This resource's own base path. */
     private static final String RESOURCE_PATH = "/medra/products";
 
+    /** The mEDRA REST client used to fetch ONIX-for-DOI metadata. */
     private final MedraClient medraClient;
+    /** Maps mEDRA works to SKG-IF Product records. */
     private final MedraToSkgIfMapper mapper;
+    /** Resolves local identifiers to/from DOIs. */
     private final LocalIdentifiers localIdentifiers;
+    /** Used to assemble the JSON-LD response envelope. */
     private final ObjectMapper objectMapper;
 
+    /** Base URL of the sandbox environment, surfaced in error responses. */
     @ConfigProperty(name = "skgif.sandbox.base-url")
     String sandboxBaseUrl;
 
+    /** Fallback {@code @context} base URL used when not overridden per-request. */
     @ConfigProperty(name = "skgif.context.base")
     String fallbackContextBase;
 

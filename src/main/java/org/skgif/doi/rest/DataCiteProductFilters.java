@@ -11,6 +11,7 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import org.skgif.doi.datacite.ResourceTypeMapping;
 import org.skgif.doi.generated.model.Product;
+import org.skgif.doi.spec.IdentifierScheme;
 import org.skgif.doi.spec.ProductFilterKeys;
 import org.skgif.doi.util.ExternalIdentifierUrls;
 
@@ -38,10 +39,12 @@ import org.skgif.doi.util.ExternalIdentifierUrls;
  */
 final class DataCiteProductFilters {
 
+    /** DataCite query clause guaranteed to match no record, for a filter that can't be satisfied. */
     private static final String NO_MATCH_CLAUSE = FilterQuerySyntax.NO_MATCH_CLAUSE;
 
     // Every ProductFilterKeys constant is implemented below, so supportedKeys is derived directly
     // from the enum rather than re-listed - a newly-added constant can't silently fall out of sync.
+    /** The {@link ProductFilterKeys} values this endpoint supports. */
     private static final Set<String> SUPPORTED = Arrays.stream(ProductFilterKeys.values())
             .map(ProductFilterKeys::key)
             .collect(Collectors.toUnmodifiableSet());
@@ -67,10 +70,11 @@ final class DataCiteProductFilters {
 
     static {
         CLAUSE_BUILDERS.put(ProductFilterKeys.PRODUCT_TYPE, DataCiteProductFilters::productTypeClause);
-        CLAUSE_BUILDERS.put(ProductFilterKeys.IDENTIFIERS_ID, value -> "doi:\"" + escape(value) + "\"");
+        CLAUSE_BUILDERS.put(ProductFilterKeys.IDENTIFIERS_ID,
+                value -> IdentifierScheme.DOI.value() + ":\"" + escape(value) + "\"");
         // We only ever expose doi identifiers, so any other requested scheme never matches.
         CLAUSE_BUILDERS.put(ProductFilterKeys.IDENTIFIERS_SCHEME,
-                value -> FilterQuerySyntax.schemeOnlyFilter(value, "doi", NO_MATCH_CLAUSE));
+                value -> FilterQuerySyntax.schemeOnlyFilter(value, IdentifierScheme.DOI.value(), NO_MATCH_CLAUSE));
 
         // contributions.by.* - "contributions" is populated from both DataCite creators[]
         // and contributors[] (see DataCiteToSkgIfMapper), so every by-filter has to match
@@ -85,7 +89,7 @@ final class DataCiteProductFilters {
         CLAUSE_BUILDERS.put(ProductFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_ID, orcidClauseBuilder);
         // We only ever emit "orcid" as the scheme for by.identifiers.
         CLAUSE_BUILDERS.put(ProductFilterKeys.CONTRIBUTIONS_BY_IDENTIFIERS_SCHEME,
-                value -> FilterQuerySyntax.schemeOnlyFilter(value, "orcid", NO_MATCH_CLAUSE));
+                value -> FilterQuerySyntax.schemeOnlyFilter(value, IdentifierScheme.ORCID.value(), NO_MATCH_CLAUSE));
         CLAUSE_BUILDERS.put(ProductFilterKeys.CONTRIBUTIONS_BY_FAMILY_NAME,
                 value -> FilterQuerySyntax.creatorOrContributorClause("familyName", value));
         CLAUSE_BUILDERS.put(ProductFilterKeys.CONTRIBUTIONS_BY_GIVEN_NAME,
@@ -104,7 +108,7 @@ final class DataCiteProductFilters {
         CLAUSE_BUILDERS.put(ProductFilterKeys.CF_CONTRIBUTIONS_AFF_ROR, rorClauseBuilder);
         // We only ever emit "ror" as the scheme for declared_affiliations.identifiers.
         CLAUSE_BUILDERS.put(ProductFilterKeys.CONTRIBUTIONS_DECLARED_AFFILIATIONS_IDENTIFIERS_SCHEME,
-                value -> FilterQuerySyntax.schemeOnlyFilter(value, "ror", NO_MATCH_CLAUSE));
+                value -> FilterQuerySyntax.schemeOnlyFilter(value, IdentifierScheme.ROR.value(), NO_MATCH_CLAUSE));
         CLAUSE_BUILDERS.put(ProductFilterKeys.CONTRIBUTIONS_DECLARED_AFFILIATIONS_NAME,
                 value -> FilterQuerySyntax.creatorOrContributorClause("affiliation.name", value));
 

@@ -10,6 +10,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 class LocalIdentifiersTest {
 
+    /** The instance under test. */
     private final LocalIdentifiers localIdentifiers = new LocalIdentifiers("https://doi.org/");
 
     private static Stream<Arguments> toDoiCases() {

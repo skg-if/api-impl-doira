@@ -31,16 +31,21 @@ import org.skgif.doi.datacite.dto.DataCiteDoiResponse;
 @QuarkusTest
 class GrantsGoldenTest {
 
+    /** Base path this API is served under. */
     private static final String BASE = "/skg-if/api";
 
+    /** Whether to overwrite the checked-in golden files instead of asserting against them. */
     private static final boolean REGENERATE_GOLDEN = Boolean.getBoolean("golden.regenerate");
 
+    /** HTTP 200 OK status code. */
     private static final int HTTP_OK = 200;
 
+    /** Mocked DataCite REST client, stubbed per test case. */
     @InjectMock
     @RestClient
     DataCiteClient dataCiteClient;
 
+    /** Mocked Crossref REST client, stubbed per test case. */
     @InjectMock
     @RestClient
     CrossrefClient crossrefClient;

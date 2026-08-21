@@ -7,6 +7,7 @@ import org.skgif.doi.generated.model.Product;
 import org.skgif.doi.generated.model.ProductAllOfIdentifiers;
 import org.skgif.doi.mapper.RegistrationAgencyMapper;
 import org.skgif.doi.medra.dto.MedraWork;
+import org.skgif.doi.spec.IdentifierScheme;
 import org.skgif.doi.util.LocalIdentifiers;
 
 /**
@@ -31,6 +32,7 @@ import org.skgif.doi.util.LocalIdentifiers;
 @ApplicationScoped
 public class MedraToSkgIfMapper implements RegistrationAgencyMapper<MedraWork> {
 
+    /** Builds full/otf local_identifier values for mapped entities. */
     private final LocalIdentifiers localIdentifiers;
 
     /**
@@ -51,7 +53,7 @@ public class MedraToSkgIfMapper implements RegistrationAgencyMapper<MedraWork> {
         return new Product()
                 .localIdentifier(localIdentifiers.toFullLocalIdentifier(work.doi()))
                 .productType(Product.ProductTypeEnum.LITERATURE)
-                .identifiers(List.of(new ProductAllOfIdentifiers().scheme("doi").value(work.doi())))
+                .identifiers(List.of(new ProductAllOfIdentifiers().scheme(IdentifierScheme.DOI.value()).value(work.doi())))
                 .titles(MedraTitleMapper.titles(work))
                 .abstracts(MedraTitleMapper.abstracts(work))
                 .contributions(MedraContributionMapper.contributions(work))

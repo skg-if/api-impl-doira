@@ -11,6 +11,7 @@ import org.skgif.doi.generated.model.ProductsRelated;
 import org.skgif.doi.generated.model.ProductsRelatedCitesInner;
 import org.skgif.doi.generated.model.ProductsRelatedItem;
 import org.skgif.doi.spec.EntityTypes;
+import org.skgif.doi.spec.IdentifierScheme;
 import org.skgif.doi.util.LocalIdentifiers;
 import org.skgif.doi.util.MapperTextUtils;
 
@@ -23,8 +24,10 @@ import org.skgif.doi.util.MapperTextUtils;
  */
 final class CrossrefRelatedProductMapper {
 
-    private static final String SCHEME_DOI = "doi";
+    /** SKG-IF identifier scheme name for a DOI. */
+    private static final String SCHEME_DOI = IdentifierScheme.DOI.value();
 
+    /** Builds a real local_identifier for DOI-bearing references. */
     private final LocalIdentifiers localIdentifiers;
 
     CrossrefRelatedProductMapper(LocalIdentifiers localIdentifiers) {

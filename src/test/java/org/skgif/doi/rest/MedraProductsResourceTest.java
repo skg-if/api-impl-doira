@@ -24,12 +24,17 @@ import org.skgif.doi.medra.MedraClient;
 @QuarkusTest
 class MedraProductsResourceTest {
 
+    /** Base path this API is served under. */
     private static final String BASE = "/skg-if/api";
 
+    /** HTTP 200 OK status code. */
     private static final int HTTP_OK = 200;
+    /** HTTP 404 Not Found status code. */
     private static final int HTTP_NOT_FOUND = 404;
+    /** Expected {@code @context} array size for a single-entity response. */
     private static final int EXPECTED_CONTEXT_SIZE = 3;
 
+    /** Mocked mEDRA REST client, stubbed per test case. */
     @InjectMock
     @RestClient
     MedraClient medraClient;

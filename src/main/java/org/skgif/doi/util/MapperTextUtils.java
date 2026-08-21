@@ -11,6 +11,7 @@ import java.util.Locale;
  */
 public final class MapperTextUtils {
 
+    /** Maximum length of a generated slug before truncation. */
     private static final int MAX_SLUG_LENGTH = 40;
 
     private MapperTextUtils() {

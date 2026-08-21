@@ -25,6 +25,7 @@ import org.skgif.doi.util.MapperTextUtils;
  */
 final class CrossrefFundingMapper {
 
+    /** Resolves a funder's Funder Registry DOI into a real local_identifier. */
     private final LocalIdentifiers localIdentifiers;
 
     CrossrefFundingMapper(LocalIdentifiers localIdentifiers) {

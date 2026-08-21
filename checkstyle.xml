@@ -74,11 +74,19 @@
     </module>
     <module name="JavadocType"/>
     <!--
-      JavadocVariable disabled: requiring a Javadoc comment on every field produced 248
-      violations, almost entirely self-explanatory fields in DTO/mapper classes (e.g.
-      CrossrefAffiliation.name) where a comment would just restate the field name.
+      Scoped to VARIABLE_DEF only (the sole token this Checkstyle version accepts for this
+      check besides ENUM_CONSTANT_DEF) - the default token set also includes ENUM_CONSTANT_DEF,
+      which would require a comment on every constant of every mapping enum (e.g.
+      ResourceTypeMapping.DataCiteResourceType.AUDIOVISUAL("Audiovisual")) - the same
+      "comment would just restate the name" problem this module was originally disabled for,
+      just relocated from DTO fields to enum constants. serialVersionUID is exempted too: it's
+      the canonical example in Checkstyle's own docs for this property, and a comment restating
+      "serialization version identifier" on it would be equally pure noise.
     -->
-    <!-- <module name="JavadocVariable"/> -->
+    <module name="JavadocVariable">
+      <property name="tokens" value="VARIABLE_DEF"/>
+      <property name="ignoreNamePattern" value="^serialVersionUID$"/>
+    </module>
     <module name="JavadocStyle"/>
     <module name="MissingJavadocMethod"/>
 

@@ -15,6 +15,7 @@ import org.skgif.doi.generated.model.GrantContributionBy;
 import org.skgif.doi.generated.model.Organisation;
 import org.skgif.doi.generated.model.PersonLiteAllOfIdentifiers;
 import org.skgif.doi.spec.EntityTypes;
+import org.skgif.doi.spec.IdentifierScheme;
 import org.skgif.doi.util.EntityRefs;
 import org.skgif.doi.util.ExternalIdentifierUrls;
 import org.skgif.doi.util.MapperTextUtils;
@@ -28,8 +29,11 @@ import org.skgif.doi.util.MapperTextUtils;
  */
 final class DataCiteGrantMapper {
 
+    /** DataCite's uppercase spelling of the ROR scheme name (nameIdentifierScheme value). */
     private static final String SCHEME_ROR_UPPER = "ROR";
-    private static final String SCHEME_ROR = "ror";
+    /** SKG-IF identifier scheme name for a ROR id. */
+    private static final String SCHEME_ROR = IdentifierScheme.ROR.value();
+    /** DataCite's {@code nameType} value identifying an organizational creator/contributor. */
     private static final String NAME_TYPE_ORGANIZATIONAL = "Organizational";
 
     private DataCiteGrantMapper() {

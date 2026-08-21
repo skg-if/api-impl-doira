@@ -14,7 +14,9 @@ import org.junit.jupiter.api.Test;
 
 class DataCiteToSkgIfMapperRelatedProductsTest {
 
+    /** Used to read the JSON fixture files this test maps. */
     private final ObjectMapper objectMapper = new ObjectMapper();
+    /** The mapper under test. */
     private final DataCiteToSkgIfMapper mapper = new DataCiteToSkgIfMapper(new LocalIdentifiers("https://doi.org/"));
 
     private Product mapFixture(String resourceName) throws IOException {

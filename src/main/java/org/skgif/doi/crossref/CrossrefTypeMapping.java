@@ -21,6 +21,7 @@ import org.skgif.doi.generated.model.Product;
  */
 public final class CrossrefTypeMapping {
 
+    /** Crossref's {@code type} value routed to the Grants endpoint, not products. */
     public static final String GRANT = "grant";
 
     /**
@@ -36,6 +37,7 @@ public final class CrossrefTypeMapping {
     private static final Set<String> XML_VENUE_ENRICHABLE_TYPES =
             Set.of("book-chapter", "book-section", "book-part", "reference-entry", "proceedings-article");
 
+    /** Reverse lookup from a Crossref {@code type} value to its SKG-IF {@code product_type}. */
     private static final Map<String, Product.ProductTypeEnum> TO_PRODUCT_TYPE = buildMap();
 
     private CrossrefTypeMapping() {

@@ -13,6 +13,7 @@ public enum EntityTypes {
 
     // Field intentionally shares its name with its accessor below, same idiom
     // CrossrefFilters.ParsedFilter.Builder's fields already do this for.
+    /** The constant's underlying SKG-IF {@code entity_type} string. */
     @SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
     private final String value;
 

@@ -17,7 +17,9 @@ import org.junit.jupiter.api.Test;
 
 class DataCiteToSkgIfMapperGrantTest {
 
+    /** Used to read the JSON fixture files this test maps. */
     private final ObjectMapper objectMapper = new ObjectMapper();
+    /** The mapper under test. */
     private final DataCiteToSkgIfMapper mapper = new DataCiteToSkgIfMapper(new LocalIdentifiers("https://doi.org/"));
 
     private Grant mapGrantFixture(String resourceName) throws IOException {

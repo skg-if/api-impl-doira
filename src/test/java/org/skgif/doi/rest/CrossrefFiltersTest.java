@@ -16,6 +16,7 @@ import org.skgif.doi.util.ExternalIdentifierUrls;
 
 class CrossrefFiltersTest {
 
+    /** Expected Crossref query clause guaranteed to match no record. */
     private static final String NO_MATCH_CLAUSE = "doi:__no_match__";
 
     @ParameterizedTest(name = "{0}")

@@ -24,6 +24,7 @@ import org.skgif.doi.generated.model.Organisation;
  */
 final class CrossrefGrantMapper {
 
+    /** Resolves a grant's funder into an SKG-IF Organisation. */
     private final CrossrefFundingMapper fundingMapper;
 
     CrossrefGrantMapper(CrossrefFundingMapper fundingMapper) {

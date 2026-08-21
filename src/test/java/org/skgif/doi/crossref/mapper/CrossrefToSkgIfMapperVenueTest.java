@@ -29,13 +29,16 @@ import org.junit.jupiter.api.Test;
 
 class CrossrefToSkgIfMapperVenueTest {
 
+    /** Used to read the JSON fixture files this test maps. */
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     // Left entirely unstubbed by default: listWorks(...) returns null, so the resolver degrades
     // to Optional.empty() for every ISSN - every existing venue assertion below keeps exercising
     // today's container-title[0]+otf-id+ISSN-only fallback. See mapsVenueUsesRealJournalDoiWhen*
     // below for the resolver-hit path.
+    /** Mocked Crossref REST client, unstubbed by default (see comment above). */
     private final CrossrefClient crossrefClient = mock(CrossrefClient.class);
+    /** The mapper under test. */
     private final CrossrefToSkgIfMapper mapper = new CrossrefToSkgIfMapper(new LocalIdentifiers("https://doi.org/"),
             new CrossrefJournalDoiResolver(crossrefClient, Optional.empty()));
 

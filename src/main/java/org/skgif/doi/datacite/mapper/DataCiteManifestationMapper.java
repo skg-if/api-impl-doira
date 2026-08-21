@@ -18,6 +18,7 @@ import org.skgif.doi.util.LicenceMapper;
  */
 final class DataCiteManifestationMapper {
 
+    /** URL of the XSD schema DataCite's {@code resourceType} XML attribute references. */
     private static final String DATACITE_RESOURCE_TYPE_SCHEMA_URL =
             "https://schema.datacite.org/meta/kernel-4.7/include/datacite-resourceType-v4.xsd";
 

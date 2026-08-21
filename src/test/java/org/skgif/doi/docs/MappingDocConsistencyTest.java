@@ -28,8 +28,11 @@ import org.junit.jupiter.api.Test;
  */
 class MappingDocConsistencyTest {
 
+    /** The repository's root directory. */
     private static final Path REPO_ROOT = Path.of("").toAbsolutePath();
+    /** Directory holding the source fixtures the mapping doc is checked against. */
     private static final Path FIXTURES_DIR = REPO_ROOT.resolve("src/test/resources");
+    /** Matches one of the split {@code SKG_IF_DOI_MAPPING*.md} doc files. */
     private static final Pattern MAPPING_DOC_PATTERN = Pattern.compile("SKG_IF_DOI_MAPPING.*\\.md");
 
     /**

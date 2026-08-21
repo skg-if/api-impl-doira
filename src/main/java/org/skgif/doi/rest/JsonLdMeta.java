@@ -16,6 +16,7 @@ import org.skgif.doi.generated.model.SearchResultPage;
  */
 final class JsonLdMeta {
 
+    /** The first page number in this API's 1-based pagination. */
     private static final int FIRST_PAGE_NUMBER = 1;
 
     private JsonLdMeta() {

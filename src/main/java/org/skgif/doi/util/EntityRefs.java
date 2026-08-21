@@ -8,6 +8,7 @@ import org.skgif.doi.generated.model.PersonLite;
 import org.skgif.doi.generated.model.PersonLiteAllOfIdentifiers;
 import org.skgif.doi.generated.model.ProductManifestationBiblioHostingDataSource;
 import org.skgif.doi.spec.EntityTypes;
+import org.skgif.doi.spec.IdentifierScheme;
 
 /**
  * Builds SKG-IF entity-reference objects (an organisation/person/data-source "by"/"beneficiary"
@@ -19,8 +20,10 @@ import org.skgif.doi.spec.EntityTypes;
  */
 public final class EntityRefs {
 
-    private static final String SCHEME_ROR = "ror";
-    private static final String SCHEME_DOI = "doi";
+    /** Identifier scheme name for a ROR id. */
+    private static final String SCHEME_ROR = IdentifierScheme.ROR.value();
+    /** Identifier scheme name for a DOI. */
+    private static final String SCHEME_DOI = IdentifierScheme.DOI.value();
 
     private EntityRefs() {
     }

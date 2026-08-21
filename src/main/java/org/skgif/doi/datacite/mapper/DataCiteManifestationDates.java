@@ -19,6 +19,7 @@ import org.skgif.doi.util.ManifestationDateSetters;
  */
 final class DataCiteManifestationDates {
 
+    /** Length of a YYYY-MM-DD day-only date string. */
     private static final int DAY_LENGTH = 10;
 
     /**
@@ -40,11 +41,13 @@ final class DataCiteManifestationDates {
         VALID("Valid"),
         WITHDRAWN("Withdrawn");
 
+        /** Reverse lookup from {@link #value()} back to the enum constant. */
         private static final Map<String, DataCiteDateType> BY_VALUE = Arrays.stream(values())
                 .collect(Collectors.toMap(DataCiteDateType::value, Function.identity()));
 
         // Field intentionally shares its name with its accessor below, same idiom
         // CrossrefFilters.ParsedFilter.Builder's fields already do this for.
+        /** The constant's underlying DataCite {@code dateType} value. */
         @SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
         private final String value;
 
@@ -61,6 +64,7 @@ final class DataCiteManifestationDates {
         }
     }
 
+    /** Maps every {@link DataCiteDateType} constant to its {@link ManifestationDateSetters} key. */
     private static final Map<DataCiteDateType, String> DATACITE_DATE_TYPE_TO_SKGIF = Map.of(
             DataCiteDateType.ACCEPTED, ManifestationDateSetters.ACCEPTANCE,
             DataCiteDateType.AVAILABLE, ManifestationDateSetters.EMBARGO,

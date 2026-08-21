@@ -15,8 +15,10 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 @ApplicationScoped
 public class LocalIdentifiers {
 
+    /** Separator between a URL's scheme and its authority. */
     private static final String SCHEME_SEPARATOR = "://";
 
+    /** The configured local_identifier base URL (e.g. {@code https://doi.org/}). */
     private final String baseUrl;
 
     /**

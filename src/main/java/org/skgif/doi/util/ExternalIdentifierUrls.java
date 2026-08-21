@@ -7,10 +7,15 @@ package org.skgif.doi.util;
  */
 public final class ExternalIdentifierUrls {
 
+    /** Base URL an ORCID identifier is resolved against (https). */
     public static final String ORCID_BASE_URL = "https://orcid.org/";
+    /** Base URL an ORCID identifier is resolved against (http). */
     public static final String ORCID_HTTP_BASE_URL = "http://orcid.org/";
+    /** Base URL a ROR identifier is resolved against. */
     public static final String ROR_BASE_URL = "https://ror.org/";
+    /** Base URL a DOI is resolved against (https). */
     public static final String DOI_BASE_URL = "https://doi.org/";
+    /** Base URL a DOI is resolved against (http). */
     public static final String DOI_HTTP_BASE_URL = "http://doi.org/";
 
     private ExternalIdentifierUrls() {
