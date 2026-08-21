@@ -45,6 +45,37 @@ record of what the skill used to get wrong.
 
 ---
 
+## `*> build.log` / `Select-String` example runs in Bash, `*` glob-expands into `mvn`'s arguments
+
+- Date: 2026-08-21
+- Skill: `skg-if-build-toolchain/SKILL.md`
+- Symptom: ran the skill's own redirect-to-a-file example via the Bash tool
+  (not PowerShell): `mvn -q -B clean test *> build.log` failed immediately
+  with `[ERROR] Unknown lifecycle phase "checkstyle.xml". You must specify a
+  valid lifecycle phase or a goal...`. `checkstyle.xml` is an unrelated file
+  that happens to sit in the repo root - nothing to do with the actual build.
+  The follow-up grep (`grep -nE '...' build.log | head -100`) then found
+  nothing new, since `build.log` was never written either.
+- Root cause: the example was fenced ` ```powershell ` and used `*>`
+  (PowerShell's redirect-all-streams operator) plus `Select-String`, both
+  PowerShell-only. In Bash, `*` isn't a redirect operator at all - it's an
+  unquoted glob that expands to every filename in the current directory
+  (`build.log checkstyle.xml pom.xml ...`) before `mvn` runs, so `mvn` gets
+  handed a pile of filenames as extra arguments and tries to interpret the
+  first one as a lifecycle phase/goal. Since this environment offers both a
+  Bash tool and a PowerShell tool, and the skill's other examples are also
+  ```powershell-fenced without a Bash caveat, it's natural to copy this one
+  into whichever shell is at hand without noticing the syntax is
+  shell-specific.
+- Fix: added a paragraph in
+  [`skg-if-build-toolchain/SKILL.md`](skg-if-build-toolchain/SKILL.md) right
+  after the `*>`/`Select-String` example calling out that both are
+  PowerShell-only, explaining the glob-expansion failure mode concretely, and
+  giving the Bash equivalent (`> build.log 2>&1` + `grep -nE`).
+- Status: Fixed
+
+---
+
 ## Reached for system `python3`/`jq` instead of the portable-python/jq-json skills
 
 - Date: 2026-08-21

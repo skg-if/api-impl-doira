@@ -121,6 +121,18 @@ mvn -q -B test *> build.log
 Select-String -Path build.log -Pattern 'ERROR|BUILD FAILURE|FAILED|Tests run:.*Failures: [1-9]|Tests run:.*Errors: [1-9]'
 ```
 
+**`*>` and `Select-String` are PowerShell-only** - `*>` is PowerShell's
+redirect-all-streams operator, not a shell-agnostic idiom. If running this via
+the Bash tool instead, `*` is a glob that expands to every filename in the
+current directory before `mvn` even sees it (garbage arguments, confusing
+"Unknown lifecycle phase" errors that name an unrelated file in the repo root)
+and `Select-String` doesn't exist. Use the Bash equivalent instead:
+
+```bash
+mvn -q -B test > build.log 2>&1
+grep -nE 'ERROR|BUILD FAILURE|FAILED|Tests run:.*Failures: [1-9]|Tests run:.*Errors: [1-9]' build.log
+```
+
 (`build.log` here lands in the repo root, since `mvn` already runs from there;
 the session scratchpad directory works too - just never a path under `target/`).
 Only `Get-Content` the log in full (or open the specific
