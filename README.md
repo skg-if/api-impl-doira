@@ -28,6 +28,12 @@ Two SKG-IF entities are implemented per provider:
   under `/crossref/grants`) - DataCite DOIs with `resourceTypeGeneral: "Award"`, or Crossref DOIs
   with `type: "grant"` (a grant/funding award registered as its own DOI).
 
+## Request flow
+
+See [GETPRODUCTBYID_FLOW.md](GETPRODUCTBYID_FLOW.md) for a sequence-diagram walkthrough of a
+single `getProductById` request, traced per provider (DataCite, Crossref, mEDRA) from the actual
+resource/mapper code.
+
 ## Requirements
 
 - JDK 21+
