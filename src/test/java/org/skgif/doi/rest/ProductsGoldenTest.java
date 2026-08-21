@@ -125,6 +125,32 @@ class ProductsGoldenTest {
     }
 
     /**
+     * DOI 10.58079/16o9y - a real OpenEdition/Calenda record whose {@code titles[]} entries all
+     * carry {@code lang: "fr"}, proving titles are grouped by their actual language rather than
+     * hardcoded under {@code "en"}.
+     *
+     * @throws IOException if a fixture resource cannot be read
+     */
+    @Test
+    void getProductById_matchesExpectedJsonLd_frenchTitles16o9y() throws IOException {
+        assertMatchesExpectedDataCiteJsonLd("10.58079/16o9y", "datacite-french-titles-16o9y.json",
+                "expected/datacite-french-titles-16o9y-out.json");
+    }
+
+    /**
+     * DOI 10.5281/zenodo.19729005 - a real Zenodo record whose sole title has no {@code lang}
+     * key at all (as opposed to an explicit {@code lang: "en"}), proving the missing-key case
+     * defaults to {@code "en"} the same way a null/blank value does.
+     *
+     * @throws IOException if a fixture resource cannot be read
+     */
+    @Test
+    void getProductById_matchesExpectedJsonLd_titleWithNoLangKeyZenodo19729005() throws IOException {
+        assertMatchesExpectedDataCiteJsonLd("10.5281/zenodo.19729005", "datacite-title-no-lang-zenodo-19729005.json",
+                "expected/datacite-title-no-lang-zenodo-19729005-out.json");
+    }
+
+    /**
      * DOI 10.5281/zenodo.21826016 - a real Zenodo software deposit ({@code
      * resourceTypeGeneral: "Software"}), proving the {@code research software} product-type
      * mapping at the golden-output level.

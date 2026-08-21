@@ -35,6 +35,16 @@
   otf id, same as an entirely absent `funderIdentifier` (see
   [`datacite-dataset-funder-no-identifier-e449e75a.json`](src/test/resources/datacite-dataset-funder-no-identifier-e449e75a.json),
   where the same funder name recurring across 2 grants resolves to the same otf id both times).
+- **DataCite's `titles[].lang`** is free text, not restricted to ISO 639-1 two-letter codes - some
+  real records use 3-letter ISO 639-2 codes instead (e.g. `"eng"` rather than `"en"`, see
+  [`datacite-mixed-lang-titles-eng-fr.json`](src/test/resources/datacite-mixed-lang-titles-eng-fr.json),
+  a real record mixing `"eng"` and `"fr"`). `DataCiteTitleMapper` does not normalize these to
+  ISO 639-1 - there's no reliable ISO 639-2-to-639-1 conversion table in this codebase, and a
+  naive truncation heuristic would silently produce wrong codes for some languages (e.g.
+  `"ger"` → `"ge"` instead of `"de"`). The value is passed through as-is (after lowercasing/
+  trimming), which can violate the SKG-IF OpenAPI schema's `titles`/`abstracts` key pattern
+  (`^([a-z]{2}|none)$`) for such records - see
+  `DataCiteToSkgIfMapperTest.mapsMixedTwoAndThreeLetterLanguageCodesSeparately`.
 
 ## Crossref
 

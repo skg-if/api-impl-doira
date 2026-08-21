@@ -1,0 +1,119 @@
+{
+  "data": {
+    "id": "10.5281/zenodo.19729005",
+    "type": "dois",
+    "attributes": {
+      "doi": "10.5281/zenodo.19729005",
+      "prefix": "10.5281",
+      "suffix": "zenodo.19729005",
+      "identifiers": [],
+      "alternateIdentifiers": [],
+      "creators": [
+        {
+          "name": "Mr. Shravan Kumar",
+          "nameType": "Personal",
+          "familyName": "Mr. Shravan Kumar",
+          "affiliation": ["SGT University"],
+          "nameIdentifiers": []
+        },
+        {
+          "name": "Prof. (Dr.) Madhavi Sharma",
+          "nameType": "Personal",
+          "familyName": "Prof. (Dr.) Madhavi Sharma",
+          "affiliation": ["SGT University"],
+          "nameIdentifiers": []
+        }
+      ],
+      "titles": [
+        {
+          "title": "Impact of Assistive Technologies on Reading Skills Among Children with Specific Learning Disabilities: Bridging Policy and Practice under NEP 2020"
+        }
+      ],
+      "publisher": "Manovikas Institute of Higher Education",
+      "container": {},
+      "publicationYear": 2026,
+      "subjects": [],
+      "contributors": [],
+      "dates": [],
+      "language": "en",
+      "types": {
+        "ris": "JOUR",
+        "bibtex": "article",
+        "citeproc": "article-journal",
+        "schemaOrg": "ScholarlyArticle",
+        "resourceType": "",
+        "resourceTypeGeneral": "JournalArticle"
+      },
+      "relatedIdentifiers": [],
+      "relatedItems": [],
+      "sizes": [],
+      "formats": [],
+      "version": null,
+      "rightsList": [],
+      "descriptions": [],
+      "geoLocations": [],
+      "fundingReferences": [],
+      "url": "https://zenodo.org/record/19729005",
+      "contentUrl": null,
+      "metadataVersion": 1,
+      "schemaVersion": "http://datacite.org/schema/kernel-4",
+      "source": "mds",
+      "isActive": true,
+      "state": "findable",
+      "reason": null,
+      "viewCount": 0,
+      "viewsOverTime": [],
+      "downloadCount": 0,
+      "downloadsOverTime": [],
+      "referenceCount": 0,
+      "citationCount": 0,
+      "citationsOverTime": [],
+      "partCount": 0,
+      "partOfCount": 0,
+      "versionCount": 0,
+      "versionOfCount": 0,
+      "created": "2026-08-13T10:23:06.000Z",
+      "registered": "2026-08-13T10:23:59.000Z",
+      "published": "2026",
+      "updated": "2026-08-13T10:23:59.000Z"
+    },
+    "relationships": {
+      "client": {
+        "data": {
+          "id": "cern.zenodo",
+          "type": "clients"
+        }
+      },
+      "provider": {
+        "data": {
+          "id": "cern",
+          "type": "providers"
+        }
+      },
+      "media": {
+        "data": {
+          "id": "10.5281/zenodo.19729005",
+          "type": "media"
+        }
+      },
+      "references": {
+        "data": []
+      },
+      "citations": {
+        "data": []
+      },
+      "parts": {
+        "data": []
+      },
+      "partOf": {
+        "data": []
+      },
+      "versions": {
+        "data": []
+      },
+      "versionOf": {
+        "data": []
+      }
+    }
+  }
+}

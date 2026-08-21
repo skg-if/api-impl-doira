@@ -67,6 +67,46 @@ class DataCiteToSkgIfMapperTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
+    void mapsMultipleFrenchTitlesUnderTheirOwnLanguageKey() throws IOException {
+        Product product = mapFixture("datacite-french-titles-16o9y.json");
+
+        Map<String, List<String>> titles = (Map<String, List<String>>) product.getTitles();
+        assertThat(titles).doesNotContainKey("en");
+        assertThat(titles.get("fr")).containsExactly(
+                "Doctorants, panels et données d'enquêtes en sciences sociales", "Rencontre annuelle ELIPSS#3");
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void mapsTitleWithNoLangKeyUnderEnglishByDefault() throws IOException {
+        // Real DataCite records often omit "lang" entirely on a title object (rather than
+        // setting it to "en" explicitly) - titleLanguage() must default a missing key the same
+        // way it defaults a null/blank value.
+        Product product = mapFixture("datacite-title-no-lang-zenodo-19729005.json");
+
+        Map<String, List<String>> titles = (Map<String, List<String>>) product.getTitles();
+        assertThat(titles.keySet()).containsExactly("en");
+        assertThat(titles.get("en")).containsExactly("Impact of Assistive Technologies on Reading Skills Among " +
+                "Children with Specific Learning Disabilities: Bridging Policy and Practice under NEP 2020");
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void mapsMixedTwoAndThreeLetterLanguageCodesSeparately() throws IOException {
+        // DataCite's lang isn't restricted to ISO 639-1 two-letter codes - a real record can mix
+        // a 3-letter ISO 639-2 code (e.g. "eng") with a 2-letter one. This is passed through
+        // unnormalized rather than guessed at - see SKG_IF_DOI_MAPPING_LIMITATIONS.md.
+        Product product = mapFixture("datacite-mixed-lang-titles-eng-fr.json");
+
+        Map<String, List<String>> titles = (Map<String, List<String>>) product.getTitles();
+        assertThat(titles.get("eng")).containsExactly(
+                "Hub Location for Waterborne Transportation Networks in the Context of the Physical Internet");
+        assertThat(titles.get("fr")).containsExactly(
+                "École Nationale Supérieure Mines-Télécom Atlantique Bretagne Pays de la Loire (IMT Atlantique)");
+    }
+
+    @Test
     void mapsCreatorsAsAuthorContributionsWithOrcid() throws IOException {
         Product product = mapFixture("datacite-esrf-dc-2493599001.json");
 

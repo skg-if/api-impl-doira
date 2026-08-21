@@ -34,7 +34,13 @@ class GoldenFixtureConsistencyTest {
      * justifying the exclusion.
      */
     private static final Set<String> EXCLUDED_FROM_GOLDEN = Set.of(
-            "crossref-journal-doi-lookup-nature.json");
+            "crossref-journal-doi-lookup-nature.json",
+            // Deliberately pins a known limitation (3-letter ISO 639-2 lang codes like "eng"
+            // passed through unnormalized - see SKG_IF_DOI_MAPPING_LIMITATIONS.md) via a plain
+            // DataCiteToSkgIfMapperTest assertion instead: a golden JSON-LD file would bake a
+            // schema-violating "eng" titles key into a committed "expected" fixture, which risks
+            // being misread later as sanctioned output rather than a flagged gap.
+            "datacite-mixed-lang-titles-eng-fr.json");
 
     private static String expectedGoldenName(String fixtureName) {
         int dot = fixtureName.lastIndexOf('.');
