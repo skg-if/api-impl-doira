@@ -56,21 +56,34 @@ public final class JsonLdSearchResponses {
     }
 
     /**
-     * @param ctx         the calling resource's envelope-building dependencies
-     * @param request     the per-request list parameters
-     * @param items       the raw provider items already extracted from this page of the provider's response
-     * @param doiOf       the item's DOI, or null to exclude it from the page (folds in each provider's own
-     *                    "missing attributes"/"wrong type" skip check)
-     * @param convert     maps a kept item to its SKG-IF entity
+     * The provider-specific page metadata computed from its own list response, distinct per call
+     * unlike {@link EnvelopeContext} - grouped together since all three are always computed and
+     * passed as a unit by every caller.
+     *
      * @param total       total number of matching results across all pages, per the provider's own response
      * @param hasNext     whether a further page exists, per the provider's own response
      * @param contextBase the {@code @context} base URL for this page, per the provider's own response
-     * @param <I>         the raw provider item type (e.g. {@code CrossrefWork}, {@code DataCiteDoiData})
-     * @param <T>         the SKG-IF entity type ({@code Grant} or {@code Product})
+     */
+    public record ProviderPage(
+            long total,
+            boolean hasNext,
+            String contextBase) {
+    }
+
+    /**
+     * @param ctx     the calling resource's envelope-building dependencies
+     * @param request the per-request list parameters
+     * @param items   the raw provider items already extracted from this page of the provider's response
+     * @param doiOf   the item's DOI, or null to exclude it from the page (folds in each provider's own
+     *                "missing attributes"/"wrong type" skip check)
+     * @param convert maps a kept item to its SKG-IF entity
+     * @param page    the provider-specific page metadata
+     * @param <I>     the raw provider item type (e.g. {@code CrossrefWork}, {@code DataCiteDoiData})
+     * @param <T>     the SKG-IF entity type ({@code Grant} or {@code Product})
      * @return a 200 response with the assembled search-results envelope
      */
     public static <I, T> Response build(EnvelopeContext ctx, ListRequest request, List<I> items,
-            Function<I, String> doiOf, Function<I, T> convert, long total, boolean hasNext, String contextBase) {
+            Function<I, String> doiOf, Function<I, T> convert, ProviderPage page) {
         List<T> entities = new ArrayList<>();
         List<ApiItem> apiItems = new ArrayList<>();
         for (I item : items) {
@@ -82,9 +95,10 @@ public final class JsonLdSearchResponses {
             apiItems.add(JsonLdMeta.apiItem(ctx.localIdentifiers().toFullLocalIdentifier(doi),
                     JsonLdLinks.selfLink(request.uriInfo(), request.resourcePath(), doi)));
         }
-        return JsonLdEnvelopes.searchResultsResponse(ctx.objectMapper(), contextBase,
+        return JsonLdEnvelopes.searchResultsResponse(ctx.objectMapper(), page.contextBase(),
                 JsonLdMeta.searchMeta(new JsonLdMeta.SearchPage(request.uriInfo(), request.resourcePath(),
-                        request.filter(), request.pageNumber(), request.size()), total, hasNext, apiItems),
+                        request.filter(), request.pageNumber(), request.size()), page.total(), page.hasNext(),
+                        apiItems),
                 entities);
     }
 }

@@ -117,6 +117,20 @@
       package-coupling limits ever comes up.
     -->
     <exclude name="LoosePackageCoupling"/>
+    <!--
+      ExcessiveParameterList disabled here so its minimum property can be overridden below: PMD's
+      default threshold is 10, lowered to 7 to mirror IntelliJ's own default "too many parameters"
+      inspection, so the build-time check lines up with what's already flagged in the IDE - same
+      "mirrors an IDE/Sonar default with no other build-time equivalent" rationale as
+      NoNestedTernaryOperators below.
+    -->
+    <exclude name="ExcessiveParameterList"/>
+  </rule>
+
+  <rule ref="category/java/design.xml/ExcessiveParameterList">
+    <properties>
+      <property name="minimum" value="7"/>
+    </properties>
   </rule>
 
   <rule ref="category/java/multithreading.xml">

@@ -42,7 +42,7 @@ final class CrossrefSearchResponses {
         String contextBase = JsonLdContextBase.contextBaseFor(Optional.<String>empty(), ctx.sandboxBaseUrl(),
                 ctx.fallbackContextBase());
         return JsonLdSearchResponses.build(ctx, request, items,
-                work -> work.doi() != null && include.test(work) ? work.doi() : null, convert, totalResults, hasNext,
-                contextBase);
+                work -> work.doi() != null && include.test(work) ? work.doi() : null, convert,
+                new JsonLdSearchResponses.ProviderPage(totalResults, hasNext, contextBase));
     }
 }

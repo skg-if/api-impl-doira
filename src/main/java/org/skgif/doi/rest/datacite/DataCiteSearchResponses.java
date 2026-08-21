@@ -38,6 +38,7 @@ final class DataCiteSearchResponses {
                 ctx.fallbackContextBase());
         return JsonLdSearchResponses.build(ctx, request, items,
                 item -> item.attributes() != null ? item.attributes().doi() : null,
-                item -> convert.apply(item.attributes()), total, hasNext, contextBase);
+                item -> convert.apply(item.attributes()),
+                new JsonLdSearchResponses.ProviderPage(total, hasNext, contextBase));
     }
 }
