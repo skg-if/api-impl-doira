@@ -200,9 +200,11 @@
       intent to build subclassable frameworks in this codebase's mapper/DTO/resource code.
     -->
     <!-- <module name="DesignForExtension"/> -->
+
     <module name="FinalClass"/>
     <module name="HideUtilityClassConstructor"/>
     <module name="InterfaceIsType"/>
+
     <!--
       VisibilityModifier disabled: requiring every non-private field to be wrapped in
       accessors produced 201 violations, almost all in DTO classes whose fields are
