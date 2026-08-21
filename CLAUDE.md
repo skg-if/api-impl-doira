@@ -5,6 +5,15 @@
 There is no system-wide JDK/Maven on this machine. For building, testing, or running
 `mvn`/`java` in any form, use the `skg-if-build-toolchain` skill.
 
+## No system Python or jq either
+
+There is no `python`/`python3`/`jq` on PATH on this machine - a bare `python3 -c ...` or
+`which jq` will fail (exit 126 / "no jq") rather than falling back to something usable. For a
+one-off script or interpreter, use the `portable-python` skill. For filtering/reshaping JSON
+(e.g. inspecting a field across many fixtures under `src/test/resources`), use the `jq-json`
+skill instead of reaching for `python3`/`jq` directly - it sets up a portable `jq` the same way
+`skg-if-build-toolchain` sets up Maven/JDK.
+
 ## "notest"/"skiptest" commit messages skip CI tests/validation
 
 If a commit message contains `notest`, `notests`, `skiptest`, or `skiptests` (case-insensitive,

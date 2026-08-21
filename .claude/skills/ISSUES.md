@@ -45,6 +45,25 @@ record of what the skill used to get wrong.
 
 ---
 
+## Reached for system `python3`/`jq` instead of the portable-python/jq-json skills
+
+- Date: 2026-08-21
+- Skill: `CLAUDE.md` (missing guidance, not a specific `SKILL.md`)
+- Symptom: needed to inspect `descriptionType`/`lang` values across ~10 DataCite fixtures under
+  `src/test/resources`. Ran `python3 -c "..."` directly - exit code 126 (no system Python on
+  this machine, same constraint CLAUDE.md already documents for Maven/JDK). Then checked `which
+  jq`/`jq --version` - also absent ("no jq"). Fell back to a manual `Grep -B/-A` scan instead,
+  which worked but was slower and less precise than a proper JSON query would have been.
+- Root cause: CLAUDE.md has a "No system Maven/JDK 21" section telling agents to use the
+  `skg-if-build-toolchain` skill instead of guessing, but had no equivalent note for
+  Python/jq - even though this repo has `portable-python` and `jq-json` skills built for exactly
+  this ("even if you just say 'grab this field from the JSON'" per `jq-json`'s own
+  description). Without a CLAUDE.md-level pointer, it's natural to try the obvious system
+  command first and only discover the dedicated skill after already failing twice.
+- Fix: added a "No system Python or jq either" section to `CLAUDE.md` right after the existing
+  Maven/JDK one, pointing at `portable-python` and `jq-json` by name.
+- Status: Fixed
+
 ## Golden-regen example cites test classes that no longer exist
 
 - Date: 2026-08-21
