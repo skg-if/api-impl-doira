@@ -6,10 +6,10 @@ import org.skgif.doi.datacite.dto.DataCiteDoiData;
 
 /**
  * Derives the JSON-LD {@code @context}'s {@code @base} namespace, shared by all four REST
- * resource classes: {@link DataCiteProductsResource}, {@link DataCiteGrantsResource}, {@link
- * CrossrefProductsResource}, and {@link CrossrefGrantsResource}.
+ * resource classes: {@code DataCiteProductsResource}, {@code DataCiteGrantsResource}, {@code
+ * CrossrefProductsResource}, and {@code CrossrefGrantsResource}.
  */
-final class JsonLdContextBase {
+public final class JsonLdContextBase {
 
     private JsonLdContextBase() {
     }
@@ -28,7 +28,7 @@ final class JsonLdContextBase {
      * @param fallbackContextBase the {@code @base} to use when no client id can be derived
      * @return the namespaced {@code @base}, or fallbackContextBase if data carries no client id
      */
-    static String contextBaseFor(DataCiteDoiData data, String sandboxBaseUrl, String fallbackContextBase) {
+    public static String contextBaseFor(DataCiteDoiData data, String sandboxBaseUrl, String fallbackContextBase) {
         return clientId(data).map(id -> sandboxBaseUrl + id + "/").orElse(fallbackContextBase);
     }
 
@@ -43,7 +43,8 @@ final class JsonLdContextBase {
      * @param fallbackContextBase the {@code @base} to use when no client id can be derived
      * @return the namespaced {@code @base}, or fallbackContextBase if no item carries a client id
      */
-    static String contextBaseFor(List<DataCiteDoiData> items, String sandboxBaseUrl, String fallbackContextBase) {
+    public static String contextBaseFor(List<DataCiteDoiData> items, String sandboxBaseUrl,
+            String fallbackContextBase) {
         if (items == null) {
             return fallbackContextBase;
         }
@@ -67,7 +68,8 @@ final class JsonLdContextBase {
      * @param fallbackContextBase the {@code @base} to use when namespaceId is absent/blank
      * @return the namespaced {@code @base}, or fallbackContextBase if namespaceId is absent/blank
      */
-    static String contextBaseFor(Optional<String> namespaceId, String sandboxBaseUrl, String fallbackContextBase) {
+    public static String contextBaseFor(Optional<String> namespaceId, String sandboxBaseUrl,
+            String fallbackContextBase) {
         return namespaceId.filter(id -> !id.isBlank())
                 .map(id -> sandboxBaseUrl + id + "/")
                 .orElse(fallbackContextBase);

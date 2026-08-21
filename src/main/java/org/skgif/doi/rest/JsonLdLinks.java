@@ -4,15 +4,23 @@ import jakarta.ws.rs.core.UriInfo;
 
 /**
  * Builds self/pagination/collection URLs for JSON-LD responses, shared by all four REST resource
- * classes: {@link DataCiteProductsResource}, {@link DataCiteGrantsResource}, {@link
- * CrossrefProductsResource}, and {@link CrossrefGrantsResource}.
+ * classes: {@code DataCiteProductsResource}, {@code DataCiteGrantsResource}, {@code
+ * CrossrefProductsResource}, and {@code CrossrefGrantsResource}.
  */
-final class JsonLdLinks {
+public final class JsonLdLinks {
 
     private JsonLdLinks() {
     }
 
-    static String selfLink(UriInfo uriInfo, String resourcePath, String doi) {
+    /**
+     * Builds this API's own resolvable self URL for a single entity.
+     *
+     * @param uriInfo      the current request URI, used to derive this API's base URL
+     * @param resourcePath the resource's own base path (e.g. {@code /datacite/products})
+     * @param doi          the entity's DOI
+     * @return the self URL, e.g. {@code <base>/datacite/products/<doi>}
+     */
+    public static String selfLink(UriInfo uriInfo, String resourcePath, String doi) {
         return baseUri(uriInfo) + resourcePath + "/" + doi;
     }
 

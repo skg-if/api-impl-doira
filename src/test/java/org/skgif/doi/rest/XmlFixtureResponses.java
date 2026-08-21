@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets;
  * Shared classpath-XML-fixture helpers for REST resource tests that mock a Crossref
  * XML-transform/mEDRA ONIX {@link Response}.
  */
-final class XmlFixtureResponses {
+public final class XmlFixtureResponses {
 
     /** HTTP 200 OK status code. */
     private static final int HTTP_OK = 200;
@@ -20,7 +20,15 @@ final class XmlFixtureResponses {
     private XmlFixtureResponses() {
     }
 
-    static String loadRawResource(Class<?> testClass, String resourceName) throws IOException {
+    /**
+     * Reads a classpath resource's raw content as a UTF-8 string.
+     *
+     * @param testClass    the calling test class, used to resolve the resource via its classloader
+     * @param resourceName classpath resource name to load
+     * @return the resource's raw content
+     * @throws IOException if the resource cannot be read
+     */
+    public static String loadRawResource(Class<?> testClass, String resourceName) throws IOException {
         try (InputStream in = testClass.getClassLoader().getResourceAsStream(resourceName)) {
             return new String(in.readAllBytes(), StandardCharsets.UTF_8);
         }
@@ -39,7 +47,7 @@ final class XmlFixtureResponses {
      * @return a mocked 200 {@code Response} whose body is the fixture's raw XML
      * @throws IOException if the fixture resource cannot be read
      */
-    static Response okXmlResponse(Class<?> testClass, String xmlResourceName) throws IOException {
+    public static Response okXmlResponse(Class<?> testClass, String xmlResourceName) throws IOException {
         Response response = mock(Response.class);
         when(response.getStatus()).thenReturn(HTTP_OK);
         when(response.readEntity(String.class)).thenReturn(loadRawResource(testClass, xmlResourceName));

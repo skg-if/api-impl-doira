@@ -1,4 +1,4 @@
-package org.skgif.doi.rest;
+package org.skgif.doi.rest.datacite;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,7 +23,7 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.Test;
 
 /**
- * Golden JSON-LD output regression tests live in {@link ProductsGoldenTest}.
+ * Golden JSON-LD output regression tests live in {@code ProductsGoldenTest}.
  */
 @QuarkusTest
 class DataCiteProductsResourceTest {

@@ -170,9 +170,11 @@ Config's standard mapping (dots to underscores, uppercased - e.g. `crossref.mail
 - `org.skgif.doi.crossref` - the Crossref sibling of `org.skgif.doi.datacite`: REST client, DTOs
   (`crossref.dto`), `CrossrefTypeMapping` (Crossref `type` &lt;-&gt; SKG-IF `product_type`, and
   grant-type detection) and `CrossrefToSkgIfMapper` (`crossref.mapper`)
-- `org.skgif.doi.rest` - the `/datacite/products`/`/datacite/grants` and `/crossref/products`/`/crossref/grants`
-  resources, their filter parsing (`ProductFilters`/`GrantFilters` for DataCite,
-  `CrossrefFilters` for Crossref), and the shared JSON-LD envelope helper. Provider selection is
-  by which resource (and thus URL path) is hit - there is no runtime dispatcher.
+- `org.skgif.doi.rest` - the shared JSON-LD envelope/pagination/filter-syntax helpers, plus one
+  subpackage per provider holding its resources and filter parsing: `rest.datacite`
+  (`/datacite/products`/`/datacite/grants`, `DataCiteProductFilters`/`DataCiteGrantFilters`),
+  `rest.crossref` (`/crossref/products`/`/crossref/grants`, `CrossrefFilters`), and `rest.medra`
+  (`/medra/products`). Provider selection is by which resource (and thus URL path) is hit - there
+  is no runtime dispatcher.
 - `org.skgif.doi.util.LocalIdentifiers` - DOI &lt;-&gt; `local_identifier` conversion
 - `org.skgif.doi.jackson` - a Jackson mixin working around a generator quirk (see its javadoc)

@@ -8,7 +8,7 @@ import java.util.function.BinaryOperator;
 /**
  * Shared mechanics for translating the SKG-IF {@code filter} query syntax (comma-separated
  * {@code key:value}, AND-combined) into a DataCite REST API {@code query} string, used by both
- * {@link DataCiteProductFilters} and {@link DataCiteGrantFilters}.
+ * {@code DataCiteProductFilters} and {@code DataCiteGrantFilters}.
  *
  * <p>The spec defines the format as plain comma-separated {@code key:value} pairs with no
  * escaping mechanism for a comma that's part of a value itself (e.g. an affiliation name like
@@ -19,10 +19,10 @@ import java.util.function.BinaryOperator;
  * syntax (the spec doesn't define one) - it would misfire only if a filter *value* happened to
  * exactly equal one of the supported keys, which is vanishingly unlikely in practice.
  */
-final class FilterQuerySyntax {
+public final class FilterQuerySyntax {
 
     /** DataCite query clause guaranteed to match no record, for a filter that can't be satisfied. */
-    static final String NO_MATCH_CLAUSE = "doi:\"__no_match__\"";
+    public static final String NO_MATCH_CLAUSE = "doi:\"__no_match__\"";
 
     private FilterQuerySyntax() {
     }
@@ -55,7 +55,13 @@ final class FilterQuerySyntax {
         }
     }
 
-    static String escape(String value) {
+    /**
+     * Escapes a double-quote in a filter value so it can be embedded in a quoted Lucene clause.
+     *
+     * @param value the raw filter value
+     * @return value with every {@code "} escaped as {@code \"}
+     */
+    public static String escape(String value) {
         return value.replace("\"", "\\\"");
     }
 
@@ -67,7 +73,7 @@ final class FilterQuerySyntax {
      * @param value the filter value to match (escaped internally)
      * @return the Lucene clause {@code field:"escapedValue"}
      */
-    static String quotedFieldClause(String field, String value) {
+    public static String quotedFieldClause(String field, String value) {
         return field + ":\"" + escape(value) + "\"";
     }
 
@@ -82,7 +88,7 @@ final class FilterQuerySyntax {
      * @param value             the filter value to match
      * @return an OR'd Lucene clause matching value on either field
      */
-    static String creatorOrContributorClause(String creatorsField, String contributorsField, String value) {
+    public static String creatorOrContributorClause(String creatorsField, String contributorsField, String value) {
         return "(" + quotedFieldClause(creatorsField, value) + " OR " + quotedFieldClause(contributorsField, value) +
                 ")";
     }
@@ -99,7 +105,7 @@ final class FilterQuerySyntax {
     // - null means "no clause"; converting to Optional<String> is a separate, larger refactor of
     // that shared functional interface, out of scope here.
     @SuppressWarnings("PMD.ReturnNullConsiderOptional")
-    static String schemeOnlyFilter(String value, String expectedScheme, String noMatchClause) {
+    public static String schemeOnlyFilter(String value, String expectedScheme, String noMatchClause) {
         return expectedScheme.equalsIgnoreCase(value) ? null : noMatchClause;
     }
 
@@ -117,7 +123,7 @@ final class FilterQuerySyntax {
      * @return the non-null clauses built from filter's segments
      * @throws UnsupportedFilterException if a segment is malformed, or its key isn't in supportedKeys
      */
-    static List<String> parseClauses(String filter, Set<String> supportedKeys,
+    public static List<String> parseClauses(String filter, Set<String> supportedKeys,
             BinaryOperator<String> clauseBuilder) {
         List<String> clauses = new ArrayList<>();
         for (String segment : splitSegments(filter, supportedKeys)) {
@@ -141,7 +147,7 @@ final class FilterQuerySyntax {
         return clauses;
     }
 
-    static final class UnsupportedFilterException extends RuntimeException {
+    public static final class UnsupportedFilterException extends RuntimeException {
         private static final long serialVersionUID = 1L;
 
         UnsupportedFilterException(String message) {

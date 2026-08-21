@@ -1,4 +1,4 @@
-package org.skgif.doi.rest;
+package org.skgif.doi.rest.crossref;
 
 import static io.restassured.RestAssured.given;
 import static org.mockito.ArgumentMatchers.any;
@@ -21,12 +21,13 @@ import org.skgif.doi.crossref.CrossrefClient;
 import org.skgif.doi.crossref.CrossrefXmlTransformClient;
 import org.skgif.doi.crossref.dto.CrossrefWorkListResponse;
 import org.skgif.doi.crossref.dto.CrossrefWorkResponse;
+import org.skgif.doi.rest.XmlFixtureResponses;
 
 /**
  * The Crossref-provider sibling of {@code DataCiteProductsResourceTest}, at the separate {@code
  * /crossref/products} path (see {@code CrossrefProductsResource}'s javadoc for why provider
  * selection is URL-driven rather than auto-detected). Golden JSON-LD output regression tests
- * live in {@link ProductsGoldenTest}.
+ * live in {@code ProductsGoldenTest}.
  */
 @QuarkusTest
 class CrossrefProductsResourceTest {

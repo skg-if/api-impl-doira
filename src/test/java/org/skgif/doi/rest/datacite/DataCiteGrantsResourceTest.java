@@ -1,4 +1,4 @@
-package org.skgif.doi.rest;
+package org.skgif.doi.rest.datacite;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,7 +23,7 @@ import org.skgif.doi.datacite.dto.DataCiteDoiListResponse;
 import org.skgif.doi.datacite.dto.DataCiteDoiResponse;
 
 /**
- * Golden JSON-LD output regression tests live in {@link GrantsGoldenTest}.
+ * Golden JSON-LD output regression tests live in {@code GrantsGoldenTest}.
  */
 @QuarkusTest
 class DataCiteGrantsResourceTest {

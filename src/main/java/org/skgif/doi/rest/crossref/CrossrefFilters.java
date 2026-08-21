@@ -1,4 +1,4 @@
-package org.skgif.doi.rest;
+package org.skgif.doi.rest.crossref;
 
 import java.util.EnumMap;
 import java.util.List;
@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.skgif.doi.crossref.CrossrefTypeMapping;
 import org.skgif.doi.generated.model.Product;
+import org.skgif.doi.rest.FilterQuerySyntax;
 import org.skgif.doi.spec.GrantFilterKeys;
 import org.skgif.doi.spec.IdentifierScheme;
 import org.skgif.doi.spec.ProductFilterKeys;
@@ -19,7 +20,7 @@ import org.skgif.doi.util.ExternalIdentifierUrls;
  * query.bibliographic} parameter - Crossref's relevance-ranked search is a distinct mechanism
  * from its exact-match {@code filter=}, unlike DataCite where both go through the same {@code
  * query} string) - see {@link FilterQuerySyntax} for the shared comma-splitting mechanics used
- * by {@link DataCiteProductFilters}/{@link DataCiteGrantFilters} on the DataCite side.
+ * by {@code DataCiteProductFilters}/{@code DataCiteGrantFilters} on the DataCite side.
  *
  * <p>Crossref's {@code filter=} already uses comma-joining for both AND (different filter
  * names) and OR (repeated filter name) semantics - see

@@ -1,4 +1,4 @@
-package org.skgif.doi.rest;
+package org.skgif.doi.rest.medra;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.inject.Inject;
@@ -21,11 +21,15 @@ import org.skgif.doi.medra.MedraClient;
 import org.skgif.doi.medra.dto.MedraWork;
 import org.skgif.doi.medra.mapper.MedraToSkgIfMapper;
 import org.skgif.doi.medra.xml.MedraOnixXmlParser;
+import org.skgif.doi.rest.JsonLdContextBase;
+import org.skgif.doi.rest.JsonLdEnvelopes;
+import org.skgif.doi.rest.JsonLdErrors;
+import org.skgif.doi.rest.JsonLdLinks;
 import org.skgif.doi.util.LocalIdentifiers;
 
 /**
  * SKG-IF Products endpoint, backed live by mEDRA's ONIX-for-DOI metadata API (no local storage) -
- * the mEDRA-provider sibling of {@link DataCiteProductsResource}/{@link CrossrefProductsResource}, see
+ * the mEDRA-provider sibling of {@code DataCiteProductsResource}/{@code CrossrefProductsResource}, see
  * {@code DataCiteProductsResource}'s javadoc for why the JSON-LD envelope is hand-assembled via {@link
  * JsonLdEnvelopes}. Provider selection is by URL path, not auto-detected: this only ever serves
  * mEDRA-registered DOIs, at {@code /medra/products}.

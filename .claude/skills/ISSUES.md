@@ -45,6 +45,43 @@ record of what the skill used to get wrong.
 
 ---
 
+## Moving a class out of a package can leave callers unable to see it at all - not just missing an import
+
+- Date: 2026-08-21
+- Skill: `skg-if-openrewrite-refactor/SKILL.md`
+- Symptom: after `ChangeType`-moving ~11 package-private helper classes (`FilterQuerySyntax`,
+  `JsonLdContextBase`, `JsonLdEnvelopes`, `JsonLdErrors`, `JsonLdLinks`, `JsonLdMeta`,
+  `RequestPagination`, plus the moved `Resource`/`Filters` classes themselves) so that new
+  `org.skgif.doi.rest.crossref`/`rest.datacite`/`rest.medra` subpackages could use them, `mvn
+  compile` failed with a wave of `X is not public in Y; cannot be accessed from outside package`
+  errors - a different failure shape than the "Known gotchas" section's documented
+  missing-import case (`cannot find symbol: class X`), and not mentioned anywhere in the skill.
+- Root cause: the skill's "Known gotchas" section only covers a moved/renamed class breaking
+  *other classes' imports* of it - it assumes accessibility was never the issue, only whether an
+  import statement is present. That assumption holds for a rename or a same-visibility move, but
+  not for splitting one package into several: several classes that stayed behind
+  (`FilterQuerySyntax` and friends) were package-private, which was fine when every caller lived
+  in the same flat `org.skgif.doi.rest` package - once callers moved into `rest.crossref`/
+  `rest.datacite`/`rest.medra` subpackages (a *different* Java package each, despite the dotted
+  name suggesting nesting), package-private access no longer reached them at all. `ChangeType`
+  has no way to know a member needs wider visibility - it only rewrites type references, never
+  touches modifiers - so this is silent until `mvn compile test-compile` surfaces it, and each hit
+  needs a judgment call (bump to `public`, and add Javadoc if the project's Checkstyle requires it
+  on public members) rather than a mechanical fix.
+- Fix: not yet patched into the skill. Should add a second bullet under "Known gotchas,
+  confirmed by real verification runs in this repo" alongside the existing missing-import one:
+  when a class move crosses a package boundary (most likely for a *package split*, e.g. flattening
+  one package into per-provider/per-feature subpackages, rather than a simple move/rename),
+  `mvn compile test-compile`'s failure mode can be `is not public in <pkg>; cannot be accessed
+  from outside package` instead of `cannot find symbol` - treat that as "widen this member's (and
+  possibly its declaring class's) visibility to `public`," and re-check whether the project's
+  Checkstyle/PMD rules now require Javadoc on it now that it's public (this repo's
+  `MissingJavadocMethod`/`JavadocVariable` default to `public` scope, so a previously-undocumented
+  package-private method needs a Javadoc comment added at the same time it's widened).
+- Status: Open
+
+---
+
 ## `C:/...`-style JAVA_HOME/PATH silently breaks `mvn` resolution in Bash (git-bash)
 
 - Date: 2026-08-21

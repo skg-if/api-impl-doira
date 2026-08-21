@@ -1,4 +1,4 @@
-package org.skgif.doi.rest;
+package org.skgif.doi.rest.medra;
 
 import static io.restassured.RestAssured.given;
 import static org.mockito.Mockito.mock;
@@ -12,12 +12,13 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.skgif.doi.medra.MedraClient;
+import org.skgif.doi.rest.XmlFixtureResponses;
 
 /**
  * The mEDRA-provider sibling of {@code CrossrefProductsResourceTest}/{@code
  * DataCiteProductsResourceTest}, at the separate {@code /medra/products} path - see {@code
  * MedraProductsResource}'s javadoc for why there is no list-endpoint counterpart here. Golden
- * JSON-LD output regression tests live in {@link ProductsGoldenTest}.
+ * JSON-LD output regression tests live in {@code ProductsGoldenTest}.
  */
 @QuarkusTest
 class MedraProductsResourceTest {

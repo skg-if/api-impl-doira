@@ -10,11 +10,11 @@ import org.skgif.doi.generated.model.MetaSingleEntity;
 
 /**
  * Assembles the {@code @context}/{@code meta}/{@code @graph} JSON-LD envelope and wraps it in a
- * REST response, shared by all four REST resource classes: {@link DataCiteProductsResource},
- * {@link DataCiteGrantsResource}, {@link CrossrefProductsResource}, and {@link
+ * REST response, shared by all four REST resource classes: {@code DataCiteProductsResource},
+ * {@code DataCiteGrantsResource}, {@code CrossrefProductsResource}, and {@code
  * CrossrefGrantsResource}.
  */
-final class JsonLdEnvelopes {
+public final class JsonLdEnvelopes {
 
     /** {@code @context} entry for the SKG-IF data model vocabulary. */
     private static final String CTX_DATA_MODEL = "https://w3id.org/skg-if/context/1.1.0/skg-if.json";
@@ -47,7 +47,7 @@ final class JsonLdEnvelopes {
      * @param entity       the SKG-IF entity (e.g. {@code Product}/{@code Grant}) to place in {@code @graph}
      * @return a 200 response with the assembled envelope
      */
-    static Response singleEntityResponse(ObjectMapper objectMapper, String contextBase, MetaSingleEntity meta,
+    public static Response singleEntityResponse(ObjectMapper objectMapper, String contextBase, MetaSingleEntity meta,
             Object entity) {
         ObjectNode root = envelope(objectMapper, contextBase);
         root.set("meta", objectMapper.valueToTree(meta));
@@ -68,7 +68,7 @@ final class JsonLdEnvelopes {
      * @param items        the page of SKG-IF entities (e.g. {@code Product}/{@code Grant}) to place in {@code @graph}
      * @return a 200 response with the assembled envelope
      */
-    static Response searchResultsResponse(ObjectMapper objectMapper, String contextBase, MetaSearch meta,
+    public static Response searchResultsResponse(ObjectMapper objectMapper, String contextBase, MetaSearch meta,
             List<?> items) {
         ObjectNode root = envelope(objectMapper, contextBase);
         root.set("meta", objectMapper.valueToTree(meta));

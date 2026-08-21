@@ -1,4 +1,4 @@
-package org.skgif.doi.rest;
+package org.skgif.doi.rest.crossref;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;

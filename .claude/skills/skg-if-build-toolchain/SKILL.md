@@ -195,7 +195,7 @@ report for the exact same run is ~60KB. Reading the `.xml` version by default co
 `.txt` files first:
 
 ```powershell
-Get-Content target\surefire-reports\org.skgif.doi.rest.DataCiteProductsResourceTest.txt
+Get-Content target\surefire-reports\org.skgif.doi.rest.datacite.DataCiteProductsResourceTest.txt
 ```
 
 Only open the matching `.xml` report when a `.txt` failure needs the full stack

@@ -1,4 +1,4 @@
-package org.skgif.doi.rest;
+package org.skgif.doi.rest.datacite;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.skgif.doi.datacite.DataCiteClient;
@@ -6,9 +6,16 @@ import org.skgif.doi.datacite.DataCiteDoiFetcher;
 import org.skgif.doi.datacite.ResourceTypeMapping;
 import org.skgif.doi.datacite.dto.DataCiteDoiData;
 import org.skgif.doi.datacite.dto.DataCiteDoiListResponse;
-import org.skgif.doi.datacite.mapper.DataCiteToSkgIfMapper;
 import org.skgif.doi.generated.model.ApiItem;
-import org.skgif.doi.generated.model.Grant;
+import org.skgif.doi.generated.model.Product;
+import org.skgif.doi.datacite.mapper.DataCiteToSkgIfMapper;
+import org.skgif.doi.rest.FilterQuerySyntax;
+import org.skgif.doi.rest.JsonLdContextBase;
+import org.skgif.doi.rest.JsonLdEnvelopes;
+import org.skgif.doi.rest.JsonLdErrors;
+import org.skgif.doi.rest.JsonLdLinks;
+import org.skgif.doi.rest.JsonLdMeta;
+import org.skgif.doi.rest.RequestPagination;
 import org.skgif.doi.util.LocalIdentifiers;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
@@ -30,21 +37,32 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * SKG-IF Grants endpoint, backed live by the DataCite REST API (no local storage). Serves only
- * DataCite DOIs with {@code resourceTypeGeneral: "Award"} - every other DOI is a product, see
- * {@link DataCiteProductsResource}. See that class's javadoc for why the JSON-LD envelope is
- * hand-assembled (via {@link JsonLdEnvelopes}) rather than implementing the generated {@code
- * GrantApi} interface directly.
+ * SKG-IF Products endpoint, backed live by the DataCite REST API (no local storage). Serves
+ * any DataCite DOI except {@code resourceTypeGeneral: "Award"} ones, which are grants, not
+ * products - see {@link DataCiteGrantsResource}.
+ *
+ * <p>This does not implement the generated {@code ProductApi} interface: openapi-generator's
+ * merge of the spec's {@code @context} anyOf (two fixed context URLs + an {@code @base} object)
+ * collapses to a type that can only hold the {@code @base} object, dropping the two required
+ * context URLs. The JSON-LD envelope (@context/meta/@graph) is therefore assembled by hand here
+ * (via {@link JsonLdEnvelopes}) with Jackson, while the generated {@code Product}/{@code
+ * MetaSingleEntity}/{@code MetaSearch}/{@code Error} models (which generated correctly) are
+ * used for everything nested inside it.
  */
-@Path("/datacite/grants")
-public class DataCiteGrantsResource {
+// The org.skgif.doi.rest.crossref/rest.datacite/rest.medra package split (added for
+// ArchUnit-enforceable provider independence) means the shared JsonLd*/RequestPagination/
+// FilterQuerySyntax helpers below need explicit imports instead of the same-package access this
+// class previously got for free.
+@SuppressWarnings("PMD.ExcessiveImports")
+@Path("/datacite/products")
+public class DataCiteProductsResource {
 
     /** This resource's own base path, used to build pagination/context links. */
-    private static final String RESOURCE_PATH = "/datacite/grants";
+    private static final String RESOURCE_PATH = "/datacite/products";
 
     /** The DataCite REST client used to fetch DOI records. */
     private final DataCiteClient dataCiteClient;
-    /** Maps DataCite DOI records to SKG-IF Grant records. */
+    /** Maps DataCite DOI records to SKG-IF Product records. */
     private final DataCiteToSkgIfMapper mapper;
     /** Resolves local identifiers to/from DOIs. */
     private final LocalIdentifiers localIdentifiers;
@@ -63,6 +81,7 @@ public class DataCiteGrantsResource {
     // value" for a plain String property, which throws at startup unless it's Optional (or
     // has a defaultValue) - and blank is exactly this property's own documented default.
     /** DataCite DOI prefix this deployment is restricted to, if configured. */
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType") //ok https://quarkus.io/guides/config-reference
     @ConfigProperty(name = "datacite.prefix")
     Optional<String> dataCitePrefix;
 
@@ -72,12 +91,12 @@ public class DataCiteGrantsResource {
 
     /**
      * @param dataCiteClient   the DataCite REST client used to fetch DOI records
-     * @param mapper           maps DataCite DOI records to SKG-IF Grant records
+     * @param mapper           maps DataCite DOI records to SKG-IF Product records
      * @param localIdentifiers resolves local identifiers to/from DOIs
      * @param objectMapper     used to assemble the JSON-LD response envelope
      */
     @Inject
-    public DataCiteGrantsResource(@RestClient DataCiteClient dataCiteClient, DataCiteToSkgIfMapper mapper,
+    public DataCiteProductsResource(@RestClient DataCiteClient dataCiteClient, DataCiteToSkgIfMapper mapper,
             LocalIdentifiers localIdentifiers, ObjectMapper objectMapper) {
         this.dataCiteClient = dataCiteClient;
         this.mapper = mapper;
@@ -88,15 +107,31 @@ public class DataCiteGrantsResource {
     /**
      * @param localIdentifierParam the DOI to look up (with or without the SKG base domain prefix)
      * @param uriInfo              the current request URI, used to build self/context links
-     * @return the JSON-LD grant envelope, or a 404 error response if not found
+     * @return the JSON-LD product envelope, or a 404 error response if not found
      */
     @GET
     @Path("/{local_identifier: .+}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getGrantById(
-            @Parameter(description = "DOI to look up (with or without the SKG base domain prefix)",
+    public Response getProductById(
+            @Parameter(
+                    description = "DOI to look up (with or without the SKG base domain prefix)",
                     examples = {
-                            @ExampleObject(name = "award", value = "10.71707/r3sy-7371")
+                            @ExampleObject(name = "dataset",
+                                    value = "10.15151/esrf-dc-2493599001"),
+                            @ExampleObject(name = "dataset-2",
+                                    value = "10.15151/esrf-es-2210534378"),
+                            @ExampleObject(name = "software", value = "10.5281/zenodo.21826016"),
+                            @ExampleObject(name = "text", value = "10.5281/zenodo.20750072"),
+                            @ExampleObject(name = "editor-contributor",
+                                    value = "10.5281/zenodo.21232199"),
+                            @ExampleObject(name = "cites-references",
+                                    value = "10.5281/zenodo.21914195"),
+                            @ExampleObject(name = "relations",
+                                    value = "10.5281/zenodo.21827103"),
+                            @ExampleObject(name = "thesis-funder-id",
+                                    value = "10.82227/repository.uwtsd.ac.uk.00004342"),
+                            @ExampleObject(name = "dataset-funder-no-identifier",
+                                    value = "10.17630/e449e75a-1ee9-4490-909c-e3913052cce1")
                     }) @PathParam("local_identifier") String localIdentifierParam,
             @Context UriInfo uriInfo) {
         String doi = localIdentifiers.toDoi(localIdentifierParam);
@@ -106,17 +141,17 @@ public class DataCiteGrantsResource {
             return notFound(localIdentifierParam);
         }
         DataCiteDoiData data = dataOpt.get();
-        if (!ResourceTypeMapping.isAward(data.attributes())) {
-            return JsonLdErrors.notFound("No grant found for local_identifier '" + localIdentifierParam +
-                    "' - this DOI is a product, see /datacite/products/" + localIdentifierParam);
+        if (ResourceTypeMapping.isAward(data.attributes())) {
+            return JsonLdErrors.notFound("No product found for local_identifier '" + localIdentifierParam +
+                    "' - this DOI is a grant award, see /datacite/grants/" + localIdentifierParam);
         }
 
-        Grant grant = mapper.toGrant(data.attributes());
+        Product product = mapper.toProduct(data.attributes());
         String selfHref = JsonLdLinks.selfLink(uriInfo, RESOURCE_PATH, doi);
 
         String contextBase = JsonLdContextBase.contextBaseFor(data, sandboxBaseUrl, fallbackContextBase);
         return JsonLdEnvelopes.singleEntityResponse(objectMapper, contextBase,
-                JsonLdMeta.singleEntityMeta(selfHref), grant);
+                JsonLdMeta.singleEntityMeta(selfHref), product);
     }
 
     /**
@@ -125,11 +160,11 @@ public class DataCiteGrantsResource {
      * @param page     the page cursor/number to fetch, or null for the first page
      * @param pageSize results per page, or null to use defaultPageSize
      * @param uriInfo  the current request URI, used to build pagination/context links
-     * @return the JSON-LD grant list envelope
+     * @return the JSON-LD product list envelope
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getGrants(
+    public Response getProducts(
             @QueryParam("filter") String filter,
             @QueryParam("page") String page,
             @QueryParam("page_size") Integer pageSize,
@@ -137,14 +172,14 @@ public class DataCiteGrantsResource {
 
         Optional<String> query;
         try {
-            query = DataCiteGrantFilters.toDataCiteQuery(filter);
+            query = DataCiteProductFilters.toDataCiteQuery(filter);
         } catch (FilterQuerySyntax.UnsupportedFilterException e) {
             return JsonLdErrors.invalidFilter(uriInfo, e.getMessage());
         }
-        // /datacite/grants only ever serves Award-type DOIs.
-        String awardInclusion = DataCiteQueryField.DATACITE_FILTER_TYPES_RESOURCE_TYPE_GENERAL.value() + ":" +
-                ResourceTypeMapping.AWARD;
-        String finalQuery = query.map(q -> q + " AND " + awardInclusion).orElse(awardInclusion);
+        // Awards are grants, not products - never let them leak into /datacite/products results.
+        String awardExclusion = "NOT " + DataCiteQueryField.DATACITE_FILTER_TYPES_RESOURCE_TYPE_GENERAL.value() +
+                ":" + ResourceTypeMapping.AWARD;
+        String finalQuery = query.map(q -> q + " AND " + awardExclusion).orElse(awardExclusion);
 
         int pageNumber = RequestPagination.parsePage(page);
         int size = pageSize != null && pageSize > 0 ? pageSize : defaultPageSize;
@@ -152,26 +187,26 @@ public class DataCiteGrantsResource {
 
         DataCiteDoiListResponse response = dataCiteClient.listDois(prefix, finalQuery, size, pageNumber);
 
-        List<Grant> grants = new ArrayList<>();
+        List<Product> products = new ArrayList<>();
         List<ApiItem> apiItems = new ArrayList<>();
         if (response.data() != null) {
             for (DataCiteDoiData item : response.data()) {
                 if (item.attributes() == null) {
                     continue;
                 }
-                grants.add(mapper.toGrant(item.attributes()));
+                products.add(mapper.toProduct(item.attributes()));
                 apiItems.add(JsonLdMeta.apiItem(localIdentifiers.toFullLocalIdentifier(item.attributes().doi()),
                         JsonLdLinks.selfLink(uriInfo, RESOURCE_PATH, item.attributes().doi())));
             }
         }
 
-        long total = response.meta() != null ? response.meta().total() : grants.size();
+        long total = response.meta() != null ? response.meta().total() : products.size();
         boolean hasNext = hasMorePages(response, pageNumber);
         String contextBase = JsonLdContextBase.contextBaseFor(response.data(), sandboxBaseUrl, fallbackContextBase);
         return JsonLdEnvelopes.searchResultsResponse(objectMapper, contextBase,
                 JsonLdMeta.searchMeta(new JsonLdMeta.SearchPage(uriInfo, RESOURCE_PATH, filter, pageNumber,
                         size), total, hasNext, apiItems),
-                grants);
+                products);
     }
 
     private boolean hasMorePages(DataCiteDoiListResponse response, int currentPage) {
@@ -179,6 +214,6 @@ public class DataCiteGrantsResource {
     }
 
     private Response notFound(String requestedId) {
-        return JsonLdErrors.notFound("No grant found for local_identifier '" + requestedId + "'");
+        return JsonLdErrors.notFound("No product found for local_identifier '" + requestedId + "'");
     }
 }

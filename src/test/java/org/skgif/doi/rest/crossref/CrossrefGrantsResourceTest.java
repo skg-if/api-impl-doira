@@ -1,4 +1,4 @@
-package org.skgif.doi.rest;
+package org.skgif.doi.rest.crossref;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,7 +25,7 @@ import org.skgif.doi.crossref.dto.CrossrefWorkResponse;
 /**
  * The Crossref-provider sibling of {@code DataCiteGrantsResourceTest}, at the separate {@code
  * /crossref/grants} path. Golden JSON-LD output regression tests live in
- * {@link GrantsGoldenTest}.
+ * {@code GrantsGoldenTest}.
  */
 @QuarkusTest
 class CrossrefGrantsResourceTest {

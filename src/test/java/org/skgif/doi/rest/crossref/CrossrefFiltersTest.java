@@ -1,4 +1,4 @@
-package org.skgif.doi.rest;
+package org.skgif.doi.rest.crossref;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.skgif.doi.rest.FilterQuerySyntax;
 import org.skgif.doi.spec.GrantFilterKeys;
 import org.skgif.doi.spec.ProductFilterKeys;
 import org.skgif.doi.util.ExternalIdentifierUrls;

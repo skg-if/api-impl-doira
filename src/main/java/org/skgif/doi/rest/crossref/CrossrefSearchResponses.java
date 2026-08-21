@@ -1,4 +1,4 @@
-package org.skgif.doi.rest;
+package org.skgif.doi.rest.crossref;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.ws.rs.core.Response;
@@ -11,6 +11,10 @@ import java.util.function.Predicate;
 import org.skgif.doi.crossref.dto.CrossrefWork;
 import org.skgif.doi.crossref.dto.CrossrefWorkListResponse;
 import org.skgif.doi.generated.model.ApiItem;
+import org.skgif.doi.rest.JsonLdContextBase;
+import org.skgif.doi.rest.JsonLdEnvelopes;
+import org.skgif.doi.rest.JsonLdLinks;
+import org.skgif.doi.rest.JsonLdMeta;
 import org.skgif.doi.util.LocalIdentifiers;
 
 /**

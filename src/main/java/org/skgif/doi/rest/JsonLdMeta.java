@@ -11,10 +11,10 @@ import org.skgif.doi.generated.model.SearchResultPage;
 
 /**
  * Builds the {@code meta} block for JSON-LD responses (single-entity and search-results shapes),
- * shared by all four REST resource classes: {@link DataCiteProductsResource}, {@link
- * DataCiteGrantsResource}, {@link CrossrefProductsResource}, and {@link CrossrefGrantsResource}.
+ * shared by all four REST resource classes: {@code DataCiteProductsResource}, {@code
+ * DataCiteGrantsResource}, {@code CrossrefProductsResource}, and {@code CrossrefGrantsResource}.
  */
-final class JsonLdMeta {
+public final class JsonLdMeta {
 
     /** The first page number in this API's 1-based pagination. */
     private static final int FIRST_PAGE_NUMBER = 1;
@@ -30,7 +30,7 @@ final class JsonLdMeta {
      * @param apiSelfHref           this API's own resolvable URL for the entity
      * @return an ApiItem referencing entityLocalIdentifier, with apiSelfHref as its self link
      */
-    static ApiItem apiItem(String entityLocalIdentifier, String apiSelfHref) {
+    public static ApiItem apiItem(String entityLocalIdentifier, String apiSelfHref) {
         return new ApiItem()
                 .localIdentifier(entityLocalIdentifier)
                 .urls(List.of(new Link().entityType("link").rel("self").href(apiSelfHref)));
@@ -43,7 +43,7 @@ final class JsonLdMeta {
      * @param selfHref this API's own resolvable URL for the entity
      * @return the single-entity meta block
      */
-    static MetaSingleEntity singleEntityMeta(String selfHref) {
+    public static MetaSingleEntity singleEntityMeta(String selfHref) {
         return new MetaSingleEntity()
                 .localIdentifier(selfHref)
                 .entityType(MetaSingleEntity.EntityTypeEnum.SINGLE_ENTITY);
@@ -60,7 +60,7 @@ final class JsonLdMeta {
      * @param pageNumber   the page number this meta block describes
      * @param size         results per page
      */
-    record SearchPage(
+    public record SearchPage(
             UriInfo uriInfo,
             String resourcePath,
             String filter,
@@ -81,7 +81,8 @@ final class JsonLdMeta {
      * @param apiItems     the page's {@code apiItems}, one per returned entity
      * @return the search-results meta block
      */
-    static MetaSearch searchMeta(SearchPage page, long totalResults, boolean hasNext, List<ApiItem> apiItems) {
+    public static MetaSearch searchMeta(SearchPage page, long totalResults, boolean hasNext,
+            List<ApiItem> apiItems) {
         UriInfo uriInfo = page.uriInfo();
         String resourcePath = page.resourcePath();
         String filter = page.filter();

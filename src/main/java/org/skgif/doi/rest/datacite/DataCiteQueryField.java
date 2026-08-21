@@ -1,9 +1,10 @@
-package org.skgif.doi.rest;
+package org.skgif.doi.rest.datacite;
+
 
 /**
  * DataCite's own Lucene {@code query} field-path names - see
  * https://support.datacite.org/docs/queries#supported-fields for the full list DataCite exposes -
- * reused across {@link FilterQuerySyntax}, {@link DataCiteGrantFilters}, {@link
+ * reused across {@code FilterQuerySyntax}, {@link DataCiteGrantFilters}, {@link
  * DataCiteProductFilters}, {@link DataCiteGrantsResource} and {@link DataCiteProductsResource} -
  * single source of truth so these don't drift when duplicated as raw string literals. Distinct
  * from {@code org.skgif.doi.spec}'s {@code GrantFilterKeys}/{@code ProductFilterKeys}: those are

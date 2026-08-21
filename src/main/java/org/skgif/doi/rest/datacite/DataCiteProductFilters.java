@@ -1,4 +1,4 @@
-package org.skgif.doi.rest;
+package org.skgif.doi.rest.datacite;
 
 import java.util.Arrays;
 import java.util.EnumMap;
@@ -11,6 +11,7 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import org.skgif.doi.datacite.ResourceTypeMapping;
 import org.skgif.doi.generated.model.Product;
+import org.skgif.doi.rest.FilterQuerySyntax;
 import org.skgif.doi.spec.IdentifierScheme;
 import org.skgif.doi.spec.ProductFilterKeys;
 import org.skgif.doi.util.ExternalIdentifierUrls;
