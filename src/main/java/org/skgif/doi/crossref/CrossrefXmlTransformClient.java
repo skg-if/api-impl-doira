@@ -18,6 +18,9 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
  * caller reads {@code response.readEntity(String.class)} itself instead of relying on JAX-RS
  * content-type negotiation.
  */
+// Single abstract method by coincidence, not a lambda target: Quarkus generates the implementation
+// from @RegisterRestClient, so @FunctionalInterface would advertise a use that never happens.
+@SuppressWarnings("PMD.ImplicitFunctionalInterface")
 @RegisterRestClient(configKey = "crossref-xml-transform-api")
 @Path("/works")
 public interface CrossrefXmlTransformClient {

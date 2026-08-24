@@ -45,6 +45,32 @@ record of what the skill used to get wrong.
 
 ---
 
+## `skg-if-cpd`'s duplication baseline was wrong, and wrong in two different ways at once
+
+- Date: 2026-08-24
+- Skill: `skg-if-cpd/SKILL.md`
+- Symptom: while verifying the `maven-pmd-plugin` 3.26.0 -> 3.28.0 bump, `.\mvnw.cmd -q -B
+  pmd:cpd-check` exited 0 with **0 duplications**, while the skill's "Known baseline" section
+  asserted "10 pre-existing duplications" on `main` - and a later section of the same file
+  asserted "this repo's current 5 duplications". Two different counts in one skill, neither
+  matching reality, which is exactly the input that makes an agent distrust a clean run (or
+  worse, wave through a real regression as "pre-existing noise").
+- Root cause: the baseline was recorded as an absolute count rather than as a measurement tied to
+  the plugin version and threshold that produced it, so it silently went stale twice over: once
+  when the sources drifted (10 -> 5) and again when PMD's CPD moved from 7.7.0 to 7.17.0 under the
+  plugin bump (5 -> 0). Nothing in the build checks the prose, so neither drift surfaced.
+- Fix: re-measured everything the skill claims and rewrote the stale numbers in
+  [`skg-if-cpd/SKILL.md`](skg-if-cpd/SKILL.md): baseline is now 0 duplications across 169 scanned
+  files, stated with the plugin/PMD version that produced it and with an explicit "do not carry an
+  older non-zero baseline forward" plus the `-DminimumTokens=60` -> 20-blocks counter-example; the
+  CSV-vs-XML size claim was re-measured (26 bytes vs 25KB); the stale "current 5 duplications"
+  paragraph was rephrased as past evidence rather than a present count; and the `help:describe`
+  provenance line now names 3.28.0, re-run to confirm `minimumTokens`/`cpd.skip`/`format` survived
+  the bump unchanged.
+- Status: Fixed
+
+---
+
 ## The JDK half of `skg-if-build-toolchain` silently degraded on a Linux clone
 
 - Date: 2026-08-24

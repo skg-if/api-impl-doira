@@ -5,7 +5,7 @@ description: Run Maven PMD's CPD (Copy/Paste Detector) to find or gate on duplic
 
 # Maven CPD (copy/paste detection)
 
-`maven-pmd-plugin` 3.26.0 is already declared in [pom.xml](../../../pom.xml), but the
+`maven-pmd-plugin` 3.28.0 is already declared in [pom.xml](../../../pom.xml), but the
 plugin's only bound execution is the `check` goal (PMD rule violations) on `process-sources`.
 That same plugin also ships CPD's mojos - `pmd:cpd` (report) and `pmd:cpd-check` (report + fail
 the build on duplication) - but **neither is bound to any lifecycle phase**, so `.\mvnw.cmd test`/
@@ -32,17 +32,20 @@ report that and move on, no need to open any report file. A non-zero exit prints
 `CPD <version> has found N duplications. For more details see: <repo>\target\cpd.xml` - open
 `target/cpd.xml` at that point (see "Reading the report" below).
 
-**Known baseline**: as of this writing, running this against `main` finds 10 pre-existing
-duplications (all just above the 100-token default threshold, in mapper/DTO code) - a failure
-here is not necessarily caused by whatever change is under review. Check whether the duplication
-blocks reported in `target/cpd.xml` involve files touched by the current diff before treating a
-failure as a regression.
+**Known baseline**: `main` is clean at the default threshold - re-measured under
+maven-pmd-plugin 3.28.0 / PMD 7.17.0, which reports **0 duplications** across the 169 scanned
+files (PMD 7.7.0 reported 10 blocks in mapper/DTO code on similar sources, so do not carry an
+older non-zero baseline forward). A failure is therefore a signal about the change under review,
+not pre-existing noise - but still check whether the blocks in `target/cpd.xml` involve files the
+current diff touched before calling it a regression. Lowering the threshold does surface blocks
+(`-DminimumTokens=60` finds 20), so a non-default threshold has no baseline of its own.
 
 ## Generating a report without failing the build
 
-Prefer CSV over the default XML - it's ~30x smaller (around 1KB vs ~30KB for this repo's current
-duplication count) because it drops the full scanned-file listing and the duplicated-code text
-that XML embeds in every block, keeping just the numbers and locations:
+Prefer CSV over the default XML - it is far smaller (measured here: 26 bytes vs 25KB with no
+duplication above the threshold) because it drops the scanned-file listing that XML emits for all
+169 files regardless of findings, plus the duplicated-code text XML embeds in every block, keeping
+just the numbers and locations:
 
 ```powershell
 . .\.claude\skills\skg-if-build-toolchain\activate.ps1
@@ -90,20 +93,20 @@ Select-String -Path target\cpd.xml -Pattern '<duplication'
 ```
 
 **For a report that names the duplicated *methods*, prefer CSV + targeted source reads over
-XML anyway** - checked empirically against this repo's current 5 duplications: only 2 of the 5
-`<codefragment>` blocks happen to start right at a method signature; the other 3 start mid-body
-(one begins at an `@ExampleObject(...)` parameter annotation), so the enclosing method's name
-isn't in the fragment at all and opening the real source file is still required. Since that
-source lookup is usually unavoidable regardless of format, and XML's per-occurrence attributes
-(`begintoken`/`column`/`endcolumn`/`endline`/`endtoken`/`line`/`path`, times two occurrences, times
-every duplication) plus the full duplicated-code CDATA cost noticeably more tokens than the CSV's
-one compact row per duplication, read the CSV first and open just the handful of distinct files it
-names (grouped by file, not by duplication, since the same file often recurs across duplications)
-to read off the real method signature.
+XML anyway** - checked empirically back when this repo did report duplications above the default
+threshold: only 2 of the 5 `<codefragment>` blocks then present started right at a method
+signature; the other 3 started mid-body (one at an `@ExampleObject(...)` parameter annotation), so
+the enclosing method name was not in the fragment at all and opening the real source file was
+still required. Since that source lookup is usually unavoidable regardless of format, and XML's
+per-occurrence attributes (`begintoken`/`column`/`endcolumn`/`endline`/`endtoken`/`line`/`path`,
+times two occurrences, times every duplication) plus the full duplicated-code CDATA cost
+noticeably more tokens than the CSV's one compact row per duplication, read the CSV first and
+open just the handful of distinct files it names (grouped by file, not by duplication, since the
+same file often recurs across duplications) to read off the real method signature.
 
 ## Tuning sensitivity
 
-Confirmed via `.\mvnw.cmd help:describe -Dplugin=org.apache.maven.plugins:maven-pmd-plugin:3.26.0
+Confirmed via `.\mvnw.cmd help:describe -Dplugin=org.apache.maven.plugins:maven-pmd-plugin:3.28.0
 -Dgoal=cpd -Ddetail` against this repo's exact plugin version (don't guess at property names -
 `maven-cpd-plugin`'s standalone `-Dminimum-tokens` is a different, unrelated plugin):
 

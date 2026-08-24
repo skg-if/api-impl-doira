@@ -18,6 +18,9 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
  * the caller reads {@code response.readEntity(String.class)} itself and hands it to {@code
  * MedraOnixXmlParser}.
  */
+// Single abstract method by coincidence, not a lambda target: Quarkus generates the implementation
+// from @RegisterRestClient, so @FunctionalInterface would advertise a use that never happens.
+@SuppressWarnings("PMD.ImplicitFunctionalInterface")
 @RegisterRestClient(configKey = "medra-api")
 public interface MedraClient {
 

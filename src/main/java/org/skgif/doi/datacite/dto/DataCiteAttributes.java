@@ -6,7 +6,6 @@ import java.util.List;
 // Top-level Jackson DTO for an entire DataCite work/DOI record - necessarily has many
 // independent optional fields; splitting it wouldn't help since Jackson needs one class
 // matching the source JSON's shape.
-@SuppressWarnings("PMD.TooManyFields")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record DataCiteAttributes(
         String doi,
@@ -33,9 +32,6 @@ public record DataCiteAttributes(
         String version,
         String url) {
 
-    // Field name mirrors the DataCite JSON key ("title") it's deserialized from, same as every
-    // other DTO field in this class - not a naming smell.
-    @SuppressWarnings("PMD.AvoidFieldNameMatchingTypeName")
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Title(
             String title,

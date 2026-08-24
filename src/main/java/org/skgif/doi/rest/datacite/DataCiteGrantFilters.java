@@ -148,11 +148,7 @@ final class DataCiteGrantFilters {
     }
 
     // Sole call site is toDataCiteQuery's `FilterQuerySyntax.parseClauses(filter, SUPPORTED,
-    // DataCiteGrantFilters::toClause)` above - PMD's symbol table doesn't reliably trace a private
-    // method through a method reference passed as the BinaryOperator<String> clause-builder
-    // argument once the generated OpenAPI sources are on the compile classpath, so it misreports
-    // this method as unused.
-    @SuppressWarnings("PMD.UnusedPrivateMethod")
+    // DataCiteGrantFilters::toClause)` above.
     private static String toClause(String key, String value) {
         return CLAUSE_BUILDERS.get(GrantFilterKeys.fromKey(key)).apply(value);
     }

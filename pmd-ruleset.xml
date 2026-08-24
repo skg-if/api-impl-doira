@@ -32,11 +32,27 @@
       DataCiteGrantMapper) - lowered to 3 to actually catch that class of duplication.
     -->
     <exclude name="AvoidDuplicateLiterals"/>
+    <!--
+      AssignmentInOperand disabled here so its allowIncrementDecrement property can be overridden
+      below. PMD 7.17 reports a value-producing increment/decrement anywhere, not just inside an
+      if/while/for condition, so it flags the `.rank(rank++)` builder argument in all three
+      contribution mappers (Crossref/DataCite/mEDRA - 5 violations). That idiom is the readable
+      way to number contributions across several sequential loops, and the case the rule exists
+      for - an assignment hidden inside a condition - is still caught, since only the
+      increment/decrement form is allowed below.
+    -->
+    <exclude name="AssignmentInOperand"/>
   </rule>
 
   <rule ref="category/java/errorprone.xml/AvoidDuplicateLiterals">
     <properties>
       <property name="maxDuplicateLiterals" value="3"/>
+    </properties>
+  </rule>
+
+  <rule ref="category/java/errorprone.xml/AssignmentInOperand">
+    <properties>
+      <property name="allowIncrementDecrement" value="true"/>
     </properties>
   </rule>
 
