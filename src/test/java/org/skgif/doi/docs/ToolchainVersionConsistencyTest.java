@@ -71,7 +71,6 @@ class ToolchainVersionConsistencyTest {
 
         Map<String, String> expected = new LinkedHashMap<>();
         expected.put("src/main/docker/Dockerfile.jvm", "openjdk-" + version + ":");
-        expected.put(".devcontainer/devcontainer.json", "java:1-" + version + "-bookworm");
         expected.put("README.md", "JDK " + version + "+");
 
         List<String> stale = new ArrayList<>();
@@ -79,6 +78,16 @@ class ToolchainVersionConsistencyTest {
             if (!Files.readString(REPO_ROOT.resolve(entry.getKey())).contains(entry.getValue())) {
                 stale.add(entry.getKey() + " (expected to contain \"" + entry.getValue() + "\")");
             }
+        }
+
+        // The devcontainer tag carries two independent versions - Microsoft's own image major and
+        // the Java major - and they do not advance together: the "1-<java>" line stopped at Java 21,
+        // so Java 25 ships as "3-25-bookworm". Only the Java half is ours to keep in step, so match
+        // the image major loosely rather than pinning a prefix that breaks at the next bump.
+        Pattern devcontainerTag = Pattern.compile("java:\\d+(?:\\.\\d+)*-" + version + "-bookworm");
+        String devcontainer = Files.readString(REPO_ROOT.resolve(".devcontainer/devcontainer.json"));
+        if (!devcontainerTag.matcher(devcontainer).find()) {
+            stale.add(".devcontainer/devcontainer.json (expected to match \"" + devcontainerTag.pattern() + "\")");
         }
 
         assertThat(stale)

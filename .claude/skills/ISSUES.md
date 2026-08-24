@@ -45,6 +45,28 @@ record of what the skill used to get wrong.
 
 ---
 
+## SKILL.md said a Java bump means editing pom.xml "and nothing else"
+
+- Date: 2026-08-24
+- Skill: `skg-if-build-toolchain/SKILL.md`
+- Symptom: Planning a Java 21 -> 25 bump on the strength of the skill's claim that "bumping Java
+  means editing `pom.xml` and nothing else" would have produced a build that fails
+  `ToolchainVersionConsistencyTest` on three unmentioned pins. Worse, the two image tags cannot be
+  fixed by substituting the major: `mcr.microsoft.com/devcontainers/java:1-25-bookworm` does not
+  exist at all (Microsoft's `1-<java>` line stops at 21; Java 25 ships as `3-25-bookworm`), and
+  `ubi9/openjdk-25`'s stream tag is `1.24`, not the `1.21` the old line carried.
+- Root cause: The sentence was true of the *toolchain* - `activate.*`, `bootstrap-jdk.*` and
+  `.github/actions/setup-java-from-pom` genuinely all derive the major from the pom and
+  re-provision with no edit - but it was written as if it were true of the repo. It silently
+  contradicted `ToolchainVersionConsistencyTest`, whose entire purpose is the three pins that
+  can't derive it, and gave no warning that both image tags carry a second, independent version.
+- Fix: Reworded that paragraph to scope the claim to the toolchain, then list the three
+  hand-edited pins (`Dockerfile.jvm`, `devcontainer.json`, `README.md`), point at the test as the
+  thing that reports staleness, and warn that the image majors version independently of Java so
+  the new tag must be confirmed to exist upstream rather than string-substituted.
+- Status: Fixed
+
+
 ## `pmd:check` on a dirty working tree gives a false clean that CI contradicts
 
 - Date: 2026-08-24

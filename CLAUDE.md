@@ -61,7 +61,7 @@ knowing before "fixing" something that looks wrong:
   `dependabot/docker/*` branches**, because those cannot change mapper output and the job makes
   real outbound calls to DataCite and Crossref. It still runs on `dependabot/maven/*`, where a
   Quarkus bump genuinely could alter the JSON-LD shape. A skipped job on a bot PR is not breakage.
-- **`Dockerfile.jvm` spells its JDK major as a literal (`openjdk-21`) on purpose.** Dependabot
+- **`Dockerfile.jvm` spells its JDK major as a literal (`openjdk-25`) on purpose.** Dependabot
   does no `ARG` interpolation, so a `${...}` anywhere in that `FROM` line makes it skip the image
   silently - leaving the published container's CVE patch level unmonitored while the config still
   looks fine. `ToolchainVersionConsistencyTest` is what keeps the literal in step with

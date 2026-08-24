@@ -1,7 +1,7 @@
 # Using GitHub Codespaces
 
 This repo includes a [`.devcontainer/devcontainer.json`](.devcontainer/devcontainer.json)
-that sets up JDK 21 + the pinned Maven wrapper (`mvnw`) and runs the API in Quarkus dev
+that sets up JDK + the pinned Maven wrapper (`mvnw`) and runs the API in Quarkus dev
 mode automatically.
 
 ## Start a Codespace

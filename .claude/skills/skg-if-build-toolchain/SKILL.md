@@ -24,7 +24,17 @@ pins a version in this file** - that is the whole point of the split:
 
   The required feature version is read from `pom.xml`'s `<maven.compiler.release>`, the
   single source of truth for this repo's Java version, so bumping Java means editing
-  `pom.xml` and nothing else.
+  `pom.xml` and nothing else *in the toolchain* - the activation and bootstrap scripts and
+  `.github/actions/setup-java-from-pom` all derive it, and re-provision automatically.
+
+  Three pins outside the toolchain still need hand-editing on a bump, because an image tag
+  and README prose resolve before any script could run: `src/main/docker/Dockerfile.jvm`,
+  `.devcontainer/devcontainer.json`, and `README.md`. `ToolchainVersionConsistencyTest`
+  fails the build until they agree, so it will tell you exactly which are stale - but check
+  the new tag actually exists upstream first. The two image lines version independently of
+  Java (Red Hat's UBI stream suffix, and Microsoft's devcontainer image major, whose
+  `1-<java>` line stopped at Java 21), so neither tag can be built by string-substituting
+  the old major.
 
 **On the Windows dev box specifically, there is no system-wide JDK or Maven and one should
 not be installed** (`winget`/`choco`) - step 1 or 3 above always applies there, and tooling
