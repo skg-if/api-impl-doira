@@ -25,13 +25,13 @@ public final class JsonLdEnvelopes {
     }
 
     static ObjectNode envelope(ObjectMapper objectMapper, String contextBase) {
-        ObjectNode root = objectMapper.createObjectNode();
         ArrayNode context = objectMapper.createArrayNode();
         context.add(CTX_DATA_MODEL);
         context.add(CTX_API);
         ObjectNode base = objectMapper.createObjectNode();
         base.put("@base", contextBase);
         context.add(base);
+        ObjectNode root = objectMapper.createObjectNode();
         root.set("@context", context);
         return root;
     }

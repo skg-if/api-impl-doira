@@ -40,6 +40,9 @@ public final class CrossrefVenueMetadataXmlParser {
     }
 
     /**
+     * Parses venue metadata out of a Crossref XML transform document, degrading to an empty result on
+     * unusable input.
+     *
      * @param xml the raw Crossref XML transform document, or null
      * @return the parsed venue metadata, or empty if xml is null/blank or unparseable
      */
@@ -97,7 +100,7 @@ public final class CrossrefVenueMetadataXmlParser {
 
             return Optional.of(new CrossrefVenueMetadata(containerTitle, containerDoi, seriesTitle, seriesIssns,
                     volume, isbns, publisherName, publisherPlace));
-        } catch (Exception e) {
+        } catch (Exception _) {
             // Malformed/unexpected XML shape degrades to the REST-JSON-only venue - never worth
             // failing the whole product response over an enrichment call, including from an
             // unexpected runtime error (e.g. a null deref on a surprising document shape).

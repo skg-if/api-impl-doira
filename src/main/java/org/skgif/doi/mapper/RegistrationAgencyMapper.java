@@ -16,6 +16,8 @@ import org.skgif.doi.generated.model.Product;
 public interface RegistrationAgencyMapper<T> {
 
     /**
+     * Maps one registration agency's DOI record onto an SKG-IF Product.
+     *
      * @param input the provider's DOI record to map
      * @return the mapped Product
      */

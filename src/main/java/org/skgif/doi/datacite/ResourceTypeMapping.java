@@ -115,7 +115,33 @@ public final class ResourceTypeMapping {
                 DataCiteResourceType.PHYSICAL_OBJECT, DataCiteResourceType.MODEL, DataCiteResourceType.AUDIOVISUAL,
                 DataCiteResourceType.INTERACTIVE_RESOURCE, DataCiteResourceType.STANDARD,
                 DataCiteResourceType.INSTRUMENT);
+        requireEveryTypeClassified(map);
         return Map.copyOf(map);
+    }
+
+    /**
+     * Fails class initialization if any {@link DataCiteResourceType} other than {@link #AWARD} is
+     * missing from the lookup table above.
+     *
+     * <p>This is the safety net that the lookup table gives up relative to an exhaustive {@code
+     * switch}, following the same pattern as the {@code *Filters} classes (see pmd-ruleset.xml's
+     * CyclomaticComplexity note for why dispatch here is a table rather than a switch). Without
+     * it, adding a value to the enum and forgetting a {@code putAll} entry would not fail
+     * anything: {@link #productType(String)} would silently report the new type as {@code OTHER},
+     * which is indistinguishable from the deliberate fallback for a type DataCite has added but
+     * this enum does not list yet. Checked here rather than in a test because the enum is private,
+     * and because failing at startup covers production too.
+     *
+     * @param map the populated lookup table to check for completeness
+     * @throws IllegalStateException if a resource type is unclassified
+     */
+    private static void requireEveryTypeClassified(Map<DataCiteResourceType, Product.ProductTypeEnum> map) {
+        for (DataCiteResourceType type : DataCiteResourceType.values()) {
+            if (type != DataCiteResourceType.AWARD && !map.containsKey(type)) {
+                throw new IllegalStateException(
+                        "DataCite resourceTypeGeneral not mapped to a SKG-IF product_type: " + type);
+            }
+        }
     }
 
     private static void putAll(Map<DataCiteResourceType, Product.ProductTypeEnum> map, Product.ProductTypeEnum value,
@@ -139,16 +165,15 @@ public final class ResourceTypeMapping {
     }
 
     /**
+     * Recognizes DataCite's {@code Award} type, which routes a record to the Grants endpoint, not Products.
+     *
      * @param attributes the DataCite record's attributes to check
      * @return whether attributes' {@code resourceTypeGeneral} is {@code Award}
      */
     public static boolean isAward(DataCiteAttributes attributes) {
-        if (attributes == null || attributes.types() == null) {
-            return false;
-        }
-        return DataCiteResourceType.fromValue(attributes.types().resourceTypeGeneral())
-                .filter(type -> type == DataCiteResourceType.AWARD)
-                .isPresent();
+        return attributes != null &&
+                attributes.types() instanceof DataCiteAttributes.Types(String resourceTypeGeneral, _) &&
+                AWARD.equals(resourceTypeGeneral);
     }
 
     /**

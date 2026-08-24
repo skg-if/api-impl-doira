@@ -10,6 +10,12 @@
   codebase have been disabled below with a rationale comment rather than deleted, so the
   original Sun intent stays visible.
 
+  READ STATIC_ANALYSIS_POLICY.md (repo root) BEFORE ADDING OR REMOVING A RULE HERE. It holds the
+  policy these decisions follow (which tool owns what, why formatting rules never belong in this
+  file, why duplicating an active PMD rule is rejected) plus a register of every Checkstyle check
+  already evaluated, its measured violation count, and the reason it was adopted or turned down -
+  so a rule that was already considered does not get re-litigated from scratch.
+
 -->
 
 <module name="Checker">
@@ -87,7 +93,41 @@
       <property name="tokens" value="VARIABLE_DEF"/>
       <property name="ignoreNamePattern" value="^serialVersionUID$"/>
     </module>
-    <module name="JavadocStyle"/>
+    <!--
+      JavadocStyle (this ruleset's Sun-baseline check for malformed HTML plus a
+      period-terminated first sentence) was REMOVED in Checkstyle 14, so it had to go when the
+      engine was pinned - see the checkstyle.version property in pom.xml for why that pin exists.
+      The six checks below replace it. SummaryJavadoc is its nearest single successor and is the
+      one that changed the codebase: it requires every Javadoc block to open with a prose summary
+      sentence, and enabling it initially reported 56 violations, because the convention until
+      then was tag-only Javadoc (a bare @param/@return block with no prose). All 56 were given a
+      real summary rather than suppressed, so this is now an enforced house rule: a new
+      @param/@return-only Javadoc block fails the build.
+
+      What a summary must NOT be, to stay useful rather than restating the method name: the
+      check's own default forbiddenSummaryFragments already rejects an opening "@return the ...",
+      "This method returns ...", and "A {@code Foo} is a ...". Beyond that, describe what the
+      member does or why it exists (the non-obvious behaviour - a fallback, a degradation, a
+      routing decision), not its signature. See ManifestationDateSetters#addDateItem or
+      XmlParsingUtils#parseDocument for the intended flavour.
+
+      The other five were each measured at 0 violations on this codebase when added, so they
+      encode existing practice rather than changing it.
+      Genuinely lost, with no replacement adopted: JavadocStyle's malformed-HTML check.
+
+      One thing NOT to infer from the ordering here: all six of these checks already shipped in
+      Checkstyle 9.3 (the version maven-checkstyle-plugin defaults to, i.e. what this project ran
+      before the pin - verified by listing the check classes in both jars). Enabling them was
+      opportunistic, not something the newer engine made possible. The only change the bump forced
+      is JavadocStyle's removal; the reason the pin exists at all is Java 21+ syntax support, not
+      these Javadoc rules.
+    -->
+    <module name="SummaryJavadoc"/>
+    <module name="NonEmptyAtclauseDescription"/>
+    <module name="JavadocBlockTagLocation"/>
+    <module name="JavadocMissingLeadingAsterisk"/>
+    <module name="JavadocContentLocation"/>
+    <module name="SingleLineJavadoc"/>
     <module name="MissingJavadocMethod"/>
 
     <!-- Checks for Naming Conventions.                  -->
@@ -127,6 +167,29 @@
     <module name="RedundantImport"/>
     <module name="UnusedImports">
       <property name="processJavadoc" value="false"/>
+    </module>
+    <!--
+      Nothing enforced import order before, and the tree had drifted: some files led with
+      org.skgif, others with java.util or com.fasterxml, with no rule to appeal to.
+
+      Deliberately one flat alphabetical group (the `groups` property is left unset) rather than
+      the java/jakarta/org/com grouping many styles use - the codebase never had blank-line import
+      groups, so imposing them would be a far larger and more arbitrary diff than simply sorting
+      what is there. option=top matches the test sources, which put their AssertJ/Mockito static
+      imports first (87 of them; src/main/java has none).
+
+      separated=true is what allows the conventional blank line between the static block and the
+      rest; with the default (false) checkstyle rejects it as "Extra separation in import group",
+      which would have meant stripping that blank line out of 40 test files for no benefit.
+
+      Note this only reports; unlike spotless it never repairs. The initial sweep (16 files) was
+      applied with a one-off script - safe because Java import order carries no semantics - but
+      future drift has to be fixed by hand.
+    -->
+    <module name="ImportOrder">
+      <property name="option" value="top"/>
+      <property name="sortStaticImportsAlphabetically" value="true"/>
+      <property name="separated" value="true"/>
     </module>
 
     <!-- Checks for Size Violations.                    -->
@@ -289,6 +352,128 @@
       <property name="allowSamelineParameterizedAnnotation" value="false"/>
     </module>
 
+
+    <!-- ================================================================ -->
+    <!-- Java 21-25 idiom enforcement.                                     -->
+    <!--                                                                  -->
+    <!-- All of these ship only in a Checkstyle newer than the 9.3 the     -->
+    <!-- maven-checkstyle-plugin defaults to, so they became available     -->
+    <!-- with the checkstyle.version pin in pom.xml (see that property's   -->
+    <!-- comment). None has a PMD equivalent - PMD 7.17 has no rule that   -->
+    <!-- requires JEP 456 unnamed variables at all - so there is no        -->
+    <!-- duplication to weigh here, unlike most of this file.              -->
+    <!--                                                                  -->
+    <!-- Why these and not the rest: this codebase already uses records,   -->
+    <!-- virtual threads, switch expressions, sequenced collections and    -->
+    <!-- record patterns, but nothing enforced that. These checks make the -->
+    <!-- style self-enforcing rather than dependent on review catching it: -->
+    <!-- UnusedCatchParameterShouldBeUnnamed found 7 discarded exception   -->
+    <!-- parameters and UnusedLambdaParameterShouldBeUnnamed 15 ignored    -->
+    <!-- lambda parameters that a manual pass had already missed. The rest  -->
+    <!-- measured 0 and are adopted as regression guards - notably          -->
+    <!-- SealedShouldHavePermitsList, which has nothing to check today     -->
+    <!-- (no sealed types) but will the moment one is introduced.          -->
+    <!-- ================================================================ -->
+    <module name="UnusedCatchParameterShouldBeUnnamed"/>
+    <module name="UnusedLambdaParameterShouldBeUnnamed"/>
+    <module name="UnusedTryResourceShouldBeUnnamed"/>
+    <!--
+      Scope limit found by negative-testing rather than assuming: this fires on a simple variable
+      receiver (`x != null && x instanceof Foo`) but NOT on a method-call one
+      (`a.b() != null && a.b() instanceof Foo`), which is the shape that actually occurred here
+      before JsonLdContextBase#clientId was rewritten. So it guards the common case only - do not
+      read a green build as proof that no redundant null check exists.
+    -->
+    <module name="UnnecessaryNullCheckWithInstanceOf"/>
+    <module name="UnnecessaryTypeArgumentsWithRecordPattern"/>
+    <module name="PatternVariableAssignment"/>
+    <module name="PatternVariableName"/>
+    <module name="MissingNullCaseInSwitch"/>
+    <module name="WhenShouldBeUsed"/>
+    <module name="UseEnhancedSwitch"/>
+    <module name="SealedShouldHavePermitsList"/>
+    <module name="MissingOverrideOnRecordAccessor"/>
+    <module name="RecordComponentName"/>
+    <module name="RecordTypeParameterName"/>
+    <module name="LambdaParameterName"/>
+    <module name="CatchParameterName"/>
+
+    <!-- ================================================================ -->
+    <!-- Semantic gaps PMD does not cover, each measured at 0 violations   -->
+    <!-- on both source roots when added, so they encode existing practice -->
+    <!-- and act as regression guards rather than demanding any cleanup.   -->
+    <!-- PMD's naming/semicolon/import rules all live in codestyle.xml,    -->
+    <!-- which pmd-ruleset.xml deliberately does not include (see its      -->
+    <!-- description) - so these overlap nothing.                          -->
+    <!--                                                                  -->
+    <!-- NOT added, though also at 0: ArrayTrailingComma. It is the direct -->
+    <!-- inverse of NoArrayTrailingComma below (one demands a trailing     -->
+    <!-- comma in an array initializer, the other forbids it). Both read 0 -->
+    <!-- only because the codebase currently has no multi-line array       -->
+    <!-- initializer at all; enabling both would contradict the moment one -->
+    <!-- is written. NoArrayTrailingComma is the one kept, to match        -->
+    <!-- NoEnumTrailingComma.                                              -->
+    <!-- ================================================================ -->
+    <module name="MutableException"/>
+    <module name="AvoidNoArgumentSuperConstructorCall"/>
+    <module name="NoClone"/>
+    <module name="NoFinalizer"/>
+    <module name="NoCodeInFile"/>
+    <module name="OneTopLevelClass"/>
+    <module name="OuterTypeFilename"/>
+    <module name="OuterTypeNumber"/>
+    <module name="PackageDeclaration"/>
+    <module name="PackageAnnotation"/>
+    <module name="MissingDeprecated"/>
+    <module name="AnnotationUseStyle"/>
+    <module name="OverloadMethodsDeclarationOrder"/>
+    <module name="ConstructorsDeclarationGrouping"/>
+    <module name="AbbreviationAsWordInName"/>
+    <module name="IllegalIdentifierName"/>
+    <module name="HexLiteralCase"/>
+    <module name="NoEnumTrailingComma"/>
+    <module name="NoArrayTrailingComma"/>
+    <module name="UnnecessarySemicolonAfterOuterTypeDeclaration"/>
+    <module name="UnnecessarySemicolonAfterTypeMemberDeclaration"/>
+    <module name="UnnecessarySemicolonInEnumeration"/>
+    <module name="UnnecessarySemicolonInTryWithResources"/>
+    <module name="AvoidEscapedUnicodeCharacters"/>
+    <module name="NestedForDepth"/>
+    <module name="NestedTryDepth"/>
+    <module name="ThrowsCount"/>
+    <module name="AnonInnerLength"/>
+    <!--
+      Not free like the rest of this block - 2 sites were fixed to adopt it:
+      CrossrefBiblioMapper's venueFromXmlMetadata and JsonLdEnvelopes' envelope each declared a
+      local several statements before its first use. Kept because "declare next to first use" is
+      a real readability rule with no PMD equivalent active here (PMD's PrematureDeclaration
+      lives in the excluded codestyle.xml).
+    -->
+    <module name="VariableDeclarationUsageDistance"/>
+
+    <!--
+      Javadoc structure checks, same 0-violation basis. These complement the
+      SummaryJavadoc block above: that one governs whether a summary exists, these govern how
+      the rest of the block is written (tag order, paragraph markup, tag continuation indent).
+    -->
+    <module name="AtclauseOrder"/>
+    <module name="RequireEmptyLineBeforeBlockTagGroup"/>
+    <module name="IllegalBlockTag"/>
+    <module name="JavadocMissingWhitespaceAfterAsterisk"/>
+    <module name="JavadocParagraph"/>
+    <module name="JavadocTagContinuationIndentation"/>
+    <!-- Fixed 6 sites to adopt: raw &amp;gt;/&amp;lt; HTML entities in Javadoc prose replaced with
+         {@code ...} spans, which read better in source and render identically. -->
+    <module name="PreferLiteralJavadocInlineTag"/>
+    <module name="MissingJavadocPackage"/>
+    <!--
+      Not free either - 33 public types (almost all Crossref/DataCite Jackson DTOs, plus the two
+      REST client interfaces and UnsupportedFilterException) had no type Javadoc. Each was given a
+      one-line summary naming the provider field it mirrors, which is the useful thing to say about
+      a DTO and is not derivable from the record name alone. Completes the pairing with
+      SummaryJavadoc above: that governs members, this governs the types holding them.
+    -->
+    <module name="MissingJavadocType"/>
   </module>
 
 </module>

@@ -50,6 +50,8 @@ public class DataCiteToSkgIfMapper implements GrantCapableMapper<DataCiteAttribu
     private final DataCiteRelatedProductMapper relatedProductMapper;
 
     /**
+     * Creates a mapper that mints local_identifiers through the given helper.
+     *
      * @param localIdentifiers builds full/otf local_identifier values for mapped entities
      */
     public DataCiteToSkgIfMapper(LocalIdentifiers localIdentifiers) {
@@ -59,6 +61,8 @@ public class DataCiteToSkgIfMapper implements GrantCapableMapper<DataCiteAttribu
     }
 
     /**
+     * Maps a DataCite DOI record's attributes onto a complete SKG-IF Product.
+     *
      * @param attributes the DataCite record's attributes to map
      * @return the mapped Product
      */

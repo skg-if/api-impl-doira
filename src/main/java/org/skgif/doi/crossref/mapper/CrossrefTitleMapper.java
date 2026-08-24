@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-
 import org.skgif.doi.crossref.dto.CrossrefWork;
 import org.skgif.doi.generated.model.ProductAllOfTopics;
 import org.skgif.doi.generated.model.Topic;

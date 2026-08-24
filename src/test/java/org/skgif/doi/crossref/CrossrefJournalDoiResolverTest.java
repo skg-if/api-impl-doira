@@ -8,14 +8,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import org.skgif.doi.crossref.dto.CrossrefWork;
-import org.skgif.doi.crossref.dto.CrossrefWorkListResponse;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
+import org.skgif.doi.crossref.dto.CrossrefWork;
+import org.skgif.doi.crossref.dto.CrossrefWorkListResponse;
 
 /**
  * Unit tests for {@link CrossrefJournalDoiResolver}, following the direct-construction Mockito
@@ -92,13 +92,13 @@ class CrossrefJournalDoiResolverTest {
         CountDownLatch bothStarted = new CountDownLatch(2);
 
         when(crossrefClient.listWorks(eq("type:journal,issn:0028-0836"), any(), any(), eq(1), any(), any()))
-                .thenAnswer(invocation -> {
+                .thenAnswer(_ -> {
                     bothStarted.countDown();
                     awaitOrFail(bothStarted);
                     return emptyListResponse();
                 });
         when(crossrefClient.listWorks(eq("type:journal,issn:1476-4687"), any(), any(), eq(1), any(), any()))
-                .thenAnswer(invocation -> {
+                .thenAnswer(_ -> {
                     bothStarted.countDown();
                     awaitOrFail(bothStarted);
                     return listResponseWithDoi("10.1038/electronic-doi");

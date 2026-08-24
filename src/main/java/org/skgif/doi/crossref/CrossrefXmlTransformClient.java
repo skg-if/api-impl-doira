@@ -26,6 +26,8 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 public interface CrossrefXmlTransformClient {
 
     /**
+     * Fetches a work's Crossref XML transform document, which carries venue metadata the REST API omits.
+     *
      * @param doi the work's DOI
      * @return the raw XML transform response
      */

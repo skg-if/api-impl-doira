@@ -63,6 +63,8 @@ public class MedraProductsResource {
     String fallbackContextBase;
 
     /**
+     * Creates the resource with the collaborators its endpoint needs.
+     *
      * @param medraClient      the mEDRA REST client used to fetch ONIX-for-DOI metadata
      * @param mapper           maps mEDRA works to SKG-IF Product records
      * @param localIdentifiers resolves local identifiers to/from DOIs
@@ -78,6 +80,8 @@ public class MedraProductsResource {
     }
 
     /**
+     * Serves the single-product endpoint, resolving one DOI to a JSON-LD envelope.
+     *
      * @param localIdentifierParam the DOI to look up (with or without the SKG base domain prefix)
      * @param uriInfo              the current request URI, used to build self/context links
      * @return the JSON-LD product envelope, or a 404 error response if not found
@@ -110,7 +114,7 @@ public class MedraProductsResource {
                 return notFound(localIdentifierParam);
             }
             xml = response.readEntity(String.class);
-        } catch (RuntimeException e) {
+        } catch (RuntimeException _) {
             return notFound(localIdentifierParam);
         }
 

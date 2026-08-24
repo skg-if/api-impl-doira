@@ -49,6 +49,9 @@ final class DataCiteTitleMapper {
     }
 
     /**
+     * Collects a record's descriptions into the single-string-per-language shape {@code Grant.abstracts}
+     * uses.
+     *
      * @param attributes the DataCite record to read abstracts from
      * @return the concatenated abstracts keyed by language, or an empty map if none carry one
      */

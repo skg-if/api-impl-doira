@@ -37,6 +37,9 @@ public class LocalIdentifiers {
     private final Optional<Pattern> collapsedBaseUrlPrefix;
 
     /**
+     * Creates a minter that namespaces identifiers under the configured base URL, precomputing its
+     * prefix matcher.
+     *
      * @param baseUrl the configured local_identifier base URL (e.g. {@code https://doi.org/})
      */
     public LocalIdentifiers(@ConfigProperty(name = "skgif.local-identifier.base-url") String baseUrl) {

@@ -23,6 +23,8 @@ public final class JsonLdMeta {
     }
 
     /**
+     * Builds the {@code meta.api} item that links an entity to its own resolvable API URL.
+     *
      * @param entityLocalIdentifier the entity's own local_identifier (matches the corresponding
      *                              @graph[i].local_identifier) - per the spec's own worked examples, this is NOT the
      *                              API

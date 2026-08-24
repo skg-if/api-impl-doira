@@ -71,6 +71,8 @@ public final class JsonLdSearchResponses {
     }
 
     /**
+     * Assembles any provider's page of items into the shared JSON-LD search-results envelope.
+     *
      * @param ctx     the calling resource's envelope-building dependencies
      * @param request the per-request list parameters
      * @param items   the raw provider items already extracted from this page of the provider's response

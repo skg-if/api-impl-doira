@@ -25,6 +25,8 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 public interface MedraClient {
 
     /**
+     * Fetches a work's ONIX-for-DOI metadata document from mEDRA.
+     *
      * @param doi the work's DOI
      * @return the raw ONIX-for-DOI XML metadata response
      */

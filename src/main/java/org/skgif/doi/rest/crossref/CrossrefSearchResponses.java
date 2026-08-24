@@ -22,6 +22,8 @@ final class CrossrefSearchResponses {
     }
 
     /**
+     * Assembles a Crossref list response into the shared JSON-LD search envelope.
+     *
      * @param ctx      the calling resource's envelope-building dependencies
      * @param request  the per-request list parameters
      * @param offset   the zero-based offset of the first item on this page

@@ -156,14 +156,7 @@ final class CrossrefBiblioMapper {
     }
 
     private ProductManifestationBiblioIn venueFromXmlMetadata(String doi, CrossrefVenueMetadata venueMetadata) {
-        String name = venueMetadata.containerTitle();
         String containerDoi = venueMetadata.containerDoi();
-        VenueLite venue = new VenueLite()
-                .localIdentifier(containerDoi != null ? localIdentifiers.toFullLocalIdentifier(containerDoi) :
-                        MapperTextUtils.otf(doi, name))
-                .entityType(EntityTypes.VENUE.value())
-                .name(name);
-
         List<VenueLiteAllOfIdentifiers> identifiers = new ArrayList<>();
         if (containerDoi != null) {
             identifiers.add(new VenueLiteAllOfIdentifiers().scheme(IdentifierScheme.DOI.value()).value(containerDoi));
@@ -180,6 +173,12 @@ final class CrossrefBiblioMapper {
                     .forEach(isbn -> identifiers.add(
                             new VenueLiteAllOfIdentifiers().scheme(IdentifierScheme.ISBN.value()).value(isbn)));
         }
+        String name = venueMetadata.containerTitle();
+        VenueLite venue = new VenueLite()
+                .localIdentifier(containerDoi != null ? localIdentifiers.toFullLocalIdentifier(containerDoi) :
+                        MapperTextUtils.otf(doi, name))
+                .entityType(EntityTypes.VENUE.value())
+                .name(name);
         if (!identifiers.isEmpty()) {
             venue.identifiers(identifiers);
         }

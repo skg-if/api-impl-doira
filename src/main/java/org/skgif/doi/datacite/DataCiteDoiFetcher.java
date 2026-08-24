@@ -16,6 +16,9 @@ public final class DataCiteDoiFetcher {
     }
 
     /**
+     * Fetches a single DataCite DOI record, treating a missing record as an empty result rather than
+     * an error.
+     *
      * @param dataCiteClient the DataCite REST client to fetch the record from
      * @param doi            the DOI to look up
      * @return the fetched record, or empty if not found (a 404 response, or a null/attributes-less

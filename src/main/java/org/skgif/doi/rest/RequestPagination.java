@@ -10,6 +10,8 @@ public final class RequestPagination {
     }
 
     /**
+     * Parses the {@code page} query param defensively, so a bad value falls back to the first page.
+     *
      * @param page the {@code page} query param, or null for the first page
      * @return the parsed 1-based page number, defaulting to 1 for a null/non-positive/unparseable value
      */
@@ -20,7 +22,7 @@ public final class RequestPagination {
         try {
             int parsed = Integer.parseInt(page);
             return parsed > 0 ? parsed : 1;
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException _) {
             return 1;
         }
     }

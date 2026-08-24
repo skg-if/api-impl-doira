@@ -14,6 +14,8 @@ import org.skgif.doi.generated.model.Grant;
 public interface GrantCapableMapper<T> extends RegistrationAgencyMapper<T> {
 
     /**
+     * Maps one registration agency's DOI record onto an SKG-IF Grant.
+     *
      * @param input the provider's DOI record to map
      * @return the mapped Grant
      */

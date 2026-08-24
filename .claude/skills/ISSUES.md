@@ -45,6 +45,24 @@ record of what the skill used to get wrong.
 
 ---
 
+## Piping the `source activate.sh` line silently discards the exports
+
+- Date: 2026-08-24
+- Skill: `skg-if-build-toolchain/SKILL.md`
+- Symptom: `source .claude/skills/skg-if-build-toolchain/activate.sh 2>&1 | tail -5 && java -version`
+  printed nothing from the activation and then `/usr/bin/bash: java: command not found`
+  (exit 127) - which reads like the portable JDK failed to provision, even though
+  `.tools/jdk-25/` was present and healthy the whole time.
+- Root cause: Bash runs every stage of a pipeline in a subshell, so the `source` ran in a child
+  process that exited immediately and took `JAVA_HOME`/`PATH` with it. The SKILL.md warned only
+  about *executing* the script ("never execute it"), which reads as satisfied when you did type
+  `source` - the pipe is a third failure mode the doc didn't cover, and the misleading part is
+  that the error surfaces on the *next* command rather than at the `source` itself.
+- Fix: added an explicit "never pipe or redirect the `source` line either" paragraph next to the
+  existing dot-source warning in `skg-if-build-toolchain/SKILL.md`, with a right/wrong example
+  pair, spelling out that the symptom is a `command not found` on the following command.
+- Status: Fixed
+
 ## SKILL.md said a Java bump means editing pom.xml "and nothing else"
 
 - Date: 2026-08-24

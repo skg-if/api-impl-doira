@@ -22,6 +22,8 @@ public enum EntityTypes {
     }
 
     /**
+     * Unwraps the constant to the raw string the SKG-IF spec expects.
+     *
      * @return the SKG-IF {@code entity_type} string this constant represents
      */
     public String value() {

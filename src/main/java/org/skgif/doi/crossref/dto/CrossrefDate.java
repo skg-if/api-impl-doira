@@ -18,6 +18,8 @@ public record CrossrefDate(
         @JsonProperty("date-parts") List<List<Integer>> dateParts) {
 
     /**
+     * Renders this date's variable-length {@code date-parts} array as an ISO-8601 date string.
+     *
      * @return this date's {@code date-parts} rendered as an ISO date string (year, year-month,
      *         or full date depending on how many parts are present), or Optional.empty() if
      *         dateParts is empty

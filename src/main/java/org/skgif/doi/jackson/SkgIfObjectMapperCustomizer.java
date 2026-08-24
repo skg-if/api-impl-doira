@@ -3,10 +3,10 @@ package org.skgif.doi.jackson;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.skgif.doi.generated.model.GrantContributionBy;
-import org.skgif.doi.generated.model.ProductContributionBy;
 import io.quarkus.jackson.ObjectMapperCustomizer;
 import jakarta.inject.Singleton;
+import org.skgif.doi.generated.model.GrantContributionBy;
+import org.skgif.doi.generated.model.ProductContributionBy;
 
 /**
  * {@code ProductContributionBy} and {@code GrantContributionBy} are openapi-generator's merge

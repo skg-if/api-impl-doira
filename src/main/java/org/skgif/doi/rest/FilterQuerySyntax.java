@@ -147,6 +147,7 @@ public final class FilterQuerySyntax {
         return clauses;
     }
 
+    /** Signals a {@code filter} query this API does not support, surfaced to callers as a 400. */
     public static final class UnsupportedFilterException extends RuntimeException {
         private static final long serialVersionUID = 1L;
 

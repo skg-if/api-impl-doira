@@ -29,6 +29,8 @@ public final class XmlParsingUtils {
     }
 
     /**
+     * Parses raw XML into a DOM document, hardened against XXE since this content comes off the network.
+     *
      * @param xml the raw XML document to parse
      * @return the parsed document
      * @throws ParserConfigurationException if the underlying parser cannot be configured
@@ -48,6 +50,8 @@ public final class XmlParsingUtils {
     }
 
     /**
+     * Evaluates an XPath expression to a single trimmed string value.
+     *
      * @param xpath      the XPath instance to evaluate the expression with
      * @param context    the node to evaluate the expression relative to
      * @param expression the XPath string expression
@@ -60,6 +64,8 @@ public final class XmlParsingUtils {
     }
 
     /**
+     * Evaluates an XPath nodeset expression to the trimmed text of every matched node.
+     *
      * @param xpath      the XPath instance to evaluate the expression with
      * @param context    the node to evaluate the expression relative to
      * @param expression the XPath nodeset expression

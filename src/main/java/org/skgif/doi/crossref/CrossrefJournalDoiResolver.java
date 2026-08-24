@@ -1,7 +1,5 @@
 package org.skgif.doi.crossref;
 
-import org.skgif.doi.crossref.dto.CrossrefWork;
-import org.skgif.doi.crossref.dto.CrossrefWorkListResponse;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import java.util.List;
@@ -14,11 +12,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.skgif.doi.crossref.dto.CrossrefWork;
+import org.skgif.doi.crossref.dto.CrossrefWorkListResponse;
+import org.skgif.doi.crossref.dto.CrossrefWorkListResponse.Message;
 
 /**
  * Resolves a real Crossref-registered journal-level DOI for a journal's ISSN(s), via {@code
  * GET works?filter=type:journal,issn:<issn>} - Crossref does register {@code type: "journal"}
- * works for many journals themselves (verified live: ISSN 0028-0836/1476-4687 -&gt; DOI
+ * works for many journals themselves (verified live: ISSN 0028-0836/1476-4687 {@code ->} DOI
  * {@code 10.1038/41586.1476-4687} for Nature), the same "prefer a real container DOI over an
  * otf id" idea {@code CrossrefBiblioMapper#venueFromXmlMetadata} already applies to
  * book/proceedings venues via the XML transform endpoint - this is the equivalent for plain
@@ -45,6 +46,8 @@ public class CrossrefJournalDoiResolver {
     private final Map<String, String> cache = new ConcurrentHashMap<>();
 
     /**
+     * Creates a resolver bound to the current request, with an empty per-request ISSN cache.
+     *
      * @param crossrefClient the Crossref REST client used to look up journal-level DOIs
      * @param crossrefMailto contact email for Crossref's polite-pool API access, if configured
      */
@@ -93,12 +96,21 @@ public class CrossrefJournalDoiResolver {
                 try {
                     String doi = future.get();
                     if (doi != null) {
+                        // Interrupt the lookups still in flight instead of letting the
+                        // try-with-resources close() wait them out: close() only calls
+                        // shutdown(), which awaits termination WITHOUT interrupting, so returning
+                        // straight from here would still block on the slowest remaining ISSN and
+                        // defeat the "bounded by the slowest single lookup" contract documented
+                        // above. This helps only insofar as the REST client honours interruption;
+                        // where it doesn't, it is no slower than not calling it.
+                        executor.shutdownNow();
                         return Optional.of(doi);
                     }
-                } catch (InterruptedException e) {
+                } catch (InterruptedException _) {
                     Thread.currentThread().interrupt();
+                    executor.shutdownNow();
                     return Optional.empty();
-                } catch (ExecutionException e) { //NOPMD
+                } catch (ExecutionException _) { //NOPMD
                     // fetchJournalDoi already swallows RuntimeException and returns null for this
                     // ISSN - this only guards an unexpected Error, so just move on to the next one.
                 }
@@ -111,13 +123,12 @@ public class CrossrefJournalDoiResolver {
         try {
             CrossrefWorkListResponse response = crossrefClient.listWorks(
                     "type:journal,issn:" + issn, null, null, 1, null, mailto);
-            if (response == null || response.message() == null || response.message().items() == null ||
-                    response.message().items().isEmpty()) {
-                return Optional.empty();
+            if (response instanceof CrossrefWorkListResponse(_, Message(_, List<CrossrefWork> items)) &&
+                    !items.isEmpty()) {
+                return Optional.ofNullable(items.getFirst().doi());
             }
-            CrossrefWork journal = response.message().items().getFirst();
-            return Optional.ofNullable(journal.doi());
-        } catch (RuntimeException e) {
+            return Optional.empty();
+        } catch (RuntimeException _) {
             return Optional.empty();
         }
     }

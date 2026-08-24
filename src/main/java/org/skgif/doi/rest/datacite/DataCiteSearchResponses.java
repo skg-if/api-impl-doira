@@ -22,6 +22,8 @@ final class DataCiteSearchResponses {
     }
 
     /**
+     * Assembles a DataCite list response into the shared JSON-LD search envelope.
+     *
      * @param ctx      the calling resource's envelope-building dependencies
      * @param request  the per-request list parameters
      * @param response the raw DataCite list response to build the envelope from

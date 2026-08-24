@@ -26,6 +26,8 @@ public class CrossrefVenueEnricher {
     private final CrossrefXmlTransformClient crossrefXmlTransformClient;
 
     /**
+     * Creates an enricher over the given XML-transform client.
+     *
      * @param crossrefXmlTransformClient the Crossref XML-transform REST client used for venue enrichment
      */
     @Inject
@@ -34,6 +36,8 @@ public class CrossrefVenueEnricher {
     }
 
     /**
+     * Fetches and parses a work's XML venue metadata, degrading to empty so callers can fall back.
+     *
      * @param doi the DOI to fetch XML venue metadata for
      * @return the parsed venue metadata, or Optional.empty() if the fetch/parse fails or finds
      *         nothing
@@ -44,7 +48,7 @@ public class CrossrefVenueEnricher {
                 return Optional.empty();
             }
             return CrossrefVenueMetadataXmlParser.parse(response.readEntity(String.class));
-        } catch (RuntimeException e) {
+        } catch (RuntimeException _) {
             return Optional.empty();
         }
     }

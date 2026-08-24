@@ -16,6 +16,9 @@ public final class CrossrefWorkFetcher {
     }
 
     /**
+     * Fetches a single Crossref work by DOI, treating a missing record as an empty result rather than
+     * an error.
+     *
      * @param crossrefClient the Crossref REST client to fetch the work from
      * @param doi            the DOI to look up
      * @return the fetched work, or empty if not found (a 404 response, or a null/DOI-less body) -

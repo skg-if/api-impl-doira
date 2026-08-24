@@ -42,6 +42,8 @@ public final class MedraOnixXmlParser {
     }
 
     /**
+     * Parses a mEDRA ONIX-for-DOI document into the subset of fields this API maps.
+     *
      * @param xml the raw mEDRA ONIX-for-DOI XML document, or null
      * @return the parsed work, or empty if xml is null/blank or no {@code ContentItem} is found
      */
@@ -93,7 +95,7 @@ public final class MedraOnixXmlParser {
             return Optional.of(new MedraWork(doi, titles(xpath, contentItem), contributors(xpath, contentItem),
                     abstractText, publicationDate, journalTitle, issns, registrantName, publisherName,
                     workElementName));
-        } catch (Exception e) {
+        } catch (Exception _) {
             return Optional.empty();
         }
     }

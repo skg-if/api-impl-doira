@@ -167,7 +167,7 @@ final class DataCiteProductFilters {
         Product.ProductTypeEnum productType;
         try {
             productType = Product.ProductTypeEnum.fromValue(value);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException _) {
             return NO_MATCH_CLAUSE;
         }
         List<String> resourceTypes = ResourceTypeMapping.resourceTypesFor(productType);

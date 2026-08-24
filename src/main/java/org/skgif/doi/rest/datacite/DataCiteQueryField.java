@@ -55,6 +55,8 @@ enum DataCiteQueryField {
     }
 
     /**
+     * Unwraps the constant to the raw field path DataCite expects.
+     *
      * @return the DataCite Lucene field-path string this constant represents
      */
     String value() {

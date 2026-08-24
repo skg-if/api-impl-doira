@@ -41,6 +41,8 @@ public enum IdentifierScheme {
     }
 
     /**
+     * Unwraps the constant to the raw scheme name the SKG-IF spec expects.
+     *
      * @return the SKG-IF {@code identifiers[].scheme} string this constant represents
      */
     public String value() {

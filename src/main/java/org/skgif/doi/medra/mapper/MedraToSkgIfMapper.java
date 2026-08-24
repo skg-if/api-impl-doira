@@ -36,6 +36,8 @@ public class MedraToSkgIfMapper implements RegistrationAgencyMapper<MedraWork> {
     private final LocalIdentifiers localIdentifiers;
 
     /**
+     * Creates a mapper that mints local_identifiers through the given helper.
+     *
      * @param localIdentifiers builds full/otf local_identifier values for mapped entities
      */
     public MedraToSkgIfMapper(LocalIdentifiers localIdentifiers) {
@@ -43,6 +45,8 @@ public class MedraToSkgIfMapper implements RegistrationAgencyMapper<MedraWork> {
     }
 
     /**
+     * Maps a mEDRA ONIX-for-DOI record onto a complete SKG-IF Product.
+     *
      * @param work the mEDRA record to map
      * @return the mapped Product
      */

@@ -43,6 +43,8 @@ public enum GrantFilterKeys {
     }
 
     /**
+     * Unwraps the constant to the raw filter key the SKG-IF spec expects.
+     *
      * @return the SKG-IF {@code filter} query key string this constant represents
      */
     public String key() {
@@ -50,6 +52,8 @@ public enum GrantFilterKeys {
     }
 
     /**
+     * Resolves a raw filter key back to its constant.
+     *
      * @param key a raw filter key string, expected to match one of this enum's {@link #key()} values
      * @return the constant whose {@link #key()} equals key
      * @throws IllegalArgumentException if no constant matches - callers are expected to have

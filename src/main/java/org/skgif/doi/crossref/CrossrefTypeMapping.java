@@ -73,6 +73,8 @@ public final class CrossrefTypeMapping {
     }
 
     /**
+     * Recognizes the Crossref type that routes a record to the Grants endpoint rather than Products.
+     *
      * @param work the Crossref work record to check
      * @return whether work's raw {@code type} is {@code grant}
      */

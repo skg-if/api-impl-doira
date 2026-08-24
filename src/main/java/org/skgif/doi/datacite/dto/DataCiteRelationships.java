@@ -13,11 +13,21 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public record DataCiteRelationships(
         ClientRelationship client) {
 
+    /**
+     * The {@code relationships.client} wrapper around the registering client's data.
+     *
+     * @param data the registering client's data member
+     */
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record ClientRelationship(
             ClientData data) {
     }
 
+    /**
+     * The {@code relationships.client.data} member, whose id names the registering client.
+     *
+     * @param id the DataCite client id (e.g. {@code inist.esrf})
+     */
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record ClientData(
             String id) {

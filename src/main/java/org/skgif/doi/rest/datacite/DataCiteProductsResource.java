@@ -1,21 +1,6 @@
 package org.skgif.doi.rest.datacite;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.skgif.doi.datacite.DataCiteClient;
-import org.skgif.doi.datacite.DataCiteDoiFetcher;
-import org.skgif.doi.datacite.ResourceTypeMapping;
-import org.skgif.doi.datacite.dto.DataCiteDoiData;
-import org.skgif.doi.datacite.dto.DataCiteDoiListResponse;
-import org.skgif.doi.generated.model.Product;
-import org.skgif.doi.datacite.mapper.DataCiteToSkgIfMapper;
-import org.skgif.doi.rest.FilterQuerySyntax;
-import org.skgif.doi.rest.JsonLdContextBase;
-import org.skgif.doi.rest.JsonLdEnvelopes;
-import org.skgif.doi.rest.JsonLdErrors;
-import org.skgif.doi.rest.JsonLdMeta;
-import org.skgif.doi.rest.JsonLdSearchResponses;
-import org.skgif.doi.rest.RequestPagination;
-import org.skgif.doi.util.LocalIdentifiers;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -26,12 +11,26 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
+import java.util.Optional;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.openapi.annotations.media.ExampleObject;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
-
-import java.util.Optional;
+import org.skgif.doi.datacite.DataCiteClient;
+import org.skgif.doi.datacite.DataCiteDoiFetcher;
+import org.skgif.doi.datacite.ResourceTypeMapping;
+import org.skgif.doi.datacite.dto.DataCiteDoiData;
+import org.skgif.doi.datacite.dto.DataCiteDoiListResponse;
+import org.skgif.doi.datacite.mapper.DataCiteToSkgIfMapper;
+import org.skgif.doi.generated.model.Product;
+import org.skgif.doi.rest.FilterQuerySyntax;
+import org.skgif.doi.rest.JsonLdContextBase;
+import org.skgif.doi.rest.JsonLdEnvelopes;
+import org.skgif.doi.rest.JsonLdErrors;
+import org.skgif.doi.rest.JsonLdMeta;
+import org.skgif.doi.rest.JsonLdSearchResponses;
+import org.skgif.doi.rest.RequestPagination;
+import org.skgif.doi.util.LocalIdentifiers;
 
 /**
  * SKG-IF Products endpoint, backed live by the DataCite REST API (no local storage). Serves
@@ -87,6 +86,8 @@ public class DataCiteProductsResource {
     int defaultPageSize;
 
     /**
+     * Creates the resource with the collaborators shared by both of its endpoints.
+     *
      * @param dataCiteClient   the DataCite REST client used to fetch DOI records
      * @param mapper           maps DataCite DOI records to SKG-IF Product records
      * @param localIdentifiers resolves local identifiers to/from DOIs
@@ -102,6 +103,8 @@ public class DataCiteProductsResource {
     }
 
     /**
+     * Serves the single-product endpoint, resolving one DOI to a JSON-LD envelope.
+     *
      * @param localIdentifierParam the DOI to look up (with or without the SKG base domain prefix)
      * @param uriInfo              the current request URI, used to build self/context links
      * @return the JSON-LD product envelope, or a 404 error response if not found
@@ -151,6 +154,8 @@ public class DataCiteProductsResource {
     }
 
     /**
+     * Serves the product search endpoint, translating SKG-IF filter syntax to DataCite's own.
+     *
      * @param filter   the SKG-IF {@code filter} query string, translated to DataCite's own filter
      *                 syntax
      * @param page     the page cursor/number to fetch, or null for the first page

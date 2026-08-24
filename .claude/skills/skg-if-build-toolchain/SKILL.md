@@ -65,6 +65,18 @@ child process cannot mutate its caller's environment, so `.\activate.ps1` or `./
 appears to succeed while leaving `JAVA_HOME`/`PATH` untouched, and the `mvnw` call that
 follows then fails for a reason that looks nothing like the actual cause.
 
+**Never pipe or redirect the `source` line either** - not even to trim its output. Bash runs
+every stage of a pipeline in a subshell, so `source .../activate.sh | tail -5` sources the
+script into a child process that exits immediately, discarding the exports exactly like
+executing it would. The symptom is a bare `java: command not found` on the *next* command in the
+same call, which reads like a missing/failed JDK provision rather than a lost environment. Source
+it on its own line and let it print what it prints:
+
+```bash
+source .claude/skills/skg-if-build-toolchain/activate.sh && java -version   # right
+source .claude/skills/skg-if-build-toolchain/activate.sh | tail -5          # WRONG - exports lost
+```
+
 Each Bash/PowerShell tool call starts a fresh process, so re-activate in **every** invocation
 that needs the toolchain. Nothing is persisted to the user or machine environment, and no
 attempt should be made to persist it.

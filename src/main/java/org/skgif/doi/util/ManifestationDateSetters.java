@@ -5,7 +5,7 @@ import java.util.function.BiConsumer;
 import org.skgif.doi.generated.model.ProductManifestationDates;
 
 /**
- * SKG-IF date-type name (e.g. {@code "creation"}, {@code "publication"}) -&gt; {@link
+ * SKG-IF date-type name (e.g. {@code "creation"}, {@code "publication"}) {@code ->} {@link
  * ProductManifestationDates} setter dispatch, shared by every provider mapper that builds a {@code
  * dates} block from a per-item type/value pair ({@code CrossrefManifestationMapper}, {@code
  * DataCiteManifestationMapper}) - byte-identical dispatch logic that was previously duplicated
@@ -68,6 +68,9 @@ public final class ManifestationDateSetters {
     }
 
     /**
+     * Adds one date to the matching {@code manifestations[].dates} field, if SKG-IF models that
+     * date type at all.
+     *
      * @param dates         the dates object to add to
      * @param skgIfDateType an SKG-IF date-type name (e.g. {@code "creation"}), or null
      * @param isoValue      the ISO-8601-ish date string to add, or null

@@ -3,6 +3,9 @@ package org.skgif.doi.rest;
 import java.util.List;
 import java.util.Optional;
 import org.skgif.doi.datacite.dto.DataCiteDoiData;
+import org.skgif.doi.datacite.dto.DataCiteRelationships;
+import org.skgif.doi.datacite.dto.DataCiteRelationships.ClientData;
+import org.skgif.doi.datacite.dto.DataCiteRelationships.ClientRelationship;
 
 /**
  * Derives the JSON-LD {@code @context}'s {@code @base} namespace, shared by all four REST
@@ -76,11 +79,16 @@ public final class JsonLdContextBase {
     }
 
     private static Optional<String> clientId(DataCiteDoiData data) {
-        if (data == null || data.relationships() == null || data.relationships().client() == null ||
-                data.relationships().client().data() == null) {
+        if (data == null) {
             return Optional.empty();
         }
-        String id = data.relationships().client().data().id();
-        return Optional.ofNullable(id != null && !id.isBlank() ? id : null);
+        // Nested record pattern instead of a null check per level: a record pattern does not
+        // match a null component, so relationships/client/data being absent - and id itself
+        // being null - all fall through to the empty result without naming each case.
+        if (data.relationships() instanceof DataCiteRelationships(ClientRelationship(ClientData(String id))) &&
+                !id.isBlank()) {
+            return Optional.of(id);
+        }
+        return Optional.empty();
     }
 }

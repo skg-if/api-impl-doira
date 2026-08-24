@@ -1,13 +1,14 @@
 package org.skgif.doi.crossref;
 
-import org.skgif.doi.crossref.dto.CrossrefWorkListResponse;
-import org.skgif.doi.crossref.dto.CrossrefWorkResponse;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
+import org.skgif.doi.crossref.dto.CrossrefWorkListResponse;
+import org.skgif.doi.crossref.dto.CrossrefWorkResponse;
 
+/** MicroProfile REST client for the Crossref REST API's {@code works} endpoints. */
 @RegisterRestClient(configKey = "crossref-api")
 @Path("/works")
 public interface CrossrefClient {

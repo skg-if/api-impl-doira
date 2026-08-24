@@ -10,10 +10,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.mockito.ArgumentCaptor;
-import org.skgif.doi.datacite.DataCiteClient;
-import org.skgif.doi.datacite.dto.DataCiteDoiListResponse;
-import org.skgif.doi.datacite.dto.DataCiteDoiResponse;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.ws.rs.NotFoundException;
@@ -21,6 +17,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.skgif.doi.datacite.DataCiteClient;
+import org.skgif.doi.datacite.dto.DataCiteDoiListResponse;
+import org.skgif.doi.datacite.dto.DataCiteDoiResponse;
 
 /**
  * Golden JSON-LD output regression tests live in {@code ProductsGoldenTest}.

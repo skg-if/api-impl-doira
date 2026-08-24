@@ -20,6 +20,8 @@ public final class LicenceMapper {
     }
 
     /**
+     * Derives an access-rights status from a record's licence URLs, recognizing Creative Commons as open.
+     *
      * @param licenceUrls the record's licence/rights URLs, in provider order, or null
      * @return an OPEN access-rights status if any URL (nulls tolerated per-entry) is a Creative
      *         Commons licence, else Optional.empty() if licenceUrls is null/empty
@@ -40,6 +42,8 @@ public final class LicenceMapper {
     }
 
     /**
+     * Picks the licence URL to report for a record, which is always the first one the provider listed.
+     *
      * @param licenceUrls the record's licence/rights URLs, in provider order, or null
      * @return the first entry verbatim, or Optional.empty() if licenceUrls is null/empty, or if
      *         its first entry is itself null. Deliberately does not skip forward to a later

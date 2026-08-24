@@ -10,6 +10,8 @@ import org.skgif.doi.crossref.dto.CrossrefFunding;
 import org.skgif.doi.crossref.dto.CrossrefProject;
 import org.skgif.doi.crossref.dto.CrossrefProjectDescription;
 import org.skgif.doi.crossref.dto.CrossrefProjectTitle;
+import org.skgif.doi.crossref.dto.CrossrefResource;
+import org.skgif.doi.crossref.dto.CrossrefResource.Primary;
 import org.skgif.doi.crossref.dto.CrossrefWork;
 import org.skgif.doi.generated.model.GrantAllOfDuration;
 import org.skgif.doi.generated.model.Organisation;
@@ -92,8 +94,9 @@ final class CrossrefGrantMapper {
     }
 
     Optional<String> website(CrossrefWork work) {
-        return Optional.ofNullable(
-                work.resource() != null && work.resource().primary() != null ? work.resource().primary().url() :
-                        null);
+        if (work.resource() instanceof CrossrefResource(Primary(String url))) {
+            return Optional.of(url);
+        }
+        return Optional.empty();
     }
 }

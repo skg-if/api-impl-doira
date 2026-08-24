@@ -51,6 +51,8 @@ public class CrossrefToSkgIfMapper implements GrantCapableMapper<CrossrefWork> {
     private final CrossrefGrantMapper grantMapper;
 
     /**
+     * Creates a mapper wired to the collaborators it needs for identifier minting and journal-DOI lookup.
+     *
      * @param localIdentifiers   builds full/otf local_identifier values for mapped entities
      * @param journalDoiResolver looks up a real journal-level DOI for an article's ISSN(s)
      */

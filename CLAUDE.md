@@ -124,6 +124,17 @@ under `src/test/resources` isn't mentioned anywhere across the `SKG_IF_DOI_MAPPI
 if any of them links to a fixture that doesn't exist - treat a failure there as a reminder to
 update the relevant doc, not just satisfy the test by adding a bare filename mention.
 
+## Static-analysis rulesets have a written policy
+
+Before adding, removing or retuning a rule in [checkstyle.xml](checkstyle.xml),
+[pmd-ruleset.xml](pmd-ruleset.xml), [pmd-ruleset-tests.xml](pmd-ruleset-tests.xml) or spotless'
+config in [pom.xml](pom.xml), read
+[STATIC_ANALYSIS_POLICY.md](STATIC_ANALYSIS_POLICY.md). It records which tool owns what (formatting
+is spotless', never checkstyle's - they *will* disagree and no config reconciles it), the
+no-duplicating-an-active-PMD-rule rule, and a register of all 107 checkstyle checks already
+evaluated with their measured violation counts - so an already-rejected rule isn't re-litigated.
+Add a register row for anything you evaluate, adopted or not.
+
 ## Java code style
 
 Follow these when writing or editing `.java` files - `spotless-maven-plugin` (pom.xml) enforces
@@ -146,6 +157,13 @@ failed build. Run `mvn spotless:apply` to fix violations it reports:
 - No unused or wildcard imports.
 - No trailing whitespace; file ends with a newline.
 - Public classes/methods need Javadoc.
+- **Every Javadoc block must open with a prose summary sentence ending in a period**, before any
+  `@param`/`@return`/`@throws` tag - checkstyle's `SummaryJavadoc` fails the build on a tag-only
+  block. Describe what the member does or the non-obvious behaviour it carries (a fallback, a
+  degradation, a routing decision); don't restate the signature. Openings of the form
+  `@return the ...`, `This method returns ...` and `A {@code Foo} is a ...` are rejected outright
+  by the check's own default `forbiddenSummaryFragments`. `ManifestationDateSetters#addDateItem`
+  and `XmlParsingUtils#parseDocument` show the intended flavour.
 
 Before reporting a task done, if it edited any `.java` files, run `spotless:apply` scoped to just
 those files - this catches/fixes drift proactively instead of letting `mvn test` fail on it later,

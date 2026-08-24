@@ -74,13 +74,42 @@ final class MedraManifestationMapper {
         }
         String normalized = switch (raw.length()) {
             case YEAR_LENGTH -> raw;
-            case YEAR_MONTH_LENGTH ->
-                raw.substring(0, YEAR_LENGTH) + "-" + raw.substring(YEAR_LENGTH, YEAR_MONTH_LENGTH);
-            case FULL_DATE_LENGTH ->
-                raw.substring(0, YEAR_LENGTH) + "-" + raw.substring(YEAR_LENGTH, YEAR_MONTH_LENGTH) +
-                        "-" + raw.substring(YEAR_MONTH_LENGTH, FULL_DATE_LENGTH);
+            case YEAR_MONTH_LENGTH -> year(raw) + "-" + month(raw);
+            case FULL_DATE_LENGTH -> year(raw) + "-" + month(raw) + "-" + day(raw);
             default -> null;
         };
         return Optional.ofNullable(normalized);
+    }
+
+    /**
+     * This and the two helpers after it are deliberately called from inside the switch arms rather
+     * than hoisted into locals: a raw string shorter than the arm's own length (e.g. a 2-digit
+     * value) must fall through to {@code default -> null}, and hoisting would make it throw instead.
+     *
+     * @param raw the raw mEDRA PublicationDate digit string
+     * @return the leading 4-digit year
+     */
+    private static String year(String raw) {
+        return raw.substring(0, YEAR_LENGTH);
+    }
+
+    /**
+     * Extracts the month digits from a year-month or full ONIX date string.
+     *
+     * @param raw the raw mEDRA PublicationDate digit string
+     * @return the 2-digit month
+     */
+    private static String month(String raw) {
+        return raw.substring(YEAR_LENGTH, YEAR_MONTH_LENGTH);
+    }
+
+    /**
+     * Extracts the day digits from a full ONIX date string.
+     *
+     * @param raw the raw mEDRA PublicationDate digit string
+     * @return the 2-digit day
+     */
+    private static String day(String raw) {
+        return raw.substring(YEAR_MONTH_LENGTH, FULL_DATE_LENGTH);
     }
 }

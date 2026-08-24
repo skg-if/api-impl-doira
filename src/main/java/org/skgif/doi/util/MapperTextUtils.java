@@ -24,13 +24,15 @@ public final class MapperTextUtils {
      *
      * @param doi   the owning record's DOI
      * @param label a human-readable label for the entity (e.g. a name), slugged into the id
-     * @return an "otf___&lt;doi-slug&gt;___&lt;label-slug&gt;" identifier
+     * @return an {@code otf___<doi-slug>___<label-slug>} identifier
      */
     public static String otf(String doi, String label) {
         return "otf___" + slug(doi) + "___" + slug(label);
     }
 
     /**
+     * Reduces arbitrary text to a slug safe for use inside an on-the-fly identifier.
+     *
      * @param text arbitrary text, or null
      * @return a lowercase, hyphenated, length-capped slug of text; "unknown" if text is null,
      *         empty, or has no alphanumeric characters

@@ -12,6 +12,10 @@
     with what checkstyle already enforces. Rules disabled below produced large volumes of
     low-value violations on the existing codebase - see rationale comments, mirroring the
     approach in checkstyle.xml.
+
+    Read STATIC_ANALYSIS_POLICY.md (repo root) before adding or removing a rule here: it holds the
+    division of labour between spotless/checkstyle/PMD, the no-duplication rule that governs this
+    file's relationship with checkstyle.xml, and the register of what has already been evaluated.
   </description>
 
   <!--
@@ -174,13 +178,19 @@
   <rule ref="category/java/bestpractices.xml"/>
 
   <!--
-    UnnecessaryLocalBeforeReturn mirrors SonarQube/SonarLint rule S1488 ("Local variables should
-    not be declared and then immediately returned or thrown") - common in mapper methods
+    VariableCanBeInlined mirrors SonarQube/SonarLint rule S1488 ("Local variables should not be
+    declared and then immediately returned or thrown") - common in mapper methods
     (`Dto d = ...; return d;`). It lives in PMD's codestyle.xml category, which is otherwise
     excluded wholesale above (overlaps with what checkstyle.xml already enforces) - referenced
     individually here since this specific rule doesn't overlap with anything checkstyle checks.
+
+    Was UnnecessaryLocalBeforeReturn until PMD 7.17.0 marked that rule deprecated="true" (verified
+    in the category XML inside pmd-java-7.17.0.jar) in favour of this one, which per its own
+    description "additionally covers throw statements". Referencing a rule by name rather than via
+    the category means a deprecated rule keeps running and only emits a deprecation warning, so
+    this needed spotting deliberately - nothing failed the build.
   -->
-  <rule ref="category/java/codestyle.xml/UnnecessaryLocalBeforeReturn"/>
+  <rule ref="category/java/codestyle.xml/VariableCanBeInlined"/>
 
   <!--
     ============================================================================================
@@ -288,38 +298,20 @@
     </properties>
   </rule>
 
-  <rule name="IgnoredMethodResult"
-        language="java"
-        message="Return value of a side-effect-free method call is ignored"
-        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
-    <description>
-      Equivalent to SonarQube/SonarLint rule S2201 ("Return values from functions without side
-      effects should not be ignored"), which has no build-time equivalent otherwise, since this
-      repo runs no Sonar server. Matches a bare top-level call to a small allowlist of well-known
-      immutable-value-returning String methods (trim/strip/toUpperCase/toLowerCase/substring/
-      replace*/concat/intern) used as a standalone statement, where the only possible effect - the
-      returned value - is thrown away. Deliberately narrow (name-based, not type-resolved, per the
-      PreferSequencedCollectionAccessors rationale above) to avoid flagging genuinely
-      void/side-effecting methods that happen to share a name - Stream/Optional's map/filter/
-      sorted/distinct were tried here too but dropped after a real `mvn pmd:check` run flagged
-      CrossrefFilters#parse's `result.filter(...)`, a `ParsedFilter.Builder` setter with the same
-      name as `Stream.filter` but genuinely side-effecting - too collision-prone to keep without
-      real type resolution.
-    </description>
-    <priority>3</priority>
-    <properties>
-      <property name="xpath">
-        <value>
-          <![CDATA[
-//ExpressionStatement/MethodCall[
-  @MethodName = ('trim','strip','stripLeading','stripTrailing','toUpperCase','toLowerCase',
-                 'substring','replace','replaceAll','replaceFirst','concat','intern')
-]
-          ]]>
-        </value>
-      </property>
-    </properties>
-  </rule>
+  <!--
+    IgnoredMethodResult (a custom XPath rule mirroring SonarQube/SonarLint S2201) was REMOVED as
+    redundant: PMD's own errorprone/UselessPureMethodCall, active via the wholesale
+    errorprone.xml include above, reports the same construct. Verified rather than assumed - each
+    of the 12 String methods the custom rule allow-listed (trim/strip/stripLeading/stripTrailing/
+    toUpperCase/toLowerCase/substring/replace/replaceAll/replaceFirst/concat/intern) was injected
+    as a discarded standalone call and target/pmd.xml showed BOTH rules firing on every one, with
+    no case caught only by the custom rule.
+
+    The built-in is also strictly better here: it is type-resolved, so it does not suffer the
+    name-collision problem that forced the custom rule to stay name-based and narrow (its old
+    comment recorded Stream/Optional map/filter/sorted being dropped after a real pmd:check run
+    flagged ParsedFilter.Builder#filter, a genuinely side-effecting method of the same name).
+  -->
 
   <rule name="NonShortCircuitBooleanOperator"
         language="java"
