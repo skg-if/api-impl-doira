@@ -16,10 +16,10 @@
     <quarkus.platform.version>3.38.3</quarkus.platform.version>
     <openapi-generator-plugin.version>7.24.0</openapi-generator-plugin.version>
     <jackson-databind-nullable.version>0.2.11</jackson-databind-nullable.version>
-    <surefire-plugin.version>3.5.2</surefire-plugin.version>
+    <surefire-plugin.version>3.5.6</surefire-plugin.version>
     <jacoco-plugin.version>0.8.15</jacoco-plugin.version>
-    <build-helper-plugin.version>3.6.0</build-helper-plugin.version>
-    <spotless-plugin.version>2.46.1</spotless-plugin.version>
+    <build-helper-plugin.version>3.6.1</build-helper-plugin.version>
+    <spotless-plugin.version>3.10.0</spotless-plugin.version>
     <pmd-plugin.version>3.28.0</pmd-plugin.version>
     <checkstyle-plugin.version>3.6.0</checkstyle-plugin.version>
     <assertj.version>3.27.7</assertj.version>
