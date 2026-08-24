@@ -63,14 +63,14 @@ record of what the skill used to get wrong.
   which silently repairs the auxclasspath and hides all three; CI is always fresh, so it never
   does. Confirmed by bisection: fresh tree at `57f30d8` = 3 violations, same tree after
   `mvnw compile -DskipTests` = 0, fresh tree at `bcba4d0` (plugin 3.26.0) = 0.
-- Fix: not yet fixed in any `SKILL.md`. What a skill needs to say: PMD/CPD results are only
-  CI-comparable when measured the way CI measures them - either from `mvnw clean` or in a
-  throwaway `git worktree` - and a clean `pmd:check` on a tree containing `target/classes` is not
-  evidence about CI. The underlying build issue (the `process-sources` binding starving PMD of its
-  auxclasspath) is a `pom.xml` question, separate from this log entry; binding `pmd-check` to
-  `process-classes` was verified to fix it on a clean tree while keeping the
-  spotless-before-pmd ordering intact.
-- Status: Open
+- Fix: [`skg-if-cpd/SKILL.md`](skg-if-cpd/SKILL.md) gained a "Measure from a clean tree, or don't
+  compare the result to CI" section (run `mvnw clean` or use a throwaway `git worktree` before
+  claiming a local result refutes CI; say which tree you measured), and its opening paragraph now
+  names the corrected phase. The underlying build issue is fixed too, in `pom.xml`: `pmd-check`
+  moved from `process-sources` to `process-classes` so PMD gets `target/classes` on its
+  auxclasspath, verified as BUILD SUCCESS with 0 violations on a `clean` tree with spotless still
+  gating first.
+- Status: Fixed
 
 ## `skg-if-cpd`'s duplication baseline was wrong, and wrong in two different ways at once
 

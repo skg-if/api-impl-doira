@@ -208,9 +208,11 @@
       <plugin>
         <!--
           Bound to process-sources, goal check, positioned (via declaration order - Maven runs
-          same-phase executions in POM order) before maven-pmd-plugin/maven-checkstyle-plugin
-          below, both also bound to process-sources - so a formatting failure is reported before
-          style-rule failures. Gated by skip=${skipTests} like those sibling plugins, so it runs
+          same-phase executions in POM order) before maven-checkstyle-plugin's javadoc-tag-check
+          below, also bound to process-sources - so a formatting failure is reported before
+          style-rule failures. maven-pmd-plugin runs later still (process-classes, see the comment
+          on its execution for why), which keeps the same formatting-first ordering.
+          Gated by skip=${skipTests} like those sibling plugins, so it runs
           whenever `mvn test`/`package` would run tests and is skipped by `-DskipTests` (and by
           extension by CI's notest/skiptest commit-message flag - see CLAUDE.md's "Java code
           style" section).
@@ -299,8 +301,22 @@
         </configuration>
         <executions>
           <execution>
+            <!--
+              process-classes, not process-sources (where spotless/checkstyle sit): PMD needs
+              target/classes on its auxclasspath to resolve types, and process-sources runs before
+              compile, so it would get none. Under PMD 7.17.0 that starved auxclasspath is not
+              merely less precise, it produces false positives - ImplicitFunctionalInterface fires
+              on GrantCapableMapper because its unresolved supertype hides a second abstract
+              method, and UnnecessaryWarningSuppression fires on the two
+              @SuppressWarnings("PMD.CompareObjectsWithEquals") sites because PMD cannot see that
+              the rule they suppress would otherwise trigger. Those 3 violations broke CI on every
+              fresh checkout while passing locally on any tree with leftover target/classes; the
+              pre-3.28.0 plugin (PMD 7.7.0) happened not to flag them, which is why the binding
+              looked fine until then. Anything later than process-classes works equally well for
+              PMD, but this phase keeps the failure adjacent to its process-sources siblings.
+            -->
             <id>pmd-check</id>
-            <phase>process-sources</phase>
+            <phase>process-classes</phase>
             <goals>
               <goal>check</goal>
             </goals>

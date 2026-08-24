@@ -6,7 +6,9 @@ description: Run Maven PMD's CPD (Copy/Paste Detector) to find or gate on duplic
 # Maven CPD (copy/paste detection)
 
 `maven-pmd-plugin` 3.28.0 is already declared in [pom.xml](../../../pom.xml), but the
-plugin's only bound execution is the `check` goal (PMD rule violations) on `process-sources`.
+plugin's only bound execution is the `check` goal (PMD rule violations) on `process-classes`
+(deliberately after `compile`, so PMD gets `target/classes` on its auxclasspath - see the comment
+on that execution, and "Measure from a clean tree" below).
 That same plugin also ships CPD's mojos - `pmd:cpd` (report) and `pmd:cpd-check` (report + fail
 the build on duplication) - but **neither is bound to any lifecycle phase**, so `.\mvnw.cmd test`/
 `package` never runs CPD; both goals must always be invoked explicitly. Don't confuse `pmd:check`
@@ -19,6 +21,20 @@ PATH, so there is no separate setup step to run first - see the `skg-if-build-to
 for how it resolves versions. Every snippet below is PowerShell; for the two substitutions that
 turn it into the Bash equivalent, see
 [Reading the examples in Bash](../skg-if-build-toolchain/SKILL.md#reading-the-examples-in-bash).
+
+## Measure from a clean tree, or don't compare the result to CI
+
+Both PMD's rule analysis and CPD read whatever is already sitting in `target/`, so a local run on
+a working tree that has built before is not the same measurement CI makes on a fresh checkout.
+This has bitten once for real: `pmd:check` exited 0 locally on sources where CI reported
+`PMD 7.17.0 has found 3 violations`, because leftover `target/classes` from an earlier build gave
+PMD the auxclasspath it needs for type resolution - which the old `process-sources` binding never
+provided on CI (see [ISSUES.md](../ISSUES.md)). The binding is fixed, but the general rule stands:
+
+- To reproduce or refute a CI finding, run `.\mvnw.cmd -B clean` first, or check the commit out
+  into a throwaway `git worktree` and run there.
+- A clean exit on a dirty tree is evidence about *your tree*, not about CI. Say which one you
+  measured when reporting a result.
 
 ## Checking for duplication (fails the build on violation)
 
