@@ -38,6 +38,42 @@ and the `validate-live-api` job (the live DataCite/Crossref contract-test script
 skipped/green-without-tests pipeline as broken when the triggering commit message uses one of
 these keywords.
 
+Two caveats on this mechanism:
+
+- It only works on `push`/tag events. The `build` job reads the message with
+  `git log -1 --pretty=%B`, and on a `pull_request` event `actions/checkout` checks out the
+  *merge* commit, so that command returns `"Merge <sha> into <sha>"` - never the author's
+  message. A `notest` keyword in a PR's commits therefore has no effect.
+- It is no longer the only reason `validate-live-api` gets skipped - see the section below.
+
+## Dependency updates arrive as monthly bot PRs
+
+[.github/dependabot.yml](.github/dependabot.yml) opens grouped update PRs on the first Monday of
+each month for three ecosystems: Maven, GitHub Actions and the Docker base image. Things worth
+knowing before "fixing" something that looks wrong:
+
+- **Version-less `io.quarkus:*` dependencies never get their own PR, and that's correct.** They
+  are managed by the imported `quarkus-bom`, so there is no version in this repo to bump - they
+  move when `${quarkus.platform.version}` moves. The corollary is that a CVE in a BOM-managed
+  transitive cannot be auto-fixed by Dependabot; the monthly `quarkus-platform` PR is what ships
+  that fix, which is why the cadence is monthly rather than quarterly.
+- **`validate-live-api` is deliberately skipped on `dependabot/github_actions/*` and
+  `dependabot/docker/*` branches**, because those cannot change mapper output and the job makes
+  real outbound calls to DataCite and Crossref. It still runs on `dependabot/maven/*`, where a
+  Quarkus bump genuinely could alter the JSON-LD shape. A skipped job on a bot PR is not breakage.
+- **`Dockerfile.jvm` spells its JDK major as a literal (`openjdk-21`) on purpose.** Dependabot
+  does no `ARG` interpolation, so a `${...}` anywhere in that `FROM` line makes it skip the image
+  silently - leaving the published container's CVE patch level unmonitored while the config still
+  looks fine. `ToolchainVersionConsistencyTest` is what keeps the literal in step with
+  `pom.xml`'s `<maven.compiler.release>`.
+- **A new composite action under `.github/actions/` must be added to the `directories` list** in
+  the `github-actions` block of `dependabot.yml`. Dependabot only scans `.github/workflows` plus
+  an `action.yml` in the repo *root*; it does not walk nested composite actions. Miss this and
+  that action's `uses:` refs go unmonitored forever, with no error and no test to catch it.
+- The Maven wrapper has no Dependabot ecosystem, so
+  [.github/workflows/maven-wrapper-update.yml](.github/workflows/maven-wrapper-update.yml) covers
+  it separately on a monthly schedule.
+
 ## Grep before reading large files
 
 The `SKG_IF_DOI_MAPPING*.md` docs (up to ~31KB each - see the next section) and the OpenAPI specs

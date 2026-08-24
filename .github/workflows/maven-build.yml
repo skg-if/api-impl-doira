@@ -7,6 +7,18 @@ on:
   pull_request:
     branches: [main]
 
+# Least-privilege default for every job. docker-publish declares its own job-level
+# `permissions:` (contents: read, packages: write), which overrides this.
+permissions:
+  contents: read
+
+# Dependency-bot PRs and quick follow-up pushes otherwise stack full pipeline runs -
+# including validate-live-api, which makes real DataCite/Crossref calls. Cancel superseded
+# PR runs; never cancel a push/tag run, since docker-publish publishes from those.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -46,7 +58,17 @@ jobs:
 
   validate-live-api:
     needs: build
-    if: needs.build.outputs.skip_tests != 'true'
+    # Skipped for non-Maven dependency-bot branches (github_actions, docker): those cannot change
+    # mapper output, and this job makes real outbound calls to api.datacite.org /
+    # api.crossref.org. Kept for dependabot/maven/* - a Quarkus platform bump is exactly the
+    # change where a live contract test earns its keep, since a Jackson/RESTEasy behaviour change
+    # inside the platform is what would silently alter the JSON-LD shape. github.head_ref is
+    # empty on push/tag events, so startsWith(...) is false there and this reduces to the
+    # skip_tests check.
+    if: >-
+      needs.build.outputs.skip_tests != 'true' &&
+      (!startsWith(github.head_ref, 'dependabot/') ||
+       startsWith(github.head_ref, 'dependabot/maven'))
     runs-on: ubuntu-latest
     env:
       CONTRACT_TEST_FILTER_PRODUCTS: "cf.search.title:tomography"
@@ -79,15 +101,15 @@ jobs:
           name: quarkus-app
           path: target/quarkus-app
 
-      - uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
 
-      - uses: docker/login-action@v3
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: docker/metadata-action@v5
+      - uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
         id: meta
         with:
           images: ghcr.io/${{ github.repository }}
@@ -97,7 +119,7 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
 
-      - uses: docker/build-push-action@v6
+      - uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
         with:
           context: .
           file: src/main/docker/Dockerfile.jvm

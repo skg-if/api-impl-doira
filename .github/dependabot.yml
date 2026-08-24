@@ -1,0 +1,138 @@
+# Dependabot configuration - https://docs.github.com/code-security/dependabot
+#
+# Cadence is deliberately monthly, grouped, PR-capped and rebase-free. Every dependency PR runs
+# the full `build` job in .github/workflows/maven-build.yml, and Maven PRs additionally run
+# `validate-live-api`, which makes real outbound calls to api.datacite.org and api.crossref.org
+# (see scripts/ci/validate-live-endpoints.sh). Left on defaults, Dependabot rebases every open PR
+# on every push to main and re-runs that whole pipeline each time.
+#
+# How Maven updates land here: every version in pom.xml is declared as a property, and quarkus-bom
+# (a dependencyManagement import) and quarkus-maven-plugin BOTH resolve ${quarkus.platform.version}.
+# Dependabot rewrites the property, so a platform bump is a single PR covering both by
+# construction - the `quarkus-platform` group below is belt-and-braces, not the mechanism.
+#
+# Dependencies with no <version> (quarkus-rest, quarkus-arc, quarkus-junit, rest-assured, ...) are
+# managed by quarkus-bom and will never get their own PR. That is correct, not a misconfiguration:
+# they move when the platform property moves. Corollary: an advisory against a BOM-managed
+# transitive CANNOT be auto-fixed by Dependabot security updates, which is why this is monthly.
+#
+# Never put the substrings "notest"/"skiptest" in a group name or commit prefix: the build job
+# greps the commit message for those and would silently skip every quality gate.
+version: 2
+
+updates:
+  # ---------------------------------------------------------------------------------
+  # Maven - /pom.xml (single module, no parent, no <modules>)
+  # ---------------------------------------------------------------------------------
+  - package-ecosystem: "maven"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+      day: "monday"
+      time: "05:00"
+      timezone: "Europe/Paris"
+    open-pull-requests-limit: 5
+    # See header: default "auto" rebasing multiplies CI runs and live API calls.
+    rebase-strategy: "disabled"
+    commit-message:
+      prefix: "build(deps)"
+      prefix-development: "build(deps-dev)"
+      include: "scope"
+    labels: ["dependencies", "java"]
+    groups:
+      quarkus-platform:
+        applies-to: version-updates
+        patterns:
+          - "io.quarkus.platform:*"
+          - "io.quarkus:*"
+      # Static analysis / formatting / test-harness plugins. Their failure mode is uniformly
+      # "the ruleset got stricter" - never a runtime behaviour change - so one review pass over
+      # the spotless/pmd/checkstyle output covers the batch.
+      build-plugins:
+        applies-to: version-updates
+        patterns:
+          - "com.diffplug.spotless:*"
+          - "org.apache.maven.plugins:maven-pmd-plugin"
+          - "org.apache.maven.plugins:maven-checkstyle-plugin"
+          - "org.apache.maven.plugins:maven-surefire-plugin"
+          - "org.codehaus.mojo:build-helper-maven-plugin"
+          - "org.jacoco:*"
+      test-libraries:
+        applies-to: version-updates
+        patterns:
+          - "org.assertj:*"
+          - "com.tngtech.archunit:*"
+          - "io.rest-assured:*"
+    # Ungrouped on purpose: openapi-generator-maven-plugin and jackson-databind-nullable both
+    # change generated code / JSON serialisation and must stay individually bisectable.
+    ignore:
+      # A generator major regenerates every DTO under org.skgif.doi.generated.* and routinely
+      # needs configOptions changes - a deliberate task, not a bot PR to merge.
+      - dependency-name: "org.openapitools:openapi-generator-maven-plugin"
+        update-types: ["version-update:semver-major"]
+      # Quarkus 4.x will be a migration project, not a dependency bump.
+      - dependency-name: "io.quarkus.platform:*"
+        update-types: ["version-update:semver-major"]
+
+  # ---------------------------------------------------------------------------------
+  # GitHub Actions
+  #
+  # `directories` (plural) is REQUIRED here, not `directory`. With directory: "/" Dependabot scans
+  # .github/workflows plus an action.yml in the REPOSITORY ROOT only - it does not walk nested
+  # composite actions (dependabot-core#6704, #7495). actions/setup-java@v5 lives in
+  # .github/actions/setup-java-from-pom/action.yml, so omitting that path would leave it
+  # permanently unmonitored. Any NEW composite action under .github/actions/ must be added here.
+  # Explicit paths, not a **/* globstar: the globstar double-scans and opens duplicate PRs
+  # (dependabot-core#10884).
+  #
+  # All refs float on a major tag, so minor/patch releases are consumed silently and only MAJOR
+  # bumps (plus renames/deprecations) appear here - expect a handful of PRs per year. The
+  # exception is the four docker/* refs, which are SHA-pinned in maven-build.yml and therefore
+  # produce a PR per release; that is the intended trade for pinning the job that holds
+  # packages: write.
+  #
+  # Single group on purpose: actions/upload-artifact and actions/download-artifact majors are not
+  # cross-compatible and live in DIFFERENT jobs. Bumping one alone goes green on `build` and only
+  # fails later at the download step - or in docker-publish, after merge.
+  # ---------------------------------------------------------------------------------
+  - package-ecosystem: "github-actions"
+    directories:
+      - "/"
+      - "/.github/actions/setup-java-from-pom"
+    schedule:
+      interval: "monthly"
+      day: "monday"
+      time: "05:00"
+      timezone: "Europe/Paris"
+    open-pull-requests-limit: 2
+    rebase-strategy: "disabled"
+    commit-message:
+      prefix: "ci(deps)"
+    labels: ["dependencies", "github-actions"]
+    groups:
+      github-actions:
+        applies-to: version-updates
+        patterns: ["*"]
+
+  # ---------------------------------------------------------------------------------
+  # Docker - src/main/docker/Dockerfile.jvm
+  #
+  # Base image of the container published to ghcr.io on every push to main, so its CVE patch level
+  # is the most externally-visible dependency in the repo. Dependabot moves only the UBI build tag
+  # (1.21 -> 1.22), which is the CVE lane; the JDK major lives in the image NAME and is therefore
+  # untouchable by the bot, guarded instead by ToolchainVersionConsistencyTest against pom.xml's
+  # <maven.compiler.release>. Do not reintroduce an ARG in that FROM line - Dependabot does no ARG
+  # interpolation and would skip the line silently, leaving this block configured but inert.
+  # ---------------------------------------------------------------------------------
+  - package-ecosystem: "docker"
+    directory: "/src/main/docker"
+    schedule:
+      interval: "monthly"
+      day: "monday"
+      time: "05:00"
+      timezone: "Europe/Paris"
+    open-pull-requests-limit: 2
+    rebase-strategy: "disabled"
+    commit-message:
+      prefix: "build(docker)"
+    labels: ["dependencies", "docker"]

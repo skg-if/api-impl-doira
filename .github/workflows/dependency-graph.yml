@@ -1,0 +1,41 @@
+# Submits the RESOLVED Maven dependency tree to GitHub's dependency graph.
+#
+# Why: GitHub only parses pom.xml statically, and nearly every dependency in this project is
+# declared without a <version> (managed by the imported quarkus-bom). Without this,
+# `gh api repos/skg-if/api-impl-doira/dependency-graph/sbom` 404s and Dependabot alerts cover
+# almost nothing. Submitting the resolved tree makes alerts apply to the whole transitive
+# Quarkus closure.
+#
+# main only: the Dependency Submission API needs `contents: write`, which is not available to
+# pull_request runs from forks.
+name: Dependency Graph
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # required by the Dependency Submission API
+    steps:
+      - uses: actions/checkout@v7
+
+      # Same composite action the build job uses, so the JDK still comes from pom.xml's
+      # <maven.compiler.release> and this workflow never carries its own copy of the pin.
+      - uses: ./.github/actions/setup-java-from-pom
+        with:
+          cache: maven
+
+      # Resolves the tree via ./mvnw and POSTs a snapshot. -DskipTests keeps
+      # spotless/pmd/checkstyle/jacoco out of a run that only needs dependency resolution
+      # (they all honour <skip>${skipTests}</skip> in pom.xml).
+      - name: Submit Maven dependency snapshot
+        uses: advanced-security/maven-dependency-submission-action@v5
+        with:
+          maven-args: '-B -DskipTests'

@@ -98,6 +98,10 @@ docker pull ghcr.io/skg-if/api-impl-doira:latest
 docker run -p 8080:8080 ghcr.io/skg-if/api-impl-doira:latest
 ```
 
+The base image tag is kept patched by Dependabot
+([.github/dependabot.yml](.github/dependabot.yml)), which also opens monthly grouped update
+PRs for Maven dependencies and GitHub Actions.
+
 Pushing a `vX.Y.Z` git tag also publishes matching `:X.Y.Z` and `:X.Y` image tags, so a specific
 release can be pinned instead of tracking `:latest`. Version tags are meant to be created once and
 never force-moved to a different commit.
