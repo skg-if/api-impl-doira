@@ -45,6 +45,33 @@ record of what the skill used to get wrong.
 
 ---
 
+## `pmd:check` on a dirty working tree gives a false clean that CI contradicts
+
+- Date: 2026-08-24
+- Skill: `skg-if-build-toolchain/SKILL.md` (also relevant to `skg-if-cpd/SKILL.md`, which is the
+  only skill documenting this plugin)
+- Symptom: `.\mvnw.cmd -q -B pmd:check` exited 0 locally on `main` (and so did a full
+  `.\mvnw.cmd -B process-sources`), which was reported to the user as "no violations" - while CI
+  on the same sources failed with `PMD 7.17.0 has found 3 violations`. Several turns then went
+  into suspecting a Dependabot PR's plugin bumps before the local tree turned out to be the
+  variable.
+- Root cause: `pmd-check` is bound to `process-sources`, i.e. *before* `compile`, so PMD gets no
+  `target/classes` on its auxclasspath and cannot resolve types. Two PMD 7.17.0 rules
+  (`UnnecessaryWarningSuppression`, `ImplicitFunctionalInterface`) then misjudge - e.g.
+  `GrantCapableMapper` looks like a single-abstract-method interface once its supertype can't be
+  resolved. A local working tree usually has `target/classes` left over from an earlier build,
+  which silently repairs the auxclasspath and hides all three; CI is always fresh, so it never
+  does. Confirmed by bisection: fresh tree at `57f30d8` = 3 violations, same tree after
+  `mvnw compile -DskipTests` = 0, fresh tree at `bcba4d0` (plugin 3.26.0) = 0.
+- Fix: not yet fixed in any `SKILL.md`. What a skill needs to say: PMD/CPD results are only
+  CI-comparable when measured the way CI measures them - either from `mvnw clean` or in a
+  throwaway `git worktree` - and a clean `pmd:check` on a tree containing `target/classes` is not
+  evidence about CI. The underlying build issue (the `process-sources` binding starving PMD of its
+  auxclasspath) is a `pom.xml` question, separate from this log entry; binding `pmd-check` to
+  `process-classes` was verified to fix it on a clean tree while keeping the
+  spotless-before-pmd ordering intact.
+- Status: Open
+
 ## `skg-if-cpd`'s duplication baseline was wrong, and wrong in two different ways at once
 
 - Date: 2026-08-24
