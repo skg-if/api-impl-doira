@@ -70,7 +70,7 @@ class ToolchainVersionConsistencyTest {
         String version = javaFeatureVersion();
 
         Map<String, String> expected = new LinkedHashMap<>();
-        expected.put("src/main/docker/Dockerfile.jvm", "ARG JAVA_VERSION=" + version);
+        expected.put("src/main/docker/Dockerfile.jvm", "openjdk-" + version + ":");
         expected.put(".devcontainer/devcontainer.json", "java:1-" + version + "-bookworm");
         expected.put("README.md", "JDK " + version + "+");
 
@@ -83,8 +83,8 @@ class ToolchainVersionConsistencyTest {
 
         assertThat(stale)
                 .withFailMessage("pom.xml declares Java " + version + ", but these files still pin a different " +
-                        "version: " + stale + ". They can't read pom.xml at the point they're evaluated (an image " +
-                        "tag, a build ARG default, and README prose), so update each by hand to match.")
+                        "version: " + stale + ". They can't read pom.xml at the point they're evaluated (two image " +
+                        "tags and README prose), so update each by hand to match.")
                 .isEmpty();
     }
 

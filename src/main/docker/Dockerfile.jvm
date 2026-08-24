@@ -21,11 +21,13 @@
 #
 ###
 
-# Keep JAVA_VERSION in step with pom.xml's <maven.compiler.release>, this repo's single
+# Keep this JDK major in step with pom.xml's <maven.compiler.release>, this repo's single
 # source of truth for the Java version. A Dockerfile cannot read pom.xml at parse time, so
-# ToolchainVersionConsistencyTest fails the build if the two drift apart.
-ARG JAVA_VERSION=21
-FROM registry.access.redhat.com/ubi9/openjdk-${JAVA_VERSION}:1.21
+# ToolchainVersionConsistencyTest fails the build if the two drift apart. Written as a literal
+# rather than an ARG because Dependabot's docker manager does no ARG interpolation - an
+# ${...} in the image reference makes it skip this line silently, which would leave the
+# published image's CVE patch level unmonitored.
+FROM registry.access.redhat.com/ubi9/openjdk-21:1.21
 
 ENV LANGUAGE='en_US:en'
 
