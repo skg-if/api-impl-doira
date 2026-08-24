@@ -5,24 +5,26 @@ description: Run Maven PMD's CPD (Copy/Paste Detector) to find or gate on duplic
 
 # Maven CPD (copy/paste detection)
 
-`maven-pmd-plugin` 3.26.0 is already declared in [pom.xml](../../../pom.xml) (~line 244), but the
+`maven-pmd-plugin` 3.26.0 is already declared in [pom.xml](../../../pom.xml), but the
 plugin's only bound execution is the `check` goal (PMD rule violations) on `process-sources`.
 That same plugin also ships CPD's mojos - `pmd:cpd` (report) and `pmd:cpd-check` (report + fail
-the build on duplication) - but **neither is bound to any lifecycle phase**, so `mvn test`/
+the build on duplication) - but **neither is bound to any lifecycle phase**, so `.\mvnw.cmd test`/
 `package` never runs CPD; both goals must always be invoked explicitly. Don't confuse `pmd:check`
 (rule violations) with `pmd:cpd`/`pmd:cpd-check` (duplication) - they're different goals from the
 same plugin.
 
-This needs the same portable JDK 21 / Maven 3.9 toolchain as any other `mvn` command in this
-repo - see the `skg-if-build-toolchain` skill for one-time setup.
+This needs the same portable toolchain as any other build command in this repo. The
+`activate.ps1` line in each snippet below provisions the JDK if it is missing and puts it on
+PATH, so there is no separate setup step to run first - see the `skg-if-build-toolchain` skill
+for how it resolves versions. Every snippet below is PowerShell; for the two substitutions that
+turn it into the Bash equivalent, see
+[Reading the examples in Bash](../skg-if-build-toolchain/SKILL.md#reading-the-examples-in-bash).
 
 ## Checking for duplication (fails the build on violation)
 
 ```powershell
-$dest = "<repo-root>\.tools"
-$env:JAVA_HOME = "$dest\jdk-21"
-$env:PATH = "$dest\jdk-21\bin;$dest\apache-maven-3.9.16\bin;$env:PATH"
-mvn -q -B pmd:cpd-check
+. .\.claude\skills\skg-if-build-toolchain\activate.ps1
+.\mvnw.cmd -q -B pmd:cpd-check
 ```
 
 Exit 0 means no duplication at or above the threshold (default 100 tokens, see "Tuning" below) -
@@ -43,10 +45,8 @@ duplication count) because it drops the full scanned-file listing and the duplic
 that XML embeds in every block, keeping just the numbers and locations:
 
 ```powershell
-$dest = "<repo-root>\.tools"
-$env:JAVA_HOME = "$dest\jdk-21"
-$env:PATH = "$dest\jdk-21\bin;$dest\apache-maven-3.9.16\bin;$env:PATH"
-mvn -q -B pmd:cpd "-Dformat=csv"
+. .\.claude\skills\skg-if-build-toolchain\activate.ps1
+.\mvnw.cmd -q -B pmd:cpd "-Dformat=csv"
 ```
 
 Always exits 0 regardless of what it finds. The report lands at `target/cpd.csv` (confirmed by
@@ -103,7 +103,7 @@ to read off the real method signature.
 
 ## Tuning sensitivity
 
-Confirmed via `mvn help:describe -Dplugin=org.apache.maven.plugins:maven-pmd-plugin:3.26.0
+Confirmed via `.\mvnw.cmd help:describe -Dplugin=org.apache.maven.plugins:maven-pmd-plugin:3.26.0
 -Dgoal=cpd -Ddetail` against this repo's exact plugin version (don't guess at property names -
 `maven-cpd-plugin`'s standalone `-Dminimum-tokens` is a different, unrelated plugin):
 

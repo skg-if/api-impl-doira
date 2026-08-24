@@ -20,7 +20,12 @@
 # docker run -i --rm -p 8080:8080 -e CROSSREF_MAILTO=you@example.org puma-skg-if-api-jvm
 #
 ###
-FROM registry.access.redhat.com/ubi9/openjdk-21:1.21
+
+# Keep JAVA_VERSION in step with pom.xml's <maven.compiler.release>, this repo's single
+# source of truth for the Java version. A Dockerfile cannot read pom.xml at parse time, so
+# ToolchainVersionConsistencyTest fails the build if the two drift apart.
+ARG JAVA_VERSION=21
+FROM registry.access.redhat.com/ubi9/openjdk-${JAVA_VERSION}:1.21
 
 ENV LANGUAGE='en_US:en'
 

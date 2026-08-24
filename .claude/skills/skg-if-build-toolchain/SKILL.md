@@ -1,72 +1,134 @@
 ---
 name: skg-if-build-toolchain
-description: Set up and use the portable JDK 21 / Maven 3.9 toolchain needed to build or test this project (mvn clean test, regenerating golden JSON-LD fixtures, etc). Use whenever a task requires running mvn or java in this repo.
+description: Set up and use the portable JDK / Maven toolchain needed to build or test this project (mvn clean test, regenerating golden JSON-LD fixtures, etc). Use whenever a task requires running mvn or java in this repo.
 ---
 
-# Portable JDK 21 / Maven toolchain
+# Portable JDK / Maven toolchain
 
-`pom.xml` targets `maven.compiler.release=21`, which requires JDK 21+ and Maven 3.9+.
-There is no system-wide Maven/JDK on this machine, and one should not be installed
-(`winget`/`choco`). Instead use a **portable, self-contained** toolchain cached in
-`.tools/` at the repo root (gitignored) - never system-wide, never persisted to
-user/machine environment variables.
+Nothing here uses a system-wide `mvn`. Two mechanisms cover the toolchain, and **neither
+pins a version in this file** - that is the whole point of the split:
 
-Caching it in-repo (instead of the session scratchpad) means it survives across
-conversations and only needs downloading once per checkout.
+- **Maven** comes from the `./mvnw` wrapper already committed at the repo root. It pins its
+  own version in `.mvn/wrapper/maven-wrapper.properties` and caches the distribution under
+  `~/.m2/wrapper/dists`. CI invokes the same wrapper, so local and CI builds run identical
+  Maven. Always call `.\mvnw.cmd` (PowerShell) or `./mvnw` (Bash) - never a bare `mvn`. This
+  half is already platform-independent: `mvnw` is committed executable with LF endings, so it
+  runs as-is on a Linux clone.
+- **The JDK** is resolved by the activation script, in this order:
+  1. a portable Temurin build cached in `.tools/jdk-<major>` at the repo root (gitignored);
+  2. otherwise the `java` already on `PATH`, **if** its feature version is at least the
+     required one - this is the devcontainer/CI path, and it downloads nothing;
+  3. otherwise a fresh download into `.tools/`, via
+     [`bootstrap-jdk.ps1`](bootstrap-jdk.ps1) on Windows or
+     [`bootstrap-jdk.sh`](bootstrap-jdk.sh) on Linux.
 
-## One-time setup (per checkout)
+  The required feature version is read from `pom.xml`'s `<maven.compiler.release>`, the
+  single source of truth for this repo's Java version, so bumping Java means editing
+  `pom.xml` and nothing else.
 
-Skip this entirely if `.tools\jdk-21\bin\java.exe` and
-`.tools\apache-maven-3.9.16\bin\mvn.cmd` already exist - go straight to "Invoking
-java/mvn" below.
+**On the Windows dev box specifically, there is no system-wide JDK or Maven and one should
+not be installed** (`winget`/`choco`) - step 1 or 3 above always applies there, and tooling
+stays scoped to this project rather than the user's machine. That constraint is about this
+machine, not about the repo: see [Linux/macOS](#linuxmacos) below, where a distro-packaged
+JDK is a perfectly good answer and step 2 will pick it up.
+
+Caching the JDK in-repo (rather than in the session scratchpad) means it survives across
+conversations and only downloads once per checkout.
+
+## Activating the toolchain
+
+There is no separate one-time setup step. Activation provisions the JDK if it is missing and
+is a cheap no-op once it is there, so run it before every command that needs `java`/`mvnw`:
 
 ```powershell
-$dest = "<repo-root>\.tools"
-New-Item -ItemType Directory -Force $dest | Out-Null
-
-# Temurin 21 JDK, Windows x64 - stable "always latest" redirect, no build number to go stale
-Invoke-WebRequest -Uri "https://api.adoptium.net/v3/binary/latest/21/ga/windows/x64/jdk/hotspot/normal/eclipse" -OutFile "$dest\temurin21.zip"
-Expand-Archive -Path "$dest\temurin21.zip" -DestinationPath "$dest\jdk-21-extracted"
-# Adoptium zips contain one top-level jdk-21.x.x+y folder - move/rename it for a stable path:
-Move-Item "$dest\jdk-21-extracted\jdk-21*" "$dest\jdk-21"
-Remove-Item "$dest\temurin21.zip", "$dest\jdk-21-extracted" -Recurse -Force
-
-# Apache Maven (bump the version in the URL if a newer one is needed later)
-Invoke-WebRequest -Uri "https://dlcdn.apache.org/maven/maven-3/3.9.16/binaries/apache-maven-3.9.16-bin.zip" -OutFile "$dest\maven.zip"
-Expand-Archive -Path "$dest\maven.zip" -DestinationPath "$dest"
-# produces $dest\apache-maven-3.9.16
-Remove-Item "$dest\maven.zip" -Force
+. .\.claude\skills\skg-if-build-toolchain\activate.ps1
+.\mvnw.cmd -version
 ```
-
-## Invoking `java`/`mvn` (scoped to one command, nothing persisted)
-
-```powershell
-$dest = "<repo-root>\.tools"
-$env:JAVA_HOME = "$dest\jdk-21"
-$env:PATH = "$dest\jdk-21\bin;$dest\apache-maven-3.9.16\bin;$env:PATH"
-mvn -version   # confirm: Java 21, Maven 3.9.16
-```
-
-**In Bash (git-bash/MSYS), use MSYS-style `/c/...` paths, never `C:/...`:**
 
 ```bash
-dest="/c/<repo-root>/.tools"
-export JAVA_HOME="$dest/jdk-21"
-export PATH="$dest/jdk-21/bin:$dest/apache-maven-3.9.16/bin:$PATH"
-mvn -version   # confirm: Java 21, Maven 3.9.16
+source .claude/skills/skg-if-build-toolchain/activate.sh
+./mvnw -version
 ```
 
-A Windows drive-letter path (`C:/repo/.tools/...`) breaks silently in Bash: `:` is
-Bash's `PATH`-separator, so `C:/repo/...` gets split at the colon right after `C`
-into two useless entries (`C` and `/repo/...`, missing its drive root) - `mvn`
-then fails with a plain `command not found` (exit 127) that gives no hint the
-problem is the path format, not a missing/broken toolchain. Always convert the
-drive letter to `/c/...` (lowercase, no colon) before putting a Windows path into
-`PATH`/`JAVA_HOME` in Bash.
+**Dot-source it (`.` in PowerShell) or `source` it - never execute it.** A script run as a
+child process cannot mutate its caller's environment, so `.\activate.ps1` or `./activate.sh`
+appears to succeed while leaving `JAVA_HOME`/`PATH` untouched, and the `mvnw` call that
+follows then fails for a reason that looks nothing like the actual cause.
 
-Set `JAVA_HOME`/`PATH` this way in every command/tool invocation that needs them (each
-Bash/PowerShell tool call starts a fresh process) - do not attempt to persist them to
-the user or machine environment.
+Each Bash/PowerShell tool call starts a fresh process, so re-activate in **every** invocation
+that needs the toolchain. Nothing is persisted to the user or machine environment, and no
+attempt should be made to persist it.
+
+### Reading the examples in Bash
+
+Every other example in this skill - and in the `skg-if-cpd`, `skg-if-format` and
+`skg-if-openrewrite-refactor` skills, which point here - is written PowerShell-first. Two
+substitutions turn any of them into its Bash equivalent, and they are the only two:
+
+| PowerShell | Bash |
+| ------------ | ------ |
+| `. .\.claude\skills\skg-if-build-toolchain\activate.ps1` | `source .claude/skills/skg-if-build-toolchain/activate.sh` |
+| `.\mvnw.cmd` | `./mvnw` |
+
+Everything after `mvnw` (goals, `-q`/`-B`, `-Dtest=...`) is identical, since those are
+arguments to Maven rather than shell syntax. The genuine shell differences are called out
+individually where they arise - see the `*>` versus `>` note under "Large failures" below, and
+the PowerShell-only quoting rules under "Regenerating golden JSON-LD fixtures". Both fences are
+spelled out in full above only because dot-sourcing is the one step where getting the shell
+wrong fails silently.
+
+### Linux/macOS
+
+`activate.sh` is the entry point on every platform (`activate.ps1` is Windows-only - its
+backslash paths aren't separators under `pwsh` on Linux). The resolution order at the top of
+this file is what makes a Linux clone work:
+
+- **A distro/SDKMAN JDK on `PATH` is preferred over downloading**, as long as its feature
+  version is at least `<maven.compiler.release>`. Nothing is exported in that case - the
+  ambient `JAVA_HOME`/`PATH` are already right. A *too old* ambient JDK is rejected outright
+  rather than used, because the alternative is a `invalid target release` error from Maven much
+  later that points nowhere near the JDK.
+- **Linux provisioning exists** ([`bootstrap-jdk.sh`](bootstrap-jdk.sh), x64 and aarch64) for a
+  box with no suitable JDK. It is invoked as `bash <path>`, never `./<path>`, so it needs no
+  executable bit.
+- **macOS provisioning does not exist** - the Adoptium tarball nests the JDK under
+  `Contents/Home`, so the script refuses rather than producing a `JAVA_HOME` that looks right
+  and isn't. Install a JDK yourself (Homebrew, SDKMAN) and step 2 picks it up.
+- **The devcontainer** ([`.devcontainer/devcontainer.json`](../../../.devcontainer/devcontainer.json))
+  is the sanctioned container path; its image already ships a matching JDK, so activation there
+  is a no-op that downloads nothing.
+
+Not verified end-to-end: no CI job runs on Linux, so the actual Adoptium Linux download has
+never been exercised. Treat a failure in it as plausible rather than surprising.
+
+### Run from the repo root
+
+Every command in this skill is written relative to the repo root - both the `activate` path and
+`mvnw` itself - and Maven additionally needs the root as its working directory to find
+`pom.xml`. The Bash and PowerShell tools **keep their working directory between calls**, so an
+earlier `cd` into a subdirectory silently invalidates all of it. Make it unconditional rather
+than assumed:
+
+```powershell
+Set-Location (git rev-parse --show-toplevel)
+```
+
+```bash
+cd "$(git rev-parse --show-toplevel)"
+```
+
+Worth doing even when you believe you're already there, because the failure mode gives no hint
+at the real cause: `.\activate.ps1` / `./mvnw` reports only a bare "is not recognized" or "No
+such file or directory", which reads like a missing or broken toolchain rather than a wrong
+working directory.
+
+**Windows/git-bash only:** `activate.sh` also handles the MSYS drive-letter conversion a
+Windows path needs before it can go into `PATH`; the reasoning is documented in the script
+itself. Don't hand-build `JAVA_HOME`/`PATH` in Bash - source the script. Note `git rev-parse`
+prints drive-letter form (`C:/...`), which is fine as a filesystem path but must never be
+spliced into a Bash `PATH` for exactly that reason. On Linux/macOS none of this applies - paths
+have no drive letter, and the plain `cd "$(git rev-parse --show-toplevel)"` above is all that's
+needed.
 
 ## Checking for compile errors only
 
@@ -76,8 +138,8 @@ When the goal is just "does this change compile" - e.g. right after editing a
 diagnostics:
 
 ```powershell
-mvn -q -B compile         # main sources only
-mvn -q -B test-compile    # also compiles test sources, still doesn't run them
+.\mvnw.cmd -q -B compile         # main sources only
+.\mvnw.cmd -q -B test-compile    # also compiles test sources, still doesn't run them
 ```
 
 This is both faster and far smaller than `clean test` for a step that's only
@@ -89,7 +151,8 @@ for a full surefire run that can't succeed anyway.
 Full suite:
 
 ```powershell
-mvn -q -B clean test
+. .\.claude\skills\skg-if-build-toolchain\activate.ps1
+.\mvnw.cmd -q -B clean test
 ```
 
 `-q` (quiet) drops plugin/download log noise; `-B` (batch mode) drops the
@@ -97,12 +160,12 @@ interactive progress-bar/ANSI noise. Maven still prints a `BUILD FAILURE` line a
 the list of failing tests through `-q` - this doesn't hide real failures.
 
 Reserve `clean` for a final verification pass. While iterating, drop it - an
-incremental `mvn -q -B test` reuses already-compiled classes and doesn't reprint
+incremental `.\mvnw.cmd -q -B test` reuses already-compiled classes and doesn't reprint
 compiler/plugin setup output for files that haven't changed.
 
 ### Trust the exit code
 
-A `0` exit from `mvn` (package/test/`pmd:check`/`checkstyle:check`/etc.) is
+A `0` exit from `mvnw` (package/test/`pmd:check`/`checkstyle:check`/etc.) is
 sufficient proof the goal ran and passed - report success and move on. This
 applies to every verification plugin bound into the build (PMD, checkstyle,
 surefire, ...), not just PMD specifically. Don't additionally open
@@ -117,14 +180,14 @@ instead of re-running everything - reach for this by default whenever the change
 is localized to one mapper/resource, not just when a full run already failed:
 
 ```powershell
-mvn -q -B test -Dtest=CrossrefToSkgIfMapperTest
+.\mvnw.cmd -q -B test -Dtest=CrossrefToSkgIfMapperTest
 ```
 
 Naming more than one class at once (e.g. to run every test class touched by a
 multi-file change)? Quote the whole `-Dtest=` value:
 
 ```powershell
-mvn -q -B test "-Dtest=CrossrefToSkgIfMapperTest,DataCiteToSkgIfMapperTest"
+.\mvnw.cmd -q -B test "-Dtest=CrossrefToSkgIfMapperTest,DataCiteToSkgIfMapperTest"
 ```
 
 See the quoting note under "Regenerating golden JSON-LD fixtures" below for why -
@@ -144,23 +207,23 @@ nothing to get in this habit, and it structurally rules out the failure mode
 below rather than relying on remembering an exception for the `clean` case:
 
 ```powershell
-mvn -q -B test *> build.log
+.\mvnw.cmd -q -B test *> build.log
 Select-String -Path build.log -Pattern 'ERROR|BUILD FAILURE|FAILED|Tests run:.*Failures: [1-9]|Tests run:.*Errors: [1-9]'
 ```
 
 **`*>` and `Select-String` are PowerShell-only** - `*>` is PowerShell's
 redirect-all-streams operator, not a shell-agnostic idiom. If running this via
 the Bash tool instead, `*` is a glob that expands to every filename in the
-current directory before `mvn` even sees it (garbage arguments, confusing
+current directory before `mvnw` even sees it (garbage arguments, confusing
 "Unknown lifecycle phase" errors that name an unrelated file in the repo root)
 and `Select-String` doesn't exist. Use the Bash equivalent instead:
 
 ```bash
-mvn -q -B test > build.log 2>&1
+./mvnw -q -B test > build.log 2>&1
 grep -nE 'ERROR|BUILD FAILURE|FAILED|Tests run:.*Failures: [1-9]|Tests run:.*Errors: [1-9]' build.log
 ```
 
-(`build.log` here lands in the repo root, since `mvn` already runs from there;
+(`build.log` here lands in the repo root, since `mvnw` already runs from there;
 the session scratchpad directory works too - just never a path under `target/`).
 Only `Get-Content` the log in full (or open the specific
 `.txt`/`.xml` report below) once the matched lines identify which class/line
@@ -172,7 +235,7 @@ irrelevant duplication.
 deletes the entire `target/` directory early in the run, including a log file
 under `target/` the shell already has open for writing - and each OS then fails
 in a different, equally-confusing direction. On Unix-like shells (git-bash) the
-process keeps writing to the now-unlinked file and `mvn` still exits `0`, but
+process keeps writing to the now-unlinked file and `mvnw` still exits `0`, but
 the directory entry is gone once `clean` finishes recreating `target/`: the
 build genuinely passed, yet a later `tail`/`Get-Content` on that same path
 fails with "No such file or directory". On PowerShell, Windows instead keeps a
@@ -207,15 +270,16 @@ After an intentional change to `DataCiteToSkgIfMapper` (or anything else that ch
 the response shape) - see README.md's Testing section for the full explanation:
 
 ```powershell
-mvn test "-Dtest=ProductsGoldenTest,GrantsGoldenTest" "-Dgolden.regenerate=true"
+. .\.claude\skills\skg-if-build-toolchain\activate.ps1
+.\mvnw.cmd test "-Dtest=ProductsGoldenTest,GrantsGoldenTest" "-Dgolden.regenerate=true"
 git diff src/test/resources/expected/   # review before committing
 ```
 
 Quote any `-Dtest=A,B` value with more than one class name, and quote any
 `-D<property.name>=value` where the property name itself contains a dot (like
 `-Dgolden.regenerate=true`) - PowerShell's parser can mis-split either shape
-before `mvn` ever runs (`ParserError: Missing argument in parameter list` for
+before `mvnw` ever runs (`ParserError: Missing argument in parameter list` for
 the comma case, or an unrelated-looking `Unknown lifecycle phase
-".regenerate=true"` from `mvn` itself for the dot case), even though each is a
+".regenerate=true"` from `mvnw` itself for the dot case), even though each is a
 single native-command argument once quoted. A single `-Dtest=OneClass` (no
 comma) or a dot-free property (like `-Dskip=true`) needs no quoting.

@@ -22,7 +22,10 @@ Skip this entirely if `.tools\python\python.exe` already exists — go straight 
 "Invoking python/pip" below.
 
 ```powershell
-$dest = "<repo-root>\.tools\python"
+# Resolve the repo root from git so this works from any subdirectory (git prints
+# forward slashes on Windows, so normalise them for the backslash paths below).
+$repoRoot = (git rev-parse --show-toplevel) -replace '/', '\'
+$dest = "$repoRoot\.tools\python"
 New-Item -ItemType Directory -Force $dest | Out-Null
 
 # python-build-standalone (the project behind uv's managed Pythons) - fully

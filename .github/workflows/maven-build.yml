@@ -15,10 +15,8 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: actions/setup-java@v5
+      - uses: ./.github/actions/setup-java-from-pom
         with:
-          distribution: temurin
-          java-version: '21'
           cache: maven
 
       - name: Determine skip-tests flag
@@ -56,10 +54,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: '21'
+      - uses: ./.github/actions/setup-java-from-pom
 
       - uses: actions/download-artifact@v8
         with:

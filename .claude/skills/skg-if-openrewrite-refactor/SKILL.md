@@ -31,13 +31,15 @@ any-project skill.
 
 ## Shared machinery
 
-**Portable toolchain.** No system Maven/JDK on this machine - reuse the
-`skg-if-build-toolchain` skill's env-var pattern before any `mvn` call:
+**Portable toolchain.** No system Maven/JDK on this machine - dot-source the
+`skg-if-build-toolchain` skill's activation script before any build command. It
+provisions the JDK if needed and is a no-op afterwards, so it is safe to run every
+time; Maven itself comes from the committed `./mvnw` wrapper. Snippets here are
+PowerShell; for the two substitutions that turn them into the Bash equivalents, see
+[Reading the examples in Bash](../skg-if-build-toolchain/SKILL.md#reading-the-examples-in-bash):
 
 ```powershell
-$dest = "<repo-root>\.tools"
-$env:JAVA_HOME = "$dest\jdk-21"
-$env:PATH = "$dest\jdk-21\bin;$dest\apache-maven-3.9.16\bin;$env:PATH"
+. .\.claude\skills\skg-if-build-toolchain\activate.ps1
 ```
 
 **Ad hoc invocation, never a permanent dependency.** Invoke
@@ -45,7 +47,7 @@ $env:PATH = "$dest\jdk-21\bin;$dest\apache-maven-3.9.16\bin;$env:PATH"
 `pom.xml`, since this is an occasional tool, not a routine build step:
 
 ```powershell
-mvn -q -B org.openrewrite.maven:rewrite-maven-plugin:6.12.0:run `
+.\mvnw.cmd -q -B org.openrewrite.maven:rewrite-maven-plugin:6.12.0:run `
   "-Drewrite.configLocation=<scratchpad>\rewrite.yml" `
   "-Drewrite.activeRecipes=com.skgif.Refactor"
 ```
@@ -78,11 +80,8 @@ does a field rename.
 
 **Format immediately after the recipe run - not optional, and before the
 compile check, not after it fails.** This repo's `spotless-check` is
-actively bound to the `process-sources` phase (confirmed by reading
-`pom.xml` directly - despite `skg-if-format/SKILL.md`'s own opening
-paragraph currently claiming otherwise; see
-[`.claude/skills/ISSUES.md`](../ISSUES.md) for that discrepancy), so a plain
-`mvn compile` already fails on formatting drift before javac even runs.
+actively bound to the `process-sources` phase, so a plain
+`.\mvnw.cmd compile` already fails on formatting drift before javac even runs.
 OpenRewrite's recipes are confirmed (by real runs while authoring this
 skill) to introduce exactly the kind of drift that trips this:
 - **Redundant/unused imports.** Moving a class and its paired test into the
@@ -94,7 +93,7 @@ skill) to introduce exactly the kind of drift that trips this:
   site past this repo's 120-character limit even though nothing else about
   that line changed - `spotless:apply` re-wraps it.
 
-Rather than re-deriving the `mvn spotless:apply` invocation here, **run the
+Rather than re-deriving the `.\mvnw.cmd spotless:apply` invocation here, **run the
 `skg-if-format` skill** right after the recipe (or plain edits) and before
 the verify step below - it already documents the correct portable-toolchain
 invocation, the `-DspotlessFiles` scoping flag, and the "review the diff
@@ -102,7 +101,7 @@ before committing" caveat, so this skill defers to it instead of duplicating
 it. Scope it to the touched files when the change is small; run it unscoped
 if a batch touched many files across the tree.
 
-**Verify.** `git status --short`, then `mvn -q -B compile test-compile`
+**Verify.** `git status --short`, then `.\mvnw.cmd -q -B compile test-compile`
 (portable toolchain, per `skg-if-build-toolchain`'s compile-check convention
 - cheaper than a full `test` run for "did this break anything"). For a
 method/field rename, optionally use `query_graph_tool` (pattern `tests_for`)
@@ -149,7 +148,7 @@ theoretical):**
   still in the original package used the moved class without an import,
   both break the moment the move happens - `ChangeType` only rewrites
   references *to* the type it was told to move, not a file's *other*,
-  unrelated same-package dependencies. `mvn compile test-compile` (the
+  unrelated same-package dependencies. `.\mvnw.cmd compile test-compile` (the
   verify step) catches this as `cannot find symbol: class X` - treat that
   specific failure as "add `import <original-package>.X;` to the file
   reporting it," not as evidence the move itself failed. Confirmed on both

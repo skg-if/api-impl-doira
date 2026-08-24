@@ -1,0 +1,38 @@
+name: Setup Java from pom.xml
+description: >-
+  Installs the Temurin JDK whose feature version is declared in pom.xml's
+  <maven.compiler.release>. That property is this repo's single source of truth for the
+  Java version, so CI never carries a copy of the pin that can drift from the build.
+
+inputs:
+  cache:
+    description: >-
+      Forwarded to actions/setup-java's `cache` input (e.g. "maven"). Leave empty to
+      disable dependency caching.
+    required: false
+    default: ''
+
+outputs:
+  java-version:
+    description: The Java feature version read from pom.xml.
+    value: ${{ steps.read-pom.outputs.version }}
+
+runs:
+  using: composite
+  steps:
+    - id: read-pom
+      shell: bash
+      run: |
+        version=$(sed -nE 's/.*<maven\.compiler\.release>[[:space:]]*([0-9]+).*/\1/p' pom.xml | head -1)
+        if [ -z "$version" ]; then
+          echo "::error file=pom.xml::Could not read <maven.compiler.release> from pom.xml"
+          exit 1
+        fi
+        echo "Java version from pom.xml: $version"
+        echo "version=$version" >> "$GITHUB_OUTPUT"
+
+    - uses: actions/setup-java@v5
+      with:
+        distribution: temurin
+        java-version: ${{ steps.read-pom.outputs.version }}
+        cache: ${{ inputs.cache }}

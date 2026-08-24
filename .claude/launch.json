@@ -7,7 +7,7 @@
       "runtimeArgs": [
         "-NoProfile",
         "-Command",
-        "$env:JAVA_HOME='.tools\\jdk-21'; $env:PATH='.tools\\jdk-21\\bin;.tools\\apache-maven-3.9.16\\bin;'+$env:PATH; mvn -q quarkus:dev -Dquarkus.analytics.disabled=true"
+        ". .\\.claude\\skills\\skg-if-build-toolchain\\activate.ps1; .\\mvnw.cmd -q quarkus:dev \"-Dquarkus.analytics.disabled=true\""
       ],
       "port": 8080
     }

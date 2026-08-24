@@ -42,7 +42,12 @@ a **portable, self-contained** Node.js build cached in `.tools/node/` at the rep
 Skip this entirely if `.tools\node\node.exe` already exists — go straight to "Prerequisite:
 build the app" below.
 
+Every path below is relative to the repo root, and the `cd .tools`/`cd ..` pair assumes it
+started there - so anchor the shell first (the Bash tool keeps its working directory between
+calls, so a previous `cd` can leave you elsewhere):
+
 ```bash
+cd "$(git rev-parse --show-toplevel)"
 version=$(curl -s https://nodejs.org/dist/index.json | .tools/jq/jq.exe -r '[.[] | select(.lts != false)][0] | .version')
 curl -sL -o .tools/node.zip "https://nodejs.org/dist/${version}/node-${version}-win-x64.zip"
 cd .tools && unzip -q node.zip && mv "node-${version}-win-x64" node && rm node.zip && cd ..
@@ -59,15 +64,13 @@ The script starts `target/quarkus-app/quarkus-run.jar` itself — it must alread
 just the artifact, so `-DskipTests` is fine here):
 
 ```bash
-$dest = "<repo-root>\.tools"
-$env:JAVA_HOME = "$dest\jdk-21"
-$env:PATH = "$dest\jdk-21\bin;$dest\apache-maven-3.9.16\bin;$env:PATH"
-mvn -q -B package -DskipTests
+source .claude/skills/skg-if-build-toolchain/activate.sh
+./mvnw -q -B package -DskipTests
 ```
 
 ## Check ports 8080 and 4010 are free
 
-The script hard-codes `APP_PORT=8080` and `PRISM_PORT=4010`. If a `mvn quarkus:dev` instance or
+The script hard-codes `APP_PORT=8080` and `PRISM_PORT=4010`. If a `quarkus:dev` instance or
 anything else already holds either port, `wait_for_port` inside the script will time out instead
 of giving a clear "address in use" error:
 
@@ -77,15 +80,25 @@ netstat -ano | grep -E ":8080 |:4010 "   # expect no output; if not, stop whatev
 
 ## Running the script
 
-From Git Bash, at the repo root, scope `PATH`/env vars to this one invocation — never persist
-them to the user or machine environment:
+From Git Bash, scope `PATH`/env vars to this one invocation — never persist them to the user or
+machine environment:
 
 ```bash
-export PATH="$(pwd)/.tools/jdk-21/bin:$(pwd)/.tools/node:$(pwd)/.tools/jq:$PATH"
+cd "$(git rev-parse --show-toplevel)"
+source .claude/skills/skg-if-build-toolchain/activate.sh   # JAVA_HOME + JDK on PATH
+export PATH="$(pwd)/.tools/node:$(pwd)/.tools/jq:$PATH"
 export CONTRACT_TEST_FILTER_PRODUCTS="cf.search.title:tomography"
 export CONTRACT_TEST_FILTER_GRANTS="cf.search.title:research"
 bash scripts/ci/validate-live-endpoints.sh
 ```
+
+**Use `$(pwd)` for those `PATH` entries, never a `C:/...` literal — and not
+`$(git rev-parse --show-toplevel)` either, despite the `cd` above using it.** In Git Bash `pwd`
+yields MSYS form (`/c/...`) while `git rev-parse` yields drive-letter form (`C:/...`), and `:` is
+Bash's `PATH` separator: a drive-letter entry gets split right after the `C` into two paths that
+don't exist. The only symptom is a bare `command not found`, which reads like a missing tool
+rather than a malformed `PATH`. The same reasoning is spelled out at the top of
+[`activate.sh`](../skg-if-build-toolchain/activate.sh).
 
 The two `CONTRACT_TEST_FILTER_*` values above match what both CI jobs use by default — keep them
 as-is to reproduce a CI run, or override them to search for something else.

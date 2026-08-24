@@ -45,6 +45,96 @@ record of what the skill used to get wrong.
 
 ---
 
+## The JDK half of `skg-if-build-toolchain` silently degraded on a Linux clone
+
+- Date: 2026-08-24
+- Skill: `skg-if-build-toolchain/SKILL.md` (plus `activate.sh`, `bootstrap-jdk.ps1`)
+- Symptom: asked what happens when a Linux user clones this repo, an audit found three
+  separate failures, none of which announce themselves. `./mvnw` works (it is committed
+  executable with LF endings, so the Maven half was already portable), but: (1) `.tools/jdk-<major>`
+  could never be populated, because `bootstrap-jdk.ps1` was the only download recipe and it
+  hardcodes `windows/x64`, `.zip`, `Invoke-WebRequest`/`Expand-Archive` and `bin/java.exe`, with no
+  `.sh` counterpart; the resulting error advised installing `powershell.exe`, which is nonsense on
+  Linux. (2) `activate.sh` fell back to whatever `java` was on `PATH` and returned 0 with a
+  reassuring message *without comparing versions*, despite holding the required major in a variable
+  two lines above - so a JDK 17 box got a "success" here and then an `invalid target release: 21`
+  from Maven much later, pointing nowhere near the JDK. (3) SKILL.md's opening asserted "There is no
+  system-wide Maven or JDK on this machine, and one should not be installed" as a universal fact -
+  true for the Windows dev box, the opposite of correct on Linux, where a distro JDK is the normal
+  answer.
+- Root cause: the skill was written against one machine and never distinguished "true here" from
+  "true of this repo". The version check was the more interesting miss: falling back to an
+  *unvalidated* ambient JDK converts a clear, immediate failure into a confusing one three minutes
+  into a build.
+- Fix: added `bootstrap-jdk.sh` (Linux x64/aarch64; explicitly refuses macOS rather than guessing,
+  since Adoptium's mac tarball nests the JDK under `Contents/Home`; invoked as `bash <path>` so it
+  needs no executable bit). Reordered `activate.sh` to `.tools/jdk-<major>` -> a *version-checked*
+  ambient `java` (`-ge`, not `-eq`) -> provision -> fail with an actionable message; the ambient
+  branch now sits ahead of provisioning deliberately, so the devcontainer's own JDK is used instead
+  of downloading a second copy over it. Rewrote SKILL.md's opening to scope the no-system-JDK rule
+  to the Windows box, added a "Linux/macOS" section and a "Reading the examples in Bash"
+  substitution table (referenced from `skg-if-cpd`/`skg-if-format`/`skg-if-openrewrite-refactor`
+  rather than duplicated), and marked the MSYS drive-letter note Windows-only.
+  `ToolchainVersionConsistencyTest` gained a check that the two bootstrap scripts can differ only
+  in the extractor, and its literal-allowlist was tightened to `ISSUES.md` alone.
+- Not proven: the actual Adoptium Linux download/extraction has never run - there is no Linux CI
+  job, and this dev box can't execute one. The version-comparison logic, the platform refusals and
+  the ambient-preference branch *were* exercised directly here.
+- Status: Fixed
+
+---
+
+## Every skill except the Java/Maven ones is still Windows-only, undeclared
+
+- Date: 2026-08-24
+- Skill: `portable-python/SKILL.md`, `jq-json/SKILL.md`, `markdown-lint/SKILL.md`,
+  `code-review-graph-setup/SKILL.md`, `skg-if-validate-live-api/SKILL.md`
+- Symptom: not yet hit - found while making the toolchain skills cross-platform. A sweep confirmed
+  that **outside `skg-if-build-toolchain`, no skill in this repo has any non-Windows branch**: every
+  download URL is a `win-x64`/`windows-amd64` asset, every interpreter path is
+  `.tools/python/python.exe` or `.tools/jq/jq.exe`, and `skg-if-validate-live-api` additionally uses
+  `netstat` rather than `ss`/`lsof`. On Linux these
+  fail as a bare "command not found" or a 404, neither of which points at the skill.
+- Root cause: same as the entry above - written against one machine. Only the Java/Maven skills were
+  in scope for the fix, so the rest keep the assumption.
+- Fix: not yet fixed. `skg-if-validate-live-api` already carries an explicit "Windows only" section;
+  the other four do not, and at minimum should say so. Porting them needs the same five facts per
+  platform (OS token, arch token, archive format, exe suffix, venv bin dir) - the `uname` cases in
+  `skg-if-build-toolchain/bootstrap-jdk.sh` are the extraction point if a shared helper is ever
+  wanted, and its header comment says so.
+- Status: Open
+
+---
+
+## Every skill re-pasted the JDK/Maven env block instead of delegating to `skg-if-build-toolchain`
+
+- Date: 2026-08-24
+- Skill: `skg-if-build-toolchain/SKILL.md` (plus `skg-if-cpd`, `skg-if-format`,
+  `skg-if-openrewrite-refactor`, `skg-if-validate-live-api`)
+- Symptom: asked how to stop the skills depending on a specific Maven and Java version, an
+  inventory found the literal strings `jdk-21` and `apache-maven-3.9.16` in 8 places across 5
+  `SKILL.md` files, plus `.claude/launch.json` and two `.claude/settings.local.json` allowlist
+  entries. Bumping Maven would have meant editing 11 places across 6 files; bumping Java, 9+
+  across 8. The allowlist entries baked in the absolute versioned path, so a bump would also
+  have silently invalidated two pre-approved commands.
+- Root cause: every skill *said* "see the `skg-if-build-toolchain` skill for one-time setup"
+  and then re-pasted its four-line `$dest`/`JAVA_HOME`/`PATH` block anyway - delegation existed
+  in prose but not in fact, because a `SKILL.md` has no include mechanism and there was no
+  script to point at. Maven was independently pinned a second time in
+  `.mvn/wrapper/maven-wrapper.properties` (a different host from the skills' download), giving
+  two provisioning paths that nothing checked for agreement.
+- Fix: added `skg-if-build-toolchain/bootstrap-jdk.ps1` (the only copy of the download recipe,
+  reading the version from `pom.xml`'s `<maven.compiler.release>`) plus `activate.ps1`/
+  `activate.sh`, which provision-if-missing and set `JAVA_HOME`/`PATH`. Maven left the skills
+  entirely - every command now goes through the committed `./mvnw` wrapper, the same one CI
+  uses. All six pasted blocks became a one-line dot-source/source. CI reads the version via a
+  new `.github/actions/setup-java-from-pom` composite action. `ToolchainVersionConsistencyTest`
+  now fails the build if a version literal reappears in a skill or in `launch.json`, or if
+  `Dockerfile.jvm`/`devcontainer.json`/`README.md` drift from `pom.xml`.
+- Status: Fixed
+
+---
+
 ## Moving a class out of a package can leave callers unable to see it at all - not just missing an import
 
 - Date: 2026-08-21
@@ -107,12 +197,20 @@ record of what the skill used to get wrong.
   example to copy from - so constructing one from scratch defaulted to the
   same `C:/...` drive-letter notation that looks natural but silently breaks
   in Bash specifically because of the colon.
-- Fix: added a Bash-specific example right under the existing PowerShell one
-  in [`skg-if-build-toolchain/SKILL.md`](skg-if-build-toolchain/SKILL.md)'s
-  "Invoking java/mvn" section, using MSYS-style `/c/...` paths (no colon after
-  the drive letter), plus a paragraph explaining the colon/PATH-separator
-  collision concretely so the failure is recognizable next time even if the
-  example itself isn't at hand.
+- Fix: originally, a Bash-specific example was added right under the existing
+  PowerShell one in
+  [`skg-if-build-toolchain/SKILL.md`](skg-if-build-toolchain/SKILL.md)'s "Invoking
+  java/mvn" section, using MSYS-style `/c/...` paths (no colon after the drive
+  letter), plus a paragraph explaining the colon/PATH-separator collision.
+  **Superseded 2026-08-24**: that whole section went away when Maven moved to the
+  `./mvnw` wrapper and env setup moved into
+  [`skg-if-build-toolchain/activate.sh`](skg-if-build-toolchain/activate.sh) - nothing
+  hand-builds `JAVA_HOME`/`PATH` in Bash any more, so there is no example left to get
+  wrong. The colon/PATH-separator reasoning now lives in that script's header comment
+  (the only place it survives), with a one-line pointer to it in `SKILL.md`. The hazard
+  itself is not gone: `activate.sh` must keep emitting `/c/...` form, and
+  `skg-if-validate-live-api/SKILL.md` still hand-builds a `PATH` for node/jq - it uses
+  `$(pwd)` precisely to avoid this bug.
 - Status: Fixed
 
 ---
@@ -164,12 +262,11 @@ record of what the skill used to get wrong.
   stale relative to the current `pom.xml` - the doc does say to "re-check
   `pom.xml` before relying on this if that comment is ever removed," but
   didn't catch that it already had been.
-- Fix: not yet fixed in `skg-if-format/SKILL.md` itself (out of scope for the
-  session that found it - it was authoring a different skill). Whoever next
-  touches `skg-if-format` should update the opening paragraph to match
-  current `pom.xml`, or reconsider whether to keep asserting the binding's
-  state at all given it's already drifted once.
-- Status: Open
+- Fix: fixed 2026-08-24 while factoring the toolchain version pins out of the
+  skills. `skg-if-format/SKILL.md`'s opening paragraph now states that the
+  `spotless-check` execution **is** bound to `process-sources`, and notes the
+  `<skip>${skipTests}</skip>` exception that makes `-DskipTests` skip it too.
+- Status: Fixed
 
 ---
 
@@ -223,6 +320,8 @@ record of what the skill used to get wrong.
   Maven/JDK one, pointing at `portable-python` and `jq-json` by name.
 - Status: Fixed
 
+---
+
 ## Golden-regen example cites test classes that no longer exist
 
 - Date: 2026-08-21
@@ -242,6 +341,8 @@ record of what the skill used to get wrong.
   `mvn test -Dtest=ProductsGoldenTest,GrantsGoldenTest -Dgolden.regenerate=true`, with a note that
   each class already covers every provider so there's no need for separate per-provider commands.
 - Status: Fixed
+
+---
 
 ## `mvn clean test *> target\build.log` fails outright on PowerShell (not just silently loses the log)
 

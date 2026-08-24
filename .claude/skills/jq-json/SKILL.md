@@ -24,7 +24,10 @@ conversations and only needs downloading once per checkout.
 Skip this entirely if `.tools\jq\jq.exe` already exists — go straight to "Invoking jq" below.
 
 ```powershell
-$dest = "<repo-root>\.tools\jq"
+# Resolve the repo root from git so this works from any subdirectory (git prints
+# forward slashes on Windows, so normalise them for the backslash paths below).
+$repoRoot = (git rev-parse --show-toplevel) -replace '/', '\'
+$dest = "$repoRoot\.tools\jq"
 New-Item -ItemType Directory -Force $dest | Out-Null
 Invoke-WebRequest -Uri "https://github.com/jqlang/jq/releases/latest/download/jq-windows-amd64.exe" -OutFile "$dest\jq.exe"
 & "$dest\jq.exe" --version   # confirm it runs

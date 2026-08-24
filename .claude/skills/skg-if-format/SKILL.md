@@ -6,18 +6,20 @@ description: Run Maven Spotless to check or auto-fix Java formatting in this rep
 # Maven Spotless formatting
 
 `spotless-maven-plugin` (pom.xml) reformats this repo's Java sources against
-`intellij-style.xml` and strips unused imports. Its lifecycle binding to
-`process-sources` is currently commented out in `pom.xml` (see the comment above the
-plugin block) while that style file's continuation-indent settings are being revised -
-so right now Spotless does **not** run automatically on `mvn compile`/`test`/`package`.
-Run it on demand with the goals below. CLAUDE.md's "Java code style" section describes
-the rules Spotless enforces; re-check `pom.xml` before relying on this if that comment
-is ever removed, since it means the behavior described here has reverted to automatic.
+`intellij-style.xml` and strips unused imports. Its `spotless-check` execution **is** bound
+to the `process-sources` phase, so a `compile`/`test`/`package` run already fails on
+formatting drift - except under `-DskipTests`, which also skips Spotless via the plugin's
+`<skip>${skipTests}</skip>`. The goals below run it on its own, without paying for
+a compile/test cycle. CLAUDE.md's "Java code style" section describes the rules Spotless
+enforces.
 
-This needs the same portable JDK 21 / Maven 3.9 toolchain as any other `mvn` command in
-this repo - see the `skg-if-build-toolchain` skill for one-time setup. Don't run a full
-`compile`/`test` just to format code; both goals below work standalone and are much
-faster.
+This needs the same portable toolchain as any other build command in this repo. The
+`activate.ps1` line in each snippet below provisions the JDK if it is missing and puts it on
+PATH, so there is no separate setup step to run first - see the `skg-if-build-toolchain` skill
+for how it resolves versions. Don't run a full `compile`/`test` just to format code; both
+goals below work standalone and are much faster. Every snippet below is PowerShell; for the two
+substitutions that turn it into the Bash equivalent, see
+[Reading the examples in Bash](../skg-if-build-toolchain/SKILL.md#reading-the-examples-in-bash).
 
 ## Checking for violations (read-only)
 
@@ -25,10 +27,8 @@ Use this to see whether anything needs formatting - e.g. before a commit, or to
 confirm a build failure is a formatting issue - without changing any files:
 
 ```powershell
-$dest = "<repo-root>\.tools"
-$env:JAVA_HOME = "$dest\jdk-21"
-$env:PATH = "$dest\jdk-21\bin;$dest\apache-maven-3.9.16\bin;$env:PATH"
-mvn -q -B spotless:check
+. .\.claude\skills\skg-if-build-toolchain\activate.ps1
+.\mvnw.cmd -q -B spotless:check
 ```
 
 Exit code `0` means everything is already formatted. A non-zero exit prints a unified
@@ -42,10 +42,8 @@ widespread it is; don't dig further into the diff output itself, just move on to
 Rewrites every violating file in place - reformats, and removes unused imports:
 
 ```powershell
-$dest = "<repo-root>\.tools"
-$env:JAVA_HOME = "$dest\jdk-21"
-$env:PATH = "$dest\jdk-21\bin;$dest\apache-maven-3.9.16\bin;$env:PATH"
-mvn -q -B spotless:apply
+. .\.claude\skills\skg-if-build-toolchain\activate.ps1
+.\mvnw.cmd -q -B spotless:apply
 ```
 
 This can touch a large number of files across the whole tree in one run (it's not
@@ -60,7 +58,7 @@ one or two classes - pass `-DspotlessFiles` with a comma-separated list of regex
 matched against each file's path:
 
 ```powershell
-mvn -q -B spotless:apply "-DspotlessFiles=.*CrossrefProject.*\.java"
+.\mvnw.cmd -q -B spotless:apply "-DspotlessFiles=.*CrossrefProject.*\.java"
 ```
 
 This still evaluates against the full `<includes>` list in `pom.xml`, it just skips

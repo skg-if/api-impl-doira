@@ -1,5 +1,6 @@
 {
   "name": "Quarkus Cloud Environment",
+  "//": "The 1-21 image tag must stay in step with pom.xml <maven.compiler.release>; a devcontainer image tag cannot be derived from it, so ToolchainVersionConsistencyTest guards the pair.",
   "image": "mcr.microsoft.com/devcontainers/java:1-21-bookworm",
   "customizations": {
     "vscode": {

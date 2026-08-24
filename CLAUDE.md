@@ -1,9 +1,22 @@
 # Notes for agents working in this repo
 
-## No system Maven/JDK 21 on your machine
+## No system Maven/JDK on your machine
 
-There is no system-wide JDK/Maven on this machine. For building, testing, or running
-`mvn`/`java` in any form, use the `skg-if-build-toolchain` skill.
+There is no system-wide JDK/Maven on this machine. Before running `java`, or any build
+command, dot-source the activation script from the `skg-if-build-toolchain` skill - it
+provisions the portable JDK into `.tools/` if it's missing and is a no-op afterwards, so
+there's no separate setup step:
+
+```powershell
+. .\.claude\skills\skg-if-build-toolchain\activate.ps1   # or, in Bash:
+#   source .claude/skills/skg-if-build-toolchain/activate.sh
+```
+
+Then build through the committed wrapper - `.\mvnw.cmd` (PowerShell) or `./mvnw` (Bash),
+never a bare `mvn`. Neither the skill nor any command hardcodes a version: the JDK's comes
+from `pom.xml`'s `<maven.compiler.release>` and Maven's from
+`.mvn/wrapper/maven-wrapper.properties`. `ToolchainVersionConsistencyTest` fails the build if
+a version literal creeps back into a skill.
 
 ## No system Python or jq either
 

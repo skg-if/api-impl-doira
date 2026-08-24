@@ -36,8 +36,9 @@ resource/mapper code.
 
 ## Requirements
 
-- JDK 21+
-- Maven 3.9+
+- JDK 21+ (declared once, in `pom.xml`'s `<maven.compiler.release>`)
+- Maven 3.9+ - or just use the bundled `./mvnw` wrapper, which pins its own version in
+  `.mvn/wrapper/maven-wrapper.properties` and needs no local Maven install
 - Network access to `api.datacite.org` and `api.crossref.org` (no API key needed for either -
   both are public, unauthenticated reads)
 - The SKG-IF API yaml reference is stored in `src/main/openapi/skg-if-openapi.yaml`.
