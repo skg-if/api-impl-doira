@@ -13,7 +13,7 @@
     <maven.compiler.release>21</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-    <quarkus.platform.version>3.38.1</quarkus.platform.version>
+    <quarkus.platform.version>3.38.3</quarkus.platform.version>
     <openapi-generator-plugin.version>7.24.0</openapi-generator-plugin.version>
     <jackson-databind-nullable.version>0.2.11</jackson-databind-nullable.version>
     <surefire-plugin.version>3.5.2</surefire-plugin.version>
