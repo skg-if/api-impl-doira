@@ -1,6 +1,7 @@
 package org.skgif.doi.datacite.mapper;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -105,9 +106,22 @@ public class DataCiteToSkgIfMapper implements GrantCapableMapper<DataCiteAttribu
 
         List<DataCiteCreator> creators = Optional.ofNullable(attributes.creators()).orElseGet(List::of);
         List<DataCiteContributor> contributors = Optional.ofNullable(attributes.contributors()).orElseGet(List::of);
-        Optional<DataCiteCreator> fundingAgencyCreator = creators.stream()
-                .filter(c -> DataCiteContributionMapper.firstRor(c.nameIdentifiers()).isPresent())
-                .findFirst();
+
+        int fundingAgencyIndex = -1;
+        for (int i = 0; i < creators.size(); i++) {
+            if (DataCiteContributionMapper.firstRor(creators.get(i).nameIdentifiers()).isPresent()) {
+                fundingAgencyIndex = i;
+                break;
+            }
+        }
+        Optional<DataCiteCreator> fundingAgencyCreator = fundingAgencyIndex < 0 ?
+                Optional.empty() : Optional.of(creators.get(fundingAgencyIndex));
+        // Removed by position, not by value, so a different creator that merely happens to be
+        // value-equal to the funding agency isn't also dropped.
+        List<DataCiteCreator> nonFundingAgencyCreators = new ArrayList<>(creators);
+        if (fundingAgencyIndex >= 0) {
+            nonFundingAgencyCreators.remove(fundingAgencyIndex);
+        }
 
         return new Grant()
                 .localIdentifier(localIdentifiers.toFullLocalIdentifier(attributes.doi()))
@@ -119,7 +133,7 @@ public class DataCiteToSkgIfMapper implements GrantCapableMapper<DataCiteAttribu
                 .fundingAgency(DataCiteGrantMapper.grantFundingAgency(
                         attributes.doi(), fundingAgencyCreator, attributes.publisher()).orElse(null))
                 .contributions(DataCiteGrantMapper.grantContributions(
-                        attributes.doi(), creators, contributors, fundingAgencyCreator))
+                        attributes.doi(), nonFundingAgencyCreators, contributors))
                 .beneficiaries(DataCiteGrantMapper.grantBeneficiaries(attributes.doi(), contributors));
     }
 }

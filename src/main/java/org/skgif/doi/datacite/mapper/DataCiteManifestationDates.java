@@ -2,6 +2,7 @@ package org.skgif.doi.datacite.mapper;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -92,7 +93,9 @@ final class DataCiteManifestationDates {
             return false;
         }
         boolean any = false;
-        for (DataCiteDate date : attributes.dates()) {
+        List<DataCiteDate> allDates = attributes.dates();
+        for (int i = 0; i < allDates.size(); i++) {
+            DataCiteDate date = allDates.get(i);
             String skgIfDateType = DataCiteDateType.fromValue(date.dateType())
                     .map(DATACITE_DATE_TYPE_TO_SKGIF::get)
                     .orElse(null);
@@ -104,7 +107,7 @@ final class DataCiteManifestationDates {
             // rather than emitted anywhere.
             boolean redundantEmbargo = !missingMapping &&
                     ManifestationDateSetters.EMBARGO.equals(skgIfDateType) &&
-                    otherRecordDays(attributes, date).contains(normalizeDay(date.date()));
+                    otherRecordDays(attributes, i).contains(normalizeDay(date.date()));
             if (missingMapping || redundantEmbargo) {
                 continue;
             }
@@ -151,18 +154,19 @@ final class DataCiteManifestationDates {
      * genuine embargo end date apart from an {@code Available} entry that merely restates another
      * date on the record.
      *
-     * @param attributes the DataCite record to collect known dates from
-     * @param excluding  the date entry to exclude from the result set
+     * @param attributes     the DataCite record to collect known dates from
+     * @param excludingIndex the index within {@code attributes.dates()} to exclude from the
+     *                       result set
      * @return the day-normalized (YYYY-MM-DD) set of every other known date
      */
-    // date != excluding intentionally checks reference identity to skip the one DataCiteDate
-    // instance being excluded while iterating the same list it came from - .equals() would
-    // wrongly also skip a different date entry that happens to carry the same value.
-    @SuppressWarnings({"PMD.CompareObjectsWithEquals", "ReferenceEquality"})
-    private static Set<String> otherRecordDays(DataCiteAttributes attributes, DataCiteDate excluding) {
+    // Excluded by position, not by value, so a different date entry that happens to carry the
+    // same value as the one being excluded isn't also dropped.
+    private static Set<String> otherRecordDays(DataCiteAttributes attributes, int excludingIndex) {
         Set<String> days = new HashSet<>();
-        for (DataCiteDate date : attributes.dates()) {
-            if (date != excluding && date.date() != null) {
+        List<DataCiteDate> allDates = attributes.dates();
+        for (int i = 0; i < allDates.size(); i++) {
+            DataCiteDate date = allDates.get(i);
+            if (i != excludingIndex && date.date() != null) {
                 days.add(normalizeDay(date.date()));
             }
         }

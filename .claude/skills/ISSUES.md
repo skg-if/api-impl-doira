@@ -45,6 +45,52 @@ record of what the skill used to get wrong.
 
 ---
 
+## `2>&1 | <cmdlet>` on `.\mvnw.cmd` reports a false failure from a benign JVM stderr warning
+
+- Date: 2026-08-25
+- Skill: `skg-if-build-toolchain/SKILL.md`
+- Symptom: `. .\.claude\skills\skg-if-build-toolchain\activate.ps1; .\mvnw.cmd -q package 2>&1 |
+  Select-Object -Last 200` reported "Exit code 1" with the tool output being just `.\mvnw.cmd :
+  OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because
+  bootstrap classpath has been appended` - which reads exactly like the build failed, even though
+  a follow-up run of the identical command without the redirect/pipe printed the full Quarkus
+  test-boot log and finished with a genuine `BUILD SUCCESS`.
+- Root cause: the "warning" is JVM startup noise `mvnw.cmd`'s forked test JVM writes to stderr on
+  every run, success or not (Quarkus's `@QuarkusTest` boots a JVM under surefire that emits it).
+  PowerShell 5.1's `2>&1` merges a native command's stderr into the success stream by wrapping
+  each line in a `NativeCommandError` `ErrorRecord` and sets `$?` to `$false` for the whole
+  pipeline *regardless of the actual exit code* - documented as a general PowerShell-tool caveat,
+  but this skill's own examples never call it out for `mvnw.cmd` specifically, and the skill
+  already has a "safe" redirect pattern (`*> build.log` to a real file, then `Select-String`) that
+  this command didn't follow, reaching for `2>&1 | Select-Object` instead out of habit.
+- Fix: added a paragraph to `skg-if-build-toolchain/SKILL.md`'s "Large failures" section naming
+  this exact symptom and pointing back at the existing `*> build.log` pattern as the reason to
+  never use `2>&1 | <cmdlet>` against `mvnw.cmd` in PowerShell - the JVM's own stderr warning
+  isn't a build failure signal at all, and `*>`-to-a-file (not a pipe) is what avoids the
+  `NativeCommandError` wrapping.
+- Status: Fixed
+
+## PowerShell activation doesn't carry across separate tool calls - `JAVA_HOME` error is the tell
+
+- Date: 2026-08-25
+- Skill: `skg-if-build-toolchain/SKILL.md`
+- Symptom: after a first PowerShell call successfully dot-sourced `activate.ps1` and ran
+  `.\mvnw.cmd -q package` to `BUILD SUCCESS`, a second, separate PowerShell call running only
+  `.\mvnw.cmd -q package` (no re-activation) failed with `The JAVA_HOME environment variable is
+  not defined correctly, this environment variable is needed to run this program.` - which reads
+  like the toolchain itself broke between the two calls, even though nothing about the JDK/repo
+  changed.
+- Root cause: exactly the documented "each tool call starts a fresh process" rule (already in
+  this file's "Activating the toolchain" section) - but the doc states the rule prescriptively
+  without the concrete failure text you'd see if you forget it, so recognizing this specific
+  error message as "you forgot to re-activate in *this* call" required rediscovering the
+  connection live rather than pattern-matching it from the skill.
+- Fix: added the exact `JAVA_HOME environment variable is not defined correctly` error text to
+  the "Activating the toolchain" section in `skg-if-build-toolchain/SKILL.md`, right after the
+  "re-activate in every invocation" rule, so it's recognizable as this failure mode on sight
+  instead of needing to be re-diagnosed.
+- Status: Fixed
+
 ## Piping the `source activate.sh` line silently discards the exports
 
 - Date: 2026-08-24

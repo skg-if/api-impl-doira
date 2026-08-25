@@ -59,18 +59,10 @@ final class DataCiteGrantMapper {
                 .entityType(EntityTypes.ORGANISATION.value()));
     }
 
-    // fundingAgencyCreator.get() == creator intentionally checks reference identity to skip the
-    // specific DataCiteCreator already used as the funding agency, while iterating the full
-    // creators list - .equals() would wrongly also skip a different creator who happens to be
-    // value-equal.
-    @SuppressWarnings({"PMD.CompareObjectsWithEquals", "ReferenceEquality"})
     static List<GrantAllOfContributions> grantContributions(String doi, List<DataCiteCreator> creators,
-            List<DataCiteContributor> contributors, Optional<DataCiteCreator> fundingAgencyCreator) {
+            List<DataCiteContributor> contributors) {
         List<GrantAllOfContributions> result = new ArrayList<>();
         for (DataCiteCreator creator : creators) {
-            if (fundingAgencyCreator.isPresent() && fundingAgencyCreator.get() == creator) {
-                continue;
-            }
             boolean organizational = NAME_TYPE_ORGANIZATIONAL.equals(creator.nameType());
             result.add(new GrantContribution()
                     .by(grantContributionBy(doi, creator.name(), creator.givenName(), creator.familyName(),

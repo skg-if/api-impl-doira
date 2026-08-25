@@ -79,7 +79,10 @@ source .claude/skills/skg-if-build-toolchain/activate.sh | tail -5          # WR
 
 Each Bash/PowerShell tool call starts a fresh process, so re-activate in **every** invocation
 that needs the toolchain. Nothing is persisted to the user or machine environment, and no
-attempt should be made to persist it.
+attempt should be made to persist it. Forgetting this in a later call doesn't look like a
+skipped activation - `mvnw`/`java` fail with `The JAVA_HOME environment variable is not defined
+correctly, this environment variable is needed to run this program.`, which reads like the
+toolchain broke rather than "this call never activated it."
 
 ### Reading the examples in Bash
 
@@ -252,6 +255,16 @@ Only `Get-Content` the log in full (or open the specific
 needs the full trace. On a clean build this adds one extra command but costs
 nothing; on a large failure it avoids paying for output that's mostly
 irrelevant duplication.
+
+**Never use `2>&1 | <cmdlet>` against `.\mvnw.cmd` in PowerShell**, even for a quick filter
+instead of a full log file - use the `*> build.log` file-redirect pattern above instead.
+`mvnw.cmd`'s forked test JVM writes a benign startup warning to stderr on every run (success or
+not, e.g. `OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes
+because bootstrap classpath has been appended`). PowerShell 5.1's `2>&1` merges stderr into the
+success stream by wrapping each line in a `NativeCommandError`, which makes the tool report
+"Exit code 1" even when `mvnw` itself exited `0` and the build genuinely passed - `*>` to a real
+file doesn't have this problem because it writes the streams directly rather than merging them
+into the pipeline.
 
 **Why it matters specifically when the command includes `clean`:** `clean`
 deletes the entire `target/` directory early in the run, including a log file
