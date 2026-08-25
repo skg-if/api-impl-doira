@@ -35,12 +35,16 @@ final class CrossrefFundingMapper {
 
     List<ProductAllOfFunding> funding(CrossrefWork work) {
         List<ProductAllOfFunding> result = new ArrayList<>();
-        for (CrossrefFunder funder : Optional.ofNullable(work.funder()).orElseGet(List::of)) {
+        List<CrossrefFunder> funders = work.funder();
+        if (funders == null) {
+            return result;
+        }
+        for (CrossrefFunder funder : funders) {
             if (funder.name() == null) {
                 continue;
             }
-            List<String> awards = Optional.ofNullable(funder.award()).orElseGet(List::of);
-            if (awards.isEmpty()) {
+            List<String> awards = funder.award();
+            if (awards == null || awards.isEmpty()) {
                 result.add(fundingEntry(work.doi(), funder, null));
             } else {
                 for (String award : awards) {
@@ -86,13 +90,15 @@ final class CrossrefFundingMapper {
      * @return the funder's Funder Registry DOI, or Optional.empty() if it has none
      */
     private Optional<String> funderDoi(CrossrefFunder funder) {
-        if (funder.doi() != null) {
-            return Optional.of(funder.doi());
+        String doi = funder.doi();
+        if (doi != null) {
+            return Optional.of(doi);
         }
-        if (funder.id() == null) {
+        List<CrossrefIdEntry> ids = funder.id();
+        if (ids == null) {
             return Optional.empty();
         }
-        return funder.id().stream()
+        return ids.stream()
                 .filter(entry -> "DOI".equalsIgnoreCase(entry.idType()) && entry.id() != null)
                 .map(CrossrefIdEntry::id)
                 .findFirst();

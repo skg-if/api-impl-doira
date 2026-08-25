@@ -8,10 +8,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
 import org.skgif.doi.datacite.dto.DataCiteDescription;
+import org.skgif.doi.datacite.dto.DataCiteSubject;
 import org.skgif.doi.generated.model.ProductAllOfTopics;
 import org.skgif.doi.generated.model.Topic;
 import org.skgif.doi.util.MapperTextUtils;
@@ -75,7 +75,8 @@ final class DataCiteTitleMapper {
      * @return the titles keyed by language, or an empty map if none carry a title
      */
     private static Map<String, List<String>> titlesByLanguage(DataCiteAttributes attributes) {
-        return groupByLanguage(Optional.ofNullable(attributes.titles()).orElseGet(List::of),
+        List<DataCiteAttributes.Title> titles = attributes.titles();
+        return groupByLanguage(titles != null ? titles : List.of(),
                 DataCiteAttributes.Title::title, DataCiteAttributes.Title::lang);
     }
 
@@ -87,11 +88,10 @@ final class DataCiteTitleMapper {
      * @return the abstracts keyed by language, or an empty map if none carry one
      */
     private static Map<String, List<String>> abstractsByLanguage(DataCiteAttributes attributes) {
-        List<DataCiteDescription> abstractDescriptions = Optional.ofNullable(attributes.descriptions())
-                .orElseGet(List::of)
-                .stream()
-                .filter(d -> "Abstract".equals(d.descriptionType()))
-                .toList();
+        List<DataCiteDescription> descriptions = attributes.descriptions();
+        List<DataCiteDescription> abstractDescriptions = descriptions == null ?
+                List.of() :
+                descriptions.stream().filter(d -> "Abstract".equals(d.descriptionType())).toList();
         return groupByLanguage(abstractDescriptions, DataCiteDescription::description, DataCiteDescription::lang);
     }
 
@@ -110,7 +110,11 @@ final class DataCiteTitleMapper {
     }
 
     static List<ProductAllOfTopics> topics(DataCiteAttributes attributes) {
-        return Optional.ofNullable(attributes.subjects()).orElseGet(List::of).stream()
+        List<DataCiteSubject> subjects = attributes.subjects();
+        if (subjects == null) {
+            return List.of();
+        }
+        return subjects.stream()
                 .filter(subject -> subject.subject() != null)
                 .map(subject -> {
                     String lang = subject.lang() != null ? subject.lang() : "none";

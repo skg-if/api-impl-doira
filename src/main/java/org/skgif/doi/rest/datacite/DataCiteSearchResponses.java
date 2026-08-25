@@ -2,6 +2,7 @@ package org.skgif.doi.rest.datacite;
 
 import jakarta.ws.rs.core.Response;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
 import org.skgif.doi.datacite.dto.DataCiteDoiData;
@@ -33,13 +34,15 @@ final class DataCiteSearchResponses {
      */
     static <T> Response build(JsonLdSearchResponses.EnvelopeContext ctx, JsonLdSearchResponses.ListRequest request,
             DataCiteDoiListResponse response, Function<DataCiteAttributes, T> convert) {
-        List<DataCiteDoiData> items = response.data() != null ? response.data() : List.of();
-        long total = response.meta() != null ? response.meta().total() : items.size();
-        boolean hasNext = response.meta() != null && request.pageNumber() < response.meta().totalPages();
-        String contextBase = JsonLdContextBase.contextBaseFor(response.data(), ctx.sandboxBaseUrl(),
+        List<DataCiteDoiData> data = response.data();
+        List<DataCiteDoiData> items = data != null ? data : List.of();
+        DataCiteDoiListResponse.Meta meta = response.meta();
+        long total = meta != null ? meta.total() : items.size();
+        boolean hasNext = meta != null && request.pageNumber() < meta.totalPages();
+        String contextBase = JsonLdContextBase.contextBaseFor(data, ctx.sandboxBaseUrl(),
                 ctx.fallbackContextBase());
         return JsonLdSearchResponses.build(ctx, request, items,
-                item -> item.attributes() != null ? item.attributes().doi() : null,
+                item -> Optional.ofNullable(item.attributes()).map(DataCiteAttributes::doi).orElse(null),
                 item -> convert.apply(item.attributes()),
                 new JsonLdSearchResponses.ProviderPage(total, hasNext, contextBase));
     }

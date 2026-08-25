@@ -161,7 +161,7 @@ final class CrossrefFiltersTest {
                 .map(ProductFilterKeys::fromKey)
                 .collect(toUnmodifiableSet());
 
-        assertThat(CrossrefFilters.PRODUCT_CLAUSE_BUILDERS).containsOnlyKeys(expected);
+        assertThat(expected).hasSameElementsAs(CrossrefFilters.PRODUCT_CLAUSE_BUILDERS.keySet());
     }
 
     @Test
@@ -170,6 +170,6 @@ final class CrossrefFiltersTest {
                 .map(GrantFilterKeys::fromKey)
                 .collect(toUnmodifiableSet());
 
-        assertThat(CrossrefFilters.GRANT_CLAUSE_BUILDERS).containsOnlyKeys(expected);
+        assertThat(expected).hasSameElementsAs(CrossrefFilters.GRANT_CLAUSE_BUILDERS.keySet());
     }
 }

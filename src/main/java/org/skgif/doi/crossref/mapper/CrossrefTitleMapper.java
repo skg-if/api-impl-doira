@@ -22,11 +22,10 @@ final class CrossrefTitleMapper {
     }
 
     static Map<String, List<String>> titles(CrossrefWork work) {
-        List<String> values = Optional.ofNullable(work.title())
-                .orElseGet(List::of)
-                .stream()
-                .filter(t -> t != null && !t.isBlank())
-                .toList();
+        List<String> titles = work.title();
+        List<String> values = titles == null ?
+                List.of() :
+                titles.stream().filter(t -> t != null && !t.isBlank()).toList();
 
         return values.isEmpty() ? Map.of() : Map.of("en", values);
     }
@@ -56,7 +55,11 @@ final class CrossrefTitleMapper {
     }
 
     static List<ProductAllOfTopics> topics(CrossrefWork work) {
-        return Optional.ofNullable(work.subject()).orElseGet(List::of).stream()
+        List<String> subjects = work.subject();
+        if (subjects == null) {
+            return List.of();
+        }
+        return subjects.stream()
                 .filter(Objects::nonNull)
                 // Crossref subjects (Sci-Val controlled vocabulary) have no external identifier
                 // system behind them, so this is always an otf id - same as DataCite subjects.

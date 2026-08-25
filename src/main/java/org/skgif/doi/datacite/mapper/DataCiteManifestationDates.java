@@ -172,21 +172,26 @@ final class DataCiteManifestationDates {
         }
         for (int i = 0; i < allDates.size(); i++) {
             DataCiteDate date = allDates.get(i);
-            if (i != excludingIndex && date.date() != null) {
-                days.add(normalizeDay(date.date()));
+            String dateValue = date.date();
+            if (i != excludingIndex && dateValue != null) {
+                days.add(normalizeDay(dateValue));
             }
         }
-        if (attributes.created() != null) {
-            days.add(normalizeDay(attributes.created()));
+        String created = attributes.created();
+        if (created != null) {
+            days.add(normalizeDay(created));
         }
-        if (attributes.registered() != null) {
-            days.add(normalizeDay(attributes.registered()));
+        String registered = attributes.registered();
+        if (registered != null) {
+            days.add(normalizeDay(registered));
         }
-        if (attributes.updated() != null) {
-            days.add(normalizeDay(attributes.updated()));
+        String updated = attributes.updated();
+        if (updated != null) {
+            days.add(normalizeDay(updated));
         }
-        if (attributes.published() != null) {
-            days.add(normalizeDay(attributes.published()));
+        String published = attributes.published();
+        if (published != null) {
+            days.add(normalizeDay(published));
         }
         return days;
     }

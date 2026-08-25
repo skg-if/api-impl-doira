@@ -124,9 +124,8 @@ final class CrossrefBiblioMapper {
         // Non-null by the hasNoContainerTitle guard above; asserted here because that guard lives
         // in another method, where the nullness checker cannot follow it.
         String name = requireNonNull(work.containerTitle()).getFirst();
-        List<String> issns = work.issn() != null ?
-                work.issn().stream().filter(Objects::nonNull).toList() :
-                List.of();
+        List<String> rawIssns = work.issn();
+        List<String> issns = rawIssns != null ? rawIssns.stream().filter(Objects::nonNull).toList() : List.of();
         String journalDoi = resolveJournalDoi(issns).orElse(null);
 
         VenueLite venue = new VenueLite()
@@ -143,8 +142,8 @@ final class CrossrefBiblioMapper {
     }
 
     private boolean hasNoContainerTitle(CrossrefWork work) {
-        return work.containerTitle() == null || work.containerTitle().isEmpty() ||
-                work.containerTitle().getFirst() == null;
+        List<String> titles = work.containerTitle();
+        return titles == null || titles.isEmpty() || titles.getFirst() == null;
     }
 
     private Optional<String> resolveJournalDoi(List<String> issns) {
@@ -169,14 +168,16 @@ final class CrossrefBiblioMapper {
         if (containerDoi != null) {
             identifiers.add(new VenueLiteAllOfIdentifiers().scheme(IdentifierScheme.DOI.value()).value(containerDoi));
         }
-        if (venueMetadata.seriesIssns() != null) {
-            venueMetadata.seriesIssns().stream()
+        List<String> seriesIssns = venueMetadata.seriesIssns();
+        if (seriesIssns != null) {
+            seriesIssns.stream()
                     .filter(Objects::nonNull)
                     .forEach(issn -> identifiers.add(
                             new VenueLiteAllOfIdentifiers().scheme(IdentifierScheme.ISSN.value()).value(issn)));
         }
-        if (venueMetadata.isbns() != null) {
-            venueMetadata.isbns().stream()
+        List<String> isbns = venueMetadata.isbns();
+        if (isbns != null) {
+            isbns.stream()
                     .filter(Objects::nonNull)
                     .forEach(isbn -> identifiers.add(
                             new VenueLiteAllOfIdentifiers().scheme(IdentifierScheme.ISBN.value()).value(isbn)));

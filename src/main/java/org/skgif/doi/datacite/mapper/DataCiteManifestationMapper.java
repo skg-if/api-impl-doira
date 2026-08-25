@@ -42,7 +42,8 @@ final class DataCiteManifestationMapper {
     }
 
     static Optional<String> resourceTypeGeneral(DataCiteAttributes attributes) {
-        return Optional.ofNullable(attributes.types() != null ? attributes.types().resourceTypeGeneral() : null);
+        DataCiteAttributes.Types types = attributes.types();
+        return Optional.ofNullable(types != null ? types.resourceTypeGeneral() : null);
     }
 
     private static Optional<ProductManifestationAccessRights> accessRights(DataCiteAttributes attributes) {
@@ -54,10 +55,7 @@ final class DataCiteManifestationMapper {
     }
 
     private static List<String> licenceUrls(DataCiteAttributes attributes) {
-        return Optional.ofNullable(attributes.rightsList())
-                .orElseGet(List::of)
-                .stream()
-                .map(DataCiteRights::rightsUri)
-                .toList();
+        List<DataCiteRights> rightsList = attributes.rightsList();
+        return rightsList == null ? List.of() : rightsList.stream().map(DataCiteRights::rightsUri).toList();
     }
 }

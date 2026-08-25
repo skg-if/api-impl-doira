@@ -36,10 +36,10 @@ final class CrossrefSearchResponses {
     static <T> Response build(JsonLdSearchResponses.EnvelopeContext ctx, JsonLdSearchResponses.ListRequest request,
             int offset, CrossrefWorkListResponse response, Predicate<CrossrefWork> include,
             Function<CrossrefWork, T> convert) {
-        List<CrossrefWork> items = response.message() != null ?
-                Optional.ofNullable(response.message().items()).orElseGet(List::of) :
-                List.of();
-        long totalResults = response.message() != null ? response.message().totalResults() : 0;
+        CrossrefWorkListResponse.Message message = response.message();
+        List<CrossrefWork> rawItems = message != null ? message.items() : null;
+        List<CrossrefWork> items = rawItems != null ? rawItems : List.of();
+        long totalResults = message != null ? message.totalResults() : 0;
         boolean hasNext = offset + request.size() < totalResults;
         String contextBase = JsonLdContextBase.contextBaseFor(Optional.<String>empty(), ctx.sandboxBaseUrl(),
                 ctx.fallbackContextBase());

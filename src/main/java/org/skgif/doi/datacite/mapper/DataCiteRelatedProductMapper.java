@@ -91,7 +91,8 @@ final class DataCiteRelatedProductMapper {
     }
 
     Optional<ProductsRelated> relatedProducts(DataCiteAttributes attributes) {
-        if (attributes.relatedIdentifiers() == null || attributes.relatedIdentifiers().isEmpty()) {
+        List<DataCiteRelatedIdentifier> relatedIdentifiers = attributes.relatedIdentifiers();
+        if (relatedIdentifiers == null || relatedIdentifiers.isEmpty()) {
             return Optional.empty();
         }
         return buildRelated(attributes);

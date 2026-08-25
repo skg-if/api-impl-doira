@@ -103,9 +103,10 @@ final class DataCiteGrantMapper {
 
     static List<GrantAllOfBeneficiaries> grantAffiliations(@Nullable String doi,
             @Nullable List<DataCiteAffiliation> affiliations) {
-        return Optional.ofNullable(affiliations)
-                .orElseGet(List::of)
-                .stream()
+        if (affiliations == null) {
+            return List.of();
+        }
+        return affiliations.stream()
                 .filter(affiliation -> affiliation.name() != null)
                 .<GrantAllOfBeneficiaries>map(affiliation -> {
                     // Held in a local rather than re-read via the accessor so the null check is

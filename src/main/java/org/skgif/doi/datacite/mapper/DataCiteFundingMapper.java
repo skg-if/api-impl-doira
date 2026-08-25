@@ -76,9 +76,11 @@ final class DataCiteFundingMapper {
     }
 
     List<ProductAllOfFunding> funding(DataCiteAttributes attributes) {
-        return Optional.ofNullable(attributes.fundingReferences())
-                .orElseGet(List::of)
-                .stream()
+        List<DataCiteFundingReference> fundingReferences = attributes.fundingReferences();
+        if (fundingReferences == null) {
+            return List.of();
+        }
+        return fundingReferences.stream()
                 .<ProductAllOfFunding>map(fundingReference -> {
                     // DataCite funding references carry no stable identifier for the grant
                     // itself (unlike the funder, which often has a ROR) - the award

@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.Optional;
 import org.jspecify.annotations.Nullable;
 import org.skgif.doi.crossref.dto.CrossrefAmount;
+import org.skgif.doi.crossref.dto.CrossrefDate;
 import org.skgif.doi.crossref.dto.CrossrefFunder;
 import org.skgif.doi.crossref.dto.CrossrefFunding;
 import org.skgif.doi.crossref.dto.CrossrefProject;
@@ -81,8 +82,9 @@ final class CrossrefGrantMapper {
 
     private Optional<CrossrefAmount> awardAmount(@Nullable CrossrefProject project,
             @Nullable CrossrefFunding funding) {
-        if (funding != null && funding.awardAmount() != null) {
-            return Optional.of(funding.awardAmount());
+        CrossrefAmount fundingAmount = funding != null ? funding.awardAmount() : null;
+        if (fundingAmount != null) {
+            return Optional.of(fundingAmount);
         }
         return Optional.ofNullable(project != null ? project.awardAmount() : null);
     }
@@ -91,8 +93,10 @@ final class CrossrefGrantMapper {
         if (project == null) {
             return Optional.empty();
         }
-        String start = project.awardStart() != null ? project.awardStart().toIsoDate().orElse(null) : null;
-        String end = project.awardEnd() != null ? project.awardEnd().toIsoDate().orElse(null) : null;
+        CrossrefDate awardStart = project.awardStart();
+        CrossrefDate awardEnd = project.awardEnd();
+        String start = awardStart != null ? awardStart.toIsoDate().orElse(null) : null;
+        String end = awardEnd != null ? awardEnd.toIsoDate().orElse(null) : null;
         return start == null && end == null ? Optional.empty() : Optional.of(new GrantAllOfDuration()
                 .start(start).end(end));
     }

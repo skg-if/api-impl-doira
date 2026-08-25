@@ -1,5 +1,6 @@
 package org.skgif.doi.medra.mapper;
 
+import java.util.List;
 import java.util.Optional;
 import org.skgif.doi.generated.model.ProductManifestationBiblio;
 import org.skgif.doi.generated.model.ProductManifestationBiblioIn;
@@ -49,8 +50,9 @@ final class MedraBiblioMapper {
                 .localIdentifier(MapperTextUtils.otf(work.doi(), work.journalTitle()))
                 .entityType(EntityTypes.VENUE.value())
                 .name(work.journalTitle());
-        if (work.issns() != null && !work.issns().isEmpty()) {
-            venue.identifiers(work.issns().stream()
+        List<String> issns = work.issns();
+        if (issns != null && !issns.isEmpty()) {
+            venue.identifiers(issns.stream()
                     .map(issn -> new VenueLiteAllOfIdentifiers().scheme(IdentifierScheme.ISSN.value()).value(issn))
                     .toList());
         }

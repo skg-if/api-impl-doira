@@ -66,9 +66,10 @@ final class CrossrefGrantContributionMapper {
 
     static List<GrantAllOfBeneficiaries> grantAffiliations(@Nullable String doi,
             @Nullable List<CrossrefAffiliation> affiliations) {
-        return Optional.ofNullable(affiliations)
-                .orElseGet(List::of)
-                .stream()
+        if (affiliations == null) {
+            return List.of();
+        }
+        return affiliations.stream()
                 .filter(affiliation -> affiliation.name() != null)
                 .<GrantAllOfBeneficiaries>map(affiliation -> EntityRefs.organisationRef(doi, affiliation.name(),
                         CrossrefContributionMapper.firstRor(affiliation.id()).orElse(null)))

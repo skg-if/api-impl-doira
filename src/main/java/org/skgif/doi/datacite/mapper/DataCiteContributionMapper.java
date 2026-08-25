@@ -102,9 +102,10 @@ final class DataCiteContributionMapper {
     }
 
     static List<PersonLiteAllOfIdentifiers> orcidIdentifiers(@Nullable List<DataCiteNameIdentifier> nameIdentifiers) {
-        return Optional.ofNullable(nameIdentifiers)
-                .orElseGet(List::of)
-                .stream()
+        if (nameIdentifiers == null) {
+            return List.of();
+        }
+        return nameIdentifiers.stream()
                 .filter(ni -> "ORCID".equalsIgnoreCase(ni.nameIdentifierScheme()))
                 .map(ni -> new PersonLiteAllOfIdentifiers()
                         .scheme(IdentifierScheme.ORCID.value())
@@ -115,9 +116,10 @@ final class DataCiteContributionMapper {
 
     static List<ProductAllOfRelevantOrganisations> affiliations(@Nullable String doi,
             @Nullable List<DataCiteAffiliation> affiliations) {
-        return Optional.ofNullable(affiliations)
-                .orElseGet(List::of)
-                .stream()
+        if (affiliations == null) {
+            return List.of();
+        }
+        return affiliations.stream()
                 .filter(affiliation -> affiliation.name() != null)
                 .<ProductAllOfRelevantOrganisations>map(affiliation -> {
                     // Held in a local rather than re-read via the accessor so the null check is

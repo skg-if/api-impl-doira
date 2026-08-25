@@ -30,9 +30,11 @@ final class MedraTitleMapper {
      * @return the titles grouped by language, or an empty map if work has none
      */
     static Map<String, List<String>> titles(MedraWork work) {
-        return Optional.ofNullable(work.titles())
-                .orElseGet(List::of)
-                .stream()
+        List<MedraTitle> titles = work.titles();
+        if (titles == null) {
+            return Map.of();
+        }
+        return titles.stream()
                 .collect(groupingBy(
                         title -> title.language() != null ? title.language() : "en",
                         LinkedHashMap::new,

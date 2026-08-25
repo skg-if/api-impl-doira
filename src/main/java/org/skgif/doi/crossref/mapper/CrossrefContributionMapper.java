@@ -112,9 +112,10 @@ final class CrossrefContributionMapper {
      */
     static List<ProductAllOfRelevantOrganisations> affiliations(@Nullable String doi,
             @Nullable List<CrossrefAffiliation> affiliations) {
-        return Optional.ofNullable(affiliations)
-                .orElseGet(List::of)
-                .stream()
+        if (affiliations == null) {
+            return List.of();
+        }
+        return affiliations.stream()
                 .filter(affiliation -> affiliation.name() != null)
                 .<ProductAllOfRelevantOrganisations>map(affiliation -> EntityRefs.organisationRef(doi,
                         affiliation.name(), firstRor(affiliation.id()).orElse(null)))
