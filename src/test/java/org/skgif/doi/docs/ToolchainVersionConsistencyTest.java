@@ -1,7 +1,10 @@
 package org.skgif.doi.docs;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.skgif.doi.util.SpotBugsSuppressions.NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE;
+import static org.skgif.doi.util.SpotBugsSuppressions.SPOTBUGS_REGISTER;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -99,6 +102,9 @@ final class ToolchainVersionConsistencyTest {
                 .isEmpty();
     }
 
+    @SuppressFBWarnings(value = NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE, justification = "Path.getFileName() on " +
+            "paths sourced from Files.walk over a known directory, never a root path, so it can never actually " +
+            "return null even though the JDK contract allows it - " + SPOTBUGS_REGISTER)
     @Test
     void skillsAndLaunchConfigCarryNoToolchainVersionLiterals() throws IOException {
         List<Path> scanned = new ArrayList<>();
@@ -175,6 +181,9 @@ final class ToolchainVersionConsistencyTest {
                 .isEmpty();
     }
 
+    @SuppressFBWarnings(value = NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE, justification = "Path.getFileName() on " +
+            "paths sourced from Files.walk over a known directory, never a root path, so it can never actually " +
+            "return null even though the JDK contract allows it - " + SPOTBUGS_REGISTER)
     private static boolean isScannableSkillFile(Path path) {
         String name = path.getFileName().toString();
         return name.endsWith(".md") || name.endsWith(".ps1") || name.endsWith(".sh") || name.endsWith(".json");

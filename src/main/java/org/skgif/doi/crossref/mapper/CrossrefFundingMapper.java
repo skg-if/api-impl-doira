@@ -1,5 +1,9 @@
 package org.skgif.doi.crossref.mapper;
 
+import static org.skgif.doi.util.SpotBugsSuppressions.IMPROPER_UNICODE;
+import static org.skgif.doi.util.SpotBugsSuppressions.SPOTBUGS_REGISTER;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -98,10 +102,29 @@ final class CrossrefFundingMapper {
         if (ids == null) {
             return Optional.empty();
         }
-        return ids.stream()
-                .filter(entry -> "DOI".equalsIgnoreCase(entry.idType()) && entry.id() != null)
-                .map(CrossrefIdEntry::id)
-                .findFirst();
+        // A loop rather than a filter/map stream pair so the id != null guard stays in the same
+        // method as the value it protects - a stream pair splits the two across separate synthetic
+        // lambdas, which neither NullAway nor SpotBugs's annotation-based suppression can connect.
+        for (CrossrefIdEntry entry : ids) {
+            String id = entry.id();
+            if (id != null && isDoiType(entry.idType())) {
+                return Optional.of(id);
+            }
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * Matches Crossref's {@code id-type} discriminator for a Funder Registry DOI, isolated in its
+     * own method so the case-insensitive comparison carries the suppression on its own.
+     *
+     * @param idType the entry's declared {@code id-type}, or null if it omits one
+     * @return true if the entry holds a Funder Registry DOI
+     */
+    @SuppressFBWarnings(value = IMPROPER_UNICODE, justification = "equalsIgnoreCase against a fixed ASCII " +
+            "vocabulary constant (\"DOI\") - unconditionally flagged by design - " + SPOTBUGS_REGISTER)
+    private static boolean isDoiType(@Nullable String idType) {
+        return "DOI".equalsIgnoreCase(idType);
     }
 
     /**

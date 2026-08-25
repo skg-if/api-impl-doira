@@ -1,5 +1,10 @@
 package org.skgif.doi.crossref.mapper;
 
+import static org.skgif.doi.util.SpotBugsSuppressions.IMPROPER_UNICODE;
+import static org.skgif.doi.util.SpotBugsSuppressions.NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE;
+import static org.skgif.doi.util.SpotBugsSuppressions.SPOTBUGS_REGISTER;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -52,6 +57,9 @@ final class CrossrefRelatedProductMapper {
      * @return the mapped related products (cites/isSupplementedBy), or Optional.empty() if there
      *         are none
      */
+    @SuppressFBWarnings(value = NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE, justification = "work.reference() misread " +
+            "as independently nullable per-call rather than a pure record accessor guarded by the preceding " +
+            "null check - " + SPOTBUGS_REGISTER)
     Optional<ProductsRelated> relatedProducts(CrossrefWork work) {
         List<ProductsRelatedCitesInner> cites = new ArrayList<>();
         if (work.reference() != null) {
@@ -96,6 +104,11 @@ final class CrossrefRelatedProductMapper {
      * @param relationType the relation key to read (e.g. "is-supplemented-by")
      * @return the mapped related-product entries for relationType, or empty if none/absent
      */
+    @SuppressFBWarnings(value = {IMPROPER_UNICODE, NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE},
+            justification = "equalsIgnoreCase against a fixed ASCII vocabulary constant (\"doi\") is " +
+                    "unconditionally flagged by design; work.relation() misread as independently nullable " +
+                    "per-call rather than a pure record accessor guarded by the preceding null check - " +
+                    SPOTBUGS_REGISTER)
     private List<ProductsRelatedCitesInner> relatedByRelationType(CrossrefWork work, String relationType) {
         List<ProductsRelatedCitesInner> result = new ArrayList<>();
         if (work.relation() == null) {

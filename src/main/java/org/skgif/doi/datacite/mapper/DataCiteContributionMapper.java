@@ -1,8 +1,14 @@
 package org.skgif.doi.datacite.mapper;
 
+import static org.skgif.doi.util.SpotBugsSuppressions.IMPROPER_UNICODE;
+import static org.skgif.doi.util.SpotBugsSuppressions.NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE;
+import static org.skgif.doi.util.SpotBugsSuppressions.SPOTBUGS_REGISTER;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.UnaryOperator;
 import org.jspecify.annotations.Nullable;
 import org.skgif.doi.datacite.dto.DataCiteAffiliation;
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
@@ -27,12 +33,17 @@ final class DataCiteContributionMapper {
 
     /** DataCite's uppercase spelling of the ROR scheme name (nameIdentifierScheme value). */
     private static final String SCHEME_ROR_UPPER = "ROR";
+    /** DataCite's uppercase spelling of the ORCID scheme name (nameIdentifierScheme value). */
+    private static final String SCHEME_ORCID_UPPER = "ORCID";
     /** DataCite's {@code contributorType} value identifying an editor contribution. */
     private static final String CONTRIBUTOR_TYPE_EDITOR = "Editor";
 
     private DataCiteContributionMapper() {
     }
 
+    @SuppressFBWarnings(value = NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE, justification = "attributes.creators()/" +
+            "attributes.contributors() misread as independently nullable per-call rather than a pure record " +
+            "accessor guarded by the preceding null check - " + SPOTBUGS_REGISTER)
     static List<ProductContribution> contributions(DataCiteAttributes attributes) {
         List<ProductContribution> contributions = new ArrayList<>();
         int rank = 1;
@@ -92,26 +103,52 @@ final class DataCiteContributionMapper {
     }
 
     static Optional<String> firstOrcid(@Nullable List<DataCiteNameIdentifier> nameIdentifiers) {
+        return firstBareIdentifier(nameIdentifiers, SCHEME_ORCID_UPPER, ExternalIdentifierUrls::stripOrcidUrl);
+    }
+
+    /**
+     * Picks the first declared identifier carrying a value under the requested scheme, in bare
+     * (URL-stripped) form. Written as a loop rather than a filter/map stream pair so the {@code
+     * != null} guard and the {@code bareForm} call it protects stay in one method body - a stream
+     * pair splits them across two synthetic lambdas, which neither NullAway nor SpotBugs's
+     * annotation-based suppression can connect.
+     *
+     * @param nameIdentifiers the creator/contributor's declared name identifiers, or null if it has none
+     * @param scheme          the {@code nameIdentifierScheme} value to match, case-insensitively
+     * @param bareForm        strips the scheme's URL prefix off a raw identifier value
+     * @return the first matching identifier in bare form, or Optional.empty() if there is none
+     */
+    private static Optional<String> firstBareIdentifier(@Nullable List<DataCiteNameIdentifier> nameIdentifiers,
+            String scheme, UnaryOperator<String> bareForm) {
         if (nameIdentifiers == null) {
             return Optional.empty();
         }
-        return nameIdentifiers.stream()
-                .filter(ni -> "ORCID".equalsIgnoreCase(ni.nameIdentifierScheme()) && ni.nameIdentifier() != null)
-                .map(ni -> ExternalIdentifierUrls.stripOrcidUrl(ni.nameIdentifier()))
-                .findFirst();
+        for (DataCiteNameIdentifier nameIdentifier : nameIdentifiers) {
+            String value = nameIdentifier.nameIdentifier();
+            if (value != null && matchesScheme(scheme, nameIdentifier.nameIdentifierScheme())) {
+                return Optional.of(bareForm.apply(value));
+            }
+        }
+        return Optional.empty();
     }
 
     static List<PersonLiteAllOfIdentifiers> orcidIdentifiers(@Nullable List<DataCiteNameIdentifier> nameIdentifiers) {
         if (nameIdentifiers == null) {
             return List.of();
         }
-        return nameIdentifiers.stream()
-                .filter(ni -> "ORCID".equalsIgnoreCase(ni.nameIdentifierScheme()))
-                .map(ni -> new PersonLiteAllOfIdentifiers()
-                        .scheme(IdentifierScheme.ORCID.value())
-                        .value(ni.nameIdentifier() != null ? ExternalIdentifierUrls.stripOrcidUrl(ni.nameIdentifier()) :
-                                null))
-                .toList();
+        List<PersonLiteAllOfIdentifiers> identifiers = new ArrayList<>();
+        for (DataCiteNameIdentifier nameIdentifier : nameIdentifiers) {
+            if (!matchesScheme(SCHEME_ORCID_UPPER, nameIdentifier.nameIdentifierScheme())) {
+                continue;
+            }
+            // Held in a local rather than re-read via the accessor so the null check is directly
+            // visible to the nullness checker at the stripOrcidUrl call, which takes a @NonNull value.
+            String value = nameIdentifier.nameIdentifier();
+            identifiers.add(new PersonLiteAllOfIdentifiers()
+                    .scheme(IdentifierScheme.ORCID.value())
+                    .value(value != null ? ExternalIdentifierUrls.stripOrcidUrl(value) : null));
+        }
+        return List.copyOf(identifiers);
     }
 
     static List<ProductAllOfRelevantOrganisations> affiliations(@Nullable String doi,
@@ -119,29 +156,38 @@ final class DataCiteContributionMapper {
         if (affiliations == null) {
             return List.of();
         }
-        return affiliations.stream()
-                .filter(affiliation -> affiliation.name() != null)
-                .<ProductAllOfRelevantOrganisations>map(affiliation -> {
-                    // Held in a local rather than re-read via the accessor so the null check is
-                    // directly visible to the nullness checker at the stripRorUrl call below,
-                    // which takes a @NonNull value.
-                    String rorIdentifier = affiliation.affiliationIdentifier();
-                    String bareRor = rorIdentifier != null &&
-                            SCHEME_ROR_UPPER.equalsIgnoreCase(affiliation.affiliationIdentifierScheme()) ?
-                                    ExternalIdentifierUrls.stripRorUrl(rorIdentifier) : null;
-                    return EntityRefs.organisationRef(doi, affiliation.name(), bareRor);
-                })
-                .toList();
+        List<ProductAllOfRelevantOrganisations> organisations = new ArrayList<>();
+        for (DataCiteAffiliation affiliation : affiliations) {
+            String name = affiliation.name();
+            if (name == null) {
+                continue;
+            }
+            // Held in a local rather than re-read via the accessor so the null check is directly
+            // visible to the nullness checker at the stripRorUrl call, which takes a @NonNull value.
+            String rorIdentifier = affiliation.affiliationIdentifier();
+            String bareRor = rorIdentifier != null &&
+                    matchesScheme(SCHEME_ROR_UPPER, affiliation.affiliationIdentifierScheme()) ?
+                            ExternalIdentifierUrls.stripRorUrl(rorIdentifier) : null;
+            organisations.add(EntityRefs.organisationRef(doi, name, bareRor));
+        }
+        return List.copyOf(organisations);
+    }
+
+    /**
+     * Compares a DataCite scheme name case-insensitively, in one place so this package carries a
+     * single {@code IMPROPER_UNICODE} suppression rather than one per calling method.
+     *
+     * @param expected the fixed uppercase vocabulary constant to match
+     * @param actual   the scheme name as DataCite spelled it, or null if the record omits it
+     * @return true if the record's scheme name matches, ignoring case
+     */
+    @SuppressFBWarnings(value = IMPROPER_UNICODE, justification = "equalsIgnoreCase against a fixed ASCII " +
+            "vocabulary constant (\"ORCID\"/\"ROR\") - unconditionally flagged by design - " + SPOTBUGS_REGISTER)
+    static boolean matchesScheme(String expected, @Nullable String actual) {
+        return expected.equalsIgnoreCase(actual);
     }
 
     static Optional<String> firstRor(@Nullable List<DataCiteNameIdentifier> nameIdentifiers) {
-        if (nameIdentifiers == null) {
-            return Optional.empty();
-        }
-        return nameIdentifiers.stream()
-                .filter(ni -> SCHEME_ROR_UPPER.equalsIgnoreCase(ni.nameIdentifierScheme()) &&
-                        ni.nameIdentifier() != null)
-                .map(ni -> ExternalIdentifierUrls.stripRorUrl(ni.nameIdentifier()))
-                .findFirst();
+        return firstBareIdentifier(nameIdentifiers, SCHEME_ROR_UPPER, ExternalIdentifierUrls::stripRorUrl);
     }
 }

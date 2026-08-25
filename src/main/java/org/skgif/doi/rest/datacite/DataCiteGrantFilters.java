@@ -2,7 +2,10 @@ package org.skgif.doi.rest.datacite;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toUnmodifiableSet;
+import static org.skgif.doi.util.SpotBugsSuppressions.IMPROPER_UNICODE;
+import static org.skgif.doi.util.SpotBugsSuppressions.SPOTBUGS_REGISTER;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
@@ -36,6 +39,9 @@ import org.skgif.doi.util.ExternalIdentifierUrls;
  * country} sub-filters of {@code beneficiaries.*}, {@code contributions.declared_affiliations.*}
  * and {@code funding_agency.*}.
  */
+@SuppressFBWarnings(value = IMPROPER_UNICODE, justification = "equalsIgnoreCase in the static clause-builder " +
+        "initializer, against fixed ASCII vocabulary constants (ORCID/ROR) - unconditionally flagged by design; " +
+        "no method to attach the annotation to (it's a static initializer block) - " + SPOTBUGS_REGISTER)
 final class DataCiteGrantFilters {
 
     /** DataCite query clause guaranteed to match no record, for a filter that can't be satisfied. */

@@ -1,7 +1,10 @@
 package org.skgif.doi.crossref.mapper;
 
 import static java.util.Objects.requireNonNull;
+import static org.skgif.doi.util.SpotBugsSuppressions.NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE;
+import static org.skgif.doi.util.SpotBugsSuppressions.SPOTBUGS_REGISTER;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.List;
 import java.util.Optional;
@@ -126,6 +129,9 @@ public class CrossrefToSkgIfMapper implements GrantCapableMapper<CrossrefWork> {
      * @return the mapped Grant
      */
     @Override
+    @SuppressFBWarnings(value = NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE, justification = "primaryProject.funding() " +
+            "misread as independently nullable per-call rather than a pure record accessor guarded by the " +
+            "preceding null check in the same expression - " + SPOTBUGS_REGISTER)
     public Grant toGrant(CrossrefWork work) {
         requireNonNull(work.doi(), "Crossref record has no DOI");
 

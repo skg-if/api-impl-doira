@@ -1,5 +1,9 @@
 package org.skgif.doi.crossref.mapper;
 
+import static org.skgif.doi.util.SpotBugsSuppressions.NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE;
+import static org.skgif.doi.util.SpotBugsSuppressions.SPOTBUGS_REGISTER;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -63,6 +67,9 @@ final class CrossrefManifestationMapper {
                 null);
     }
 
+    @SuppressFBWarnings(value = NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE, justification = "work.updateTo() misread " +
+            "as independently nullable per-call rather than a pure record accessor guarded by the preceding " +
+            "null check - " + SPOTBUGS_REGISTER)
     private Optional<ProductManifestationDates> dates(CrossrefWork work) {
         ProductManifestationDates dates = new ProductManifestationDates();
         boolean any = false;

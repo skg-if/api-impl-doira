@@ -2,7 +2,10 @@ package org.skgif.doi.datacite.mapper;
 
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
+import static org.skgif.doi.util.SpotBugsSuppressions.IMPROPER_UNICODE;
+import static org.skgif.doi.util.SpotBugsSuppressions.SPOTBUGS_REGISTER;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -146,6 +149,9 @@ final class DataCiteRelatedProductMapper {
         return related;
     }
 
+    @SuppressFBWarnings(value = IMPROPER_UNICODE, justification = "type.value().toLowerCase(Locale.ROOT) is " +
+            "flagged regardless of the explicit Locale argument - FindSecBugs's ImproperHandlingUnicodeDetector " +
+            "matches toLowerCase by method name only, ignoring the descriptor - " + SPOTBUGS_REGISTER)
     private List<ProductsRelatedCitesInner> relatedByType(DataCiteAttributes attributes, String relationType) {
         List<ProductsRelatedCitesInner> result = new ArrayList<>();
         List<DataCiteRelatedIdentifier> relatedIdentifiers = attributes.relatedIdentifiers();

@@ -23,6 +23,17 @@
     <pmd-plugin.version>3.28.0</pmd-plugin.version>
     <checkstyle-plugin.version>3.6.0</checkstyle-plugin.version>
     <spotbugs-plugin.version>4.10.4.0</spotbugs-plugin.version>
+    <!--
+      Declared here only because spotbugs-maven-plugin's own <configuration><plugins> block below
+      needs a version. Dependabot's maven ecosystem tracks <dependencies>/<build><plugins> GAVs,
+      not an arbitrary plugin's nested <configuration> body, so this property will never get an
+      automated bump PR like every other *.version property here - same class of blind spot as
+      Dockerfile.jvm's literal JDK tag (see .github/dependabot.yml). Re-check
+      https://central.sonatype.com/artifact/com.h3xstream.findsecbugs/findsecbugs-plugin manually.
+    -->
+    <findsecbugs-plugin.version>1.14.0</findsecbugs-plugin.version>
+    <!-- Matches spotbugs-plugin.version's core analysis engine (4.10.4.0 wraps spotbugs 4.10.4). -->
+    <spotbugs-annotations.version>4.10.4</spotbugs-annotations.version>
     <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
     <error-prone.version>2.50.0</error-prone.version>
     <error-prone-support.version>0.30.0</error-prone-support.version>
@@ -134,6 +145,19 @@
       <groupId>org.jspecify</groupId>
       <artifactId>jspecify</artifactId>
       <version>${jspecify.version}</version>
+    </dependency>
+
+    <!--
+      @SuppressFBWarnings, used in place of spotbugs-exclude.xml <Match> entries wherever a
+      rejection is scoped to a specific class/method - see STATIC_ANALYSIS_POLICY.md's SpotBugs
+      decision register. CLASS retention (the annotation only needs to be visible to SpotBugs'
+      own bytecode analysis, not at runtime), so provided rather than compile scope.
+    -->
+    <dependency>
+      <groupId>com.github.spotbugs</groupId>
+      <artifactId>spotbugs-annotations</artifactId>
+      <version>${spotbugs-annotations.version}</version>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -623,6 +647,12 @@
           analyzes real bytecode, and target/test-classes does not exist until after
           test-compile - an earlier phase would silently skip test-code detectors while reporting
           a clean run.
+
+          The nested <plugins> below loads FindSecBugs, whose SECURITY-category detectors (XXE,
+          injection, crypto misuse, ...) plain SpotBugs does not ship - see
+          STATIC_ANALYSIS_POLICY.md's SpotBugs decision register for the triage of what it found
+          here. It runs under the same effort/threshold/excludeFilterFile as the rest, so no
+          separate include/exclude file.
         -->
         <groupId>com.github.spotbugs</groupId>
         <artifactId>spotbugs-maven-plugin</artifactId>
@@ -634,6 +664,13 @@
           <excludeFilterFile>spotbugs-exclude.xml</excludeFilterFile>
           <skip>${skipTests}</skip>
           <failOnError>true</failOnError>
+          <plugins>
+            <plugin>
+              <groupId>com.h3xstream.findsecbugs</groupId>
+              <artifactId>findsecbugs-plugin</artifactId>
+              <version>${findsecbugs-plugin.version}</version>
+            </plugin>
+          </plugins>
         </configuration>
         <executions>
           <execution>

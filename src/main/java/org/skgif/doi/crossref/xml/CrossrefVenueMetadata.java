@@ -1,5 +1,8 @@
 package org.skgif.doi.crossref.xml;
 
+import static org.skgif.doi.util.SpotBugsSuppressions.EI_EXPOSE_REP;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.List;
 import org.jspecify.annotations.Nullable;
 
@@ -24,6 +27,8 @@ import org.jspecify.annotations.Nullable;
  * @param publisherName  the container's publisher
  * @param publisherPlace the publisher's place
  */
+@SuppressFBWarnings(value = EI_EXPOSE_REP, justification = "Plain XML-parsed data carrier with no independent " +
+        "mutation path once constructed")
 public record CrossrefVenueMetadata(
         @Nullable String containerTitle,
         @Nullable String containerDoi,

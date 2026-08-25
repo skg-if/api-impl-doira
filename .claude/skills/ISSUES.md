@@ -119,6 +119,46 @@ record of what the skill used to get wrong.
   goals actually ran before trusting a findings count" note, since this is not NullAway-specific.
 - Status: Open
 
+## `activate.ps1` leaked `$ErrorActionPreference = 'Stop'`, turning a benign mvnw stderr line into an aborted build even with `*> file.log`
+
+- Date: 2026-08-25
+- Skill: `skg-if-build-toolchain/SKILL.md` (`activate.ps1`)
+- Symptom: `. .\.claude\skills\skg-if-build-toolchain\activate.ps1; .\mvnw.cmd -B package *>
+  C:\Puma\git\puma-skg-if-api\target\findsecbugs-package.log` reported `Exit code 1` with
+  `.\mvnw.cmd : OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader
+  classes because bootstrap classpath has been appended` / `FullyQualifiedErrorId:
+  NativeCommandError` - exactly the failure signature the entry below this one already
+  documents and marked `Fixed` via "redirect to a file with `*>`, never pipe with `2>&1 |
+  <cmdlet>`". This command *was* using `*> file`, not a pipe, and still failed. The log file
+  itself was truncated mid-`surefire:test` (272 lines, stopped right after `spotbugs-check`
+  reported 0 findings), which read as a possible test failure until a separate run with plain
+  `> file` (stdout only, same command otherwise) completed to a genuine `BUILD SUCCESS` with
+  364 passing tests.
+- Root cause: the previous fix's diagnosis (native-command stderr wrapped as `NativeCommandError`)
+  was right, but its scoping was wrong - it isn't specific to `2>&1 | <cmdlet>`. `activate.ps1`
+  itself sets `$ErrorActionPreference = 'Stop'` at its top for its *own* bootstrap logic (so a
+  failed download throws instead of silently continuing), but never restored it. Dot-sourcing
+  runs in the caller's scope, so that assignment persists past the `;` into whatever command
+  follows on the same line - which is the *only* supported way to invoke this skill, since env
+  vars don't survive across separate tool calls (see the "PowerShell activation doesn't carry
+  across separate tool calls" entry below). Once the caller's `$ErrorActionPreference` is `'Stop'`,
+  PowerShell 5.1 promotes a native command's stderr line to a terminating `NativeCommandError`
+  regardless of whether that stream is redirected with `*>` to a real file - the promotion happens
+  before/independent of the file write, so the terminating exception fires mid-build (explaining
+  the truncated log) and the redirect target still exists but is incomplete. `.\mvnw.cmd` reliably
+  produces a stderr line on any goal that runs tests - surefire's forked `@QuarkusTest` JVM prints
+  the "OpenJDK ... Sharing is only supported..." notice on every run, pass or fail - so this fires
+  on essentially every `package`/`test`/`verify` invocation, not an edge case.
+- Fix: `activate.ps1` now saves the caller's `$ErrorActionPreference` before setting `'Stop'`,
+  wraps its own logic in `try`/`finally`, and restores the saved value on exit - so a chained
+  `. activate.ps1; .\mvnw.cmd ...` leaves the caller's preference exactly as it was (`'Continue'`
+  by default) once activation finishes, and only `activate.ps1`'s own commands run under `'Stop'`.
+  Verified by re-running the exact failing command (`*> ...\target\findsecbugs-package.log`
+  against `package`, which forks the surefire test JVM) after the fix: `EXIT:0`. The entry below
+  this one is not wrong, just incomplete - `2>&1 | <cmdlet>` is a second, independent way to hit
+  the same `NativeCommandError` symptom; both causes are now addressed.
+- Status: Fixed
+
 ## `2>&1 | <cmdlet>` on `.\mvnw.cmd` reports a false failure from a benign JVM stderr warning
 
 - Date: 2026-08-25

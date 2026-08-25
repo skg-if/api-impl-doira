@@ -1,6 +1,10 @@
 package org.skgif.doi.rest.datacite;
 
+import static org.skgif.doi.util.SpotBugsSuppressions.EI_EXPOSE_REP2;
+import static org.skgif.doi.util.SpotBugsSuppressions.JAXRS_ENDPOINT;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -95,6 +99,8 @@ public class DataCiteProductsResource {
      * @param objectMapper     used to assemble the JSON-LD response envelope
      */
     @Inject
+    @SuppressFBWarnings(value = EI_EXPOSE_REP2, justification = "Standard CDI constructor injection - these " +
+            "collaborators are shared, not independently mutated by this resource")
     public DataCiteProductsResource(@RestClient DataCiteClient dataCiteClient, DataCiteToSkgIfMapper mapper,
             LocalIdentifiers localIdentifiers, ObjectMapper objectMapper) {
         this.dataCiteClient = dataCiteClient;
@@ -113,6 +119,8 @@ public class DataCiteProductsResource {
     @GET
     @Path("/{local_identifier: .+}")
     @Produces(MediaType.APPLICATION_JSON)
+    @SuppressFBWarnings(value = JAXRS_ENDPOINT, justification = "Taint-source marker, not a finding - no " +
+            "injection-family detector traced a dangerous sink from this endpoint's parameters")
     public Response getProductById(
             @Parameter(
                     description = "DOI to look up (with or without the SKG base domain prefix)",

@@ -2,7 +2,10 @@ package org.skgif.doi.datacite.mapper;
 
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
+import static org.skgif.doi.util.SpotBugsSuppressions.NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE;
+import static org.skgif.doi.util.SpotBugsSuppressions.SPOTBUGS_REGISTER;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -90,6 +93,9 @@ final class DataCiteManifestationDates {
         return any ? Optional.of(dates) : Optional.empty();
     }
 
+    @SuppressFBWarnings(value = NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE, justification = "attributes.dates() " +
+            "misread as independently nullable per-call rather than a pure record accessor guarded by the " +
+            "preceding null check - " + SPOTBUGS_REGISTER)
     private static boolean applyDatesArray(ProductManifestationDates dates, DataCiteAttributes attributes) {
         if (attributes.dates() == null) {
             return false;

@@ -1,5 +1,10 @@
 package org.skgif.doi.crossref.mapper;
 
+import static org.skgif.doi.util.SpotBugsSuppressions.IMPROPER_UNICODE;
+import static org.skgif.doi.util.SpotBugsSuppressions.NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE;
+import static org.skgif.doi.util.SpotBugsSuppressions.SPOTBUGS_REGISTER;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +32,9 @@ final class CrossrefContributionMapper {
     private CrossrefContributionMapper() {
     }
 
+    @SuppressFBWarnings(value = NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE,
+            justification = "work.author()/work.editor() misread as independently nullable per-call rather than " +
+                    "a pure record accessor guarded by the preceding null check - " + SPOTBUGS_REGISTER)
     static List<ProductContribution> contributions(CrossrefWork work) {
         List<ProductContribution> contributions = new ArrayList<>();
         int rank = 1;
@@ -122,13 +130,31 @@ final class CrossrefContributionMapper {
                 .toList();
     }
 
+    /**
+     * Picks the first ROR-typed identifier off a Crossref affiliation's {@code id} list. Written as
+     * a loop rather than a stream so the {@code id != null} guard sits in the same method as the
+     * dereference - a filter/map stream pair puts the guard in one synthetic lambda and the
+     * dereference in another, which neither NullAway nor SpotBugs can connect.
+     *
+     * @param ids the affiliation's declared identifiers, or null if it asserts none
+     * @return the bare ROR id, or Optional.empty() if no ROR-typed entry carries a value
+     */
     static Optional<String> firstRor(@Nullable List<CrossrefIdEntry> ids) {
         if (ids == null) {
             return Optional.empty();
         }
-        return ids.stream()
-                .filter(entry -> "ROR".equalsIgnoreCase(entry.idType()) && entry.id() != null)
-                .map(entry -> ExternalIdentifierUrls.stripRorUrl(entry.id()))
-                .findFirst();
+        for (CrossrefIdEntry entry : ids) {
+            String id = entry.id();
+            if (id != null && isRorType(entry.idType())) {
+                return Optional.of(ExternalIdentifierUrls.stripRorUrl(id));
+            }
+        }
+        return Optional.empty();
+    }
+
+    @SuppressFBWarnings(value = IMPROPER_UNICODE, justification = "equalsIgnoreCase against a fixed ASCII " +
+            "vocabulary constant (\"ROR\") - unconditionally flagged by design - " + SPOTBUGS_REGISTER)
+    private static boolean isRorType(@Nullable String idType) {
+        return "ROR".equalsIgnoreCase(idType);
     }
 }

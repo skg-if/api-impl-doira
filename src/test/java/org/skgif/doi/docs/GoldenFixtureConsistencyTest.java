@@ -1,7 +1,10 @@
 package org.skgif.doi.docs;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.skgif.doi.util.SpotBugsSuppressions.NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE;
+import static org.skgif.doi.util.SpotBugsSuppressions.SPOTBUGS_REGISTER;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -51,12 +54,30 @@ final class GoldenFixtureConsistencyTest {
         return fixtureName.substring(0, dot) + "-out.json";
     }
 
+    /**
+     * Tests a listed path against {@link #SOURCE_FIXTURE_PATTERN}, as a named method rather than
+     * an inline lambda so the {@code getFileName() != null} guard is visible to both nullness
+     * analysis and SpotBugs (neither can see into a synthetic lambda's body from the enclosing
+     * method's annotations).
+     *
+     * @param path a path yielded by {@code Files.list(FIXTURES_DIR)}
+     * @return true if the path names a provider source fixture
+     */
+    private static boolean isSourceFixture(Path path) {
+        Path name = path.getFileName();
+        return name != null && SOURCE_FIXTURE_PATTERN.matcher(name.toString()).matches();
+    }
+
+    // The bug site below (file.getFileName().toString()) is in this method's own body, not a
+    // nested lambda, so the enclosing-method @SuppressFBWarnings reliably matches it.
+    @SuppressFBWarnings(value = NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE, justification = "Path.getFileName() on " +
+            "paths sourced from Files.list over a known directory, never a root path, so it can never actually " +
+            "return null even though the JDK contract allows it - " + SPOTBUGS_REGISTER)
     @Test
     void everySourceFixtureHasAMatchingGoldenOutput() throws IOException {
         List<String> missingGolden = new ArrayList<>();
         try (var files = Files.list(FIXTURES_DIR)) {
-            for (Path file : files.filter(p -> SOURCE_FIXTURE_PATTERN.matcher(p.getFileName().toString()).matches())
-                    .toList()) {
+            for (Path file : files.filter(GoldenFixtureConsistencyTest::isSourceFixture).toList()) {
                 String name = file.getFileName().toString();
                 if (EXCLUDED_FROM_GOLDEN.contains(name)) {
                     continue;

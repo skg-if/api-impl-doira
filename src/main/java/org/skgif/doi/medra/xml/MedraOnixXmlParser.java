@@ -1,5 +1,8 @@
 package org.skgif.doi.medra.xml;
 
+import static org.skgif.doi.util.SpotBugsSuppressions.REC_CATCH_EXCEPTION;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -48,6 +51,9 @@ public final class MedraOnixXmlParser {
      * @param xml the raw mEDRA ONIX-for-DOI XML document, or null
      * @return the parsed work, or empty if xml is null/blank or no {@code ContentItem} is found
      */
+    @SuppressFBWarnings(value = REC_CATCH_EXCEPTION, justification = "Deliberate degrade-gracefully catch - " +
+            "malformed/unexpected upstream XML degrades to a not-found result rather than failing the whole " +
+            "product response, same rationale as checkstyle.xml's IllegalCatch exclusion for this class")
     public static Optional<MedraWork> parse(@Nullable String xml) {
         if (xml == null || xml.isBlank()) {
             return Optional.empty();

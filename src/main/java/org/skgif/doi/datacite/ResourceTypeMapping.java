@@ -2,7 +2,10 @@ package org.skgif.doi.datacite;
 
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
+import static org.skgif.doi.util.SpotBugsSuppressions.BC_VACUOUS_INSTANCEOF;
+import static org.skgif.doi.util.SpotBugsSuppressions.DLS_DEAD_LOCAL_STORE;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
@@ -172,6 +175,10 @@ public final class ResourceTypeMapping {
      * @param attributes the DataCite record's attributes to check
      * @return whether attributes' {@code resourceTypeGeneral} is {@code Award}
      */
+    @SuppressFBWarnings(value = {BC_VACUOUS_INSTANCEOF, DLS_DEAD_LOCAL_STORE}, justification = "Record " +
+            "deconstruction pattern requires naming the type even when statically redundant (JEP 440/441 " +
+            "desugaring); the \"dead store\" is the unnamed pattern variable _, the language's own marker for an " +
+            "intentionally discarded component, not an accidentally unused value")
     public static boolean isAward(@Nullable DataCiteAttributes attributes) {
         return attributes != null &&
                 attributes.types() instanceof DataCiteAttributes.Types(String resourceTypeGeneral, _) &&

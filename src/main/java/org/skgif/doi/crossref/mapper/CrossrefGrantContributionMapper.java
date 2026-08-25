@@ -1,5 +1,9 @@
 package org.skgif.doi.crossref.mapper;
 
+import static org.skgif.doi.util.SpotBugsSuppressions.NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE;
+import static org.skgif.doi.util.SpotBugsSuppressions.SPOTBUGS_REGISTER;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -30,6 +34,10 @@ final class CrossrefGrantContributionMapper {
     private CrossrefGrantContributionMapper() {
     }
 
+    @SuppressFBWarnings(value = NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE,
+            justification = "project.leadInvestigator()/project.investigator() misread as independently " +
+                    "nullable per-call rather than a pure record accessor guarded by the preceding null check - " +
+                    SPOTBUGS_REGISTER)
     static List<GrantAllOfContributions> grantContributions(@Nullable String doi, List<CrossrefProject> projects) {
         List<GrantAllOfContributions> result = new ArrayList<>();
         for (CrossrefProject project : projects) {
@@ -96,6 +104,9 @@ final class CrossrefGrantContributionMapper {
         return grantAffiliations(doi, new ArrayList<>(byName.values()));
     }
 
+    @SuppressFBWarnings(value = NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE,
+            justification = "investigator.affiliation() misread as independently nullable per-call rather than " +
+                    "a pure record accessor guarded by the preceding null check - " + SPOTBUGS_REGISTER)
     private static void collectAffiliations(Map<String, CrossrefAffiliation> byName,
             @Nullable List<CrossrefInvestigator> investigators) {
         if (investigators == null) {

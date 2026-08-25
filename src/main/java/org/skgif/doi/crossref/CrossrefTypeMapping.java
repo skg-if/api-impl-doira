@@ -1,5 +1,9 @@
 package org.skgif.doi.crossref;
 
+import static org.skgif.doi.util.SpotBugsSuppressions.IMPROPER_UNICODE;
+import static org.skgif.doi.util.SpotBugsSuppressions.SPOTBUGS_REGISTER;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,6 +83,9 @@ public final class CrossrefTypeMapping {
      * @param work the Crossref work record to check
      * @return whether work's raw {@code type} is {@code grant}
      */
+    @SuppressFBWarnings(value = IMPROPER_UNICODE, justification = "equalsIgnoreCase against a fixed ASCII " +
+            "vocabulary constant (\"grant\") - none of the Turkish-i/German-ss-style case-folding ambiguity this " +
+            "detector exists to catch applies here; unconditionally flagged by design - " + SPOTBUGS_REGISTER)
     public static boolean isGrant(CrossrefWork work) {
         return work != null && GRANT.equalsIgnoreCase(work.type());
     }

@@ -1,6 +1,9 @@
 package org.skgif.doi.rest;
 
+import static org.skgif.doi.util.SpotBugsSuppressions.EI_EXPOSE_REP;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import java.util.ArrayList;
@@ -31,6 +34,9 @@ public final class JsonLdSearchResponses {
      * @param fallbackContextBase fallback {@code @context} base URL used when not overridden per-request
      * @param localIdentifiers    resolves local identifiers to/from DOIs
      */
+    @SuppressFBWarnings(value = EI_EXPOSE_REP, justification = "Plain constructor-injected dependency holder, " +
+            "not independently mutated after construction - the shared ObjectMapper is deliberately handed " +
+            "straight back out")
     public record EnvelopeContext(
             ObjectMapper objectMapper,
             String sandboxBaseUrl,

@@ -1,7 +1,10 @@
 package org.skgif.doi.rest;
 
 import static java.util.Objects.requireNonNull;
+import static org.skgif.doi.util.SpotBugsSuppressions.IMPROPER_UNICODE;
+import static org.skgif.doi.util.SpotBugsSuppressions.SPOTBUGS_REGISTER;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -107,6 +110,8 @@ public final class FilterQuerySyntax {
     // Bound as a BinaryOperator<String>/ClauseBuilder method reference inside a switch expression
     // - null means "no clause"; converting to Optional<String> is a separate, larger refactor of
     // that shared functional interface, out of scope here.
+    @SuppressFBWarnings(value = IMPROPER_UNICODE, justification = "equalsIgnoreCase against a scheme value this " +
+            "API itself controls - unconditionally flagged by design - " + SPOTBUGS_REGISTER)
     @SuppressWarnings("PMD.ReturnNullConsiderOptional")
     public static @Nullable String schemeOnlyFilter(String value, String expectedScheme, String noMatchClause) {
         return expectedScheme.equalsIgnoreCase(value) ? null : noMatchClause;

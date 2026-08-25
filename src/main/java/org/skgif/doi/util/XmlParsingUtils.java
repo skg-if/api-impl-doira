@@ -1,5 +1,8 @@
 package org.skgif.doi.util;
 
+import static org.skgif.doi.util.SpotBugsSuppressions.XPATH_INJECTION;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -58,6 +61,10 @@ public final class XmlParsingUtils {
      * @return the trimmed text value, or empty if null/blank
      * @throws XPathExpressionException if the XPath evaluation fails
      */
+    @SuppressFBWarnings(value = XPATH_INJECTION,
+            justification = "Every caller across CrossrefVenueMetadataXmlParser and MedraOnixXmlParser passes a " +
+                    "compile-time string literal, never a value built from parsed XML or other network-derived " +
+                    "data - SpotBugs can't see across this shared utility's public method boundary to confirm that")
     public static Optional<String> text(XPath xpath, Node context, String expression) throws XPathExpressionException {
         String value = (String) xpath.evaluate(expression, context, XPathConstants.STRING);
         return Optional.ofNullable(value == null || value.isBlank() ? null : value.trim());
@@ -72,6 +79,10 @@ public final class XmlParsingUtils {
      * @return the trimmed, non-blank text content of each matched node, in document order
      * @throws XPathExpressionException if the XPath evaluation fails
      */
+    @SuppressFBWarnings(value = XPATH_INJECTION,
+            justification = "Every caller across CrossrefVenueMetadataXmlParser and MedraOnixXmlParser passes a " +
+                    "compile-time string literal, never a value built from parsed XML or other network-derived " +
+                    "data - SpotBugs can't see across this shared utility's public method boundary to confirm that")
     public static List<String> textList(XPath xpath, Node context, String expression) throws XPathExpressionException {
         NodeList nodes = (NodeList) xpath.evaluate(expression, context, XPathConstants.NODESET);
         List<String> values = new ArrayList<>();

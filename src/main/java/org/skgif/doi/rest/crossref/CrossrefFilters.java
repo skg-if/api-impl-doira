@@ -1,7 +1,10 @@
 package org.skgif.doi.rest.crossref;
 
 import static java.util.stream.Collectors.joining;
+import static org.skgif.doi.util.SpotBugsSuppressions.IMPROPER_UNICODE;
+import static org.skgif.doi.util.SpotBugsSuppressions.SPOTBUGS_REGISTER;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +37,9 @@ import org.skgif.doi.util.ExternalIdentifierUrls;
  * ({@code type}, {@code orcid}, {@code doi}, {@code award.number}) - per the spec, "each filter
  * implementation is optional" and unsupported filters must 422.
  */
+@SuppressFBWarnings(value = IMPROPER_UNICODE, justification = "equalsIgnoreCase in the static clause-builder " +
+        "initializer, against fixed ASCII vocabulary constants (ORCID/ROR) - unconditionally flagged by design; " +
+        "no method to attach the annotation to (it's a static initializer block) - " + SPOTBUGS_REGISTER)
 final class CrossrefFilters {
 
     // Unquoted, unlike FilterQuerySyntax.NO_MATCH_CLAUSE - Crossref's filter= syntax has no Lucene

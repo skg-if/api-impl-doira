@@ -1,101 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  SpotBugs exclude filter - see STATIC_ANALYSIS_POLICY.md's "SpotBugs decision register" for the
-  measured count and reasoning behind every <Match> below. Each entry documents a rejection, the
-  same discipline pmd-ruleset.xml/pmd-ruleset-tests.xml already use for their own exclusions -
-  never add a <Match> here without a matching register row.
+  SpotBugs exclude filter - kept deliberately minimal. Every rejection that can be attached to a
+  specific class/method now lives as a @SuppressFBWarnings annotation in source (or a package-info.java
+  package-level annotation for a whole DTO package) instead of a <Match> here - see
+  STATIC_ANALYSIS_POLICY.md's SpotBugs decision register for the full reasoning behind each one.
+
+  This file now covers only what CANNOT carry an annotation:
 -->
 <FindBugsFilter>
   <!--
-    469 hits (96% of an unfiltered run), almost entirely on OpenAPI-generated model getters/
-    constructors and JSON-deserialized provider DTOs (CrossrefWork, DataCiteAttributes, ...).
-    These are plain data carriers with no independent mutation path once deserialized; defensive
-    copying every List/Map getter and constructor across ~30 DTO classes would be pure churn for
-    no real safety gain here.
+    Whole-package exclusion: org.skgif.doi.generated.* is openapi-generator output, regenerated on
+    every build - hand-added annotations here would be silently wiped on the next generator run,
+    the same reason maven-pmd-plugin's excludeRoots and jacoco-maven-plugin's excludes skip this
+    exact package. Matched by class, not by bug pattern, so a future openapi-generator bump
+    tripping a different detector on this generated code doesn't need a new entry before the build
+    goes green again.
   -->
   <Match>
-    <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
-  </Match>
-
-  <!--
-    9 hits (8 BC_VACUOUS_INSTANCEOF + 1 SIO_SUPERFLUOUS_INSTANCEOF), every one on a Java 21+
-    record deconstruction pattern - e.g. CrossrefGrantMapper#website's
-    `work.resource() instanceof CrossrefResource(Primary(String url))`. Record patterns require
-    naming the type at every nesting level even when it's statically redundant with the accessor's
-    return type; SpotBugs's bytecode-level check doesn't recognize the JEP 440/441 pattern
-    desugaring and reads the resulting instanceof as vacuous/superfluous. This is a systemic style
-    throughout the mappers (CrossrefJournalDoiResolver, CrossrefGrantMapper, ResourceTypeMapping,
-    JsonLdContextBase), so a whole-codebase exclusion is used rather than per-site matches that
-    would just multiply with every future record pattern.
-  -->
-  <Match>
-    <Bug pattern="BC_VACUOUS_INSTANCEOF,SIO_SUPERFLUOUS_INSTANCEOF"/>
-  </Match>
-
-  <!--
-    Nullness is NullAway's concern, not SpotBugs's - see STATIC_ANALYSIS_POLICY.md's NullAway
-    section, and the "never duplicate an active rule" principle this codebase already applies
-    between PMD and checkstyle. This detector is the weaker, bytecode-level half of that overlap
-    and now contributes only false positives, so it is off tree-wide.
-
-    Originally scoped to org.skgif.doi.docs only (6 hits: Path.getFileName() on paths sourced from
-    Files.list/Files.walk over a known directory, never a root path, so it can never actually
-    return null even though the JDK contract allows it). Widened when the provider DTO accessors
-    were annotated @Nullable: that handed SpotBugs real nullness information and took this detector
-    from 6 hits to 49, every one of the 43 new ones a false positive of a single shape it cannot
-    model - a null-guard on a record accessor followed by another call to the SAME accessor, e.g.
-
-      if (work.author() != null) { for (CrossrefContributor a : work.author()) { ... } }
-      return work.containerTitle() == null || work.containerTitle().isEmpty() || ...;
-
-    SpotBugs treats each invocation as an independently-nullable value rather than a pure field
-    read, and likewise cannot follow a guard through a stream filter or across a method boundary.
-    NullAway checks the same property at source level, understands Optional chains and
-    Objects.requireNonNull assertions, and reports zero findings on this codebase - so the
-    remaining signal here is noise, not coverage being given up.
-  -->
-  <Match>
-    <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
-  </Match>
-
-  <!--
-    4 hits (2 call sites, reported twice each) on the two deliberate `catch (Exception _)`
-    degrade-gracefully blocks that checkstyle.xml's IllegalCatch exclusion already documents (5
-    violations there, same rationale) - malformed/unexpected upstream XML degrades to a
-    REST-JSON-only result rather than failing the whole product response.
-  -->
-  <Match>
-    <Class name="org.skgif.doi.crossref.xml.CrossrefVenueMetadataXmlParser"/>
-    <Bug pattern="REC_CATCH_EXCEPTION"/>
-  </Match>
-  <Match>
-    <Class name="org.skgif.doi.medra.xml.MedraOnixXmlParser"/>
-    <Bug pattern="REC_CATCH_EXCEPTION"/>
-  </Match>
-
-  <!--
-    Whole-package exclusion, not bug-pattern-scoped: org.skgif.doi.generated.model.* is
-    openapi-generator output, not hand-written - same "generated code doesn't get the same
-    scrutiny" precedent as maven-pmd-plugin's excludeRoots and jacoco-maven-plugin's excludes for
-    this exact package. The only pattern this package tripped in the 2026-08-25 unfiltered run was
-    1 SE_NO_SERIALVERSIONID hit (on JsonLdCtxBaseOrMore), already covered by the EI_EXPOSE_REP/REP2
-    match above too - but matching the whole class rather than that one pattern means a future
-    openapi-generator bump tripping a *different* detector on this generated code doesn't need a
-    new register row before the build goes green again.
-  -->
-  <Match>
-    <Class name="~org\.skgif\.doi\.generated\.model\..*"/>
-  </Match>
-
-  <!--
-    1 hit, on ResourceTypeMapping#isAward's
-    `attributes.types() instanceof DataCiteAttributes.Types(String resourceTypeGeneral, _)`. The
-    "dead store" SpotBugs sees is the unnamed pattern variable `_` - the language's own marker for
-    an intentionally discarded component, not an accidentally unused value.
-  -->
-  <Match>
-    <Class name="org.skgif.doi.datacite.ResourceTypeMapping"/>
-    <Method name="isAward"/>
-    <Bug pattern="DLS_DEAD_LOCAL_STORE"/>
+    <Class name="~org\.skgif\.doi\.generated\..*"/>
   </Match>
 </FindBugsFilter>

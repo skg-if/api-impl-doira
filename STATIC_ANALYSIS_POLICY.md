@@ -25,10 +25,10 @@ Six tools, and mixing up their jobs is the single most expensive mistake availab
 | **Spotless** (Eclipse formatter + `intellij-style.xml`) | formatting: indentation, wrapping, whitespace, blank lines | yes - `check` fails the build |
 | **Checkstyle** | semantics and style a formatter cannot express: naming, Javadoc, imports, language-idiom rules | yes - both source roots |
 | **PMD** | correctness, design, complexity, error-prone patterns | yes - both source roots |
-| **SpotBugs** | bytecode/dataflow correctness Checkstyle's style rules and PMD's AST-level rules can't reach: null dataflow, resource leaks, concurrency hazards | yes - `check` fails the build |
+| **SpotBugs** (+ FindSecBugs) | bytecode/dataflow correctness Checkstyle's style rules and PMD's AST-level rules can't reach: null dataflow, resource leaks, concurrency hazards; plus, via the bundled FindSecBugs detector plugin, known security bug classes (injection, XXE, taint-tracked endpoints) | yes - `check` fails the build |
 | **Error Prone** | compile-time, type-aware bug patterns caught via `javac`'s own type information - a different reach than PMD's pure-AST rules or SpotBugs's post-compile bytecode analysis | yes - `failOnWarning=true` fails the compile on any diagnostic, `WARNING`-severity default checks included, not just its `ERROR`-severity ones |
 | **Error Prone Support** (Picnic) | extra type-aware checks and Refaster template rewrites layered on Error Prone's plugin: JUnit/AssertJ/Mockito idiom, static-import and annotation hygiene. Does **not** own formatting (spotless) or nullness (NullAway) | yes - `-XepAllSuggestionsAsWarnings` promotes its `SUGGESTION` checks into `failOnWarning`'s reach; Guava-introducing and inference-breaking rule families excluded, see its section below |
-| **NullAway** | nullness specifically: that a `@Nullable` value never reaches a `@NonNull` field, parameter or return. Rides on Error Prone's `javac` plugin, scoped by one prefix flag over the whole `org.skgif.doi` tree. Owns this concern outright - SpotBugs's weaker bytecode-level `NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE` is excluded tree-wide as a duplicate | yes - `-Xep:NullAway:ERROR` fails the compile, both source roots; only `org.skgif.doi.generated` is out of scope |
+| **NullAway** | nullness specifically: that a `@Nullable` value never reaches a `@NonNull` field, parameter or return. Rides on Error Prone's `javac` plugin, scoped by one prefix flag over the whole `org.skgif.doi` tree. Owns this concern outright - SpotBugs's weaker bytecode-level `NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE` is a documented, per-site `@SuppressFBWarnings` duplicate wherever NullAway's own source-level tracking already proved a path safe | yes - `-Xep:NullAway:ERROR` fails the compile, both source roots; only `org.skgif.doi.generated` is out of scope |
 | **Sonar** | nothing - no Sonar server runs here | **no** |
 
 Sonar is used only as a *naming scheme*: `SXXXX` ids give each concern a stable, documented
@@ -342,24 +342,85 @@ addresses.
 What SpotBugs *is* wired up for: a genuine regression guard against the bug classes its detectors
 do reach reliably (see principle 4 above - a 0-violation check is still worth having as a guard).
 The first `effort=Max, threshold=Low`, no-filter run against this codebase (2026-08-25) reported
-490 findings; every one was triaged into `spotbugs-exclude.xml` as a rejection, none as a fix - a
-plausible outcome for a codebase already gated by strict Checkstyle/PMD/Spotless and written in a
-record-pattern-heavy Java 21+ style that predates most SpotBugs detectors.
+490 findings; every one was triaged as a rejection, none as a fix - a plausible outcome for a
+codebase already gated by strict Checkstyle/PMD/Spotless and written in a record-pattern-heavy
+Java 21+ style that predates most SpotBugs detectors.
 
-| SpotBugs pattern | Status | Basis | Count |
-|---|---|---:|---:|
-| `EI_EXPOSE_REP` / `EI_EXPOSE_REP2` | rejected | noise: fires on nearly every List/Map-typed getter or constructor across the OpenAPI-generated models and JSON-deserialized provider DTOs (`CrossrefWork`, `DataCiteAttributes`, ...) - plain data carriers with no independent mutation path once deserialized; defensive-copying ~30 DTO classes is pure churn for no real safety gain | 469 |
-| `BC_VACUOUS_INSTANCEOF` | rejected | false positive: fires on every Java 21+ record deconstruction pattern (e.g. `work.resource() instanceof CrossrefResource(Primary(String url))`), where the language requires naming the type at each nesting level even though it is statically redundant with the accessor's return type - SpotBugs's bytecode check doesn't recognize the JEP 440/441 pattern desugaring | 8 |
-| `SIO_SUPERFLUOUS_INSTANCEOF` | rejected | false positive: same record-pattern root cause as `BC_VACUOUS_INSTANCEOF` above | 1 |
-| `NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE` | rejected, **tree-wide** (was scoped to `org.skgif.doi.docs.*`) | duplicate + false positive: originally 6 `Path.getFileName()` hits in the doc-consistency tests, all on paths from `Files.list`/`Files.walk` over a known directory or `resolve()`'d against one, never a root path. Widened to the whole tree once the DTO accessors were annotated `@Nullable` - that took it to 49 hits, the 43 new ones all one shape SpotBugs cannot model (a null-guard on a record accessor followed by another call to the *same* accessor). Nullness is now NullAway's concern, at source level and with zero findings - see the NullAway section | 6 → 49 |
-| `REC_CATCH_EXCEPTION` | rejected, scoped to `CrossrefVenueMetadataXmlParser`/`MedraOnixXmlParser` | duplicate: the same two deliberate `catch (Exception _)` degrade-gracefully blocks `checkstyle.xml`'s `IllegalCatch` exclusion already documents (5 violations there) - malformed upstream XML degrades to a REST-JSON-only result rather than failing the whole response | 4 |
-| *(any pattern)* | rejected, whole package `org.skgif.doi.generated.model.*` | generated code: same "generated code doesn't get the same scrutiny" precedent as `maven-pmd-plugin`'s `excludeRoots` and `jacoco-maven-plugin`'s `excludes` for this package - matched by class, not by bug pattern, so a future openapi-generator bump tripping a different detector here doesn't need a new row before the build goes green again. The only pattern this package actually tripped was `SE_NO_SERIALVERSIONID` (on `JsonLdCtxBaseOrMore`) | 1 |
-| `DLS_DEAD_LOCAL_STORE` | rejected, scoped to `ResourceTypeMapping#isAward` | false positive: the "dead store" is the unnamed pattern variable `_` in a record deconstruction (`DataCiteAttributes.Types(String resourceTypeGeneral, _)`) - the language's own marker for an intentionally discarded component, not an accidentally unused value | 1 |
+### Rejections live as `@SuppressFBWarnings` in source, not in `spotbugs-exclude.xml`
 
-A future re-run only needs to evaluate findings from packages/classes not already covered by a
-`<Match>` in `spotbugs-exclude.xml` - anything new surfacing in an already-matched class/pattern
-combination is filtered by construction and should be looked at manually rather than assumed
-still valid, since a filter matches by class+pattern, not by the original measured instance.
+Every rejection above was originally recorded as a `<Match>` in `spotbugs-exclude.xml`. That filter
+file has since been reduced to a single entry (the generated-code exclusion below) and every other
+rejection converted to a `@SuppressFBWarnings` annotation, via the `com.github.spotbugs:
+spotbugs-annotations` dependency (`provided` scope, `RetentionPolicy.CLASS` - no runtime footprint),
+placed directly on the class/method/field the finding actually belongs to, or on a
+`package-info.java` for a whole DTO-only package (`crossref.dto`, `datacite.dto`, `medra.dto` -
+confirmed empirically to suppress the pattern for every class in that package). The motivation:
+a class-wide XML filter matches by class+pattern only, so it silently also swallows a genuinely new
+bug introduced later in the same class/pattern combination; a per-site annotation only ever matches
+the one finding it was written for; if that exact bug shape is fixed and a new one appears nearby,
+`US_USELESS_SUPPRESSION_ON_METHOD`/`_CLASS` fires and the build fails until the annotation is
+revisited. `spotbugs-exclude.xml` itself documents that it now only holds what *cannot* carry an
+annotation.
+
+Every pattern name and the shared justification-tail phrase are centralized as `public static final
+String` constants in `org.skgif.doi.util.SpotBugsSuppressions` (a constants-only holder, `@SuppressWarnings("PMD.DataClass")`
+- deliberately not a Java `interface` of constants, the worse-regarded idiom this pattern replaces)
+and referenced via `import static`, rather than repeating the literal at every annotated site - both
+because a typo in a repeated literal silently no-ops the suppression, and because PMD's
+`AvoidDuplicateLiterals` (`maxDuplicateLiterals=3`) otherwise fires on a class annotating several
+methods with the same pattern. Read the class Javadoc there for what each constant covers; read the
+`justification` string at each call site for why that specific site is safe - this file intentionally
+doesn't duplicate either, to avoid the two drifting apart.
+
+### Lambda bodies can't reliably carry a method-level suppression
+
+An enclosing method's `@SuppressFBWarnings` *sometimes* reaches a finding SpotBugs attributes to a
+nested lambda's synthetic method (`lambda$methodName$N`), but this was confirmed unreliable at this
+codebase's scale: a full-tree run with ~50 annotations present left 31 findings still failing, every
+one where the actual bug site was inside a lambda body, while every finding whose bug site sat in
+the enclosing method's own code (or was reached via a plain method reference to a *separately*
+annotated method) suppressed correctly. Confirmed via `javap -v -p` bytecode inspection (the
+annotation's `RuntimeInvisibleAnnotations` value resolves the shared constant correctly, ruling out
+a constant-folding bug) and byte-for-byte identical reruns (ruling out flakiness) - and each failure
+carried its own `US_USELESS_SUPPRESSION_ON_METHOD`/`_CLASS` alongside the still-firing original
+finding, proving genuine non-suppression rather than the cosmetic self-referential false positive
+that detector can also produce.
+
+**The fix, applied throughout:** extract the lambda body into a named private method (static where
+possible) invoked via a method reference, and annotate that named method directly -
+`CrossrefContributionMapper.firstRor`/`isRorType`, `CrossrefFundingMapper.funderDoi`/`isDoiType`,
+`DataCiteContributionMapper.firstBareIdentifier`/`matchesScheme`, and the doc-consistency tests'
+`isSourceFixture`/`isMappingDoc` predicates are worked examples. Where the guard and the dereference
+it protects were split across a `filter(...).map(...)` stream pair specifically (rather than a
+`Nullable`-scheme comparison), a plain indexed loop reads at least as clearly and keeps both in one
+method body without needing a second extracted method at all - see the same
+`DataCiteContributionMapper`/`DataCiteGrantMapper` methods, and `CrossrefGrantMapper.grantTitles`/
+`grantAbstracts`, which instead route the null-dropping through `Objects::nonNull` via
+accessor-then-filter method references (`map(CrossrefProject::projectTitle).filter(Objects::nonNull)`)
+rather than an inline `p -> p.x() != null` predicate lambda, for the same reason.
+
+Only what genuinely cannot carry an annotation stays in `spotbugs-exclude.xml`:
+
+| Exclusion | Basis |
+|---|---|
+| whole package `org.skgif.doi.generated.*` | openapi-generator output, regenerated on every build - a hand-added annotation here is silently wiped on the next generator run, the same reason `maven-pmd-plugin`'s `excludeRoots` and `jacoco-maven-plugin`'s `excludes` skip this package. Matched by class, not by bug pattern, so a future generator bump tripping a different detector here doesn't need a new entry |
+
+### FindSecBugs
+
+Added 2026-08-25 alongside the annotation migration, via SpotBugs's own nested
+`<configuration><plugins>` detector-plugin mechanism (`com.h3xstream.findsecbugs:findsecbugs-plugin`).
+**Not tracked by Dependabot**: its GAV lives inside SpotBugs's `<configuration>` body rather than a
+standard `<dependency>`/`<plugin>` declaration site, which Dependabot's Maven updater does not walk
+into - `pom.xml` documents this gap with a comment next to the version property, the same convention
+`.github/dependabot.yml` uses for its own `Dockerfile.jvm`-ARG and composite-actions-`directories`
+blind spots.
+
+FindSecBugs's own findings were triaged the same way as vanilla SpotBugs's - fix the genuine ones,
+annotate the rest via `SpotBugsSuppressions`' `JAXRS_ENDPOINT`/`IMPROPER_UNICODE`/`XPATH_INJECTION`/
+`PATH_TRAVERSAL_IN` constants where the finding is a documented false positive or an accepted,
+justified pattern (each call site's own `justification` string states which and why) - none were
+rejected via `spotbugs-exclude.xml`, since none were whole-class/whole-package noise the way the
+original DTO-getter flood was.
 
 ## Error Prone
 
@@ -610,12 +671,14 @@ return work.containerTitle() == null || work.containerTitle().isEmpty() || ...;
 ```
 
 SpotBugs treats each invocation as an independently-nullable value rather than a pure field read, and
-likewise cannot follow a guard through a stream filter or across a method boundary. That detector is
-now excluded **tree-wide** in `spotbugs-exclude.xml` (it was already excluded for
-`org.skgif.doi.docs`), by the same "never duplicate an active rule" principle this file applies
-between PMD and checkstyle: NullAway checks the same property at source level, understands `Optional`
-chains and `Objects.requireNonNull` assertions, and reports zero findings. The remaining SpotBugs
-signal there was noise, not coverage being given up.
+likewise cannot follow a guard through a stream filter or across a method boundary. Rather than a
+tree-wide XML exclusion, each of these is now a per-site `@SuppressFBWarnings(NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE)`
+next to the guarded accessor it fires on, by the same "never duplicate an active rule" principle
+this file applies between PMD and checkstyle: NullAway checks the same property at source level,
+understands `Optional` chains and `Objects.requireNonNull` assertions, and reports zero findings.
+Per-site rather than tree-wide so a genuinely new nullness bug introduced later in an already-annotated
+class still gets caught - see the "Rejections live as `@SuppressFBWarnings` in source" subsection of
+the SpotBugs decision register above for why that granularity was chosen over a class/package match.
 
 ### Negative tests
 

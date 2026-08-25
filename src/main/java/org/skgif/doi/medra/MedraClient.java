@@ -1,5 +1,8 @@
 package org.skgif.doi.medra;
 
+import static org.skgif.doi.util.SpotBugsSuppressions.JAXRS_ENDPOINT;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -32,5 +35,7 @@ public interface MedraClient {
      */
     @GET
     @Path("/metadata/{doi}")
+    @SuppressFBWarnings(value = JAXRS_ENDPOINT, justification = "Taint-source marker, not a finding - no " +
+            "injection-family detector traced a dangerous sink from this endpoint's parameters")
     Response getMetadata(@PathParam("doi") String doi);
 }

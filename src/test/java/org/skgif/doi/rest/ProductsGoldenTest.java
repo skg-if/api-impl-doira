@@ -7,9 +7,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static org.skgif.doi.util.SpotBugsSuppressions.PATH_TRAVERSAL_IN;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.ws.rs.core.Response;
@@ -647,6 +649,9 @@ final class ProductsGoldenTest {
         compareOrWriteGolden(new ObjectMapper().readTree(actualBody), expectedJsonLdResource);
     }
 
+    @SuppressFBWarnings(value = PATH_TRAVERSAL_IN, justification = "expectedResource is always a compile-time " +
+            "string literal supplied by the caller at each golden-test call site, never external input - " +
+            "reachable only behind the hardcoded REGENERATE_GOLDEN dev-mode flag")
     private void compareOrWriteGolden(JsonNode actual, String expectedResource) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         if (REGENERATE_GOLDEN) {

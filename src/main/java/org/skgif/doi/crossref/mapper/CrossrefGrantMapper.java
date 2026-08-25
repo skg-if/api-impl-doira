@@ -1,5 +1,8 @@
 package org.skgif.doi.crossref.mapper;
 
+import static org.skgif.doi.util.SpotBugsSuppressions.BC_VACUOUS_INSTANCEOF;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -44,9 +47,13 @@ final class CrossrefGrantMapper {
      * @return the concatenated titles keyed by "en", or an empty map if none carry a title
      */
     Map<String, String> grantTitles(List<CrossrefProject> projects) {
+        // Accessor-then-filter via method references rather than filter(p -> p.x() != null)
+        // followed by flatMap(p -> p.x().stream()): the latter puts the guard in one synthetic
+        // lambda and the dereference in another, which nullness analysis cannot connect.
         List<String> values = projects.stream()
-                .filter(p -> p.projectTitle() != null)
-                .flatMap(p -> p.projectTitle().stream())
+                .map(CrossrefProject::projectTitle)
+                .filter(Objects::nonNull)
+                .flatMap(List::stream)
                 .map(CrossrefProjectTitle::title)
                 .filter(Objects::nonNull)
                 .toList();
@@ -55,8 +62,9 @@ final class CrossrefGrantMapper {
 
     Map<String, String> grantAbstracts(List<CrossrefProject> projects) {
         List<String> values = projects.stream()
-                .filter(p -> p.projectDescription() != null)
-                .flatMap(p -> p.projectDescription().stream())
+                .map(CrossrefProject::projectDescription)
+                .filter(Objects::nonNull)
+                .flatMap(List::stream)
                 .map(CrossrefProjectDescription::description)
                 .filter(Objects::nonNull)
                 .toList();
@@ -101,6 +109,9 @@ final class CrossrefGrantMapper {
                 .start(start).end(end));
     }
 
+    @SuppressFBWarnings(value = BC_VACUOUS_INSTANCEOF, justification = "Record deconstruction pattern requires " +
+            "naming the type at every nesting level even when statically redundant with the accessor's return " +
+            "type - JEP 440/441 desugaring SpotBugs's bytecode analysis doesn't recognize")
     Optional<String> website(CrossrefWork work) {
         if (work.resource() instanceof CrossrefResource(Primary(String url))) {
             return Optional.of(url);

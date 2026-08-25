@@ -1,5 +1,8 @@
 package org.skgif.doi.crossref.xml;
 
+import static org.skgif.doi.util.SpotBugsSuppressions.REC_CATCH_EXCEPTION;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.List;
 import java.util.Optional;
 import javax.xml.xpath.XPath;
@@ -46,6 +49,9 @@ public final class CrossrefVenueMetadataXmlParser {
      * @param xml the raw Crossref XML transform document, or null
      * @return the parsed venue metadata, or empty if xml is null/blank or unparseable
      */
+    @SuppressFBWarnings(value = REC_CATCH_EXCEPTION, justification = "Deliberate degrade-gracefully catch - " +
+            "malformed/unexpected upstream XML degrades to a REST-JSON-only result rather than failing the " +
+            "whole product response, same rationale as checkstyle.xml's IllegalCatch exclusion for this class")
     public static Optional<CrossrefVenueMetadata> parse(String xml) {
         if (xml == null || xml.isBlank()) {
             return Optional.empty();

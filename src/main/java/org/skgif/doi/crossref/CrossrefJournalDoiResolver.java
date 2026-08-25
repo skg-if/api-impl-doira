@@ -1,5 +1,11 @@
 package org.skgif.doi.crossref;
 
+import static org.skgif.doi.util.SpotBugsSuppressions.BC_VACUOUS_INSTANCEOF;
+import static org.skgif.doi.util.SpotBugsSuppressions.NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE;
+import static org.skgif.doi.util.SpotBugsSuppressions.SIO_SUPERFLUOUS_INSTANCEOF;
+import static org.skgif.doi.util.SpotBugsSuppressions.SPOTBUGS_REGISTER;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import java.util.List;
@@ -120,6 +126,12 @@ public class CrossrefJournalDoiResolver {
         }
     }
 
+    @SuppressFBWarnings(
+            value = {BC_VACUOUS_INSTANCEOF, SIO_SUPERFLUOUS_INSTANCEOF, NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE},
+            justification = "Record deconstruction pattern requires naming the type at every nesting level even " +
+                    "when statically redundant (JEP 440/441 desugaring SpotBugs's bytecode analysis doesn't " +
+                    "recognize); NP_NULL is items.getFirst().doi() misread as independently nullable per-call " +
+                    "rather than a pure record accessor - " + SPOTBUGS_REGISTER)
     private Optional<String> fetchJournalDoi(String issn) {
         try {
             CrossrefWorkListResponse response = crossrefClient.listWorks(

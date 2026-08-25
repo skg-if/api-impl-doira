@@ -106,19 +106,21 @@ final class DataCiteGrantMapper {
         if (affiliations == null) {
             return List.of();
         }
-        return affiliations.stream()
-                .filter(affiliation -> affiliation.name() != null)
-                .<GrantAllOfBeneficiaries>map(affiliation -> {
-                    // Held in a local rather than re-read via the accessor so the null check is
-                    // directly visible to the nullness checker at the stripRorUrl call below,
-                    // which takes a @NonNull value.
-                    String rorIdentifier = affiliation.affiliationIdentifier();
-                    String bareRor = rorIdentifier != null &&
-                            SCHEME_ROR_UPPER.equalsIgnoreCase(affiliation.affiliationIdentifierScheme()) ?
-                                    ExternalIdentifierUrls.stripRorUrl(rorIdentifier) : null;
-                    return EntityRefs.organisationRef(doi, affiliation.name(), bareRor);
-                })
-                .toList();
+        List<GrantAllOfBeneficiaries> beneficiaries = new ArrayList<>();
+        for (DataCiteAffiliation affiliation : affiliations) {
+            String name = affiliation.name();
+            if (name == null) {
+                continue;
+            }
+            // Held in a local rather than re-read via the accessor so the null check is directly
+            // visible to the nullness checker at the stripRorUrl call, which takes a @NonNull value.
+            String rorIdentifier = affiliation.affiliationIdentifier();
+            String bareRor = rorIdentifier != null && DataCiteContributionMapper.matchesScheme(SCHEME_ROR_UPPER,
+                    affiliation.affiliationIdentifierScheme()) ?
+                            ExternalIdentifierUrls.stripRorUrl(rorIdentifier) : null;
+            beneficiaries.add(EntityRefs.organisationRef(doi, name, bareRor));
+        }
+        return List.copyOf(beneficiaries);
     }
 
     /**

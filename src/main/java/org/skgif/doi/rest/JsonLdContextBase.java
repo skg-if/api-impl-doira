@@ -1,5 +1,10 @@
 package org.skgif.doi.rest;
 
+import static org.skgif.doi.util.SpotBugsSuppressions.BC_VACUOUS_INSTANCEOF;
+import static org.skgif.doi.util.SpotBugsSuppressions.NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE;
+import static org.skgif.doi.util.SpotBugsSuppressions.SPOTBUGS_REGISTER;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.List;
 import java.util.Optional;
 import org.jspecify.annotations.Nullable;
@@ -79,6 +84,10 @@ public final class JsonLdContextBase {
                 .orElse(fallbackContextBase);
     }
 
+    @SuppressFBWarnings(value = {BC_VACUOUS_INSTANCEOF, NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE},
+            justification = "Record deconstruction pattern requires naming the type at every nesting level even " +
+                    "when statically redundant (JEP 440/441 desugaring SpotBugs's bytecode analysis doesn't " +
+                    "recognize) - " + SPOTBUGS_REGISTER)
     private static Optional<String> clientId(DataCiteDoiData data) {
         if (data == null) {
             return Optional.empty();
