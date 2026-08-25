@@ -362,15 +362,47 @@ the one finding it was written for; if that exact bug shape is fixed and a new o
 revisited. `spotbugs-exclude.xml` itself documents that it now only holds what *cannot* carry an
 annotation.
 
-Every pattern name and the shared justification-tail phrase are centralized as `public static final
-String` constants in `org.skgif.doi.util.SpotBugsSuppressions` (a constants-only holder, `@SuppressWarnings("PMD.DataClass")`
-- deliberately not a Java `interface` of constants, the worse-regarded idiom this pattern replaces)
-and referenced via `import static`, rather than repeating the literal at every annotated site - both
-because a typo in a repeated literal silently no-ops the suppression, and because PMD's
-`AvoidDuplicateLiterals` (`maxDuplicateLiterals=3`) otherwise fires on a class annotating several
-methods with the same pattern. Read the class Javadoc there for what each constant covers; read the
-`justification` string at each call site for why that specific site is safe - this file intentionally
-doesn't duplicate either, to avoid the two drifting apart.
+Every pattern name and the shared justification-tail phrase are centralized in
+`org.skgif.doi.util.SpotBugsError` and referenced via `import static`, rather than repeating the
+literal at every annotated site - both because a typo in a repeated literal silently no-ops the
+suppression, and because PMD's `AvoidDuplicateLiterals` (`maxDuplicateLiterals=3`) otherwise fires
+on a class annotating several methods with the same pattern. Read that enum's per-constant Javadoc
+for what each pattern covers and a link to its upstream description; read the `justification` string
+at each call site for why that specific site is safe - this file intentionally doesn't duplicate
+either, to avoid the two drifting apart.
+
+`SpotBugsError` is an **enum plus a nested `Code` holder of `String` constants**, not the flat
+constants class it replaced (`SpotBugsSuppressions`, removed). Two constraints force that shape and
+neither is negotiable:
+
+- A `@SuppressFBWarnings` argument is an annotation value, so it must be a *compile-time constant* -
+  an enum constant is not one, and `SpotBugsError.EI_EXPOSE_REP.code()` will not compile there.
+  `Code.EI_EXPOSE_REP` is what the annotated sites `import static`; the enum member of the same
+  name is the descriptive layer over it, carrying the reporting category and the doc link a bare
+  `String` cannot.
+- Making `SpotBugsError` itself an *enum* is what satisfies PMD's `DataClass` for the outer type,
+  the same fix recorded for `EntityTypes`/`GrantFilterKeys`/`ProductFilterKeys` in `pmd-ruleset.xml`
+  (an enum constant isn't an `ASTFieldDeclaration`, so it can't contribute to the rule's NOPA
+  metric). The nested `Code` holder can't take that fix - it must stay plain `String` constants for
+  the reason above - so it carries its own `@SuppressWarnings("PMD.DataClass")`, the same
+  compile-time-constant-holder exception `SpotBugsSuppressions` itself used to carry. It's a `final`
+  class with a private constructor - deliberately not a Java `interface` of constants, the
+  worse-regarded idiom this pattern replaces.
+
+`SpotBugsErrorTest` fails the build if either side gains or loses an entry, and if a member's `@see`
+link stops naming the member it sits above. Categories were taken from the tools' own
+`findbugs.xml` `BugPattern` declarations (`spotbugs-<version>.jar`, `findsecbugs-plugin-<version>.jar`)
+rather than inferred from the docs page - note that SpotBugs files
+`NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE` and `REC_CATCH_EXCEPTION` under `STYLE` (rendered as "Dodgy
+code"), not `CORRECTNESS`, and that all four FindSecBugs patterns are `SECURITY`.
+
+Those doc links are also the reason `checkstyle.xml`'s `LineLength` carries an `ignorePattern`: a
+`bugDescriptions.html` anchor is a full slugified section title, so every one of these URLs is
+123-182 characters. Spotless already wraps a `@see <a href="...">TEXT</a>` tag that long onto two
+lines - `@see <a` on its own line, `href="...">TEXT</a>` on the next, since those are the only
+whitespace positions it's allowed to break the tag at - and what's left on that continuation line is
+a single unbreakable token Spotless cannot shorten further. The pattern exempts only that
+continuation-line shape, so an over-long line of code or prose elsewhere is still a violation.
 
 ### Lambda bodies can't reliably carry a method-level suppression
 
@@ -416,7 +448,7 @@ into - `pom.xml` documents this gap with a comment next to the version property,
 blind spots.
 
 FindSecBugs's own findings were triaged the same way as vanilla SpotBugs's - fix the genuine ones,
-annotate the rest via `SpotBugsSuppressions`' `JAXRS_ENDPOINT`/`IMPROPER_UNICODE`/`XPATH_INJECTION`/
+annotate the rest via `SpotBugsError.Code`'s `JAXRS_ENDPOINT`/`IMPROPER_UNICODE`/`XPATH_INJECTION`/
 `PATH_TRAVERSAL_IN` constants where the finding is a documented false positive or an accepted,
 justified pattern (each call site's own `justification` string states which and why) - none were
 rejected via `spotbugs-exclude.xml`, since none were whole-class/whole-package noise the way the

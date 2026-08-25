@@ -1,7 +1,7 @@
 package org.skgif.doi.crossref;
 
-import static org.skgif.doi.util.SpotBugsSuppressions.IMPROPER_UNICODE;
-import static org.skgif.doi.util.SpotBugsSuppressions.SPOTBUGS_REGISTER;
+import static org.skgif.doi.util.SpotBugsError.Code.IMPROPER_UNICODE;
+import static org.skgif.doi.util.SpotBugsError.SPOTBUGS_REGISTER;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.HashMap;

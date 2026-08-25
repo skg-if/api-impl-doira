@@ -7,7 +7,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
-import static org.skgif.doi.util.SpotBugsSuppressions.PATH_TRAVERSAL_IN;
+import static org.skgif.doi.util.SpotBugsError.Code.PATH_TRAVERSAL_IN;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

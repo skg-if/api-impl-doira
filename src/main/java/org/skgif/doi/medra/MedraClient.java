@@ -1,6 +1,6 @@
 package org.skgif.doi.medra;
 
-import static org.skgif.doi.util.SpotBugsSuppressions.JAXRS_ENDPOINT;
+import static org.skgif.doi.util.SpotBugsError.Code.JAXRS_ENDPOINT;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jakarta.ws.rs.GET;

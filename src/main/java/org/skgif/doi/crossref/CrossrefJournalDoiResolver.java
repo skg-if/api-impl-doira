@@ -1,9 +1,9 @@
 package org.skgif.doi.crossref;
 
-import static org.skgif.doi.util.SpotBugsSuppressions.BC_VACUOUS_INSTANCEOF;
-import static org.skgif.doi.util.SpotBugsSuppressions.NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE;
-import static org.skgif.doi.util.SpotBugsSuppressions.SIO_SUPERFLUOUS_INSTANCEOF;
-import static org.skgif.doi.util.SpotBugsSuppressions.SPOTBUGS_REGISTER;
+import static org.skgif.doi.util.SpotBugsError.Code.BC_VACUOUS_INSTANCEOF;
+import static org.skgif.doi.util.SpotBugsError.Code.NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE;
+import static org.skgif.doi.util.SpotBugsError.Code.SIO_SUPERFLUOUS_INSTANCEOF;
+import static org.skgif.doi.util.SpotBugsError.SPOTBUGS_REGISTER;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jakarta.enterprise.context.RequestScoped;

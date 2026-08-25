@@ -1,6 +1,6 @@
 package org.skgif.doi.rest;
 
-import static org.skgif.doi.util.SpotBugsSuppressions.EI_EXPOSE_REP;
+import static org.skgif.doi.util.SpotBugsError.Code.EI_EXPOSE_REP;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;

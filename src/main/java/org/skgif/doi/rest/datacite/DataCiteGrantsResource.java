@@ -1,7 +1,7 @@
 package org.skgif.doi.rest.datacite;
 
-import static org.skgif.doi.util.SpotBugsSuppressions.EI_EXPOSE_REP2;
-import static org.skgif.doi.util.SpotBugsSuppressions.JAXRS_ENDPOINT;
+import static org.skgif.doi.util.SpotBugsError.Code.EI_EXPOSE_REP2;
+import static org.skgif.doi.util.SpotBugsError.Code.JAXRS_ENDPOINT;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;

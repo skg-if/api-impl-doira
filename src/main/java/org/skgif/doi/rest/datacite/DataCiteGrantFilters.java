@@ -2,8 +2,8 @@ package org.skgif.doi.rest.datacite;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toUnmodifiableSet;
-import static org.skgif.doi.util.SpotBugsSuppressions.IMPROPER_UNICODE;
-import static org.skgif.doi.util.SpotBugsSuppressions.SPOTBUGS_REGISTER;
+import static org.skgif.doi.util.SpotBugsError.Code.IMPROPER_UNICODE;
+import static org.skgif.doi.util.SpotBugsError.SPOTBUGS_REGISTER;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.Arrays;

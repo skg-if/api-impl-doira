@@ -2,8 +2,8 @@ package org.skgif.doi.datacite;
 
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
-import static org.skgif.doi.util.SpotBugsSuppressions.BC_VACUOUS_INSTANCEOF;
-import static org.skgif.doi.util.SpotBugsSuppressions.DLS_DEAD_LOCAL_STORE;
+import static org.skgif.doi.util.SpotBugsError.Code.BC_VACUOUS_INSTANCEOF;
+import static org.skgif.doi.util.SpotBugsError.Code.DLS_DEAD_LOCAL_STORE;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.Arrays;

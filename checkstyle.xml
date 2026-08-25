@@ -55,6 +55,22 @@
     <!-- Sun's default of 80 is a 1990s-era convention; 120 matches common modern practice. -->
     <property name="max" value="120"/>
     <property name="fileExtensions" value="java"/>
+    <!--
+      Exempts the continuation line of a `@see <a href="...">TEXT</a>` Javadoc link. The Eclipse
+      formatter Spotless runs already wraps this tag onto two lines once the URL pushes it past the
+      limit - `@see <a` on its own line, `href="...">TEXT</a>` on the next - because `@see`/`<a` are
+      the only whitespace it's allowed to break on. What's left on the continuation line is a single
+      unbreakable token (the URL plus its closing markup), so it cannot be shortened further.
+      SpotBugsError's upstream links are all 123-182 characters (bugDescriptions.html anchors are
+      full slugified section titles), so without this exemption every one of them is a violation
+      Spotless's own formatting produces and cannot fix.
+
+      Kept deliberately narrow rather than the usual "any line with no spaces" pattern: it matches
+      only this specific continuation-line shape, so an over-long line of code or prose is still a
+      violation.
+    -->
+    <property name="ignorePattern"
+              value="^ *\* *href=&quot;https?://[^&quot; ]+&quot;&gt;[^ ]+&lt;/a&gt;$"/>
   </module>
 
   <!-- Checks for whitespace                               -->

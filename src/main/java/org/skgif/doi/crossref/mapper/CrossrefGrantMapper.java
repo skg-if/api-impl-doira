@@ -1,6 +1,6 @@
 package org.skgif.doi.crossref.mapper;
 
-import static org.skgif.doi.util.SpotBugsSuppressions.BC_VACUOUS_INSTANCEOF;
+import static org.skgif.doi.util.SpotBugsError.Code.BC_VACUOUS_INSTANCEOF;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.List;

@@ -1,8 +1,8 @@
 package org.skgif.doi.datacite.mapper;
 
-import static org.skgif.doi.util.SpotBugsSuppressions.IMPROPER_UNICODE;
-import static org.skgif.doi.util.SpotBugsSuppressions.NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE;
-import static org.skgif.doi.util.SpotBugsSuppressions.SPOTBUGS_REGISTER;
+import static org.skgif.doi.util.SpotBugsError.Code.IMPROPER_UNICODE;
+import static org.skgif.doi.util.SpotBugsError.Code.NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE;
+import static org.skgif.doi.util.SpotBugsError.SPOTBUGS_REGISTER;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.ArrayList;

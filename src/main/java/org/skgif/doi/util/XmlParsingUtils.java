@@ -1,6 +1,6 @@
 package org.skgif.doi.util;
 
-import static org.skgif.doi.util.SpotBugsSuppressions.XPATH_INJECTION;
+import static org.skgif.doi.util.SpotBugsError.Code.XPATH_INJECTION;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.IOException;

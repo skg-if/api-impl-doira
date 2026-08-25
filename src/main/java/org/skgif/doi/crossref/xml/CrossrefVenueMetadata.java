@@ -1,6 +1,6 @@
 package org.skgif.doi.crossref.xml;
 
-import static org.skgif.doi.util.SpotBugsSuppressions.EI_EXPOSE_REP;
+import static org.skgif.doi.util.SpotBugsError.Code.EI_EXPOSE_REP;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.List;

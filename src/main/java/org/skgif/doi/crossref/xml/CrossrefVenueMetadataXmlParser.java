@@ -1,6 +1,6 @@
 package org.skgif.doi.crossref.xml;
 
-import static org.skgif.doi.util.SpotBugsSuppressions.REC_CATCH_EXCEPTION;
+import static org.skgif.doi.util.SpotBugsError.Code.REC_CATCH_EXCEPTION;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.List;
