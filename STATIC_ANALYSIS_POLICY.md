@@ -1,5 +1,12 @@
 # Static analysis policy
 
+> **Note on the numbers below:** every violation count in this file (in the exclusions above and in
+> the register) was measured as of 2026-08-24, against the codebase and ruleset versions at that
+> time. They are not re-verified automatically on each change to `checkstyle.xml`,
+> `pmd-ruleset.xml`, `pmd-ruleset-tests.xml`, or the code they scan - a count can drift as the
+> codebase grows or a rule's config changes. Treat a stale count as a reason to re-measure, not as
+> proof the rule is still (in)active at that level.
+
 Why this file exists: the ruleset files (`checkstyle.xml`, `pmd-ruleset.xml`,
 `pmd-ruleset-tests.xml`, and spotless' config in `pom.xml`) each explain *individual* decisions in
 comments, but nothing recorded the rules those decisions follow, or which of the hundreds of
