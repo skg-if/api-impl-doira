@@ -25,6 +25,7 @@ Four tools, and mixing up their jobs is the single most expensive mistake availa
 | **Spotless** (Eclipse formatter + `intellij-style.xml`) | formatting: indentation, wrapping, whitespace, blank lines | yes - `check` fails the build |
 | **Checkstyle** | semantics and style a formatter cannot express: naming, Javadoc, imports, language-idiom rules | yes - both source roots |
 | **PMD** | correctness, design, complexity, error-prone patterns | yes - both source roots |
+| **SpotBugs** | bytecode/dataflow correctness Checkstyle's style rules and PMD's AST-level rules can't reach: null dataflow, resource leaks, concurrency hazards | yes - `check` fails the build |
 | **Sonar** | nothing - no Sonar server runs here | **no** |
 
 Sonar is used only as a *naming scheme*: `SXXXX` ids give each concern a stable, documented
@@ -311,3 +312,38 @@ Two traps here, both cost a wasted run:
 - **PMD rules referenced by name keep running when deprecated**, emitting only a warning.
   `UnnecessaryLocalBeforeReturn` was deprecated in PMD 7.17.0 and had to be spotted by reading the
   category XML inside `pmd-java-<ver>.jar`; nothing failed.
+
+## SpotBugs decision register
+
+Added because Checkstyle (style-only, no dataflow) and PMD's rulesets here (source-level, no
+interprocedural null-dataflow tracking of JDK APIs) both miss a class of bug neither is designed
+to catch - see the investigation that started this: a `getResourceAsStream()` call in
+`MedraToSkgIfMapperTest#parseFixture` used without a null guard. **That specific bug is still not
+caught** even by SpotBugs at `effort=Max, threshold=Low` (its per-file `bugCount` for that class is
+0) - `ClassLoader.getResourceAsStream`'s nullability isn't in SpotBugs's nullness database, so this
+gap remains a known, accepted risk shared by ~15 identical fixture-loading test helpers across the
+suite (`ProductsGoldenTest`, `GrantsGoldenTest`, `CrossrefToSkgIfMapperTestBase`,
+`DataCiteToSkgIfMapperTestBase`, `XmlFixtureResponses`, etc.) rather than something this tool
+addresses.
+
+What SpotBugs *is* wired up for: a genuine regression guard against the bug classes its detectors
+do reach reliably (see principle 4 above - a 0-violation check is still worth having as a guard).
+The first `effort=Max, threshold=Low`, no-filter run against this codebase (2026-08-25) reported
+490 findings; every one was triaged into `spotbugs-exclude.xml` as a rejection, none as a fix - a
+plausible outcome for a codebase already gated by strict Checkstyle/PMD/Spotless and written in a
+record-pattern-heavy Java 21+ style that predates most SpotBugs detectors.
+
+| SpotBugs pattern | Status | Basis | Count |
+|---|---|---:|---:|
+| `EI_EXPOSE_REP` / `EI_EXPOSE_REP2` | rejected | noise: fires on nearly every List/Map-typed getter or constructor across the OpenAPI-generated models and JSON-deserialized provider DTOs (`CrossrefWork`, `DataCiteAttributes`, ...) - plain data carriers with no independent mutation path once deserialized; defensive-copying ~30 DTO classes is pure churn for no real safety gain | 469 |
+| `BC_VACUOUS_INSTANCEOF` | rejected | false positive: fires on every Java 21+ record deconstruction pattern (e.g. `work.resource() instanceof CrossrefResource(Primary(String url))`), where the language requires naming the type at each nesting level even though it is statically redundant with the accessor's return type - SpotBugs's bytecode check doesn't recognize the JEP 440/441 pattern desugaring | 8 |
+| `SIO_SUPERFLUOUS_INSTANCEOF` | rejected | false positive: same record-pattern root cause as `BC_VACUOUS_INSTANCEOF` above | 1 |
+| `NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE` | rejected, scoped to `org.skgif.doi.docs.*` | false positive: `Path.getFileName()` calls in the doc-consistency tests, all on paths sourced from `Files.list`/`Files.walk` over a known directory or `resolve()`'d against one - never a root path, so `getFileName()` cannot actually return null here even though the JDK contract allows it in general | 6 |
+| `REC_CATCH_EXCEPTION` | rejected, scoped to `CrossrefVenueMetadataXmlParser`/`MedraOnixXmlParser` | duplicate: the same two deliberate `catch (Exception _)` degrade-gracefully blocks `checkstyle.xml`'s `IllegalCatch` exclusion already documents (5 violations there) - malformed upstream XML degrades to a REST-JSON-only result rather than failing the whole response | 4 |
+| *(any pattern)* | rejected, whole package `org.skgif.doi.generated.model.*` | generated code: same "generated code doesn't get the same scrutiny" precedent as `maven-pmd-plugin`'s `excludeRoots` and `jacoco-maven-plugin`'s `excludes` for this package - matched by class, not by bug pattern, so a future openapi-generator bump tripping a different detector here doesn't need a new row before the build goes green again. The only pattern this package actually tripped was `SE_NO_SERIALVERSIONID` (on `JsonLdCtxBaseOrMore`) | 1 |
+| `DLS_DEAD_LOCAL_STORE` | rejected, scoped to `ResourceTypeMapping#isAward` | false positive: the "dead store" is the unnamed pattern variable `_` in a record deconstruction (`DataCiteAttributes.Types(String resourceTypeGeneral, _)`) - the language's own marker for an intentionally discarded component, not an accidentally unused value | 1 |
+
+A future re-run only needs to evaluate findings from packages/classes not already covered by a
+`<Match>` in `spotbugs-exclude.xml` - anything new surfacing in an already-matched class/pattern
+combination is filtered by construction and should be looked at manually rather than assumed
+still valid, since a filter matches by class+pattern, not by the original measured instance.

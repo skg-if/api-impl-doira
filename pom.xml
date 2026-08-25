@@ -22,6 +22,7 @@
     <spotless-plugin.version>3.10.0</spotless-plugin.version>
     <pmd-plugin.version>3.28.0</pmd-plugin.version>
     <checkstyle-plugin.version>3.6.0</checkstyle-plugin.version>
+    <spotbugs-plugin.version>4.10.4.0</spotbugs-plugin.version>
     <!--
       Checkstyle engine version, pinned independently of maven-checkstyle-plugin above.
       That plugin hardcodes a default engine of 9.3 (Jan 2022, a Java-17-era grammar),
@@ -384,6 +385,45 @@
               <failOnViolation>true</failOnViolation>
               <violationSeverity>warning</violationSeverity>
             </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <!--
+          effort=Max/threshold=Low with no include filter is "all its checkers" - full detector
+          set, lowest confidence bar. A first discovery-mode run (goal spotbugs, no exclude
+          filter) found 490 findings; triage (see STATIC_ANALYSIS_POLICY.md's SpotBugs decision
+          register) showed every one was either noise (EI_EXPOSE_REP/REP2 on plain DTO getters),
+          a SpotBugs/Java-21-record-pattern false positive, or an already-documented deliberate
+          decision (the checkstyle.xml IllegalCatch degrade-gracefully catches) - all now covered
+          by spotbugs-exclude.xml. What's left after filtering is a genuine regression guard, so
+          this runs as a hard gate (goal check, failOnViolation=true) like Checkstyle/PMD.
+
+          Bound to process-test-classes, not process-classes like maven-pmd-plugin above: PMD
+          analyzes source (AST) and only needs target/classes on its auxclasspath for type
+          resolution, so process-classes works even though it scans test sources too. SpotBugs
+          analyzes real bytecode, and target/test-classes does not exist until after
+          test-compile - an earlier phase would silently skip test-code detectors while reporting
+          a clean run.
+        -->
+        <groupId>com.github.spotbugs</groupId>
+        <artifactId>spotbugs-maven-plugin</artifactId>
+        <version>${spotbugs-plugin.version}</version>
+        <configuration>
+          <effort>Max</effort>
+          <threshold>Low</threshold>
+          <includeTests>true</includeTests>
+          <excludeFilterFile>spotbugs-exclude.xml</excludeFilterFile>
+          <skip>${skipTests}</skip>
+          <failOnError>true</failOnError>
+        </configuration>
+        <executions>
+          <execution>
+            <id>spotbugs-check</id>
+            <phase>process-test-classes</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>
