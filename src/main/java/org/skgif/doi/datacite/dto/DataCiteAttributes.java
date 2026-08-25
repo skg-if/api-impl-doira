@@ -2,6 +2,7 @@ package org.skgif.doi.datacite.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 
 // Top-level Jackson DTO for an entire DataCite work/DOI record - necessarily has many
 // independent optional fields; splitting it wouldn't help since Jackson needs one class
@@ -32,29 +33,29 @@ import java.util.List;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record DataCiteAttributes(
-        String doi,
-        List<Title> titles,
-        List<DataCiteCreator> creators,
-        List<DataCiteContributor> contributors,
-        String publisher,
-        Integer publicationYear,
-        List<DataCiteSubject> subjects,
-        List<DataCiteDate> dates,
+        @Nullable String doi,
+        @Nullable List<Title> titles,
+        @Nullable List<DataCiteCreator> creators,
+        @Nullable List<DataCiteContributor> contributors,
+        @Nullable String publisher,
+        @Nullable Integer publicationYear,
+        @Nullable List<DataCiteSubject> subjects,
+        @Nullable List<DataCiteDate> dates,
         // System-generated record-lifecycle timestamps, distinct from the researcher-asserted
         // dates[] array above - used by the mapper only as a fallback when dates[] has no
         // Created/Submitted/Updated/Issued entry (see DataCiteManifestationMapper#dates).
-        String created,
-        String registered,
-        String published,
-        String updated,
-        String language,
-        Types types,
-        List<DataCiteRights> rightsList,
-        List<DataCiteDescription> descriptions,
-        List<DataCiteRelatedIdentifier> relatedIdentifiers,
-        List<DataCiteFundingReference> fundingReferences,
-        String version,
-        String url) {
+        @Nullable String created,
+        @Nullable String registered,
+        @Nullable String published,
+        @Nullable String updated,
+        @Nullable String language,
+        @Nullable Types types,
+        @Nullable List<DataCiteRights> rightsList,
+        @Nullable List<DataCiteDescription> descriptions,
+        @Nullable List<DataCiteRelatedIdentifier> relatedIdentifiers,
+        @Nullable List<DataCiteFundingReference> fundingReferences,
+        @Nullable String version,
+        @Nullable String url) {
 
     /**
      * One {@code titles[]} entry, with its optional language tag.
@@ -64,8 +65,8 @@ public record DataCiteAttributes(
      */
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Title(
-            String title,
-            String lang) {
+            @Nullable String title,
+            @Nullable String lang) {
     }
 
     /**
@@ -76,7 +77,7 @@ public record DataCiteAttributes(
      */
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Types(
-            String resourceTypeGeneral,
-            String resourceType) {
+            @Nullable String resourceTypeGeneral,
+            @Nullable String resourceType) {
     }
 }

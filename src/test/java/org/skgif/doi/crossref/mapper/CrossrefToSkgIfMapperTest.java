@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -38,7 +39,7 @@ class CrossrefToSkgIfMapperTest extends CrossrefToSkgIfMapperTestBase {
         Product product = mapFixture("crossref-journal-article.json");
 
         Map<String, List<String>> titles = (Map<String, List<String>>) product.getTitles();
-        assertThat(titles.get("en").getFirst()).contains("Nanometre-scale thermometry");
+        assertThat(Objects.requireNonNull(titles.get("en")).getFirst()).contains("Nanometre-scale thermometry");
     }
 
     @ParameterizedTest
@@ -197,7 +198,7 @@ class CrossrefToSkgIfMapperTest extends CrossrefToSkgIfMapperTestBase {
         Product product = mapFixture("crossref-journal-article-with-funder.json");
 
         Map<String, List<String>> abstracts = (Map<String, List<String>>) product.getAbstracts();
-        String abstractText = abstracts.get("en").getFirst();
+        String abstractText = Objects.requireNonNull(abstracts.get("en")).getFirst();
         assertThat(abstractText).contains("Lissajous scanner").doesNotContain("<jats:p>");
     }
 

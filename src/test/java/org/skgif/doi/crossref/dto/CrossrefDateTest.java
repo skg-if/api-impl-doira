@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -41,13 +42,13 @@ class CrossrefDateTest {
         return new CrossrefDate(List.of(parts));
     }
 
-    private static CrossrefDate withParts(String year, String month, String day) {
+    private static CrossrefDate withParts(@Nullable String year, @Nullable String month, @Nullable String day) {
         List<Integer> parts = Arrays.asList(parseOrNull(year), parseOrNull(month), parseOrNull(day));
         return new CrossrefDate(List.of(parts));
     }
 
     @SuppressWarnings("PMD.ReturnNullConsiderOptional")
-    private static Integer parseOrNull(String value) {
+    private static @Nullable Integer parseOrNull(@Nullable String value) {
         return value == null ? null : Integer.parseInt(value);
     }
 }

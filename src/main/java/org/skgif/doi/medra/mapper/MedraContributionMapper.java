@@ -3,6 +3,7 @@ package org.skgif.doi.medra.mapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.jspecify.annotations.Nullable;
 import org.skgif.doi.generated.model.ProductContribution;
 import org.skgif.doi.generated.model.ProductContributionBy;
 import org.skgif.doi.medra.dto.MedraContributor;
@@ -56,7 +57,7 @@ final class MedraContributionMapper {
      * @return the mapped PersonLite, or Optional.empty() if contributor carries none of the three
      *         name shapes
      */
-    private static Optional<ProductContributionBy> personRef(String doi, MedraContributor contributor) {
+    private static Optional<ProductContributionBy> personRef(@Nullable String doi, MedraContributor contributor) {
         String givenName = null;
         String familyName = null;
         String name;
@@ -82,7 +83,7 @@ final class MedraContributionMapper {
         return Optional.of(EntityRefs.personRef(doi, name, givenName, familyName, null, null));
     }
 
-    private static String displayName(String given, String family) {
+    private static @Nullable String displayName(@Nullable String given, @Nullable String family) {
         if (given == null) {
             return family;
         }
@@ -98,7 +99,7 @@ final class MedraContributionMapper {
      * @param inverted an inverted-order name string ("Family, Given"), or null
      * @return an array of {family, given}, or an empty array if inverted is null
      */
-    private static String[] splitInverted(String inverted) {
+    private static String[] splitInverted(@Nullable String inverted) {
         if (inverted == null) {
             return new String[0];
         }

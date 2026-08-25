@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -41,10 +42,10 @@ class DataCiteToSkgIfMapperTest extends DataCiteToSkgIfMapperTestBase {
         Product product = mapFixture("datacite-esrf-dc-2493599001.json");
 
         Map<String, List<String>> titles = (Map<String, List<String>>) product.getTitles();
-        assertThat(titles.get("en").getFirst()).contains("Aleodon");
+        assertThat(Objects.requireNonNull(titles.get("en")).getFirst()).contains("Aleodon");
 
         Map<String, List<String>> abstracts = (Map<String, List<String>>) product.getAbstracts();
-        assertThat(abstracts.get("en").getFirst()).contains("Aleodon");
+        assertThat(Objects.requireNonNull(abstracts.get("en")).getFirst()).contains("Aleodon");
     }
 
     @Test
@@ -81,8 +82,10 @@ class DataCiteToSkgIfMapperTest extends DataCiteToSkgIfMapperTestBase {
         assertThat(titles.keySet()).containsExactly("en");
 
         Map<String, List<String>> abstracts = (Map<String, List<String>>) product.getAbstracts();
-        assertThat(abstracts.get("en").getFirst()).contains("large heterogeneity in the cyclicality");
-        assertThat(abstracts.get("fr").getFirst()).contains("grande hétérogénéité dans la cyclicité");
+        assertThat(Objects.requireNonNull(abstracts.get("en")).getFirst()).contains(
+                "large heterogeneity in the cyclicality");
+        assertThat(Objects.requireNonNull(abstracts.get("fr")).getFirst()).contains(
+                "grande hétérogénéité dans la cyclicité");
     }
 
     @Test
@@ -278,8 +281,8 @@ class DataCiteToSkgIfMapperTest extends DataCiteToSkgIfMapperTestBase {
         // A funderIdentifier that isn't ROR and isn't DOI-shaped (e.g. a bare GRID id) must still
         // fall back to an otf id rather than being mis-parsed.
         var attributes = readFixture("datacite-thesis-crossref-funder-id-4342.json");
-        DataCiteFundingReference original = attributes.fundingReferences().getFirst();
-        attributes.fundingReferences().set(0, new DataCiteFundingReference(
+        DataCiteFundingReference original = Objects.requireNonNull(attributes.fundingReferences()).getFirst();
+        Objects.requireNonNull(attributes.fundingReferences()).set(0, new DataCiteFundingReference(
                 original.funderName(), "grid.451003.6", "GRID",
                 original.awardNumber(), original.awardTitle(), original.awardUri()));
 
@@ -297,8 +300,8 @@ class DataCiteToSkgIfMapperTest extends DataCiteToSkgIfMapperTestBase {
         // documented Crossref Funder ID/GRID/ISNI/ROR/Other list) must be treated like any other
         // non-ROR type rather than making the mapping fail.
         var attributes = readFixture("datacite-thesis-crossref-funder-id-4342.json");
-        DataCiteFundingReference original = attributes.fundingReferences().getFirst();
-        attributes.fundingReferences().set(0, new DataCiteFundingReference(
+        DataCiteFundingReference original = Objects.requireNonNull(attributes.fundingReferences()).getFirst();
+        Objects.requireNonNull(attributes.fundingReferences()).set(0, new DataCiteFundingReference(
                 original.funderName(), "Q1234567", "Wikidata",
                 original.awardNumber(), original.awardTitle(), original.awardUri()));
 

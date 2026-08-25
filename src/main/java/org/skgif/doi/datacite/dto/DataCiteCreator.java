@@ -2,6 +2,7 @@ package org.skgif.doi.datacite.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 
 /**
  * One {@code creators[]} entry of a DataCite record.
@@ -15,10 +16,10 @@ import java.util.List;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record DataCiteCreator(
-        String name,
-        String givenName,
-        String familyName,
-        String nameType,
-        List<DataCiteNameIdentifier> nameIdentifiers,
-        List<DataCiteAffiliation> affiliation) {
+        @Nullable String name,
+        @Nullable String givenName,
+        @Nullable String familyName,
+        @Nullable String nameType,
+        @Nullable List<DataCiteNameIdentifier> nameIdentifiers,
+        @Nullable List<DataCiteAffiliation> affiliation) {
 }

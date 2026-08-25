@@ -2,6 +2,7 @@ package org.skgif.doi.crossref.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Always a plain object in Crossref (unlike DataCite, which can send either a bare string or
@@ -15,7 +16,7 @@ import java.util.List;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record CrossrefAffiliation(
-        String name,
-        String country,
-        List<CrossrefIdEntry> id) {
+        @Nullable String name,
+        @Nullable String country,
+        @Nullable List<CrossrefIdEntry> id) {
 }

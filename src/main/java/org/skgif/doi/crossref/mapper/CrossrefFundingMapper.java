@@ -3,6 +3,7 @@ package org.skgif.doi.crossref.mapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.jspecify.annotations.Nullable;
 import org.skgif.doi.crossref.dto.CrossrefFunder;
 import org.skgif.doi.crossref.dto.CrossrefFunding;
 import org.skgif.doi.crossref.dto.CrossrefIdEntry;
@@ -50,7 +51,8 @@ final class CrossrefFundingMapper {
         return result;
     }
 
-    private ProductAllOfFunding fundingEntry(String doi, CrossrefFunder funder, String awardNumber) {
+    private ProductAllOfFunding fundingEntry(@Nullable String doi, CrossrefFunder funder,
+            @Nullable String awardNumber) {
         String label = awardNumber != null ? awardNumber : funder.name();
         return new GrantLite()
                 .localIdentifier(MapperTextUtils.otf(doi, label))
@@ -69,7 +71,7 @@ final class CrossrefFundingMapper {
      * @param funder the Crossref funder record
      * @return an Organisation for funder, identified by its Funder Registry DOI when present
      */
-    Organisation fundingAgencyOrg(String doi, CrossrefFunder funder) {
+    Organisation fundingAgencyOrg(@Nullable String doi, CrossrefFunder funder) {
         Optional<String> funderDoi = funderDoi(funder);
         String doiLocalIdentifier = funderDoi.map(localIdentifiers::toFullLocalIdentifier).orElse(null);
         return EntityRefs.organisationRef(doi, funder.name(), null, doiLocalIdentifier, funderDoi.orElse(null));
@@ -107,8 +109,8 @@ final class CrossrefFundingMapper {
      * @param topLevelFunders the grant record's top-level funder[], or null
      * @return the mapped Organisation, or Optional.empty() if no funder name is available
      */
-    Optional<Organisation> grantFundingAgency(String doi, CrossrefFunding primaryFunding,
-            List<CrossrefFunder> topLevelFunders) {
+    Optional<Organisation> grantFundingAgency(@Nullable String doi, @Nullable CrossrefFunding primaryFunding,
+            @Nullable List<CrossrefFunder> topLevelFunders) {
         CrossrefFunder funder = primaryFunding != null ? primaryFunding.funder() : null;
         if (funder == null && topLevelFunders != null && !topLevelFunders.isEmpty()) {
             funder = topLevelFunders.getFirst();

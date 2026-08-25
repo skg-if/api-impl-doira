@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.jspecify.annotations.Nullable;
 import org.skgif.doi.crossref.dto.CrossrefAffiliation;
 import org.skgif.doi.crossref.dto.CrossrefInvestigator;
 import org.skgif.doi.crossref.dto.CrossrefProject;
@@ -29,7 +30,7 @@ final class CrossrefGrantContributionMapper {
     private CrossrefGrantContributionMapper() {
     }
 
-    static List<GrantAllOfContributions> grantContributions(String doi, List<CrossrefProject> projects) {
+    static List<GrantAllOfContributions> grantContributions(@Nullable String doi, List<CrossrefProject> projects) {
         List<GrantAllOfContributions> result = new ArrayList<>();
         for (CrossrefProject project : projects) {
             if (project.leadInvestigator() != null) {
@@ -46,7 +47,8 @@ final class CrossrefGrantContributionMapper {
         return result;
     }
 
-    private static GrantAllOfContributions investigatorContribution(String doi, CrossrefInvestigator investigator,
+    private static GrantAllOfContributions investigatorContribution(@Nullable String doi,
+            CrossrefInvestigator investigator,
             GrantContribution.RolesEnum role) {
         Optional<String> bareOrcid = CrossrefContributionMapper.bareOrcid(investigator.orcid());
         String name = CrossrefContributionMapper.displayName(investigator.given(), investigator.family());
@@ -62,7 +64,8 @@ final class CrossrefGrantContributionMapper {
                 .roles(List.of(role));
     }
 
-    static List<GrantAllOfBeneficiaries> grantAffiliations(String doi, List<CrossrefAffiliation> affiliations) {
+    static List<GrantAllOfBeneficiaries> grantAffiliations(@Nullable String doi,
+            @Nullable List<CrossrefAffiliation> affiliations) {
         return Optional.ofNullable(affiliations)
                 .orElseGet(List::of)
                 .stream()
@@ -83,7 +86,7 @@ final class CrossrefGrantContributionMapper {
      * @return the deduped beneficiary organisations, or an empty list if none have a declared
      *         affiliation
      */
-    static List<GrantAllOfBeneficiaries> grantBeneficiaries(String doi, List<CrossrefProject> projects) {
+    static List<GrantAllOfBeneficiaries> grantBeneficiaries(@Nullable String doi, List<CrossrefProject> projects) {
         Map<String, CrossrefAffiliation> byName = new LinkedHashMap<>();
         for (CrossrefProject project : projects) {
             collectAffiliations(byName, project.leadInvestigator());
@@ -93,7 +96,7 @@ final class CrossrefGrantContributionMapper {
     }
 
     private static void collectAffiliations(Map<String, CrossrefAffiliation> byName,
-            List<CrossrefInvestigator> investigators) {
+            @Nullable List<CrossrefInvestigator> investigators) {
         if (investigators == null) {
             return;
         }

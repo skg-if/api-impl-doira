@@ -1,6 +1,7 @@
 package org.skgif.doi.util;
 
 import java.util.Locale;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Text-only helpers shared by every provider's mapper ({@code CrossrefToSkgIfMapper}, {@code
@@ -26,7 +27,7 @@ public final class MapperTextUtils {
      * @param label a human-readable label for the entity (e.g. a name), slugged into the id
      * @return an {@code otf___<doi-slug>___<label-slug>} identifier
      */
-    public static String otf(String doi, String label) {
+    public static String otf(@Nullable String doi, @Nullable String label) {
         return "otf___" + slug(doi) + "___" + slug(label);
     }
 
@@ -37,7 +38,7 @@ public final class MapperTextUtils {
      * @return a lowercase, hyphenated, length-capped slug of text; "unknown" if text is null,
      *         empty, or has no alphanumeric characters
      */
-    public static String slug(String text) {
+    public static String slug(@Nullable String text) {
         if (text == null) {
             return "unknown";
         }

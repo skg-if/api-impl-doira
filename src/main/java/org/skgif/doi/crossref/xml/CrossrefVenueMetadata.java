@@ -1,6 +1,7 @@
 package org.skgif.doi.crossref.xml;
 
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Container-level metadata parsed from Crossref's XML "transform" representation of a
@@ -24,12 +25,12 @@ import java.util.List;
  * @param publisherPlace the publisher's place
  */
 public record CrossrefVenueMetadata(
-        String containerTitle,
-        String containerDoi,
-        String seriesTitle,
-        List<String> seriesIssns,
-        String volume,
-        List<String> isbns,
-        String publisherName,
-        String publisherPlace) {
+        @Nullable String containerTitle,
+        @Nullable String containerDoi,
+        @Nullable String seriesTitle,
+        @Nullable List<String> seriesIssns,
+        @Nullable String volume,
+        @Nullable List<String> isbns,
+        @Nullable String publisherName,
+        @Nullable String publisherPlace) {
 }

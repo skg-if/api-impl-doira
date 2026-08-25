@@ -1,6 +1,7 @@
 package org.skgif.doi.datacite.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.jspecify.annotations.Nullable;
 
 /**
  * One {@code descriptions[]} entry, typed by its {@code descriptionType}.
@@ -11,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record DataCiteDescription(
-        String description,
-        String descriptionType,
-        String lang) {
+        @Nullable String description,
+        @Nullable String descriptionType,
+        @Nullable String lang) {
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 import java.util.Optional;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Crossref dates are structured {@code {date-parts: [[y,m,d]]}} objects, unlike DataCite's
@@ -15,7 +16,7 @@ import java.util.Optional;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record CrossrefDate(
-        @JsonProperty("date-parts") List<List<Integer>> dateParts) {
+        @JsonProperty("date-parts") @Nullable List<List<Integer>> dateParts) {
 
     /**
      * Renders this date's variable-length {@code date-parts} array as an ISO-8601 date string.

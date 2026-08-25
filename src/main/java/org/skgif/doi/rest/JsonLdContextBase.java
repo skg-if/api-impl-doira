@@ -2,6 +2,7 @@ package org.skgif.doi.rest;
 
 import java.util.List;
 import java.util.Optional;
+import org.jspecify.annotations.Nullable;
 import org.skgif.doi.datacite.dto.DataCiteDoiData;
 import org.skgif.doi.datacite.dto.DataCiteRelationships;
 import org.skgif.doi.datacite.dto.DataCiteRelationships.ClientData;
@@ -46,7 +47,7 @@ public final class JsonLdContextBase {
      * @param fallbackContextBase the {@code @base} to use when no client id can be derived
      * @return the namespaced {@code @base}, or fallbackContextBase if no item carries a client id
      */
-    public static String contextBaseFor(List<DataCiteDoiData> items, String sandboxBaseUrl,
+    public static String contextBaseFor(@Nullable List<DataCiteDoiData> items, String sandboxBaseUrl,
             String fallbackContextBase) {
         if (items == null) {
             return fallbackContextBase;

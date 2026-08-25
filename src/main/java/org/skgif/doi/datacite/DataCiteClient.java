@@ -5,6 +5,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
+import org.jspecify.annotations.Nullable;
 import org.skgif.doi.datacite.dto.DataCiteDoiListResponse;
 import org.skgif.doi.datacite.dto.DataCiteDoiResponse;
 
@@ -34,8 +35,8 @@ public interface DataCiteClient {
      */
     @GET
     DataCiteDoiListResponse listDois(
-            @QueryParam("prefix") String prefix,
-            @QueryParam("query") String query,
-            @QueryParam("page[size]") Integer pageSize,
-            @QueryParam("page[number]") Integer pageNumber);
+            @QueryParam("prefix") @Nullable String prefix,
+            @QueryParam("query") @Nullable String query,
+            @QueryParam("page[size]") @Nullable Integer pageSize,
+            @QueryParam("page[number]") @Nullable Integer pageNumber);
 }

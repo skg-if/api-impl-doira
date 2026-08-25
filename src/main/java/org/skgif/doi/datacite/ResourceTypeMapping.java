@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.jspecify.annotations.Nullable;
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
 import org.skgif.doi.generated.model.Product;
 
@@ -92,7 +93,7 @@ public final class ResourceTypeMapping {
             return value;
         }
 
-        static Optional<DataCiteResourceType> fromValue(String value) {
+        static Optional<DataCiteResourceType> fromValue(@Nullable String value) {
             return Optional.ofNullable(BY_VALUE.get(value));
         }
     }
@@ -158,7 +159,7 @@ public final class ResourceTypeMapping {
      * @param resourceTypeGeneral the DataCite {@code resourceTypeGeneral} value
      * @return the corresponding SKG-IF product_type, or OTHER if unrecognized
      */
-    public static Product.ProductTypeEnum productType(String resourceTypeGeneral) {
+    public static Product.ProductTypeEnum productType(@Nullable String resourceTypeGeneral) {
         return DataCiteResourceType.fromValue(resourceTypeGeneral)
                 .map(TO_PRODUCT_TYPE::get)
                 .orElse(Product.ProductTypeEnum.OTHER);
@@ -170,7 +171,7 @@ public final class ResourceTypeMapping {
      * @param attributes the DataCite record's attributes to check
      * @return whether attributes' {@code resourceTypeGeneral} is {@code Award}
      */
-    public static boolean isAward(DataCiteAttributes attributes) {
+    public static boolean isAward(@Nullable DataCiteAttributes attributes) {
         return attributes != null &&
                 attributes.types() instanceof DataCiteAttributes.Types(String resourceTypeGeneral, _) &&
                 AWARD.equals(resourceTypeGeneral);

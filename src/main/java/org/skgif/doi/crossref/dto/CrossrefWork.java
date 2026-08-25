@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 import java.util.Map;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A single Crossref {@code works} record ({@code message} in the API envelope). Unlike
@@ -51,33 +52,33 @@ import java.util.Map;
 // matching the source JSON's shape.
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record CrossrefWork(
-        @JsonProperty("DOI") String doi,
-        @JsonProperty("URL") String url,
-        String type,
-        String publisher,
-        List<String> title,
-        List<String> subtitle,
-        @JsonProperty("container-title") List<String> containerTitle,
-        String page,
-        String volume,
-        String issue,
-        @JsonProperty("abstract") String abstractText,
-        List<String> subject,
-        @JsonProperty("ISSN") List<String> issn,
-        List<CrossrefContributor> author,
-        List<CrossrefContributor> editor,
-        List<CrossrefFunder> funder,
-        List<CrossrefLicense> license,
-        List<CrossrefReference> reference,
-        Map<String, List<CrossrefIdEntry>> relation,
-        CrossrefDate issued,
-        CrossrefDate created,
-        CrossrefDate deposited,
-        @JsonProperty("published-print") CrossrefDate publishedPrint,
-        @JsonProperty("published-online") CrossrefDate publishedOnline,
-        CrossrefDate accepted,
-        @JsonProperty("update-to") List<CrossrefUpdateTo> updateTo,
-        String award,
-        List<CrossrefProject> project,
-        CrossrefResource resource) {
+        @JsonProperty("DOI") @Nullable String doi,
+        @JsonProperty("URL") @Nullable String url,
+        @Nullable String type,
+        @Nullable String publisher,
+        @Nullable List<String> title,
+        @Nullable List<String> subtitle,
+        @JsonProperty("container-title") @Nullable List<String> containerTitle,
+        @Nullable String page,
+        @Nullable String volume,
+        @Nullable String issue,
+        @JsonProperty("abstract") @Nullable String abstractText,
+        @Nullable List<String> subject,
+        @JsonProperty("ISSN") @Nullable List<String> issn,
+        @Nullable List<CrossrefContributor> author,
+        @Nullable List<CrossrefContributor> editor,
+        @Nullable List<CrossrefFunder> funder,
+        @Nullable List<CrossrefLicense> license,
+        @Nullable List<CrossrefReference> reference,
+        @Nullable Map<String, List<CrossrefIdEntry>> relation,
+        @Nullable CrossrefDate issued,
+        @Nullable CrossrefDate created,
+        @Nullable CrossrefDate deposited,
+        @JsonProperty("published-print") @Nullable CrossrefDate publishedPrint,
+        @JsonProperty("published-online") @Nullable CrossrefDate publishedOnline,
+        @Nullable CrossrefDate accepted,
+        @JsonProperty("update-to") @Nullable List<CrossrefUpdateTo> updateTo,
+        @Nullable String award,
+        @Nullable List<CrossrefProject> project,
+        @Nullable CrossrefResource resource) {
 }

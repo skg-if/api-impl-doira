@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import org.jspecify.annotations.Nullable;
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
 import org.skgif.doi.datacite.dto.DataCiteFundingReference;
 import org.skgif.doi.generated.model.GrantLite;
@@ -61,7 +62,7 @@ final class DataCiteFundingMapper {
             return value;
         }
 
-        static Optional<DataCiteFunderIdentifierType> fromValue(String value) {
+        static Optional<DataCiteFunderIdentifierType> fromValue(@Nullable String value) {
             return Optional.ofNullable(BY_VALUE.get(value));
         }
     }
@@ -112,16 +113,21 @@ final class DataCiteFundingMapper {
      * @param fundingReference the DataCite funding reference to derive a funding agency from
      * @return the mapped Organisation, or Optional.empty() if fundingReference has no funder name
      */
-    private Optional<Organisation> fundingAgency(String doi, DataCiteFundingReference fundingReference) {
+    private Optional<Organisation> fundingAgency(@Nullable String doi, DataCiteFundingReference fundingReference) {
         if (fundingReference.funderName() == null) {
             return Optional.empty();
         }
-        boolean hasRor = fundingReference.funderIdentifier() != null &&
+        // Held in a local rather than re-read via the accessor so the null check is directly
+        // visible to the nullness checker at the stripRorUrl call below, which takes a @NonNull
+        // value.
+        String funderIdentifier = fundingReference.funderIdentifier();
+        boolean hasRor = funderIdentifier != null &&
                 DataCiteFunderIdentifierType.fromValue(fundingReference.funderIdentifierType())
                         .filter(type -> type == DataCiteFunderIdentifierType.ROR)
                         .isPresent();
-        String bareRor = hasRor ? ExternalIdentifierUrls.stripRorUrl(fundingReference.funderIdentifier()) : null;
-        String funderDoi = hasRor ? null : extractDoi(fundingReference.funderIdentifier()).orElse(null);
+        String bareRor = funderIdentifier != null && hasRor ?
+                ExternalIdentifierUrls.stripRorUrl(funderIdentifier) : null;
+        String funderDoi = hasRor ? null : extractDoi(funderIdentifier).orElse(null);
         String doiLocalIdentifier = funderDoi != null ? localIdentifiers.toFullLocalIdentifier(funderDoi) : null;
         return Optional.of(
                 EntityRefs.organisationRef(doi, fundingReference.funderName(), bareRor, doiLocalIdentifier,
@@ -136,7 +142,7 @@ final class DataCiteFundingMapper {
      * @param identifier the raw identifier value to check, or null
      * @return the bare DOI, or Optional.empty() if identifier is null or not DOI-shaped
      */
-    private Optional<String> extractDoi(String identifier) {
+    private Optional<String> extractDoi(@Nullable String identifier) {
         if (identifier == null) {
             return Optional.empty();
         }

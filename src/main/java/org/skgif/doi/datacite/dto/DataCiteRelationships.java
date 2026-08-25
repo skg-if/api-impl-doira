@@ -1,6 +1,7 @@
 package org.skgif.doi.datacite.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The DOI's DataCite {@code relationships} block. Only {@code client} is modeled - the DataCite
@@ -11,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record DataCiteRelationships(
-        ClientRelationship client) {
+        @Nullable ClientRelationship client) {
 
     /**
      * The {@code relationships.client} wrapper around the registering client's data.
@@ -20,7 +21,7 @@ public record DataCiteRelationships(
      */
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record ClientRelationship(
-            ClientData data) {
+            @Nullable ClientData data) {
     }
 
     /**
@@ -30,6 +31,6 @@ public record DataCiteRelationships(
      */
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record ClientData(
-            String id) {
+            @Nullable String id) {
     }
 }

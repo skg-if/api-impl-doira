@@ -3,6 +3,7 @@ package org.skgif.doi.crossref.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A top-level {@code work.funder[]} entry carries the Funder Registry DOI directly as {@code
@@ -18,8 +19,8 @@ import java.util.List;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record CrossrefFunder(
-        String name,
-        @JsonProperty("DOI") String doi,
-        List<String> award,
-        List<CrossrefIdEntry> id) {
+        @Nullable String name,
+        @JsonProperty("DOI") @Nullable String doi,
+        @Nullable List<String> award,
+        @Nullable List<CrossrefIdEntry> id) {
 }

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
+import org.skgif.doi.datacite.dto.DataCiteDoiData;
 import org.skgif.doi.datacite.dto.DataCiteDoiResponse;
 import org.skgif.doi.generated.model.Product;
 import org.skgif.doi.util.LocalIdentifiers;
@@ -28,7 +29,9 @@ abstract class DataCiteToSkgIfMapperTestBase {
         try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
             Objects.requireNonNull(in, "Fixture not found on classpath: " + resourceName);
             DataCiteDoiResponse response = objectMapper.readValue(in, DataCiteDoiResponse.class);
-            return response.data().attributes();
+            DataCiteDoiData data = Objects.requireNonNull(response.data(), "Fixture has no data block: " +
+                    resourceName);
+            return Objects.requireNonNull(data.attributes(), "Fixture has no attributes block: " + resourceName);
         }
     }
 }

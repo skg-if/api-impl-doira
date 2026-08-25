@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.jspecify.annotations.Nullable;
 import org.skgif.doi.crossref.CrossrefTypeMapping;
 import org.skgif.doi.generated.model.Product;
 import org.skgif.doi.rest.FilterQuerySyntax;
@@ -84,7 +85,7 @@ final class CrossrefFilters {
      * @param filter the filter clause built so far, or null
      * @return {@code filter} with the prefix clause appended, or unchanged if no prefix is configured
      */
-    static String withPrefix(Optional<String> prefix, String filter) {
+    static @Nullable String withPrefix(Optional<String> prefix, @Nullable String filter) {
         String prefixValue = prefix.filter(p -> !p.isBlank()).orElse(null);
         if (prefixValue == null) {
             return filter;
@@ -95,6 +96,7 @@ final class CrossrefFilters {
 
     @FunctionalInterface
     private interface ClauseBuilder {
+        @Nullable
         String clause(String key, String value, ParsedFilter.Builder builder);
     }
 
@@ -105,6 +107,7 @@ final class CrossrefFilters {
      */
     @FunctionalInterface
     interface ValueClauseBuilder {
+        @Nullable
         String clause(String value, ParsedFilter.Builder builder);
     }
 
@@ -174,26 +177,26 @@ final class CrossrefFilters {
 
     // Sole call site is toProductsQuery's `parse(filter, PRODUCT_SUPPORTED,
     // CrossrefFilters::toProductClause)` above.
-    private static String toProductClause(String key, String value, ParsedFilter.Builder builder) {
+    private static @Nullable String toProductClause(String key, String value, ParsedFilter.Builder builder) {
         return PRODUCT_CLAUSE_BUILDERS.getOrDefault(ProductFilterKeys.fromKey(key), (_, _) -> null)
                 .clause(value, builder);
     }
 
     // Sole call site is toGrantsQuery's `parse(filter, GRANT_SUPPORTED,
     // CrossrefFilters::toGrantClause)` above.
-    private static String toGrantClause(String key, String value, ParsedFilter.Builder builder) {
+    private static @Nullable String toGrantClause(String key, String value, ParsedFilter.Builder builder) {
         return GRANT_CLAUSE_BUILDERS.getOrDefault(GrantFilterKeys.fromKey(key), (_, _) -> null)
                 .clause(value, builder);
     }
 
     @SuppressWarnings("PMD.ReturnNullConsiderOptional")
-    private static String queryTitleClause(String value, ParsedFilter.Builder builder) {
+    private static @Nullable String queryTitleClause(String value, ParsedFilter.Builder builder) {
         builder.queryTitle(value);
         return null;
     }
 
     @SuppressWarnings("PMD.ReturnNullConsiderOptional")
-    private static String queryBibliographicClause(String value, ParsedFilter.Builder builder) {
+    private static @Nullable String queryBibliographicClause(String value, ParsedFilter.Builder builder) {
         builder.queryBibliographic(value);
         return null;
     }
@@ -230,30 +233,30 @@ final class CrossrefFilters {
      * @param queryBibliographic the {@code query.bibliographic} free-text search value
      */
     record ParsedFilter(
-            String filter,
-            String queryTitle,
-            String queryBibliographic) {
+            @Nullable String filter,
+            @Nullable String queryTitle,
+            @Nullable String queryBibliographic) {
 
         // Fields intentionally share their names with their fluent setters below, same
         // builder idiom checkstyle.xml's HiddenField already special-cases for this codebase.
         @SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
         static final class Builder {
             /** The {@code filter=} clause being assembled. */
-            private String filter;
+            private @Nullable String filter;
             /** The {@code query.title} free-text search value being assembled. */
-            private String queryTitle;
+            private @Nullable String queryTitle;
             /** The {@code query.bibliographic} free-text search value being assembled. */
-            private String queryBibliographic;
+            private @Nullable String queryBibliographic;
 
-            void filter(String value) {
+            void filter(@Nullable String value) {
                 this.filter = value;
             }
 
-            void queryTitle(String value) {
+            void queryTitle(@Nullable String value) {
                 this.queryTitle = value;
             }
 
-            void queryBibliographic(String value) {
+            void queryBibliographic(@Nullable String value) {
                 this.queryBibliographic = value;
             }
 

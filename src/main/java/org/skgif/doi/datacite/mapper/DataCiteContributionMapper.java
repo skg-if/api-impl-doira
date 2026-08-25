@@ -3,6 +3,7 @@ package org.skgif.doi.datacite.mapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.jspecify.annotations.Nullable;
 import org.skgif.doi.datacite.dto.DataCiteAffiliation;
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
 import org.skgif.doi.datacite.dto.DataCiteContributor;
@@ -64,15 +65,15 @@ final class DataCiteContributionMapper {
         return contributions;
     }
 
-    private static ProductContribution.RoleEnum contributorRole(String dataCiteContributorType) {
+    private static ProductContribution.RoleEnum contributorRole(@Nullable String dataCiteContributorType) {
         if (CONTRIBUTOR_TYPE_EDITOR.equals(dataCiteContributorType)) {
             return ProductContribution.RoleEnum.EDITOR;
         }
         return ProductContribution.RoleEnum.AUTHOR;
     }
 
-    static ProductContributionBy personRef(String doi, String name, String givenName, String familyName,
-            List<DataCiteNameIdentifier> nameIdentifiers) {
+    static ProductContributionBy personRef(@Nullable String doi, @Nullable String name, @Nullable String givenName,
+            @Nullable String familyName, @Nullable List<DataCiteNameIdentifier> nameIdentifiers) {
         return EntityRefs.personRef(doi, name, givenName, familyName, firstOrcid(nameIdentifiers).orElse(null),
                 orcidIdentifiers(nameIdentifiers));
     }
@@ -86,11 +87,11 @@ final class DataCiteContributionMapper {
      * @param name the organisation's name
      * @return an Organisation reference with an otf local_identifier
      */
-    private static ProductContributionBy organisationRef(String doi, String name) {
+    private static ProductContributionBy organisationRef(@Nullable String doi, @Nullable String name) {
         return EntityRefs.organisationRef(doi, name, null);
     }
 
-    static Optional<String> firstOrcid(List<DataCiteNameIdentifier> nameIdentifiers) {
+    static Optional<String> firstOrcid(@Nullable List<DataCiteNameIdentifier> nameIdentifiers) {
         if (nameIdentifiers == null) {
             return Optional.empty();
         }
@@ -100,7 +101,7 @@ final class DataCiteContributionMapper {
                 .findFirst();
     }
 
-    static List<PersonLiteAllOfIdentifiers> orcidIdentifiers(List<DataCiteNameIdentifier> nameIdentifiers) {
+    static List<PersonLiteAllOfIdentifiers> orcidIdentifiers(@Nullable List<DataCiteNameIdentifier> nameIdentifiers) {
         return Optional.ofNullable(nameIdentifiers)
                 .orElseGet(List::of)
                 .stream()
@@ -112,22 +113,26 @@ final class DataCiteContributionMapper {
                 .toList();
     }
 
-    static List<ProductAllOfRelevantOrganisations> affiliations(String doi, List<DataCiteAffiliation> affiliations) {
+    static List<ProductAllOfRelevantOrganisations> affiliations(@Nullable String doi,
+            @Nullable List<DataCiteAffiliation> affiliations) {
         return Optional.ofNullable(affiliations)
                 .orElseGet(List::of)
                 .stream()
                 .filter(affiliation -> affiliation.name() != null)
                 .<ProductAllOfRelevantOrganisations>map(affiliation -> {
-                    boolean hasRor = affiliation.affiliationIdentifier() != null &&
-                            SCHEME_ROR_UPPER.equalsIgnoreCase(affiliation.affiliationIdentifierScheme());
-                    String bareRor =
-                            hasRor ? ExternalIdentifierUrls.stripRorUrl(affiliation.affiliationIdentifier()) : null;
+                    // Held in a local rather than re-read via the accessor so the null check is
+                    // directly visible to the nullness checker at the stripRorUrl call below,
+                    // which takes a @NonNull value.
+                    String rorIdentifier = affiliation.affiliationIdentifier();
+                    String bareRor = rorIdentifier != null &&
+                            SCHEME_ROR_UPPER.equalsIgnoreCase(affiliation.affiliationIdentifierScheme()) ?
+                                    ExternalIdentifierUrls.stripRorUrl(rorIdentifier) : null;
                     return EntityRefs.organisationRef(doi, affiliation.name(), bareRor);
                 })
                 .toList();
     }
 
-    static Optional<String> firstRor(List<DataCiteNameIdentifier> nameIdentifiers) {
+    static Optional<String> firstRor(@Nullable List<DataCiteNameIdentifier> nameIdentifiers) {
         if (nameIdentifiers == null) {
             return Optional.empty();
         }

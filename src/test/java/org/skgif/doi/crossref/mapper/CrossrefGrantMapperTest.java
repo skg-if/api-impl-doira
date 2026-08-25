@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.skgif.doi.crossref.dto.CrossrefAmount;
 import org.skgif.doi.crossref.dto.CrossrefDate;
@@ -157,16 +158,17 @@ class CrossrefGrantMapperTest {
         assertThat(mapper.website(workWithResource(resource))).contains("https://example.org/grant");
     }
 
-    private static CrossrefProject project(List<CrossrefProjectTitle> titles,
-            List<CrossrefProjectDescription> descriptions) {
+    private static CrossrefProject project(@Nullable List<CrossrefProjectTitle> titles,
+            @Nullable List<CrossrefProjectDescription> descriptions) {
         return new CrossrefProject(titles, descriptions, null, null, null, null, null, null);
     }
 
-    private static CrossrefProject amountProject(CrossrefAmount awardAmount) {
+    private static CrossrefProject amountProject(@Nullable CrossrefAmount awardAmount) {
         return new CrossrefProject(null, null, null, null, awardAmount, null, null, null);
     }
 
-    private static CrossrefProject durationProject(CrossrefDate awardStart, CrossrefDate awardEnd) {
+    private static CrossrefProject durationProject(@Nullable CrossrefDate awardStart,
+            @Nullable CrossrefDate awardEnd) {
         return new CrossrefProject(null, null, null, null, null, awardStart, awardEnd, null);
     }
 
@@ -175,7 +177,7 @@ class CrossrefGrantMapperTest {
         return new CrossrefDate(List.of(parts));
     }
 
-    private static CrossrefWork workWithResource(CrossrefResource resource) {
+    private static CrossrefWork workWithResource(@Nullable CrossrefResource resource) {
         return new CrossrefWork(
                 null, // doi
                 null, // url

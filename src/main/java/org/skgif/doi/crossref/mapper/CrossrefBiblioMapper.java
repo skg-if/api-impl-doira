@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import org.jspecify.annotations.Nullable;
 import org.skgif.doi.crossref.CrossrefJournalDoiResolver;
 import org.skgif.doi.crossref.dto.CrossrefWork;
 import org.skgif.doi.crossref.xml.CrossrefVenueMetadata;
@@ -41,7 +42,7 @@ final class CrossrefBiblioMapper {
         this.journalDoiResolver = journalDoiResolver;
     }
 
-    Optional<ProductManifestationBiblio> biblio(CrossrefWork work, CrossrefVenueMetadata venueMetadata) {
+    Optional<ProductManifestationBiblio> biblio(CrossrefWork work, @Nullable CrossrefVenueMetadata venueMetadata) {
         if (hasNoBiblioData(work, venueMetadata)) {
             return Optional.empty();
         }
@@ -57,7 +58,7 @@ final class CrossrefBiblioMapper {
         return Optional.of(biblio);
     }
 
-    private boolean hasNoBiblioData(CrossrefWork work, CrossrefVenueMetadata venueMetadata) {
+    private boolean hasNoBiblioData(CrossrefWork work, @Nullable CrossrefVenueMetadata venueMetadata) {
         return work.publisher() == null && work.containerTitle() == null && work.issue() == null &&
                 work.volume() == null && work.page() == null && venueMetadata == null;
     }
@@ -66,14 +67,14 @@ final class CrossrefBiblioMapper {
     // volume); a book chapter's or proceedings paper's REST JSON commonly has neither that
     // nor a series volume, but the XML transform's `.../volume` (e.g. an LNCS series volume
     // number, or a recurring proceedings series volume) fills that gap when present.
-    private Optional<String> resolveVolume(CrossrefWork work, CrossrefVenueMetadata venueMetadata) {
+    private Optional<String> resolveVolume(CrossrefWork work, @Nullable CrossrefVenueMetadata venueMetadata) {
         if (work.volume() != null) {
             return Optional.of(work.volume());
         }
         return Optional.ofNullable(venueMetadata != null ? venueMetadata.volume() : null);
     }
 
-    private Optional<ProductManifestationBiblioPages> pages(String page) {
+    private Optional<ProductManifestationBiblioPages> pages(@Nullable String page) {
         if (page == null || page.isBlank()) {
             return Optional.empty();
         }
@@ -110,14 +111,17 @@ final class CrossrefBiblioMapper {
      * @param venueMetadata venue metadata parsed from Crossref's XML transform endpoint, or null
      * @return the mapped Venue, or Optional.empty() if no container information is available
      */
-    private Optional<ProductManifestationBiblioIn> venue(CrossrefWork work, CrossrefVenueMetadata venueMetadata) {
+    private Optional<ProductManifestationBiblioIn> venue(CrossrefWork work,
+            @Nullable CrossrefVenueMetadata venueMetadata) {
         if (venueMetadata != null && venueMetadata.containerTitle() != null) {
             return Optional.of(venueFromXmlMetadata(work.doi(), venueMetadata));
         }
         if (hasNoContainerTitle(work)) {
             return Optional.empty();
         }
-        String name = work.containerTitle().getFirst();
+        // Non-null by the hasNoContainerTitle guard above; asserted here because that guard lives
+        // in another method, where the nullness checker cannot follow it.
+        String name = Objects.requireNonNull(work.containerTitle()).getFirst();
         List<String> issns = work.issn() != null ?
                 work.issn().stream().filter(Objects::nonNull).toList() :
                 List.of();
@@ -145,7 +149,8 @@ final class CrossrefBiblioMapper {
         return issns.isEmpty() ? Optional.empty() : journalDoiResolver.resolveJournalDoi(issns);
     }
 
-    private List<VenueLiteAllOfIdentifiers> journalArticleVenueIdentifiers(String journalDoi, List<String> issns) {
+    private List<VenueLiteAllOfIdentifiers> journalArticleVenueIdentifiers(@Nullable String journalDoi,
+            List<String> issns) {
         List<VenueLiteAllOfIdentifiers> identifiers = new ArrayList<>();
         if (journalDoi != null) {
             identifiers.add(new VenueLiteAllOfIdentifiers().scheme(IdentifierScheme.DOI.value()).value(journalDoi));
@@ -155,7 +160,8 @@ final class CrossrefBiblioMapper {
         return identifiers;
     }
 
-    private ProductManifestationBiblioIn venueFromXmlMetadata(String doi, CrossrefVenueMetadata venueMetadata) {
+    private ProductManifestationBiblioIn venueFromXmlMetadata(@Nullable String doi,
+            CrossrefVenueMetadata venueMetadata) {
         String containerDoi = venueMetadata.containerDoi();
         List<VenueLiteAllOfIdentifiers> identifiers = new ArrayList<>();
         if (containerDoi != null) {

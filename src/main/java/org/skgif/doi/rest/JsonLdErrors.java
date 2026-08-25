@@ -2,6 +2,7 @@ package org.skgif.doi.rest;
 
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
+import org.jspecify.annotations.Nullable;
 import org.skgif.doi.generated.model.Error;
 
 /**
@@ -40,7 +41,7 @@ public final class JsonLdErrors {
      * @param detail  human-readable detail explaining what was wrong with the filter
      * @return a 422 response with an RFC 7807 {@code INVALID_FILTER} error body
      */
-    public static Response invalidFilter(UriInfo uriInfo, String detail) {
+    public static Response invalidFilter(UriInfo uriInfo, @Nullable String detail) {
         Error error = new Error()
                 .type("https://skg-if.github.io/api/errors#INVALID_FILTER")
                 .title("INVALID_FILTER")

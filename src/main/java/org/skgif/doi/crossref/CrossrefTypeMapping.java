@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.jspecify.annotations.Nullable;
 import org.skgif.doi.crossref.dto.CrossrefWork;
 import org.skgif.doi.generated.model.Product;
 
@@ -68,7 +69,7 @@ public final class CrossrefTypeMapping {
      * @param type the Crossref work's raw {@code type} value
      * @return the corresponding SKG-IF product_type, or OTHER if unrecognized
      */
-    public static Product.ProductTypeEnum productType(String type) {
+    public static Product.ProductTypeEnum productType(@Nullable String type) {
         return TO_PRODUCT_TYPE.getOrDefault(type, Product.ProductTypeEnum.OTHER);
     }
 

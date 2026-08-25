@@ -2,6 +2,7 @@ package org.skgif.doi.crossref.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A single {@code work.update-to[]} entry - Crossref's record of a correction/retraction/etc.
@@ -16,8 +17,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record CrossrefUpdateTo(
-        CrossrefDate updated,
-        @JsonProperty("DOI") String doi,
-        String type,
-        String label) {
+        @Nullable CrossrefDate updated,
+        @JsonProperty("DOI") @Nullable String doi,
+        @Nullable String type,
+        @Nullable String label) {
 }

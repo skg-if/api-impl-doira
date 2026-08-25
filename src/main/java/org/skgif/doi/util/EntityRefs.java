@@ -1,6 +1,7 @@
 package org.skgif.doi.util;
 
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 import org.skgif.doi.generated.model.AgentAllOfIdentifiers;
 import org.skgif.doi.generated.model.DataSourceLite;
 import org.skgif.doi.generated.model.Organisation;
@@ -37,7 +38,8 @@ public final class EntityRefs {
      * @return an Organisation reference, ROR-identified when bareRor is present, otf-identified
      *         otherwise
      */
-    public static Organisation organisationRef(String doi, String name, String bareRor) {
+    public static Organisation organisationRef(@Nullable String doi, @Nullable String name,
+            @Nullable String bareRor) {
         Organisation org = new Organisation()
                 .localIdentifier(bareRor != null ?
                         ExternalIdentifierUrls.ROR_BASE_URL + bareRor :
@@ -69,8 +71,8 @@ public final class EntityRefs {
     // Each parameter maps 1:1 to a value the caller already resolved from its own DTO/service -
     // same reasoning as personRef's suppression above.
     @SuppressWarnings("PMD.UseObjectForClearerAPI")
-    public static Organisation organisationRef(String doi, String name, String bareRor, String doiLocalIdentifier,
-            String bareDoiValue) {
+    public static Organisation organisationRef(@Nullable String doi, @Nullable String name,
+            @Nullable String bareRor, @Nullable String doiLocalIdentifier, @Nullable String bareDoiValue) {
         if (bareRor != null) {
             return organisationRef(doi, name, bareRor);
         }
@@ -107,8 +109,9 @@ public final class EntityRefs {
     // DTO - bundling them into a container object would need a new DTO for no real clarity gain
     // over five named, individually-documented parameters (same call as CrossrefClient's).
     @SuppressWarnings("PMD.UseObjectForClearerAPI")
-    public static PersonLite personRef(String doi, String name, String givenName, String familyName,
-            String bareOrcid, List<PersonLiteAllOfIdentifiers> orcidIdentifiers) {
+    public static PersonLite personRef(@Nullable String doi, @Nullable String name, @Nullable String givenName,
+            @Nullable String familyName, @Nullable String bareOrcid,
+            @Nullable List<PersonLiteAllOfIdentifiers> orcidIdentifiers) {
         PersonLite by = new PersonLite()
                 .localIdentifier(bareOrcid != null ?
                         ExternalIdentifierUrls.ORCID_BASE_URL + bareOrcid :
@@ -132,7 +135,8 @@ public final class EntityRefs {
      * @param name the publisher's name
      * @return a DataSourceLite for name, with an otf local_identifier
      */
-    public static ProductManifestationBiblioHostingDataSource hostingDataSource(String doi, String name) {
+    public static ProductManifestationBiblioHostingDataSource hostingDataSource(@Nullable String doi,
+            @Nullable String name) {
         return new DataSourceLite()
                 .localIdentifier(MapperTextUtils.otf(doi, name))
                 .entityType(DataSourceLite.EntityTypeEnum.DATASOURCE)

@@ -1,6 +1,7 @@
 package org.skgif.doi.crossref.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Envelope of a Crossref single-work response.
@@ -10,6 +11,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record CrossrefWorkResponse(
-        String status,
-        CrossrefWork message) {
+        @Nullable String status,
+        @Nullable CrossrefWork message) {
 }

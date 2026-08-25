@@ -16,6 +16,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.openapi.annotations.media.ExampleObject;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.jspecify.annotations.Nullable;
 import org.skgif.doi.crossref.CrossrefClient;
 import org.skgif.doi.crossref.CrossrefTypeMapping;
 import org.skgif.doi.crossref.CrossrefWorkFetcher;
@@ -176,7 +177,7 @@ public class CrossrefGrantsResource {
                 response, CrossrefTypeMapping::isGrant, mapper::toGrant);
     }
 
-    private String withGrantType(String filter) {
+    private String withGrantType(@Nullable String filter) {
         String clause = "type:" + CrossrefTypeMapping.GRANT;
         return filter == null ? clause : filter + "," + clause;
     }

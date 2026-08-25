@@ -19,6 +19,7 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.skgif.doi.datacite.DataCiteClient;
 import org.skgif.doi.datacite.DataCiteDoiFetcher;
 import org.skgif.doi.datacite.ResourceTypeMapping;
+import org.skgif.doi.datacite.dto.DataCiteAttributes;
 import org.skgif.doi.datacite.dto.DataCiteDoiData;
 import org.skgif.doi.datacite.dto.DataCiteDoiListResponse;
 import org.skgif.doi.datacite.mapper.DataCiteToSkgIfMapper;
@@ -141,12 +142,19 @@ public class DataCiteProductsResource {
             return notFound(localIdentifierParam);
         }
         DataCiteDoiData data = dataOpt.get();
-        if (ResourceTypeMapping.isAward(data.attributes())) {
+        // A record with no attributes block carries nothing this API can map, so it is reported
+        // as not-found rather than dereferenced - DataCite always sends one, but the DTO cannot
+        // promise that.
+        DataCiteAttributes attributes = data.attributes();
+        if (attributes == null) {
+            return notFound(localIdentifierParam);
+        }
+        if (ResourceTypeMapping.isAward(attributes)) {
             return JsonLdErrors.notFound("No product found for local_identifier '" + localIdentifierParam +
                     "' - this DOI is a grant award, see /datacite/grants/" + localIdentifierParam);
         }
 
-        Product product = mapper.toProduct(data.attributes());
+        Product product = mapper.toProduct(attributes);
 
         String contextBase = JsonLdContextBase.contextBaseFor(data, sandboxBaseUrl, fallbackContextBase);
         return JsonLdEnvelopes.singleEntityResponse(objectMapper, contextBase,

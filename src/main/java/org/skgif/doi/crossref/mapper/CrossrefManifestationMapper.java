@@ -3,6 +3,7 @@ package org.skgif.doi.crossref.mapper;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.jspecify.annotations.Nullable;
 import org.skgif.doi.crossref.dto.CrossrefDate;
 import org.skgif.doi.crossref.dto.CrossrefLicense;
 import org.skgif.doi.crossref.dto.CrossrefUpdateTo;
@@ -44,7 +45,7 @@ final class CrossrefManifestationMapper {
         this.biblioMapper = biblioMapper;
     }
 
-    ProductManifestation manifestation(CrossrefWork work, CrossrefVenueMetadata venueMetadata) {
+    ProductManifestation manifestation(CrossrefWork work, @Nullable CrossrefVenueMetadata venueMetadata) {
         return new ProductManifestation()
                 .type(manifestationType(work).orElse(null))
                 .dates(dates(work).orElse(null))
@@ -84,7 +85,7 @@ final class CrossrefManifestationMapper {
         return any ? Optional.of(dates) : Optional.empty();
     }
 
-    private boolean addDateItem(ProductManifestationDates dates, String type, CrossrefDate date) {
+    private boolean addDateItem(ProductManifestationDates dates, @Nullable String type, @Nullable CrossrefDate date) {
         return date != null && ManifestationDateSetters.addDateItem(dates, type, date.toIsoDate().orElse(null));
     }
 

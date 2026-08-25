@@ -1,6 +1,7 @@
 package org.skgif.doi.medra.dto;
 
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A mEDRA ONIX-for-DOI record, flattened out of the raw XML by {@code MedraOnixXmlParser} into a
@@ -35,14 +36,14 @@ import java.util.List;
  *                        JournalIssue/ContentItem - {@code DOISerialArticleWork} or {@code DOISerialArticleVersion}
  */
 public record MedraWork(
-        String doi,
-        List<MedraTitle> titles,
-        List<MedraContributor> contributors,
-        String abstractText,
-        String publicationDate,
-        String journalTitle,
-        List<String> issns,
-        String registrantName,
-        String publisherName,
-        String workElementName) {
+        @Nullable String doi,
+        @Nullable List<MedraTitle> titles,
+        @Nullable List<MedraContributor> contributors,
+        @Nullable String abstractText,
+        @Nullable String publicationDate,
+        @Nullable String journalTitle,
+        @Nullable List<String> issns,
+        @Nullable String registrantName,
+        @Nullable String publisherName,
+        @Nullable String workElementName) {
 }

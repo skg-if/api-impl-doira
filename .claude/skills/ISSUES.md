@@ -45,6 +45,29 @@ record of what the skill used to get wrong.
 
 ---
 
+## javac's default 100-diagnostic cap silently truncates a findings count
+
+- Date: 2026-08-25
+- Skill: `skg-if-build-toolchain/SKILL.md`
+- Symptom: two consecutive NullAway discovery runs over the whole tree each reported exactly **100**
+  test-phase findings. That read as a real measurement - the number was stable across runs, the
+  build said `BUILD SUCCESS`, and both source roots had compiled - and it was used to conclude the
+  test-side work was smaller than it is. Raising the cap showed the true figure was 138, with a
+  whole test file's worth of findings that had never appeared in any earlier run.
+- Root cause: javac defaults to `-Xmaxerrs 100`/`-Xmaxwarns 100` and stops *printing* past that,
+  without emitting any "N more" notice that the tooling here surfaces. A round number like exactly
+  100 is the only tell, and it looks like data rather than a limit. Compounding it: the earlier
+  aborted-at-ERROR problem (logged below) meant test findings had been absent entirely before, so
+  100 looked like an increase rather than a ceiling. `pom.xml` now sets both caps to 2000, with a
+  comment; any count taken without that is a lower bound.
+- Fix: not yet fixed in the skill. The repo side is done (`pom.xml` caps, plus
+  `STATIC_ANALYSIS_POLICY.md`'s "Gotchas worth not rediscovering" and NullAway sections). The
+  skill's guidance on reading build output should say: before trusting any diagnostic count, check
+  it is not exactly 100 (or whatever cap is in force), and check which goals actually ran. This is
+  the second instance of the same class of error - a plausible-looking count that was silently
+  incomplete - so the two belong together as one "don't trust a count you didn't bound" note.
+- Status: Open
+
 ## `-Dmaven.compiler.*` overrides for compiler-plugin config are silently ignored
 
 - Date: 2026-08-25

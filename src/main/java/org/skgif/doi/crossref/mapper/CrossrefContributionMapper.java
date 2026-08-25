@@ -3,6 +3,7 @@ package org.skgif.doi.crossref.mapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.jspecify.annotations.Nullable;
 import org.skgif.doi.crossref.dto.CrossrefAffiliation;
 import org.skgif.doi.crossref.dto.CrossrefContributor;
 import org.skgif.doi.crossref.dto.CrossrefIdEntry;
@@ -56,7 +57,8 @@ final class CrossrefContributionMapper {
         return contributions;
     }
 
-    static ProductContributionBy personRef(String doi, String given, String family, String rawOrcid) {
+    static ProductContributionBy personRef(@Nullable String doi, @Nullable String given, @Nullable String family,
+            @Nullable String rawOrcid) {
         Optional<String> bareOrcid = bareOrcid(rawOrcid);
         String name = displayName(given, family);
         List<PersonLiteAllOfIdentifiers> orcidIdentifiers = bareOrcid
@@ -75,7 +77,7 @@ final class CrossrefContributionMapper {
      * @param name the organisation's name
      * @return an Organisation reference with an otf local_identifier
      */
-    private static ProductContributionBy organisationRef(String doi, String name) {
+    private static ProductContributionBy organisationRef(@Nullable String doi, @Nullable String name) {
         return EntityRefs.organisationRef(doi, name, null);
     }
 
@@ -85,11 +87,11 @@ final class CrossrefContributionMapper {
      * @param orcidUrl the full ORCID URL (http or https), or null
      * @return the bare ORCID id, or Optional.empty() if orcidUrl is null
      */
-    static Optional<String> bareOrcid(String orcidUrl) {
+    static Optional<String> bareOrcid(@Nullable String orcidUrl) {
         return orcidUrl == null ? Optional.empty() : Optional.of(ExternalIdentifierUrls.stripOrcidUrl(orcidUrl));
     }
 
-    static String displayName(String given, String family) {
+    static @Nullable String displayName(@Nullable String given, @Nullable String family) {
         if (given == null) {
             return family;
         }
@@ -108,7 +110,8 @@ final class CrossrefContributionMapper {
      * @param affiliations the author/editor's declared affiliations
      * @return the mapped affiliations, or an empty list if affiliations is null/empty
      */
-    static List<ProductAllOfRelevantOrganisations> affiliations(String doi, List<CrossrefAffiliation> affiliations) {
+    static List<ProductAllOfRelevantOrganisations> affiliations(@Nullable String doi,
+            @Nullable List<CrossrefAffiliation> affiliations) {
         return Optional.ofNullable(affiliations)
                 .orElseGet(List::of)
                 .stream()
@@ -118,7 +121,7 @@ final class CrossrefContributionMapper {
                 .toList();
     }
 
-    static Optional<String> firstRor(List<CrossrefIdEntry> ids) {
+    static Optional<String> firstRor(@Nullable List<CrossrefIdEntry> ids) {
         if (ids == null) {
             return Optional.empty();
         }

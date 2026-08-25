@@ -1,6 +1,7 @@
 package org.skgif.doi.crossref.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.jspecify.annotations.Nullable;
 
 /**
  * One {@code project[].project-title[]} entry of a Crossref grant record.
@@ -9,5 +10,5 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record CrossrefProjectTitle(
-        String title) {
+        @Nullable String title) {
 }

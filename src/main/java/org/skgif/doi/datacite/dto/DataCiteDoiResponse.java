@@ -1,6 +1,7 @@
 package org.skgif.doi.datacite.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Envelope of a DataCite single-DOI response.
@@ -9,5 +10,5 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record DataCiteDoiResponse(
-        DataCiteDoiData data) {
+        @Nullable DataCiteDoiData data) {
 }

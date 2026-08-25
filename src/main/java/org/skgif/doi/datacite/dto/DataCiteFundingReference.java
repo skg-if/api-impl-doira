@@ -1,6 +1,7 @@
 package org.skgif.doi.datacite.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.jspecify.annotations.Nullable;
 
 /**
  * One {@code fundingReferences[]} entry of a DataCite record.
@@ -14,10 +15,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record DataCiteFundingReference(
-        String funderName,
-        String funderIdentifier,
-        String funderIdentifierType,
-        String awardNumber,
-        String awardTitle,
-        String awardUri) {
+        @Nullable String funderName,
+        @Nullable String funderIdentifier,
+        @Nullable String funderIdentifierType,
+        @Nullable String awardNumber,
+        @Nullable String awardTitle,
+        @Nullable String awardUri) {
 }

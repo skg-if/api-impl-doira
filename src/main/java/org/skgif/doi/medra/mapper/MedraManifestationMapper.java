@@ -2,6 +2,7 @@ package org.skgif.doi.medra.mapper;
 
 import java.util.Map;
 import java.util.Optional;
+import org.jspecify.annotations.Nullable;
 import org.skgif.doi.generated.model.ProductManifestation;
 import org.skgif.doi.generated.model.ProductManifestationDates;
 import org.skgif.doi.generated.model.ProductManifestationType;
@@ -68,7 +69,7 @@ final class MedraManifestationMapper {
      * @return the ISO-normalized date (year, year-month, or full date), or Optional.empty() if
      *         unrecognized
      */
-    private static Optional<String> isoDate(String raw) {
+    private static Optional<String> isoDate(@Nullable String raw) {
         if (raw == null) {
             return Optional.empty();
         }

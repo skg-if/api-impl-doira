@@ -40,7 +40,7 @@ abstract class CrossrefToSkgIfMapperTestBase {
         try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
             Objects.requireNonNull(in, "Fixture not found on classpath: " + resourceName);
             CrossrefWorkResponse response = objectMapper.readValue(in, CrossrefWorkResponse.class);
-            return response.message();
+            return Objects.requireNonNull(response.message(), "Fixture has no message block: " + resourceName);
         }
     }
 }

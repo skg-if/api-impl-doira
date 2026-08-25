@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.jspecify.annotations.Nullable;
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
 import org.skgif.doi.datacite.dto.DataCiteDate;
 import org.skgif.doi.generated.model.ProductManifestationDates;
@@ -60,7 +61,7 @@ final class DataCiteManifestationDates {
             return value;
         }
 
-        static Optional<DataCiteDateType> fromValue(String value) {
+        static Optional<DataCiteDateType> fromValue(@Nullable String value) {
             return Optional.ofNullable(BY_VALUE.get(value));
         }
     }
@@ -99,15 +100,16 @@ final class DataCiteManifestationDates {
             String skgIfDateType = DataCiteDateType.fromValue(date.dateType())
                     .map(DATACITE_DATE_TYPE_TO_SKGIF::get)
                     .orElse(null);
-            boolean missingMapping = skgIfDateType == null || date.date() == null;
+            String dateValue = date.date();
+            boolean missingMapping = skgIfDateType == null || dateValue == null;
             // An `Available` date only signals a genuine embargo when it differs (at day
             // granularity) from every other date already known for this record - if it
             // coincides with e.g. `Issued` or the top-level `created` timestamp, that's just
             // "published and immediately available," not an embargo end date, so it's dropped
             // rather than emitted anywhere.
-            boolean redundantEmbargo = !missingMapping &&
+            boolean redundantEmbargo = dateValue != null &&
                     ManifestationDateSetters.EMBARGO.equals(skgIfDateType) &&
-                    otherRecordDays(attributes, i).contains(normalizeDay(date.date()));
+                    otherRecordDays(attributes, i).contains(normalizeDay(dateValue));
             if (missingMapping || redundantEmbargo) {
                 continue;
             }
@@ -164,6 +166,9 @@ final class DataCiteManifestationDates {
     private static Set<String> otherRecordDays(DataCiteAttributes attributes, int excludingIndex) {
         Set<String> days = new HashSet<>();
         List<DataCiteDate> allDates = attributes.dates();
+        if (allDates == null) {
+            return days;
+        }
         for (int i = 0; i < allDates.size(); i++) {
             DataCiteDate date = allDates.get(i);
             if (i != excludingIndex && date.date() != null) {

@@ -47,6 +47,20 @@
     -->
     <maven.compiler.failOnWarning>true</maven.compiler.failOnWarning>
     <!--
+      Subpackages of org.skgif.doi that NullAway must NOT treat as annotated. Matching is by
+      prefix, so this one entry covers both generated packages (org.skgif.doi.generated.api and
+      .model). It is required, not cosmetic: AnnotatedPackages=org.skgif.doi below prefix-matches
+      the generated openapi output too, and openapi-generator emits no nullness annotations at all,
+      which makes every `builder.setX(foo.orElse(null))` call a finding. Measured while wiring this
+      up: adding the exclusion removed 7 of 14 findings in CrossrefToSkgIfMapper alone.
+
+      A property rather than a literal so a big new package can be staged in: temporarily append it
+      here from the command line, fix its findings, then drop it again -
+      `-Dnullaway.unannotated=org.skgif.doi.generated,org.skgif.doi.<new>`. Prefix matching only
+      cascades downward, so excluding a child package does not exclude its parent.
+    -->
+    <nullaway.unannotated>org.skgif.doi.generated</nullaway.unannotated>
+    <!--
       Checkstyle engine version, pinned independently of maven-checkstyle-plugin above.
       That plugin hardcodes a default engine of 9.3 (Jan 2022, a Java-17-era grammar),
       which cannot parse Java 21+ record patterns, guarded case labels, or the unnamed
@@ -195,24 +209,28 @@
           blocking, -Xep:NullAway:ERROR is NullAway's own documented setup and keeps this gate
           independent of that flag.
 
-          OnlyNullMarked=true is the important choice. The alternative,
-          AnnotatedPackages=org.skgif.doi, opts the whole main tree in at once - measured at 100
-          findings, which is what sank an earlier attempt at this. OnlyNullMarked instead treats
-          just @NullMarked code as in scope, so packages opt in one at a time via their existing
-          package-info.java (checkstyle's JavadocPackage guarantees every package has one). Three
-          consequences worth knowing before "fixing" something that looks under-configured:
+          AnnotatedPackages=org.skgif.doi scopes it, and matching is by PREFIX, so that one entry
+          covers the whole tree - both source roots, every subpackage, and anything added later. An
+          earlier iteration instead used OnlyNullMarked=true with @NullMarked on each
+          package-info.java; that was dropped once the whole tree was covered, because it needed 19
+          annotations kept in sync and left a newly-added package silently UNCHECKED until someone
+          remembered to mark it. The prefix flag fails safe instead. The two are mutually exclusive
+          - passing both is an error. Nothing under src/ carries @NullMarked any more; the
+          ${nullaway.unannotated} property above is the only scoping lever.
 
-            - src/test/java is out of scope structurally, not by an exclusion list: it has no
-              package-info.java files at all, so no test package can be marked by accident.
-            - The generated openapi model is likewise out of scope for free - it carries no
-              @NullMarked - so unlike -XepExcludedPaths above, NullAway needs no generated-code
-              exclusion. Do NOT add UnannotatedSubPackages=org.skgif.doi.generated; it is dead
-              config under OnlyNullMarked.
-            - JSpecifyMode is deliberately NOT set. That flag turns on deep generic-type nullness
-              checking, is documented as still under development with known false positives, and is
-              orthogonal to using @NullMarked for scoping, which works in standard mode.
+          JSpecifyMode is deliberately NOT set. That flag turns on deep generic-type nullness
+          checking (nullness of type arguments, wildcards) and is documented as still under
+          development with known false positives. Standard mode - top-level nullability only - is
+          what this build relies on. A consequence worth knowing: annotating an inner type argument,
+          e.g. List<@Nullable String>, is documentation the tool will not act on.
 
-          When opting a new package in, run the discovery pass with
+          -Xmaxerrs/-Xmaxwarns are raised from javac's default of 100 deliberately, and this is not
+          cosmetic. That default silently TRUNCATES the diagnostic list: a discovery pass over this
+          codebase reported exactly 100 test-phase findings twice in a row, which read as a real
+          measurement rather than a cap, and hid a whole test file's worth of findings. Any count
+          taken with the default cap in place is a lower bound, not a total.
+
+          When bringing a new package or a batch of annotations in, run the discovery pass with
 
             -Dnullaway.severity=WARN -Dmaven.compiler.failOnWarning=false
 
@@ -221,6 +239,12 @@
           trap that made an earlier discovery run under-report its own scope by an unknown margin.
           Note that -Dmaven.compiler.compilerArgs=... does NOT work for this: it does not override
           a <compilerArgs> list declared here, which is why the severity is a property.
+
+          ExcludedFieldAnnotations exempts framework-initialised fields from the
+          field-initialization check. The rest.* resources declare their config as non-final
+          @ConfigProperty fields with no initializer, and tests use @InjectMock the same way; the
+          container populates both before any use. This is an initialisation exemption, NOT a claim
+          that those fields are nullable.
         -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -230,7 +254,11 @@
           <compilerArgs>
             <arg>-XDcompilePolicy=simple</arg>
             <arg>--should-stop=ifError=FLOW</arg>
-            <arg>-Xplugin:ErrorProne -XepDisableWarningsInGeneratedCode -XepExcludedPaths:.*/generated-sources/.* -Xep:NullAway:${nullaway.severity} -XepOpt:NullAway:OnlyNullMarked=true</arg>
+            <arg>-Xmaxerrs</arg>
+            <arg>2000</arg>
+            <arg>-Xmaxwarns</arg>
+            <arg>2000</arg>
+            <arg>-Xplugin:ErrorProne -XepDisableWarningsInGeneratedCode -XepExcludedPaths:.*/generated-sources/.* -Xep:NullAway:${nullaway.severity} -XepOpt:NullAway:AnnotatedPackages=org.skgif.doi -XepOpt:NullAway:UnannotatedSubPackages=${nullaway.unannotated} -XepOpt:NullAway:ExcludedFieldAnnotations=org.eclipse.microprofile.config.inject.ConfigProperty,jakarta.inject.Inject,org.eclipse.microprofile.rest.client.inject.RestClient,io.quarkus.test.InjectMock</arg>
           </compilerArgs>
           <annotationProcessorPaths>
             <path>

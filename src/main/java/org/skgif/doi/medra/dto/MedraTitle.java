@@ -1,5 +1,7 @@
 package org.skgif.doi.medra.dto;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * One ONIX-for-DOI {@code <Title>} element ({@code TitleType}/{@code TitleText}, {@code language}
  * as an XML attribute) - the same flat shape is used at both {@code ContentItem} (article) and
@@ -11,7 +13,7 @@ package org.skgif.doi.medra.dto;
  * @param text      the title text
  */
 public record MedraTitle(
-        String titleType,
-        String language,
-        String text) {
+        @Nullable String titleType,
+        @Nullable String language,
+        @Nullable String text) {
 }

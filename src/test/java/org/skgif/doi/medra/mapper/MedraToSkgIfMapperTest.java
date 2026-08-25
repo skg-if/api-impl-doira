@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.skgif.doi.generated.model.PersonLite;
 import org.skgif.doi.generated.model.Product;
@@ -146,7 +147,7 @@ class MedraToSkgIfMapperTest {
     }
 
     @SuppressWarnings("unchecked")
-    private String manifestationTypeLabel(Product product) {
+    private @Nullable String manifestationTypeLabel(Product product) {
         var labels = (java.util.Map<String, String>) product.getManifestations().getFirst().getType().getLabels();
         return labels.get("en");
     }

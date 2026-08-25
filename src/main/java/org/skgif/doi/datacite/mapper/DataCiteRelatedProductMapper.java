@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.jspecify.annotations.Nullable;
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
 import org.skgif.doi.datacite.dto.DataCiteRelatedIdentifier;
 import org.skgif.doi.generated.model.EntityIdentifiersInner;
@@ -76,7 +77,7 @@ final class DataCiteRelatedProductMapper {
             return value;
         }
 
-        static Optional<DataCiteRelatedIdentifierType> fromValue(String value) {
+        static Optional<DataCiteRelatedIdentifierType> fromValue(@Nullable String value) {
             return Optional.ofNullable(BY_VALUE.get(value));
         }
     }
@@ -145,7 +146,11 @@ final class DataCiteRelatedProductMapper {
 
     private List<ProductsRelatedCitesInner> relatedByType(DataCiteAttributes attributes, String relationType) {
         List<ProductsRelatedCitesInner> result = new ArrayList<>();
-        for (DataCiteRelatedIdentifier related : attributes.relatedIdentifiers()) {
+        List<DataCiteRelatedIdentifier> relatedIdentifiers = attributes.relatedIdentifiers();
+        if (relatedIdentifiers == null) {
+            return result;
+        }
+        for (DataCiteRelatedIdentifier related : relatedIdentifiers) {
             if (!relationType.equals(related.relationType()) || related.relatedIdentifier() == null) {
                 continue;
             }
@@ -170,7 +175,7 @@ final class DataCiteRelatedProductMapper {
         return result;
     }
 
-    private static String unmappedScheme(String relatedIdentifierType) {
+    private static String unmappedScheme(@Nullable String relatedIdentifierType) {
         return relatedIdentifierType != null ? relatedIdentifierType.toLowerCase(Locale.ROOT) : "url";
     }
 }

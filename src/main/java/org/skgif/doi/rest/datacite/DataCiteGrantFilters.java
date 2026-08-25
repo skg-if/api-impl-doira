@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -150,7 +151,10 @@ final class DataCiteGrantFilters {
     // Sole call site is toDataCiteQuery's `FilterQuerySyntax.parseClauses(filter, SUPPORTED,
     // DataCiteGrantFilters::toClause)` above.
     private static String toClause(String key, String value) {
-        return CLAUSE_BUILDERS.get(GrantFilterKeys.fromKey(key)).apply(value);
+        // parseClauses only ever hands back a key from SUPPORTED, and every one of those has a
+        // CLAUSE_BUILDERS entry - asserted rather than assumed because that invariant is
+        // established at the call site, out of the nullness checker's reach.
+        return Objects.requireNonNull(CLAUSE_BUILDERS.get(GrantFilterKeys.fromKey(key))).apply(value);
     }
 
     /**

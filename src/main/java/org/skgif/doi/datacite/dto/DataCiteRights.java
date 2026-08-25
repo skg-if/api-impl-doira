@@ -1,6 +1,7 @@
 package org.skgif.doi.datacite.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.jspecify.annotations.Nullable;
 
 /**
  * One {@code rightsList[]} entry, carrying a licence name, URL and identifier.
@@ -11,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record DataCiteRights(
-        String rights,
-        String rightsUri,
-        String rightsIdentifier) {
+        @Nullable String rights,
+        @Nullable String rightsUri,
+        @Nullable String rightsIdentifier) {
 }

@@ -2,6 +2,7 @@ package org.skgif.doi.crossref.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A Crossref work's {@code resource} block, holding its publisher landing-page URL.
@@ -10,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record CrossrefResource(
-        Primary primary) {
+        @Nullable Primary primary) {
 
     /**
      * The {@code resource.primary} entry, whose URL is the work's canonical landing page.
@@ -19,6 +20,6 @@ public record CrossrefResource(
      */
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Primary(
-            @JsonProperty("URL") String url) {
+            @JsonProperty("URL") @Nullable String url) {
     }
 }

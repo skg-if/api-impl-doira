@@ -2,6 +2,7 @@ package org.skgif.doi.datacite;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -48,7 +49,7 @@ class ResourceTypeMappingTest {
                 .isSorted();
     }
 
-    private static DataCiteAttributes attributesWithResourceTypeGeneral(String resourceTypeGeneral) {
+    private static DataCiteAttributes attributesWithResourceTypeGeneral(@Nullable String resourceTypeGeneral) {
         return new DataCiteAttributes(null, null, null, null, null, null, null, null, null, null, null, null, null,
                 new DataCiteAttributes.Types(resourceTypeGeneral, null), null, null, null, null, null, null);
     }

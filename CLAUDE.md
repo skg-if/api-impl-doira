@@ -178,6 +178,67 @@ against a candidate file's absolute path (so a bare filename needs a leading `.*
 `.*MapperTextUtils\.java`) - confirmed by decompiling `AbstractSpotlessMojo.class` in the
 `spotless-maven-plugin` 2.46.1 jar, since this isn't documented in the plugin's compiled metadata.
 
+## Nullness: `@Nullable` and `Objects.requireNonNull`
+
+NullAway runs at `ERROR` over the **whole** `org.skgif.doi` tree, both source roots, and currently
+reports zero findings - so any nullness slip in new code **fails `mvn compile`**, not just a later
+check goal. Scoping is one pom flag (`AnnotatedPackages=org.skgif.doi`), not `@NullMarked`: there is
+no `@NullMarked` anywhere in `src/` and none should be added. Only `org.skgif.doi.generated` is out
+of scope. Full rationale and the measured rollout are in
+[STATIC_ANALYSIS_POLICY.md](STATIC_ANALYSIS_POLICY.md)'s NullAway section.
+
+**The annotation.** `org.jspecify.annotations.Nullable`, never `javax.annotation.Nullable` (not on
+the classpath at all here) or a vendor one. It's `TYPE_USE`, so it goes immediately before the type:
+
+```java
+private final @Nullable String mailto;
+Optional<String> currency(@Nullable CrossrefProject project, @Nullable CrossrefFunding funding)
+static @Nullable String displayName(@Nullable String given, @Nullable String family)
+```
+
+Two placement traps: on a declaration with **no preceding modifier** - an interface method - a
+leading `@Nullable` trips checkstyle's `AnnotationLocation` and must go on its own line; with any
+modifier present (`private static @Nullable String ...`) inline is correct. And don't annotate inner
+type arguments (`List<@Nullable String>`) - `JSpecifyMode` is deliberately off, so the tool ignores
+it and it reads as a promise the build doesn't keep.
+
+**When a finding appears, pick by cause - don't reach for the annotation reflexively:**
+
+- **Genuinely null-tolerant** (the body opens with `if (x == null) return ...`, or the javadoc
+  already hedges "or null if none is known") → annotate `@Nullable`, and update the `@param`/`@return`
+  text in the same edit. This is the common case and changes no behaviour.
+- **Safe but unprovable** → restructure so the guard is visible rather than annotating around it.
+  Nullness doesn't flow through a boolean local, so hoist the accessor:
+  `String id = x.foo(); ... id != null && ... ? strip(id) : null`. And prefer
+  `.map(Foo::amount).map(Double::intValue)` over `.filter(a -> a.amount() != null).map(a -> a.amount().intValue())`
+  - `Optional.map` already drops a null result, so it's the same behaviour and provable.
+- **Invariant established in another method** → `Objects.requireNonNull(...)` with a comment naming
+  the guard that makes it safe (see `CrossrefBiblioMapper#venue`, guarded by `hasNoContainerTitle`).
+  Prefer a self-contained local null-check in the helper where that's reasonable - it removes the
+  unstated dependency on the caller instead of documenting it.
+- **Genuinely missing guard** → add the guard. Rare, but the reason the gate is worth having: the
+  DataCite resources' `data.attributes()` was one, and now returns 404 rather than dereferencing.
+
+**Never `@SuppressWarnings("NullAway")`.** There are zero in the tree; a suppression records "we
+looked" and nothing about the contract.
+
+**`Objects.requireNonNull` conventions.** Always with a message that names what's missing
+(`"Fixture not found on classpath: " + resourceName`), so a failure identifies itself. In tests it's
+also the right way to state an assumption an assertion depends on -
+`Objects.requireNonNull(work.contributors()).getFirst()` - rather than relying on an implicit NPE.
+
+**To measure rather than guess** (e.g. after a wide refactor), run discovery at `WARN` - never at
+`ERROR`, where javac aborts in `default-compile` and every test-source finding silently disappears:
+
+```bash
+./mvnw -B compile test-compile -Dnullaway.severity=WARN -Dmaven.compiler.failOnWarning=false
+```
+
+Confirm the run actually reached `test-compile` before trusting its count, and note that
+`-Dmaven.compiler.compilerArgs=`/`-Dmaven.compiler.failOnWarning=` overrides of pom-declared plugin
+config are silently ignored - the `nullaway.severity`, `maven.compiler.failOnWarning` and
+`nullaway.unannotated` properties in `pom.xml` exist precisely so these overrides work.
+
 <!-- code-review-graph MCP tools -->
 ## MCP Tools: code-review-graph
 

@@ -47,7 +47,7 @@ public interface CrossrefClient {
     @SuppressWarnings("PMD.UseObjectForClearerAPI")
     @GET
     CrossrefWorkListResponse listWorks(
-            @QueryParam("filter") String filter,
+            @QueryParam("filter") @Nullable String filter,
             @QueryParam("query.title") @Nullable String queryTitle,
             @QueryParam("query.bibliographic") @Nullable String queryBibliographic,
             @QueryParam("rows") Integer rows,

@@ -2,6 +2,7 @@ package org.skgif.doi.crossref.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The {@code {id, id-type, asserted-by}} shape Crossref uses for structured external
@@ -14,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record CrossrefIdEntry(
-        String id,
-        @JsonProperty("id-type") String idType,
-        @JsonProperty("asserted-by") String assertedBy) {
+        @Nullable String id,
+        @JsonProperty("id-type") @Nullable String idType,
+        @JsonProperty("asserted-by") @Nullable String assertedBy) {
 }

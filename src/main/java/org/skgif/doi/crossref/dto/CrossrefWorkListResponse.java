@@ -3,6 +3,7 @@ package org.skgif.doi.crossref.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Envelope of a Crossref {@code works} list/search response.
@@ -12,8 +13,8 @@ import java.util.List;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record CrossrefWorkListResponse(
-        String status,
-        Message message) {
+        @Nullable String status,
+        @Nullable Message message) {
 
     /**
      * The {@code message} payload of a list response: this page of works plus the total count.
@@ -24,6 +25,6 @@ public record CrossrefWorkListResponse(
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Message(
             @JsonProperty("total-results") long totalResults,
-            List<CrossrefWork> items) {
+            @Nullable List<CrossrefWork> items) {
     }
 }

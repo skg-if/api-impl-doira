@@ -3,6 +3,7 @@ package org.skgif.doi.datacite.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
 import java.util.Map;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Envelope of a DataCite {@code dois} list/search response.
@@ -13,9 +14,9 @@ import java.util.Map;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record DataCiteDoiListResponse(
-        List<DataCiteDoiData> data,
-        Meta meta,
-        Map<String, String> links) {
+        @Nullable List<DataCiteDoiData> data,
+        @Nullable Meta meta,
+        @Nullable Map<String, String> links) {
 
     /**
      * The {@code meta} block's pagination counters.

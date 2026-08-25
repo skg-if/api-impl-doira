@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import org.jspecify.annotations.Nullable;
 import org.skgif.doi.crossref.dto.CrossrefAmount;
 import org.skgif.doi.crossref.dto.CrossrefFunder;
 import org.skgif.doi.crossref.dto.CrossrefFunding;
@@ -61,29 +62,32 @@ final class CrossrefGrantMapper {
         return values.isEmpty() ? Map.of() : Map.of("en", String.join("\n\n", values));
     }
 
-    Optional<Organisation> grantFundingAgency(String doi, CrossrefFunding primaryFunding,
-            List<CrossrefFunder> topLevelFunders) {
+    Optional<Organisation> grantFundingAgency(@Nullable String doi, @Nullable CrossrefFunding primaryFunding,
+            @Nullable List<CrossrefFunder> topLevelFunders) {
         return fundingMapper.grantFundingAgency(doi, primaryFunding, topLevelFunders);
     }
 
-    Optional<Integer> fundedAmount(CrossrefProject project, CrossrefFunding funding) {
+    Optional<Integer> fundedAmount(@Nullable CrossrefProject project, @Nullable CrossrefFunding funding) {
+        // Optional.map already drops a null result, so mapping the accessor and the conversion
+        // separately replaces the filter-then-dereference pair with the same behaviour.
         return awardAmount(project, funding)
-                .filter(amount -> amount.amount() != null)
-                .map(amount -> amount.amount().intValue());
+                .map(CrossrefAmount::amount)
+                .map(Double::intValue);
     }
 
-    Optional<String> currency(CrossrefProject project, CrossrefFunding funding) {
+    Optional<String> currency(@Nullable CrossrefProject project, @Nullable CrossrefFunding funding) {
         return awardAmount(project, funding).map(CrossrefAmount::currency);
     }
 
-    private Optional<CrossrefAmount> awardAmount(CrossrefProject project, CrossrefFunding funding) {
+    private Optional<CrossrefAmount> awardAmount(@Nullable CrossrefProject project,
+            @Nullable CrossrefFunding funding) {
         if (funding != null && funding.awardAmount() != null) {
             return Optional.of(funding.awardAmount());
         }
         return Optional.ofNullable(project != null ? project.awardAmount() : null);
     }
 
-    Optional<GrantAllOfDuration> duration(CrossrefProject project) {
+    Optional<GrantAllOfDuration> duration(@Nullable CrossrefProject project) {
         if (project == null) {
             return Optional.empty();
         }

@@ -3,6 +3,7 @@ package org.skgif.doi.crossref.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 
 /**
  * One {@code project[].investigator[]} entry of a Crossref grant record.
@@ -14,8 +15,8 @@ import java.util.List;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record CrossrefInvestigator(
-        String given,
-        String family,
-        @JsonProperty("ORCID") String orcid,
-        List<CrossrefAffiliation> affiliation) {
+        @Nullable String given,
+        @Nullable String family,
+        @JsonProperty("ORCID") @Nullable String orcid,
+        @Nullable List<CrossrefAffiliation> affiliation) {
 }

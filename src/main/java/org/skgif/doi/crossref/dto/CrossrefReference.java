@@ -2,6 +2,7 @@ package org.skgif.doi.crossref.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A {@code work.reference[]} entry - Crossref's structured citation list, and (verified live:
@@ -19,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record CrossrefReference(
-        @JsonProperty("DOI") String doi,
-        @JsonProperty("key") String key,
-        @JsonProperty("unstructured") String unstructured) {
+        @JsonProperty("DOI") @Nullable String doi,
+        @JsonProperty("key") @Nullable String key,
+        @JsonProperty("unstructured") @Nullable String unstructured) {
 }

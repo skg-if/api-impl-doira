@@ -3,6 +3,7 @@ package org.skgif.doi.crossref.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 
 /**
  * One {@code author}/{@code editor} entry of a Crossref work.
@@ -15,9 +16,9 @@ import java.util.List;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record CrossrefContributor(
-        String given,
-        String family,
-        String sequence,
-        @JsonProperty("ORCID") String orcid,
-        List<CrossrefAffiliation> affiliation) {
+        @Nullable String given,
+        @Nullable String family,
+        @Nullable String sequence,
+        @JsonProperty("ORCID") @Nullable String orcid,
+        @Nullable List<CrossrefAffiliation> affiliation) {
 }

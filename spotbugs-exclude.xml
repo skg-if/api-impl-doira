@@ -33,14 +33,28 @@
   </Match>
 
   <!--
-    6 hits, all Path.getFileName() calls in the doc-consistency tests (GoldenFixtureConsistencyTest,
-    MappingDocConsistencyTest, ToolchainVersionConsistencyTest) on paths sourced from Files.list/
-    Files.walk over a known directory, or resolve()'d against one - never a root path, so
-    getFileName() can never actually return null here even though the JDK contract allows it in
-    general.
+    Nullness is NullAway's concern, not SpotBugs's - see STATIC_ANALYSIS_POLICY.md's NullAway
+    section, and the "never duplicate an active rule" principle this codebase already applies
+    between PMD and checkstyle. This detector is the weaker, bytecode-level half of that overlap
+    and now contributes only false positives, so it is off tree-wide.
+
+    Originally scoped to org.skgif.doi.docs only (6 hits: Path.getFileName() on paths sourced from
+    Files.list/Files.walk over a known directory, never a root path, so it can never actually
+    return null even though the JDK contract allows it). Widened when the provider DTO accessors
+    were annotated @Nullable: that handed SpotBugs real nullness information and took this detector
+    from 6 hits to 49, every one of the 43 new ones a false positive of a single shape it cannot
+    model - a null-guard on a record accessor followed by another call to the SAME accessor, e.g.
+
+      if (work.author() != null) { for (CrossrefContributor a : work.author()) { ... } }
+      return work.containerTitle() == null || work.containerTitle().isEmpty() || ...;
+
+    SpotBugs treats each invocation as an independently-nullable value rather than a pure field
+    read, and likewise cannot follow a guard through a stream filter or across a method boundary.
+    NullAway checks the same property at source level, understands Optional chains and
+    Objects.requireNonNull assertions, and reports zero findings on this codebase - so the
+    remaining signal here is noise, not coverage being given up.
   -->
   <Match>
-    <Class name="~org\.skgif\.doi\.docs\..*"/>
     <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
   </Match>
 

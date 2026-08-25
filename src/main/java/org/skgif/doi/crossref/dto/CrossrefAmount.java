@@ -1,6 +1,7 @@
 package org.skgif.doi.crossref.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The {@code {amount, currency}} shape of a Crossref grant's {@code award-amount} - verified
@@ -13,6 +14,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record CrossrefAmount(
-        Double amount,
-        String currency) {
+        @Nullable Double amount,
+        @Nullable String currency) {
 }

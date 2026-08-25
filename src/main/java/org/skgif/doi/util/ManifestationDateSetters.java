@@ -2,6 +2,7 @@ package org.skgif.doi.util;
 
 import java.util.Map;
 import java.util.function.BiConsumer;
+import org.jspecify.annotations.Nullable;
 import org.skgif.doi.generated.model.ProductManifestationDates;
 
 /**
@@ -76,7 +77,8 @@ public final class ManifestationDateSetters {
      * @param isoValue      the ISO-8601-ish date string to add, or null
      * @return true if isoValue was non-null and skgIfDateType matched a known setter
      */
-    public static boolean addDateItem(ProductManifestationDates dates, String skgIfDateType, String isoValue) {
+    public static boolean addDateItem(ProductManifestationDates dates, @Nullable String skgIfDateType,
+            @Nullable String isoValue) {
         if (isoValue == null || skgIfDateType == null) {
             return false;
         }

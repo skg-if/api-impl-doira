@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BinaryOperator;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Shared mechanics for translating the SKG-IF {@code filter} query syntax (comma-separated
@@ -105,7 +106,7 @@ public final class FilterQuerySyntax {
     // - null means "no clause"; converting to Optional<String> is a separate, larger refactor of
     // that shared functional interface, out of scope here.
     @SuppressWarnings("PMD.ReturnNullConsiderOptional")
-    public static String schemeOnlyFilter(String value, String expectedScheme, String noMatchClause) {
+    public static @Nullable String schemeOnlyFilter(String value, String expectedScheme, String noMatchClause) {
         return expectedScheme.equalsIgnoreCase(value) ? null : noMatchClause;
     }
 

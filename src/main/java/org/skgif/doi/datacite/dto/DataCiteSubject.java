@@ -1,6 +1,7 @@
 package org.skgif.doi.datacite.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.jspecify.annotations.Nullable;
 
 /**
  * One {@code subjects[]} entry, with its optional scheme and language.
@@ -11,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record DataCiteSubject(
-        String subject,
-        String subjectScheme,
-        String lang) {
+        @Nullable String subject,
+        @Nullable String subjectScheme,
+        @Nullable String lang) {
 }

@@ -28,7 +28,7 @@ class MedraOnixXmlParserTest {
 
         assertThat(work.doi()).isEqualTo("10.19276/plinius.2019.01004");
         assertThat(work.contributors()).hasSize(1);
-        MedraContributor contributor = work.contributors().getFirst();
+        MedraContributor contributor = Objects.requireNonNull(work.contributors()).getFirst();
         assertThat(contributor.role()).isEqualTo("A01");
         assertThat(contributor.namesBeforeKey()).isEqualTo("Daniela");
         assertThat(contributor.keyNames()).isEqualTo("D'Alessio");
@@ -36,7 +36,7 @@ class MedraOnixXmlParserTest {
         assertThat(contributor.personNameInverted()).isEqualTo("D'Alessio, Daniela");
 
         assertThat(work.titles()).hasSize(1);
-        assertThat(work.titles().getFirst().text())
+        assertThat(Objects.requireNonNull(work.titles()).getFirst().text())
                 .isEqualTo("Synthesis, phase transitions, degassing behaviour of melanophlogite (type I clathrate)");
         assertThat(work.journalTitle()).isEqualTo("Plinius");
         assertThat(work.issns()).isEqualTo(java.util.List.of("1972-1366"));
@@ -51,7 +51,7 @@ class MedraOnixXmlParserTest {
 
         assertThat(work.doi()).isEqualTo("10.3254/978-1-61499-732-0-119");
         assertThat(work.contributors()).hasSize(2);
-        MedraContributor first = work.contributors().getFirst();
+        MedraContributor first = Objects.requireNonNull(work.contributors()).getFirst();
         assertThat(first.personName()).isEqualTo("Cotte M.");
         assertThat(first.personNameInverted()).isNull();
         assertThat(first.namesBeforeKey()).isNull();
@@ -70,7 +70,7 @@ class MedraOnixXmlParserTest {
 
         final int expectedContributorCount = 23;
         assertThat(work.contributors()).hasSize(expectedContributorCount);
-        MedraContributor first = work.contributors().getFirst();
+        MedraContributor first = Objects.requireNonNull(work.contributors()).getFirst();
         assertThat(first.namesBeforeKey()).isEqualTo("L.");
         assertThat(first.keyNames()).isEqualTo("Baldesi");
         assertThat(first.personName()).isNull();
@@ -91,7 +91,7 @@ class MedraOnixXmlParserTest {
         MedraWork work = parseFixture("medra-multilang-titles.xml");
 
         assertThat(work.titles()).hasSize(1);
-        MedraTitle articleTitle = work.titles().getFirst();
+        MedraTitle articleTitle = Objects.requireNonNull(work.titles()).getFirst();
         assertThat(articleTitle.text())
                 .isEqualTo("Transverse THz dynamics of phospholipid membranes: A neutron scattering study");
         assertThat(articleTitle.language()).isNull();
@@ -110,7 +110,7 @@ class MedraOnixXmlParserTest {
         MedraWork work = parseFixture("medra-personname-inverted-only.xml");
 
         assertThat(work.contributors()).hasSize(1);
-        MedraContributor contributor = work.contributors().getFirst();
+        MedraContributor contributor = Objects.requireNonNull(work.contributors()).getFirst();
         assertThat(contributor.personNameInverted()).isEqualTo("Fragneto, Giovanna");
         assertThat(contributor.personName()).isNull();
         assertThat(contributor.namesBeforeKey()).isNull();
@@ -138,7 +138,7 @@ class MedraOnixXmlParserTest {
         assertThat(work.publicationDate()).isNull();
 
         assertThat(work.contributors()).hasSize(1);
-        MedraContributor contributor = work.contributors().getFirst();
+        MedraContributor contributor = Objects.requireNonNull(work.contributors()).getFirst();
         assertThat(contributor.personNameInverted()).isEqualTo("Camara Bastos, Maria Helena");
         assertThat(contributor.personName()).isNull();
     }

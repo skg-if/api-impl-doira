@@ -1,5 +1,7 @@
 package org.skgif.doi.medra.dto;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * One ONIX-for-DOI {@code <Contributor>} element. {@code role} is the raw {@code ContributorRole}
  * code (e.g. {@code "A01"} for author - the only value observed in practice). The four name
@@ -17,9 +19,9 @@ package org.skgif.doi.medra.dto;
  *                           personName
  */
 public record MedraContributor(
-        String role,
-        String namesBeforeKey,
-        String keyNames,
-        String personName,
-        String personNameInverted) {
+        @Nullable String role,
+        @Nullable String namesBeforeKey,
+        @Nullable String keyNames,
+        @Nullable String personName,
+        @Nullable String personNameInverted) {
 }

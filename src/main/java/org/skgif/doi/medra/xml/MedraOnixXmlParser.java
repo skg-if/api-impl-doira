@@ -7,6 +7,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import org.jspecify.annotations.Nullable;
 import org.skgif.doi.medra.dto.MedraContributor;
 import org.skgif.doi.medra.dto.MedraTitle;
 import org.skgif.doi.medra.dto.MedraWork;
@@ -47,7 +48,7 @@ public final class MedraOnixXmlParser {
      * @param xml the raw mEDRA ONIX-for-DOI XML document, or null
      * @return the parsed work, or empty if xml is null/blank or no {@code ContentItem} is found
      */
-    public static Optional<MedraWork> parse(String xml) {
+    public static Optional<MedraWork> parse(@Nullable String xml) {
         if (xml == null || xml.isBlank()) {
             return Optional.empty();
         }
@@ -138,7 +139,7 @@ public final class MedraOnixXmlParser {
      * @return the journal/series' own name, or null if none found
      * @throws XPathExpressionException if the XPath evaluation fails
      */
-    private static String journalTitle(XPath xpath, Node serialWork) throws XPathExpressionException {
+    private static @Nullable String journalTitle(XPath xpath, Node serialWork) throws XPathExpressionException {
         NodeList nodes = (NodeList) xpath.evaluate("*[local-name()='Title']", serialWork, XPathConstants.NODESET);
         String firstAny = null;
         for (int i = 0; i < nodes.getLength(); i++) {

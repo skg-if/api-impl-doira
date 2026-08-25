@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import org.junit.jupiter.api.Test;
 import org.skgif.doi.crossref.dto.CrossrefIdEntry;
 import org.skgif.doi.crossref.dto.CrossrefWork;
@@ -62,7 +63,8 @@ class CrossrefToSkgIfMapperRelatedProductsTest extends CrossrefToSkgIfMapperTest
         // No real fixture is expected to carry a non-DOI is-supplemented-by entry - mutated in
         // Java from the real fixture's own DOI-shaped entry to prove the otf fallback still works.
         CrossrefWork work = readFixture("crossref-journal-article-with-is-supplemented-by.json");
-        List<CrossrefIdEntry> supplements = work.relation().get("is-supplemented-by");
+        List<CrossrefIdEntry> supplements =
+                Objects.requireNonNull(Objects.requireNonNull(work.relation()).get("is-supplemented-by"));
         CrossrefIdEntry original = supplements.getFirst();
         supplements.set(0, new CrossrefIdEntry(original.id(), "handle", original.assertedBy()));
 

@@ -3,6 +3,7 @@ package org.skgif.doi.datacite.mapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.jspecify.annotations.Nullable;
 import org.skgif.doi.datacite.dto.DataCiteAffiliation;
 import org.skgif.doi.datacite.dto.DataCiteContributor;
 import org.skgif.doi.datacite.dto.DataCiteCreator;
@@ -37,8 +38,8 @@ final class DataCiteGrantMapper {
     private DataCiteGrantMapper() {
     }
 
-    static Optional<Organisation> grantFundingAgency(String doi, Optional<DataCiteCreator> fundingAgencyCreator,
-            String publisher) {
+    static Optional<Organisation> grantFundingAgency(@Nullable String doi,
+            Optional<DataCiteCreator> fundingAgencyCreator, @Nullable String publisher) {
         if (fundingAgencyCreator.isPresent()) {
             DataCiteCreator creator = fundingAgencyCreator.get();
             String ror = DataCiteContributionMapper.firstRor(creator.nameIdentifiers()).orElse(null);
@@ -79,9 +80,9 @@ final class DataCiteGrantMapper {
         return result;
     }
 
-    private static GrantContributionBy grantContributionBy(String doi, String name, String givenName,
-            String familyName, List<DataCiteNameIdentifier> nameIdentifiers,
-            boolean organizational) {
+    private static GrantContributionBy grantContributionBy(@Nullable String doi, @Nullable String name,
+            @Nullable String givenName, @Nullable String familyName,
+            @Nullable List<DataCiteNameIdentifier> nameIdentifiers, boolean organizational) {
         if (organizational) {
             String ror = DataCiteContributionMapper.firstRor(nameIdentifiers).orElse(null);
             Organisation by = new Organisation()
@@ -100,16 +101,20 @@ final class DataCiteGrantMapper {
         return EntityRefs.personRef(doi, name, givenName, familyName, orcid, identifiers);
     }
 
-    static List<GrantAllOfBeneficiaries> grantAffiliations(String doi, List<DataCiteAffiliation> affiliations) {
+    static List<GrantAllOfBeneficiaries> grantAffiliations(@Nullable String doi,
+            @Nullable List<DataCiteAffiliation> affiliations) {
         return Optional.ofNullable(affiliations)
                 .orElseGet(List::of)
                 .stream()
                 .filter(affiliation -> affiliation.name() != null)
                 .<GrantAllOfBeneficiaries>map(affiliation -> {
-                    boolean hasRor = affiliation.affiliationIdentifier() != null &&
-                            SCHEME_ROR_UPPER.equalsIgnoreCase(affiliation.affiliationIdentifierScheme());
-                    String bareRor =
-                            hasRor ? ExternalIdentifierUrls.stripRorUrl(affiliation.affiliationIdentifier()) : null;
+                    // Held in a local rather than re-read via the accessor so the null check is
+                    // directly visible to the nullness checker at the stripRorUrl call below,
+                    // which takes a @NonNull value.
+                    String rorIdentifier = affiliation.affiliationIdentifier();
+                    String bareRor = rorIdentifier != null &&
+                            SCHEME_ROR_UPPER.equalsIgnoreCase(affiliation.affiliationIdentifierScheme()) ?
+                                    ExternalIdentifierUrls.stripRorUrl(rorIdentifier) : null;
                     return EntityRefs.organisationRef(doi, affiliation.name(), bareRor);
                 })
                 .toList();

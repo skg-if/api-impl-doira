@@ -3,6 +3,7 @@ package org.skgif.doi.crossref.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A grant-type Crossref record's {@code project[]} entry - the source of most Grant fields
@@ -21,12 +22,12 @@ import java.util.List;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record CrossrefProject(
-        @JsonProperty("project-title") List<CrossrefProjectTitle> projectTitle,
-        @JsonProperty("project-description") List<CrossrefProjectDescription> projectDescription,
-        List<CrossrefInvestigator> investigator,
-        @JsonProperty("lead-investigator") List<CrossrefInvestigator> leadInvestigator,
-        @JsonProperty("award-amount") CrossrefAmount awardAmount,
-        @JsonProperty("award-start") CrossrefDate awardStart,
-        @JsonProperty("award-end") CrossrefDate awardEnd,
-        List<CrossrefFunding> funding) {
+        @JsonProperty("project-title") @Nullable List<CrossrefProjectTitle> projectTitle,
+        @JsonProperty("project-description") @Nullable List<CrossrefProjectDescription> projectDescription,
+        @Nullable List<CrossrefInvestigator> investigator,
+        @JsonProperty("lead-investigator") @Nullable List<CrossrefInvestigator> leadInvestigator,
+        @JsonProperty("award-amount") @Nullable CrossrefAmount awardAmount,
+        @JsonProperty("award-start") @Nullable CrossrefDate awardStart,
+        @JsonProperty("award-end") @Nullable CrossrefDate awardEnd,
+        @Nullable List<CrossrefFunding> funding) {
 }

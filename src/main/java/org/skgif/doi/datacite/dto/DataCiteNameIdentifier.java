@@ -1,6 +1,7 @@
 package org.skgif.doi.datacite.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.jspecify.annotations.Nullable;
 
 /**
  * One {@code nameIdentifiers[]} entry (e.g. an ORCID) of a creator or contributor.
@@ -11,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record DataCiteNameIdentifier(
-        String nameIdentifier,
-        String nameIdentifierScheme,
-        String schemeUri) {
+        @Nullable String nameIdentifier,
+        @Nullable String nameIdentifierScheme,
+        @Nullable String schemeUri) {
 }

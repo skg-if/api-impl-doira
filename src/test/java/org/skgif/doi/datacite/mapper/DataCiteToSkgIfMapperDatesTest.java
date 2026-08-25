@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
 import org.skgif.doi.datacite.dto.DataCiteDate;
@@ -11,8 +13,8 @@ import org.skgif.doi.generated.model.Product;
 
 class DataCiteToSkgIfMapperDatesTest extends DataCiteToSkgIfMapperTestBase {
 
-    private static DataCiteAttributes withLifecycleDates(DataCiteAttributes attributes, String created,
-            String registered, String updated, String published) {
+    private static DataCiteAttributes withLifecycleDates(DataCiteAttributes attributes, @Nullable String created,
+            @Nullable String registered, @Nullable String updated, @Nullable String published) {
         return new DataCiteAttributes(
                 attributes.doi(), attributes.titles(), attributes.creators(), attributes.contributors(),
                 attributes.publisher(), attributes.publicationYear(), attributes.subjects(), attributes.dates(),
@@ -54,7 +56,7 @@ class DataCiteToSkgIfMapperDatesTest extends DataCiteToSkgIfMapperTestBase {
     void explicitDatesEntryWinsOverTopLevelAttributeFallback() throws IOException {
         var attributes = readFixture("datacite-esrf-dc-2493599001.json");
         var created = new DataCiteDate("2020-01-01", "Created");
-        attributes.dates().add(created);
+        Objects.requireNonNull(attributes.dates()).add(created);
         assertThat(created.date()).isNotEqualTo(attributes.created());
 
         Product product = mapper.toProduct(attributes);
@@ -72,7 +74,7 @@ class DataCiteToSkgIfMapperDatesTest extends DataCiteToSkgIfMapperTestBase {
         var attributes = withLifecycleDates(
                 readFixture("datacite-thesis-crossref-funder-id-4342.json"), null, null, null, null);
         var coverage = new DataCiteDate("1990/2000", "Coverage");
-        attributes.dates().add(coverage);
+        Objects.requireNonNull(attributes.dates()).add(coverage);
 
         Product product = mapper.toProduct(attributes);
 

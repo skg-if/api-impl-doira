@@ -4,6 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import org.jspecify.annotations.Nullable;
 import org.skgif.doi.crossref.CrossrefJournalDoiResolver;
 import org.skgif.doi.crossref.CrossrefTypeMapping;
 import org.skgif.doi.crossref.dto.CrossrefFunding;
@@ -91,7 +92,7 @@ public class CrossrefToSkgIfMapper implements GrantCapableMapper<CrossrefWork> {
      * @param venueMetadata venue metadata parsed from Crossref's XML transform endpoint, or null
      * @return the mapped Product
      */
-    public Product toProduct(CrossrefWork work, CrossrefVenueMetadata venueMetadata) {
+    public Product toProduct(CrossrefWork work, @Nullable CrossrefVenueMetadata venueMetadata) {
         Objects.requireNonNull(work.doi(), "Crossref record has no DOI");
 
         return new Product()
