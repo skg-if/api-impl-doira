@@ -23,6 +23,8 @@
     <pmd-plugin.version>3.28.0</pmd-plugin.version>
     <checkstyle-plugin.version>3.6.0</checkstyle-plugin.version>
     <spotbugs-plugin.version>4.10.4.0</spotbugs-plugin.version>
+    <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
+    <error-prone.version>2.50.0</error-prone.version>
     <!--
       Checkstyle engine version, pinned independently of maven-checkstyle-plugin above.
       That plugin hardcodes a default engine of 9.3 (Jan 2022, a Java-17-era grammar),
@@ -114,6 +116,62 @@
 
   <build>
     <plugins>
+      <plugin>
+        <!--
+          No explicit maven-compiler-plugin block existed before this - the build relied on
+          whatever version ships with the pinned Maven wrapper. Made explicit now because Error
+          Prone needs to hook into javac via compilerArgs/annotationProcessorPaths, and every
+          other plugin here already pins its version explicitly.
+
+          Error Prone runs in-process (no fork=true), so it shares the JVM that runs Maven
+          itself. That JVM needs the add-exports/add-opens flags Error Prone requires on
+          JDK 16+ to reach into com.sun.tools.javac.* internals - those live in .mvn/jvm.config,
+          not here, because compilerArgs only reaches a forked javac process. Don't add a comment
+          line to that file itself: it has no comment syntax, every line is passed to the JVM
+          launcher verbatim, and a "#..." line fails the build with "Could not find or load main
+          class #" (confirmed empirically) - explain changes to it here instead.
+
+          Wired for its default check set only: no -Xep:Check:SEVERITY overrides. Its
+          ERROR-severity default checks already fail the build (a compile error), same effect as
+          the failOnViolation=true gates below. failOnWarning=true below closes the remaining gap
+          for its WARNING-severity checks: unlike javac's own -Werror (which Error Prone's issue
+          tracker documents as not reliably catching its diagnostics - google/error-prone#614),
+          failOnWarning is enforced at the Maven plugin layer against every diagnostic the shared
+          javax.tools compiler API reports, Error-Prone-sourced or not - confirmed by a negative
+          test (see STATIC_ANALYSIS_POLICY.md's Error Prone section) that a reintroduced
+          WARNING-severity finding fails test-compile.
+
+          -XepExcludedPaths exempts the openapi-generator output under target/generated-sources,
+          mirroring the same "generated code doesn't get the same scrutiny" precedent already
+          applied via maven-pmd-plugin's excludeRoots, jacoco-maven-plugin's excludes and
+          SpotBugs's whole-package match below. -XepDisableWarningsInGeneratedCode is kept too as
+          a second, narrower layer (it recognizes the @jakarta.annotation.Generated annotation
+          openapi-generator already emits) - the path exclusion covers ERROR-severity findings,
+          which the annotation-based flag alone would not suppress.
+
+          Not gated by ${skipTests} like the other four tools: Error Prone runs during compile, a
+          phase -DskipTests never skips (that flag only skips test execution), so there is no
+          equivalent lever here and none is being invented.
+        -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${maven-compiler-plugin.version}</version>
+        <configuration>
+          <failOnWarning>true</failOnWarning>
+          <compilerArgs>
+            <arg>-XDcompilePolicy=simple</arg>
+            <arg>--should-stop=ifError=FLOW</arg>
+            <arg>-Xplugin:ErrorProne -XepDisableWarningsInGeneratedCode -XepExcludedPaths:.*/generated-sources/.*</arg>
+          </compilerArgs>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>com.google.errorprone</groupId>
+              <artifactId>error_prone_core</artifactId>
+              <version>${error-prone.version}</version>
+            </path>
+          </annotationProcessorPaths>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>${quarkus.platform.group-id}</groupId>
         <artifactId>quarkus-maven-plugin</artifactId>

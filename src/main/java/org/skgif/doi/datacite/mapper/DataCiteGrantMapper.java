@@ -63,7 +63,7 @@ final class DataCiteGrantMapper {
     // specific DataCiteCreator already used as the funding agency, while iterating the full
     // creators list - .equals() would wrongly also skip a different creator who happens to be
     // value-equal.
-    @SuppressWarnings("PMD.CompareObjectsWithEquals")
+    @SuppressWarnings({"PMD.CompareObjectsWithEquals", "ReferenceEquality"})
     static List<GrantAllOfContributions> grantContributions(String doi, List<DataCiteCreator> creators,
             List<DataCiteContributor> contributors, Optional<DataCiteCreator> fundingAgencyCreator) {
         List<GrantAllOfContributions> result = new ArrayList<>();
@@ -134,6 +134,9 @@ final class DataCiteGrantMapper {
      * @return the organisational contributors mapped as beneficiaries, or an empty list if there
      *         are none
      */
+    // "contributions" above names the SKG-IF spec's output field, not a typo of the
+    // "contributors" parameter - the two are deliberately different words.
+    @SuppressWarnings("InvalidParam")
     static List<GrantAllOfBeneficiaries> grantBeneficiaries(String doi, List<DataCiteContributor> contributors) {
         List<DataCiteAffiliation> organizationalContributors = new ArrayList<>();
         for (DataCiteContributor contributor : contributors) {

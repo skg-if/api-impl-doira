@@ -31,7 +31,7 @@ final class CrossrefTitleMapper {
 
     /**
      * Crossref's {@code abstract} is a single JATS-XML-tagged string (e.g. {@code
-     * &lt;jats:p&gt;...&lt;/jats:p&gt;}), not plain text like DataCite's - this strips the tags
+     * <jats:p>...</jats:p>}), not plain text like DataCite's - this strips the tags
      * rather than attempting to preserve any structure, since SKG-IF's {@code abstracts} field is
      * plain text.
      *

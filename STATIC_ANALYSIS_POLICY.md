@@ -26,6 +26,7 @@ Four tools, and mixing up their jobs is the single most expensive mistake availa
 | **Checkstyle** | semantics and style a formatter cannot express: naming, Javadoc, imports, language-idiom rules | yes - both source roots |
 | **PMD** | correctness, design, complexity, error-prone patterns | yes - both source roots |
 | **SpotBugs** | bytecode/dataflow correctness Checkstyle's style rules and PMD's AST-level rules can't reach: null dataflow, resource leaks, concurrency hazards | yes - `check` fails the build |
+| **Error Prone** | compile-time, type-aware bug patterns caught via `javac`'s own type information - a different reach than PMD's pure-AST rules or SpotBugs's post-compile bytecode analysis | yes - `failOnWarning=true` fails the compile on any diagnostic, `WARNING`-severity default checks included, not just its `ERROR`-severity ones |
 | **Sonar** | nothing - no Sonar server runs here | **no** |
 
 Sonar is used only as a *naming scheme*: `SXXXX` ids give each concern a stable, documented
@@ -347,3 +348,56 @@ A future re-run only needs to evaluate findings from packages/classes not alread
 `<Match>` in `spotbugs-exclude.xml` - anything new surfacing in an already-matched class/pattern
 combination is filtered by construction and should be looked at manually rather than assumed
 still valid, since a filter matches by class+pattern, not by the original measured instance.
+
+## Error Prone
+
+Added 2026-08-25, wired via `maven-compiler-plugin` (previously absent from this pom entirely -
+the build relied on whichever version shipped with the pinned Maven wrapper) rather than as a
+separate `check`-goal execution like the other four tools, because Error Prone is a `javac`
+compiler plugin: it has no standalone Maven goal to bind to a later phase, it runs as part of
+`compile` itself.
+
+Deliberately scoped to **default checks only** - no `-Xep:Check:SEVERITY` overrides to enable
+extra (non-default) checks. What *is* overridden is the severity floor, not which checks run:
+`maven-compiler-plugin`'s `failOnWarning=true` fails the compile on any compiler warning,
+Error-Prone-sourced or not, closing the `WARNING`/`ERROR` asymmetry so this tool is no weaker a
+gate than Checkstyle/PMD/SpotBugs/Spotless. javac's own `-Werror` was considered instead and
+rejected: Error Prone's issue tracker documents it as not reliably catching its own diagnostics
+(google/error-prone#614, a still-open feature request for exactly that gap) - `failOnWarning` is
+enforced at the Maven plugin layer against every diagnostic the shared `javax.tools` compiler API
+reports instead, and negative-testing (see below) confirmed it does catch Error Prone's
+`WARNING`-severity findings specifically.
+
+`target/generated-sources/openapi/**` (the openapi-generator output) is exempted via
+`-XepExcludedPaths:.*/generated-sources/.*` in `pom.xml`, the same "generated code doesn't get
+the same scrutiny" precedent already applied via `maven-pmd-plugin`'s `excludeRoots`,
+`jacoco-maven-plugin`'s `excludes`, and the SpotBugs whole-package match above.
+`-XepDisableWarningsInGeneratedCode` is also set, recognizing the
+`@jakarta.annotation.Generated` annotation openapi-generator already emits on every generated
+class - kept as a second, narrower layer since it only suppresses `WARNING`-severity findings,
+not `ERROR`-severity ones, which the path exclusion covers instead.
+
+Not gated by `${skipTests}` the way Spotless/Checkstyle/PMD/SpotBugs are: those four are bound to
+executions that specifically check `${skipTests}` so `-DskipTests` (and, by extension, a
+`notest`/`skiptest` commit message per CLAUDE.md) skips them. Error Prone runs during `compile`,
+a phase `-DskipTests` never skips (that flag only skips test *execution*), so there is no
+equivalent lever - this is expected, not a gap to close.
+
+**First-run measured count (2026-08-25):** a clean `mvn compile`/`test-compile` against the
+pre-existing codebase (default checks, no severity overrides yet) reported 7 findings across 5
+files, all `WARNING`-severity, none in generated code:
+
+| File | Check | Fix |
+|---|---|---|
+| `CrossrefTitleMapper.java` | `EscapedEntity` | double-escaped HTML entities inside a `{@code}` Javadoc tag - use literal `<`/`>` instead |
+| `DataCiteGrantMapper.java` (x2) | `ReferenceEquality`, `InvalidParam` | widened an existing `@SuppressWarnings("PMD.CompareObjectsWithEquals")` to also cover `ReferenceEquality` (same documented intentional-identity-check rationale); added `@SuppressWarnings("InvalidParam")` where Javadoc prose names the SKG-IF `contributions` field, not a typo of the `contributors` parameter |
+| `DataCiteManifestationDates.java` | `ReferenceEquality` | same widened-suppression fix as above, same rationale already documented at the call site |
+| `JsonLdMeta.java` | `InvalidBlockTag` | a wrapped `@param` description's continuation line started with `@graph[i]`, which Javadoc's parser mistook for a block tag - reflowed and wrapped in `{@code @graph[i]}` |
+| `CrossrefFilters.java` (x2, plus one that only surfaced after the first fix) | `ExposedPrivateType` | `ValueClauseBuilder` widened from `private` to package-private to match the package-private fields typed with it; that widening then exposed its `clause` method's reference to `ParsedFilter.Builder` (itself `private`), which needed widening to package-private too - a reminder that narrowing/widening one type in an exposure chain can just relocate the same finding rather than resolve it |
+
+All 7 are fixed in this pass; `failOnWarning=true` now makes any regression of these (or any other
+default `WARNING`-severity check) fail the build. Negative-tested per the "a green build never
+proves a rule is enforced" gotcha below: a scratch `record`-typed `==` comparison (pure
+`ReferenceEquality`, no other check involved) failed `test-compile` with "warnings found and
+-Werror specified" - confirming `failOnWarning` genuinely reaches Error Prone's diagnostics, not
+just javac's own `-Xlint` categories.

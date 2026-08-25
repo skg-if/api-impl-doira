@@ -104,7 +104,7 @@ final class CrossrefFilters {
      * baked into which builder got looked up, so it isn't passed again here.
      */
     @FunctionalInterface
-    private interface ValueClauseBuilder {
+    interface ValueClauseBuilder {
         String clause(String value, ParsedFilter.Builder builder);
     }
 
@@ -237,7 +237,7 @@ final class CrossrefFilters {
         // Fields intentionally share their names with their fluent setters below, same
         // builder idiom checkstyle.xml's HiddenField already special-cases for this codebase.
         @SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
-        private static final class Builder {
+        static final class Builder {
             /** The {@code filter=} clause being assembled. */
             private String filter;
             /** The {@code query.title} free-text search value being assembled. */

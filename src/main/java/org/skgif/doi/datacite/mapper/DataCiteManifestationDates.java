@@ -158,7 +158,7 @@ final class DataCiteManifestationDates {
     // date != excluding intentionally checks reference identity to skip the one DataCiteDate
     // instance being excluded while iterating the same list it came from - .equals() would
     // wrongly also skip a different date entry that happens to carry the same value.
-    @SuppressWarnings("PMD.CompareObjectsWithEquals")
+    @SuppressWarnings({"PMD.CompareObjectsWithEquals", "ReferenceEquality"})
     private static Set<String> otherRecordDays(DataCiteAttributes attributes, DataCiteDate excluding) {
         Set<String> days = new HashSet<>();
         for (DataCiteDate date : attributes.dates()) {
