@@ -44,8 +44,8 @@ import org.skgif.doi.util.LocalIdentifiers;
 // ArchUnit-enforceable provider independence) means the shared JsonLd*/RequestPagination/
 // FilterQuerySyntax helpers below need explicit imports instead of the same-package access this
 // class previously got for free.
-@SuppressWarnings("PMD.ExcessiveImports")
 @Path("/datacite/grants")
+@SuppressWarnings("PMD.ExcessiveImports")
 public class DataCiteGrantsResource {
 
     /** This resource's own base path, used to build pagination/context links. */
@@ -108,9 +108,8 @@ public class DataCiteGrantsResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getGrantById(
             @Parameter(description = "DOI to look up (with or without the SKG base domain prefix)",
-                    examples = {
-                            @ExampleObject(name = "award", value = "10.71707/r3sy-7371")
-                    }) @PathParam("local_identifier") String localIdentifierParam,
+                    examples = @ExampleObject(name = "award",
+                            value = "10.71707/r3sy-7371")) @PathParam("local_identifier") String localIdentifierParam,
             @Context UriInfo uriInfo) {
         String doi = localIdentifiers.toDoi(localIdentifierParam);
 
@@ -118,7 +117,7 @@ public class DataCiteGrantsResource {
         if (dataOpt.isEmpty()) {
             return notFound(localIdentifierParam);
         }
-        DataCiteDoiData data = dataOpt.get();
+        DataCiteDoiData data = dataOpt.orElseThrow();
         // A record with no attributes block carries nothing this API can map, so it is reported
         // as not-found rather than dereferenced - DataCite always sends one, but the DTO cannot
         // promise that.

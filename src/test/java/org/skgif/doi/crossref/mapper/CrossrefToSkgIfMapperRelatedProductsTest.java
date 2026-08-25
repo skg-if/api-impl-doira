@@ -1,10 +1,10 @@
 package org.skgif.doi.crossref.mapper;
 
+import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 import org.junit.jupiter.api.Test;
 import org.skgif.doi.crossref.dto.CrossrefIdEntry;
 import org.skgif.doi.crossref.dto.CrossrefWork;
@@ -12,7 +12,7 @@ import org.skgif.doi.generated.model.Product;
 import org.skgif.doi.generated.model.ProductsRelatedCitesInner;
 import org.skgif.doi.generated.model.ProductsRelatedItem;
 
-class CrossrefToSkgIfMapperRelatedProductsTest extends CrossrefToSkgIfMapperTestBase {
+final class CrossrefToSkgIfMapperRelatedProductsTest extends CrossrefToSkgIfMapperTestBase {
 
     @Test
     void mapsRelatedProductsFromReferenceListDois() throws IOException {
@@ -64,7 +64,7 @@ class CrossrefToSkgIfMapperRelatedProductsTest extends CrossrefToSkgIfMapperTest
         // Java from the real fixture's own DOI-shaped entry to prove the otf fallback still works.
         CrossrefWork work = readFixture("crossref-journal-article-with-is-supplemented-by.json");
         List<CrossrefIdEntry> supplements =
-                Objects.requireNonNull(Objects.requireNonNull(work.relation()).get("is-supplemented-by"));
+                requireNonNull(requireNonNull(work.relation()).get("is-supplemented-by"));
         CrossrefIdEntry original = supplements.getFirst();
         supplements.set(0, new CrossrefIdEntry(original.id(), "handle", original.assertedBy()));
 

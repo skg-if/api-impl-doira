@@ -20,8 +20,8 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
  */
 // Single abstract method by coincidence, not a lambda target: Quarkus generates the implementation
 // from @RegisterRestClient, so @FunctionalInterface would advertise a use that never happens.
-@SuppressWarnings("PMD.ImplicitFunctionalInterface")
 @RegisterRestClient(configKey = "medra-api")
+@SuppressWarnings("PMD.ImplicitFunctionalInterface")
 public interface MedraClient {
 
     /**

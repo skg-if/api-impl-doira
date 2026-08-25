@@ -70,7 +70,7 @@ public class LocalIdentifiers {
             return pathParam.substring(baseUrl.length());
         }
         if (collapsedBaseUrlPrefix.isPresent()) {
-            Matcher matcher = collapsedBaseUrlPrefix.get().matcher(pathParam);
+            Matcher matcher = collapsedBaseUrlPrefix.orElseThrow().matcher(pathParam);
             if (matcher.lookingAt()) {
                 return pathParam.substring(matcher.end());
             }

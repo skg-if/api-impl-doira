@@ -1,13 +1,14 @@
 package org.skgif.doi.datacite.mapper;
 
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import org.jspecify.annotations.Nullable;
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
 import org.skgif.doi.datacite.dto.DataCiteDate;
@@ -45,7 +46,7 @@ final class DataCiteManifestationDates {
 
         /** Reverse lookup from {@link #value()} back to the enum constant. */
         private static final Map<String, DataCiteDateType> BY_VALUE = Arrays.stream(values())
-                .collect(Collectors.toMap(DataCiteDateType::value, Function.identity()));
+                .collect(toMap(DataCiteDateType::value, identity()));
 
         // Field intentionally shares its name with its accessor below, same idiom
         // CrossrefFilters.ParsedFilter.Builder's fields already do this for.

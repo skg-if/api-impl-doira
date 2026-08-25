@@ -21,13 +21,13 @@ import org.skgif.doi.crossref.dto.CrossrefWorkListResponse;
  * Unit tests for {@link CrossrefJournalDoiResolver}, following the direct-construction Mockito
  * pattern already used by {@code CrossrefToSkgIfMapperVenueTest} - no CDI container needed.
  */
-class CrossrefJournalDoiResolverTest {
+final class CrossrefJournalDoiResolverTest {
 
     /** Timeout, in seconds, for tests asserting a call completes promptly. */
     private static final int TEST_TIMEOUT_SECONDS = 5;
 
     /** Mocked Crossref REST client, stubbed per test case. */
-    private final CrossrefClient crossrefClient = mock(CrossrefClient.class);
+    private final CrossrefClient crossrefClient = mock();
     /** The resolver under test, backed by {@link #crossrefClient}. */
     private final CrossrefJournalDoiResolver resolver =
             new CrossrefJournalDoiResolver(crossrefClient, Optional.empty());
@@ -65,7 +65,7 @@ class CrossrefJournalDoiResolverTest {
 
         Optional<String> resolved = resolver.resolveJournalDoi(List.of("0028-0836", "1476-4687"));
 
-        assertThat(resolved).contains("10.1038/print-doi");
+        assertThat(resolved).hasValue("10.1038/print-doi");
     }
 
     @Test
@@ -77,7 +77,7 @@ class CrossrefJournalDoiResolverTest {
 
         Optional<String> resolved = resolver.resolveJournalDoi(List.of("0028-0836", "1476-4687"));
 
-        assertThat(resolved).contains("10.1038/electronic-doi");
+        assertThat(resolved).hasValue("10.1038/electronic-doi");
     }
 
     /**
@@ -107,7 +107,7 @@ class CrossrefJournalDoiResolverTest {
         Optional<String> resolved = assertTimeoutPreemptively(Duration.ofSeconds(TEST_TIMEOUT_SECONDS),
                 () -> resolver.resolveJournalDoi(List.of("0028-0836", "1476-4687")));
 
-        assertThat(resolved).contains("10.1038/electronic-doi");
+        assertThat(resolved).hasValue("10.1038/electronic-doi");
     }
 
     // Restoring the interrupt flag on a test-helper thread (mirrors CrossrefJournalDoiResolver's

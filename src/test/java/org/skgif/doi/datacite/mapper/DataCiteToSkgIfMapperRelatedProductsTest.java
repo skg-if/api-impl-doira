@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.skgif.doi.generated.model.Product;
 import org.skgif.doi.generated.model.ProductsRelatedItem;
 
-class DataCiteToSkgIfMapperRelatedProductsTest extends DataCiteToSkgIfMapperTestBase {
+final class DataCiteToSkgIfMapperRelatedProductsTest extends DataCiteToSkgIfMapperTestBase {
 
     // datacite-zenodo-editor-21232199.json: a real Zenodo journal-article deposit. It has
     // relatedIdentifiers of types the mapper doesn't model ("HasVersion", "IsPartOf") and no

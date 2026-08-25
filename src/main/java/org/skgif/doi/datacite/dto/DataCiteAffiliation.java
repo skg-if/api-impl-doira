@@ -11,8 +11,8 @@ import org.jspecify.annotations.Nullable;
  * @param affiliationIdentifier       the organisation identifier (typically a ROR URL)
  * @param affiliationIdentifierScheme the scheme that identifier belongs to (e.g. {@code ROR})
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonDeserialize(using = DataCiteAffiliationDeserializer.class)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public record DataCiteAffiliation(
         @Nullable String name,
         @Nullable String affiliationIdentifier,

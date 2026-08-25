@@ -10,7 +10,7 @@ import org.skgif.doi.generated.model.GrantContribution;
 import org.skgif.doi.generated.model.Organisation;
 import org.skgif.doi.generated.model.PersonLite;
 
-class DataCiteToSkgIfMapperGrantTest extends DataCiteToSkgIfMapperTestBase {
+final class DataCiteToSkgIfMapperGrantTest extends DataCiteToSkgIfMapperTestBase {
 
     private Grant mapGrantFixture(String resourceName) throws IOException {
         return mapper.toGrant(readFixture(resourceName));
@@ -32,8 +32,8 @@ class DataCiteToSkgIfMapperGrantTest extends DataCiteToSkgIfMapperTestBase {
         assertThat(grant.getIdentifiers().getFirst().getValue()).isEqualTo("10.71707/r3sy-7371");
     }
 
-    @Test
     @SuppressWarnings("unchecked")
+    @Test
     void toGrant_mapsTitlesAndAbstracts() throws IOException {
         Grant grant = mapGrantFixture("datacite-award-r3sy-7371.json");
 
@@ -44,8 +44,8 @@ class DataCiteToSkgIfMapperGrantTest extends DataCiteToSkgIfMapperTestBase {
         assertThat(abstracts.get("en")).contains("open cloud service");
     }
 
-    @Test
     @SuppressWarnings("unchecked")
+    @Test
     void toGrant_groupsAndJoinsTitlesByLanguage() throws IOException {
         Grant grant = mapGrantFixture("datacite-french-titles-16o9y.json");
 
@@ -55,8 +55,8 @@ class DataCiteToSkgIfMapperGrantTest extends DataCiteToSkgIfMapperTestBase {
                         "Doctorants, panels et données d'enquêtes en sciences sociales Rencontre annuelle ELIPSS#3");
     }
 
-    @Test
     @SuppressWarnings("unchecked")
+    @Test
     void toGrant_groupsAbstractsByLanguage() throws IOException {
         Grant grant = mapGrantFixture("datacite-multilang-abstracts-swp-2026-29.json");
 

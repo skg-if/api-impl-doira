@@ -31,7 +31,7 @@ final class MedraContributionMapper {
                 continue;
             }
             contributions.add(new ProductContribution()
-                    .by(by.get())
+                    .by(by.orElseThrow())
                     .rank(rank++)
                     .role("A01".equals(contributor.role()) ? ProductContribution.RoleEnum.AUTHOR : null));
         }

@@ -1,13 +1,13 @@
 package org.skgif.doi.rest;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.requireNonNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import jakarta.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Objects;
 
 /**
  * Shared classpath-XML-fixture helpers for REST resource tests that mock a Crossref
@@ -31,8 +31,8 @@ public final class XmlFixtureResponses {
      */
     public static String loadRawResource(Class<?> testClass, String resourceName) throws IOException {
         try (InputStream in = testClass.getClassLoader().getResourceAsStream(resourceName)) {
-            Objects.requireNonNull(in, "Fixture not found on classpath: " + resourceName);
-            return new String(in.readAllBytes(), StandardCharsets.UTF_8);
+            requireNonNull(in, "Fixture not found on classpath: " + resourceName);
+            return new String(in.readAllBytes(), UTF_8);
         }
     }
 
@@ -50,7 +50,7 @@ public final class XmlFixtureResponses {
      * @throws IOException if the fixture resource cannot be read
      */
     public static Response okXmlResponse(Class<?> testClass, String xmlResourceName) throws IOException {
-        Response response = mock(Response.class);
+        Response response = mock();
         when(response.getStatus()).thenReturn(HTTP_OK);
         when(response.readEntity(String.class)).thenReturn(loadRawResource(testClass, xmlResourceName));
         return response;

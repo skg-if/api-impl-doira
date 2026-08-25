@@ -1,8 +1,9 @@
 package org.skgif.doi.medra.mapper;
 
+import static java.util.Objects.requireNonNull;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.List;
-import java.util.Objects;
 import org.skgif.doi.generated.model.Product;
 import org.skgif.doi.generated.model.ProductAllOfIdentifiers;
 import org.skgif.doi.mapper.RegistrationAgencyMapper;
@@ -52,7 +53,7 @@ public class MedraToSkgIfMapper implements RegistrationAgencyMapper<MedraWork> {
      */
     @Override
     public Product toProduct(MedraWork work) {
-        Objects.requireNonNull(work.doi(), "mEDRA record has no DOI");
+        requireNonNull(work.doi(), "mEDRA record has no DOI");
 
         return new Product()
                 .localIdentifier(localIdentifiers.toFullLocalIdentifier(work.doi()))

@@ -1,15 +1,17 @@
 package org.skgif.doi.rest.datacite;
 
+import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toUnmodifiableSet;
+
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
-import java.util.stream.Collectors;
 import org.skgif.doi.datacite.ResourceTypeMapping;
 import org.skgif.doi.generated.model.Product;
 import org.skgif.doi.rest.FilterQuerySyntax;
@@ -49,7 +51,7 @@ final class DataCiteProductFilters {
     /** The {@link ProductFilterKeys} values this endpoint supports. */
     private static final Set<String> SUPPORTED = Arrays.stream(ProductFilterKeys.values())
             .map(ProductFilterKeys::key)
-            .collect(Collectors.toUnmodifiableSet());
+            .collect(toUnmodifiableSet());
 
     private DataCiteProductFilters() {
     }
@@ -155,7 +157,7 @@ final class DataCiteProductFilters {
         // parseClauses only ever hands back a key from SUPPORTED, and every one of those has a
         // CLAUSE_BUILDERS entry - asserted rather than assumed because that invariant is
         // established at the call site, out of the nullness checker's reach.
-        return Objects.requireNonNull(CLAUSE_BUILDERS.get(ProductFilterKeys.fromKey(key))).apply(value);
+        return requireNonNull(CLAUSE_BUILDERS.get(ProductFilterKeys.fromKey(key))).apply(value);
     }
 
     /**
@@ -181,7 +183,7 @@ final class DataCiteProductFilters {
         String field = DataCiteQueryField.DATACITE_FILTER_TYPES_RESOURCE_TYPE_GENERAL.value();
         return "(" + resourceTypes.stream()
                 .map(resourceType -> FilterQuerySyntax.quotedFieldClause(field, resourceType))
-                .collect(Collectors.joining(" OR ")) + ")";
+                .collect(joining(" OR ")) + ")";
     }
 
     /**

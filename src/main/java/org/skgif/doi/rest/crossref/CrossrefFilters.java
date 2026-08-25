@@ -1,11 +1,12 @@
 package org.skgif.doi.rest.crossref;
 
+import static java.util.stream.Collectors.joining;
+
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.jspecify.annotations.Nullable;
 import org.skgif.doi.crossref.CrossrefTypeMapping;
 import org.skgif.doi.generated.model.Product;
@@ -222,7 +223,7 @@ final class CrossrefFilters {
         if (types.isEmpty()) {
             return NO_MATCH_CLAUSE;
         }
-        return types.stream().map(type -> "type:" + type).collect(Collectors.joining(","));
+        return types.stream().map(type -> "type:" + type).collect(joining(","));
     }
 
     /**

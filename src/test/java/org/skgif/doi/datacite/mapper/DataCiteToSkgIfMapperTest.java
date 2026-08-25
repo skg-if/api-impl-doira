@@ -1,11 +1,12 @@
 package org.skgif.doi.datacite.mapper;
 
+import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -22,7 +23,7 @@ import org.skgif.doi.generated.model.ProductManifestation;
 import org.skgif.doi.generated.model.ProductManifestationAccessRights;
 import org.skgif.doi.generated.model.Topic;
 
-class DataCiteToSkgIfMapperTest extends DataCiteToSkgIfMapperTestBase {
+final class DataCiteToSkgIfMapperTest extends DataCiteToSkgIfMapperTestBase {
 
     @Test
     void mapsCoreFieldsFromRealEsrfDataciteRecord() throws IOException {
@@ -36,20 +37,20 @@ class DataCiteToSkgIfMapperTest extends DataCiteToSkgIfMapperTestBase {
         assertThat(product.getIdentifiers().getFirst().getValue()).isEqualTo("10.15151/esrf-dc-2493599001");
     }
 
-    @Test
     @SuppressWarnings("unchecked")
+    @Test
     void mapsTitlesAndAbstracts() throws IOException {
         Product product = mapFixture("datacite-esrf-dc-2493599001.json");
 
         Map<String, List<String>> titles = (Map<String, List<String>>) product.getTitles();
-        assertThat(Objects.requireNonNull(titles.get("en")).getFirst()).contains("Aleodon");
+        assertThat(requireNonNull(titles.get("en")).getFirst()).contains("Aleodon");
 
         Map<String, List<String>> abstracts = (Map<String, List<String>>) product.getAbstracts();
-        assertThat(Objects.requireNonNull(abstracts.get("en")).getFirst()).contains("Aleodon");
+        assertThat(requireNonNull(abstracts.get("en")).getFirst()).contains("Aleodon");
     }
 
-    @Test
     @SuppressWarnings("unchecked")
+    @Test
     void mapsMultipleFrenchTitlesUnderTheirOwnLanguageKey() throws IOException {
         Product product = mapFixture("datacite-french-titles-16o9y.json");
 
@@ -59,8 +60,8 @@ class DataCiteToSkgIfMapperTest extends DataCiteToSkgIfMapperTestBase {
                 "Doctorants, panels et données d'enquêtes en sciences sociales", "Rencontre annuelle ELIPSS#3");
     }
 
-    @Test
     @SuppressWarnings("unchecked")
+    @Test
     void mapsTitleWithNoLangKeyUnderEnglishByDefault() throws IOException {
         // Real DataCite records often omit "lang" entirely on a title object (rather than
         // setting it to "en" explicitly) - titleLanguage() must default a missing key the same
@@ -68,28 +69,28 @@ class DataCiteToSkgIfMapperTest extends DataCiteToSkgIfMapperTestBase {
         Product product = mapFixture("datacite-title-no-lang-zenodo-19729005.json");
 
         Map<String, List<String>> titles = (Map<String, List<String>>) product.getTitles();
-        assertThat(titles.keySet()).containsExactly("en");
+        assertThat(titles).containsOnlyKeys("en");
         assertThat(titles.get("en")).containsExactly("Impact of Assistive Technologies on Reading Skills Among " +
                 "Children with Specific Learning Disabilities: Bridging Policy and Practice under NEP 2020");
     }
 
-    @Test
     @SuppressWarnings("unchecked")
+    @Test
     void mapsAbstractsInDifferentLanguagesUnderTheirOwnKeys() throws IOException {
         Product product = mapFixture("datacite-multilang-abstracts-swp-2026-29.json");
 
         Map<String, List<String>> titles = (Map<String, List<String>>) product.getTitles();
-        assertThat(titles.keySet()).containsExactly("en");
+        assertThat(titles).containsOnlyKeys("en");
 
         Map<String, List<String>> abstracts = (Map<String, List<String>>) product.getAbstracts();
-        assertThat(Objects.requireNonNull(abstracts.get("en")).getFirst()).contains(
+        assertThat(requireNonNull(abstracts.get("en")).getFirst()).contains(
                 "large heterogeneity in the cyclicality");
-        assertThat(Objects.requireNonNull(abstracts.get("fr")).getFirst()).contains(
+        assertThat(requireNonNull(abstracts.get("fr")).getFirst()).contains(
                 "grande hétérogénéité dans la cyclicité");
     }
 
-    @Test
     @SuppressWarnings("unchecked")
+    @Test
     void mapsMixedTwoAndThreeLetterLanguageCodesSeparately() throws IOException {
         // DataCite's lang isn't restricted to ISO 639-1 two-letter codes - a real record can mix
         // a 3-letter ISO 639-2 code (e.g. "eng") with a 2-letter one. This is passed through
@@ -143,8 +144,8 @@ class DataCiteToSkgIfMapperTest extends DataCiteToSkgIfMapperTestBase {
         assertThat(product.getRelevantOrganisations()).isNull();
     }
 
-    @ParameterizedTest
     @MethodSource("resourceTypeGeneralFixtures")
+    @ParameterizedTest
     void mapsResourceTypeGeneralToProductType(String fixtureName,
             Product.ProductTypeEnum expectedProductType) throws IOException {
         Product product = mapFixture(fixtureName);
@@ -154,9 +155,9 @@ class DataCiteToSkgIfMapperTest extends DataCiteToSkgIfMapperTestBase {
 
     private static Stream<Arguments> resourceTypeGeneralFixtures() {
         return Stream.of(
-                Arguments.of("datacite-esrf-dc-2493599001.json", Product.ProductTypeEnum.RESEARCH_DATA),
-                Arguments.of("datacite-zenodo-software-21826016.json", Product.ProductTypeEnum.RESEARCH_SOFTWARE),
-                Arguments.of("datacite-zenodo-text-20750072.json", Product.ProductTypeEnum.LITERATURE));
+                arguments("datacite-esrf-dc-2493599001.json", Product.ProductTypeEnum.RESEARCH_DATA),
+                arguments("datacite-zenodo-software-21826016.json", Product.ProductTypeEnum.RESEARCH_SOFTWARE),
+                arguments("datacite-zenodo-text-20750072.json", Product.ProductTypeEnum.LITERATURE));
     }
 
     @Test
@@ -206,8 +207,8 @@ class DataCiteToSkgIfMapperTest extends DataCiteToSkgIfMapperTestBase {
                 .isEqualTo("ESRF, 71 avenue des Martyrs, CS 40220, 38043 Grenoble Cedex 9, France");
     }
 
-    @Test
     @SuppressWarnings("unchecked")
+    @Test
     void mapsFundingReferenceWithNormalizedRorOnFundingAgency() throws IOException {
         Product product = mapFixture("datacite-esrf-es-2210534378.json");
 
@@ -229,8 +230,8 @@ class DataCiteToSkgIfMapperTest extends DataCiteToSkgIfMapperTestBase {
     // https://doi.org/10.13039/100010038 URL - the mapper detects that directly (regardless of
     // what funderIdentifierType claims) rather than requiring the type to literally say "ROR".
 
-    @Test
     @SuppressWarnings("unchecked")
+    @Test
     void mapsFundingAgencyToDoiWhenFunderIdentifierIsDoiShapedRegardlessOfType() throws IOException {
         Product product = mapFixture("datacite-thesis-crossref-funder-id-4342.json");
 
@@ -249,8 +250,8 @@ class DataCiteToSkgIfMapperTest extends DataCiteToSkgIfMapperTestBase {
     // unlike datacite-thesis-crossref-funder-id-4342.json above, funderIdentifier here is a bare
     // DOI ("10.13039/100000001") with no "https://doi.org/" prefix, and there are two distinct
     // funders on the same record rather than one.
-    @Test
     @SuppressWarnings("unchecked")
+    @Test
     void mapsMultipleFundingReferencesWithBareDoiCrossrefFunderIds() throws IOException {
         Product product = mapFixture("datacite-dataset-multiple-crossref-funder-ids-15047595.json");
 
@@ -281,8 +282,8 @@ class DataCiteToSkgIfMapperTest extends DataCiteToSkgIfMapperTestBase {
         // A funderIdentifier that isn't ROR and isn't DOI-shaped (e.g. a bare GRID id) must still
         // fall back to an otf id rather than being mis-parsed.
         var attributes = readFixture("datacite-thesis-crossref-funder-id-4342.json");
-        DataCiteFundingReference original = Objects.requireNonNull(attributes.fundingReferences()).getFirst();
-        Objects.requireNonNull(attributes.fundingReferences()).set(0, new DataCiteFundingReference(
+        DataCiteFundingReference original = requireNonNull(attributes.fundingReferences()).getFirst();
+        requireNonNull(attributes.fundingReferences()).set(0, new DataCiteFundingReference(
                 original.funderName(), "grid.451003.6", "GRID",
                 original.awardNumber(), original.awardTitle(), original.awardUri()));
 
@@ -300,8 +301,8 @@ class DataCiteToSkgIfMapperTest extends DataCiteToSkgIfMapperTestBase {
         // documented Crossref Funder ID/GRID/ISNI/ROR/Other list) must be treated like any other
         // non-ROR type rather than making the mapping fail.
         var attributes = readFixture("datacite-thesis-crossref-funder-id-4342.json");
-        DataCiteFundingReference original = Objects.requireNonNull(attributes.fundingReferences()).getFirst();
-        Objects.requireNonNull(attributes.fundingReferences()).set(0, new DataCiteFundingReference(
+        DataCiteFundingReference original = requireNonNull(attributes.fundingReferences()).getFirst();
+        requireNonNull(attributes.fundingReferences()).set(0, new DataCiteFundingReference(
                 original.funderName(), "Q1234567", "Wikidata",
                 original.awardNumber(), original.awardTitle(), original.awardUri()));
 

@@ -27,6 +27,7 @@ Six tools, and mixing up their jobs is the single most expensive mistake availab
 | **PMD** | correctness, design, complexity, error-prone patterns | yes - both source roots |
 | **SpotBugs** | bytecode/dataflow correctness Checkstyle's style rules and PMD's AST-level rules can't reach: null dataflow, resource leaks, concurrency hazards | yes - `check` fails the build |
 | **Error Prone** | compile-time, type-aware bug patterns caught via `javac`'s own type information - a different reach than PMD's pure-AST rules or SpotBugs's post-compile bytecode analysis | yes - `failOnWarning=true` fails the compile on any diagnostic, `WARNING`-severity default checks included, not just its `ERROR`-severity ones |
+| **Error Prone Support** (Picnic) | extra type-aware checks and Refaster template rewrites layered on Error Prone's plugin: JUnit/AssertJ/Mockito idiom, static-import and annotation hygiene. Does **not** own formatting (spotless) or nullness (NullAway) | yes - `-XepAllSuggestionsAsWarnings` promotes its `SUGGESTION` checks into `failOnWarning`'s reach; Guava-introducing and inference-breaking rule families excluded, see its section below |
 | **NullAway** | nullness specifically: that a `@Nullable` value never reaches a `@NonNull` field, parameter or return. Rides on Error Prone's `javac` plugin, scoped by one prefix flag over the whole `org.skgif.doi` tree. Owns this concern outright - SpotBugs's weaker bytecode-level `NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE` is excluded tree-wide as a duplicate | yes - `-Xep:NullAway:ERROR` fails the compile, both source roots; only `org.skgif.doi.generated` is out of scope |
 | **Sonar** | nothing - no Sonar server runs here | **no** |
 
@@ -412,6 +413,59 @@ proves a rule is enforced" gotcha below: a scratch `record`-typed `==` compariso
 `ReferenceEquality`, no other check involved) failed `test-compile` with "warnings found and
 -Werror specified" - confirming `failOnWarning` genuinely reaches Error Prone's diagnostics, not
 just javac's own `-Xlint` categories.
+
+### Error Prone Support (Picnic)
+
+Added 2026-08-25. `tech.picnic.error-prone-support` **0.30.0**, both artifacts
+(`error-prone-contrib` + `refaster-runner`), on the existing `annotationProcessorPaths`. 0.30.0 is
+built against Error Prone **2.50.0** - the version this pom already pinned - so the two properties
+must be bumped together. Requires a JDK 21+ build JVM (this repo builds on 25) and
+`-XDaddTypeAnnotationsToSymbol=true`.
+
+**Why `-XepAllSuggestionsAsWarnings` is load-bearing.** Nearly every Picnic check ships at
+`SUGGESTION`, which javac reports as a *note* - `failOnWarning` never sees it. Measured: at stock
+severities the library reported **12** blocking findings; with suggestions promoted, **521**. Adopting
+without the promotion flag would have enforced 12 things and let the other 509 rot silently.
+
+**First-run measured counts (2026-08-25).** 521 findings, excluding 150 `RequireExplicitNullMarking`
+which is NullAway's own check surfaced only by the promotion flag, not Picnic's:
+
+| Bucket | Found | Fixed | Left | Disposition |
+|---|---|---|---|---|
+| `StaticImport` | 154 | 154 | 0 | adopted |
+| `LexicographicalAnnotationListing` | 43 | 43 | 0 | adopted |
+| `JUnitClassModifiers` | 38 | 38 | 0 | adopted - incl. 7 `@QuarkusTest` classes now `final`, verified safe by the suite |
+| `ExplicitArgumentEnumeration` | 20 | 20 | 0 | adopted (20 were *created* by the `JUnitRules.ArgumentsEnumeration` rewrites) |
+| `FormatStringConcatenation` | 9 | 9 | 0 | adopted |
+| `MockitoMockClassReference` | 5 | 5 | 0 | adopted |
+| `CollectorMutability` | 2 | 2 | 0 | adopted - hand-fixed to JDK `toUnmodifiableSet()`; the suggested fix wanted Guava |
+| `CanonicalAnnotationSyntax` | 2 | 2 | 0 | adopted despite partial overlap with checkstyle `AnnotationUseStyle` (see below) |
+| `OptionalOrElseGet`, `ClassCastLambdaUsage` | 2 | 2 | 0 | adopted |
+| Refaster (allowed families) | 145 | 145 | 0 | adopted |
+| Refaster (denied families) | 90+21+4+2 | 0 | 0 | **rejected** - excluded via `NamePattern`, see pom |
+| `LexicographicalAnnotationAttributeListing` | 4 | 1 | 0 | **rejected** - `-Xep:...:OFF` |
+
+Net: 65 files changed, build green with `failOnWarning=true`, 364 tests passing, **0 residual
+findings**. The per-exclusion rationale (Guava dependency, generic-inference breakage, NullAway
+provability loss, spotless/checkstyle deadlock) is in the `maven-compiler-plugin` comment in
+[pom.xml](pom.xml) rather than duplicated here.
+
+**`CanonicalAnnotationSyntax` and the no-duplication rule.** It overlaps checkstyle's
+`AnnotationUseStyle` (already active, `elementStyle=COMPACT_NO_ARRAY`), which would normally make it
+a rejected duplicate. Kept because it demonstrably caught 2 sites `AnnotationUseStyle` passed, so it
+is a strict superset here, not a duplicate. Revisit if it ever starts disagreeing with checkstyle
+rather than extending it.
+
+**Negative-tested in both directions**, per the "a green build never proves a rule is enforced"
+gotcha below - and here that matters more than usual, because a `NamePattern` regex matching *nothing*
+silently disables Refaster wholesale and is indistinguishable from a clean build. It bit this rollout
+once: an earlier anchored/escaped pattern turned every Refaster rule off, and the 262 findings only
+reappeared on a control run. The standing check is therefore a pair:
+
+- a scratch `Optional.of("a").filter(s -> !s.isEmpty())` (`StringRules.NotStringIsEmpty`, an
+  *allowed* family) must FAIL `test-compile` - proving Refaster is live;
+- a scratch `List.of("a")` (`ImmutableListRules`, a *denied* family) must NOT fire - proving the
+  deny-list still excludes Guava.
 
 ## NullAway
 

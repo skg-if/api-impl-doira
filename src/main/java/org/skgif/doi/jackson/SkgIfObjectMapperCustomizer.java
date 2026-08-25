@@ -39,8 +39,8 @@ import org.skgif.doi.generated.model.ProductContributionBy;
 @Singleton
 public class SkgIfObjectMapperCustomizer implements ObjectMapperCustomizer {
 
-    @JsonTypeInfo(use = JsonTypeInfo.Id.NONE)
     @JsonIgnoreProperties({})
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NONE)
     private interface NoPolymorphicTypeInfo {
     }
 

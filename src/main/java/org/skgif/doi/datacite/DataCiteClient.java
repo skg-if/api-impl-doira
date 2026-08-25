@@ -10,8 +10,8 @@ import org.skgif.doi.datacite.dto.DataCiteDoiListResponse;
 import org.skgif.doi.datacite.dto.DataCiteDoiResponse;
 
 /** MicroProfile REST client for the DataCite REST API's {@code dois} endpoints. */
-@RegisterRestClient(configKey = "datacite-api")
 @Path("/dois")
+@RegisterRestClient(configKey = "datacite-api")
 public interface DataCiteClient {
 
     /**

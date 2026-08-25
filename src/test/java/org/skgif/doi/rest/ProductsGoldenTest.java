@@ -1,6 +1,7 @@
 package org.skgif.doi.rest;
 
 import static io.restassured.RestAssured.given;
+import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -15,7 +16,6 @@ import jakarta.ws.rs.core.Response;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Objects;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.Test;
 import org.skgif.doi.crossref.CrossrefClient;
@@ -40,7 +40,7 @@ import org.skgif.doi.medra.MedraClient;
  * committing.
  */
 @QuarkusTest
-class ProductsGoldenTest {
+final class ProductsGoldenTest {
 
     /** Base path this API is served under. */
     private static final String BASE = "/skg-if/api";
@@ -80,7 +80,7 @@ class ProductsGoldenTest {
     private DataCiteDoiResponse loadDataCiteFixture(String resourceName) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
-            Objects.requireNonNull(in, "Fixture not found on classpath: " + resourceName);
+            requireNonNull(in, "Fixture not found on classpath: " + resourceName);
             return objectMapper.readValue(in, DataCiteDoiResponse.class);
         }
     }
@@ -88,7 +88,7 @@ class ProductsGoldenTest {
     private CrossrefWorkResponse loadCrossrefFixture(String resourceName) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
-            Objects.requireNonNull(in, "Fixture not found on classpath: " + resourceName);
+            requireNonNull(in, "Fixture not found on classpath: " + resourceName);
             return objectMapper.readValue(in, CrossrefWorkResponse.class);
         }
     }
@@ -96,7 +96,7 @@ class ProductsGoldenTest {
     private CrossrefWorkListResponse loadCrossrefWorkListFixture(String resourceName) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
-            Objects.requireNonNull(in, "Fixture not found on classpath: " + resourceName);
+            requireNonNull(in, "Fixture not found on classpath: " + resourceName);
             return objectMapper.readValue(in, CrossrefWorkListResponse.class);
         }
     }
@@ -655,14 +655,15 @@ class ProductsGoldenTest {
             return;
         }
 
-        var expected = objectMapper.readTree(Objects.requireNonNull(
+        var expected = objectMapper.readTree(requireNonNull(
                 getClass().getClassLoader().getResourceAsStream(expectedResource),
                 "Fixture not found on classpath: " + expectedResource));
 
         assertThat(actual)
-                .as("Actual JSON-LD output no longer matches " + expectedResource +
-                        ". If this change is intentional: mvn test -Dtest=ProductsGoldenTest" +
-                        " -Dgolden.regenerate=true, then review the diff before committing.")
+                .as("Actual JSON-LD output no longer matches %s. If this change is intentional: " +
+                        "mvn test -Dtest=ProductsGoldenTest -Dgolden.regenerate=true, then review " +
+                        "the diff before committing.",
+                        expectedResource)
                 .isEqualTo(expected);
     }
 }

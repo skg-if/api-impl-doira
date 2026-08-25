@@ -18,7 +18,7 @@ import org.skgif.doi.crossref.dto.CrossrefWork;
 import org.skgif.doi.generated.model.GrantAllOfDuration;
 import org.skgif.doi.util.LocalIdentifiers;
 
-class CrossrefGrantMapperTest {
+final class CrossrefGrantMapperTest {
 
     /** The mapper under test. */
     private final CrossrefGrantMapper mapper =
@@ -39,7 +39,8 @@ class CrossrefGrantMapperTest {
         CrossrefProject first = project(List.of(new CrossrefProjectTitle("Biocontainment")), null);
         CrossrefProject second = project(List.of(new CrossrefProjectTitle("Level 2")), null);
 
-        assertThat(mapper.grantTitles(List.of(first, second))).isEqualTo(Map.of("en", "Biocontainment Level 2"));
+        assertThat(mapper.grantTitles(List.of(first, second))).containsExactlyInAnyOrderEntriesOf(Map.of("en",
+                "Biocontainment Level 2"));
     }
 
     @Test
@@ -57,8 +58,8 @@ class CrossrefGrantMapperTest {
         CrossrefProject first = project(null, List.of(new CrossrefProjectDescription("First part.")));
         CrossrefProject second = project(null, List.of(new CrossrefProjectDescription("Second part.")));
 
-        assertThat(mapper.grantAbstracts(List.of(first, second)))
-                .isEqualTo(Map.of("en", "First part.\n\nSecond part."));
+        assertThat(mapper.grantAbstracts(List.of(first, second))).containsExactlyInAnyOrderEntriesOf(Map.of("en",
+                "First part.\n\nSecond part."));
     }
 
     @Test
@@ -67,8 +68,8 @@ class CrossrefGrantMapperTest {
         CrossrefFunding funding = new CrossrefFunding(null, new CrossrefAmount(2.0, "GBP"), null);
 
         final int expected = 2;
-        assertThat(mapper.fundedAmount(projectWithAmount, funding)).contains(expected);
-        assertThat(mapper.currency(projectWithAmount, funding)).contains("GBP");
+        assertThat(mapper.fundedAmount(projectWithAmount, funding)).hasValue(expected);
+        assertThat(mapper.currency(projectWithAmount, funding)).hasValue("GBP");
     }
 
     @Test
@@ -77,8 +78,8 @@ class CrossrefGrantMapperTest {
         final int expectedFundedAmount = 3;
         CrossrefProject projectWithAmount = amountProject(new CrossrefAmount(projectAwardAmount, "USD"));
 
-        assertThat(mapper.fundedAmount(projectWithAmount, null)).contains(expectedFundedAmount);
-        assertThat(mapper.currency(projectWithAmount, null)).contains("USD");
+        assertThat(mapper.fundedAmount(projectWithAmount, null)).hasValue(expectedFundedAmount);
+        assertThat(mapper.currency(projectWithAmount, null)).hasValue("USD");
     }
 
     @Test
@@ -102,8 +103,8 @@ class CrossrefGrantMapperTest {
         CrossrefProject projectWithAmount = amountProject(new CrossrefAmount(projectAwardAmount, "USD"));
         CrossrefFunding fundingWithoutAmount = new CrossrefFunding("scheme-x", null, null);
 
-        assertThat(mapper.fundedAmount(projectWithAmount, fundingWithoutAmount)).contains(expectedFundedAmount);
-        assertThat(mapper.currency(projectWithAmount, fundingWithoutAmount)).contains("USD");
+        assertThat(mapper.fundedAmount(projectWithAmount, fundingWithoutAmount)).hasValue(expectedFundedAmount);
+        assertThat(mapper.currency(projectWithAmount, fundingWithoutAmount)).hasValue("USD");
     }
 
     @Test
@@ -155,7 +156,7 @@ class CrossrefGrantMapperTest {
     void website_returnsPrimaryResourceUrl() {
         CrossrefResource resource = new CrossrefResource(new CrossrefResource.Primary("https://example.org/grant"));
 
-        assertThat(mapper.website(workWithResource(resource))).contains("https://example.org/grant");
+        assertThat(mapper.website(workWithResource(resource))).hasValue("https://example.org/grant");
     }
 
     private static CrossrefProject project(@Nullable List<CrossrefProjectTitle> titles,

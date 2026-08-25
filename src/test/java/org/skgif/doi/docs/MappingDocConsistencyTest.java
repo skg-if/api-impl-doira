@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
  * unreadably large. Every file matching {@link #MAPPING_DOC_PATTERN} is treated as part of one
  * combined document for both checks below.
  */
-class MappingDocConsistencyTest {
+final class MappingDocConsistencyTest {
 
     /** The repository's root directory. */
     private static final Path REPO_ROOT = Path.of("").toAbsolutePath();
@@ -68,10 +68,11 @@ class MappingDocConsistencyTest {
         }
         assertThat(undocumented)
                 .withFailMessage(
-                        "These fixtures under src/test/resources aren't mentioned in any SKG_IF_DOI_MAPPING*.md " +
-                                "file: " + undocumented + ". Add a row/link describing what they exercise, or " +
-                                "add them to MappingDocConsistencyTest.EXCLUDED_FROM_DOC with a reason if " +
-                                "they're genuinely out of scope (e.g. a list/search-endpoint golden).")
+                        "These fixtures under src/test/resources aren't mentioned in any " +
+                                "SKG_IF_DOI_MAPPING*.md file: %s. Add a row/link describing what they exercise, " +
+                                "or add them to MappingDocConsistencyTest.EXCLUDED_FROM_DOC with a reason if " +
+                                "they're genuinely out of scope (e.g. a list/search-endpoint golden).",
+                        undocumented)
                 .isEmpty();
     }
 
@@ -89,7 +90,7 @@ class MappingDocConsistencyTest {
             }
         }
         assertThat(broken)
-                .withFailMessage("SKG_IF_DOI_MAPPING*.md links to files that no longer exist: " + broken)
+                .withFailMessage("SKG_IF_DOI_MAPPING*.md links to files that no longer exist: %s", broken)
                 .isEmpty();
     }
 }

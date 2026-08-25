@@ -1,5 +1,7 @@
 package org.skgif.doi.rest;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -153,7 +155,7 @@ public final class FilterQuerySyntax {
         private static final long serialVersionUID = 1L;
 
         UnsupportedFilterException(String message) {
-            super(java.util.Objects.requireNonNull(message));
+            super(requireNonNull(message));
         }
     }
 }

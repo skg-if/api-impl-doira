@@ -1,12 +1,13 @@
 package org.skgif.doi.datacite;
 
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
+
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import org.jspecify.annotations.Nullable;
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
 import org.skgif.doi.generated.model.Product;
@@ -79,7 +80,7 @@ public final class ResourceTypeMapping {
 
         /** Reverse lookup from {@link #value()} back to the enum constant. */
         private static final Map<String, DataCiteResourceType> BY_VALUE = Arrays.stream(values())
-                .collect(Collectors.toMap(DataCiteResourceType::value, Function.identity()));
+                .collect(toMap(DataCiteResourceType::value, identity()));
 
         /** The constant's underlying DataCite {@code resourceTypeGeneral} value. */
         @SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")

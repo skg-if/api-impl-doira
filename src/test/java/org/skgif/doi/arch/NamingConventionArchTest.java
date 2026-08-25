@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
  * required to carry the suffix - several legitimate classes in {@code org.skgif.doi.rest}
  * (e.g. {@code RestApplication}, {@code RootRoutes}, the {@code JsonLd*} helpers) don't.
  */
-class NamingConventionArchTest {
+final class NamingConventionArchTest {
 
     /** The whole {@code org.skgif.doi} main-source tree, imported once for every rule below. */
     private static JavaClasses classes;

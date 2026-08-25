@@ -1,10 +1,13 @@
 package org.skgif.doi.medra.mapper;
 
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toList;
+
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.skgif.doi.medra.dto.MedraTitle;
 import org.skgif.doi.medra.dto.MedraWork;
 
@@ -30,10 +33,10 @@ final class MedraTitleMapper {
         return Optional.ofNullable(work.titles())
                 .orElseGet(List::of)
                 .stream()
-                .collect(Collectors.groupingBy(
+                .collect(groupingBy(
                         title -> title.language() != null ? title.language() : "en",
                         LinkedHashMap::new,
-                        Collectors.mapping(MedraTitle::text, Collectors.toList())));
+                        mapping(MedraTitle::text, toList())));
     }
 
     static Map<String, List<String>> abstracts(MedraWork work) {

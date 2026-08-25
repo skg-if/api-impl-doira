@@ -1,5 +1,7 @@
 package org.skgif.doi.crossref.mapper;
 
+import static java.util.function.Predicate.not;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -41,7 +43,7 @@ final class CrossrefTitleMapper {
     static Map<String, List<String>> abstracts(CrossrefWork work) {
         return Optional.ofNullable(work.abstractText())
                 .map(text -> text.replaceAll("<[^>]+>", "").trim())
-                .filter(stripped -> !stripped.isEmpty())
+                .filter(not(String::isEmpty))
                 .map(CrossrefTitleMapper::toSingleEnglishValue)
                 .orElseGet(Map::of);
     }

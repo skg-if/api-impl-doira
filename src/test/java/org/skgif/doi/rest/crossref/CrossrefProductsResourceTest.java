@@ -1,6 +1,12 @@
 package org.skgif.doi.rest.crossref;
 
 import static io.restassured.RestAssured.given;
+import static java.util.Objects.requireNonNull;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -14,9 +20,7 @@ import jakarta.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Objects;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.skgif.doi.crossref.CrossrefClient;
 import org.skgif.doi.crossref.CrossrefXmlTransformClient;
@@ -31,7 +35,7 @@ import org.skgif.doi.rest.XmlFixtureResponses;
  * live in {@code ProductsGoldenTest}.
  */
 @QuarkusTest
-class CrossrefProductsResourceTest {
+final class CrossrefProductsResourceTest {
 
     /** Base path this API is served under. */
     private static final String BASE = "/skg-if/api";
@@ -58,7 +62,7 @@ class CrossrefProductsResourceTest {
     private CrossrefWorkResponse loadFixture(String resourceName) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
-            Objects.requireNonNull(in, "Fixture not found on classpath: " + resourceName);
+            requireNonNull(in, "Fixture not found on classpath: " + resourceName);
             return objectMapper.readValue(in, CrossrefWorkResponse.class);
         }
     }
@@ -66,7 +70,7 @@ class CrossrefProductsResourceTest {
     private CrossrefWorkListResponse loadWorkListFixture(String resourceName) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
-            Objects.requireNonNull(in, "Fixture not found on classpath: " + resourceName);
+            requireNonNull(in, "Fixture not found on classpath: " + resourceName);
             return objectMapper.readValue(in, CrossrefWorkListResponse.class);
         }
     }
@@ -84,10 +88,10 @@ class CrossrefProductsResourceTest {
                 .when().get(BASE + "/crossref/products/10.1038/nature12373")
                 .then()
                 .statusCode(HTTP_OK)
-                .body("@context", Matchers.hasSize(EXPECTED_CONTEXT_SIZE))
-                .body("'@graph'[0].local_identifier", Matchers.equalTo("https://doi.org/10.1038/nature12373"))
-                .body("'@graph'[0].product_type", Matchers.equalTo("literature"))
-                .body("'@graph'[0].identifiers[0].scheme", Matchers.equalTo("doi"));
+                .body("@context", hasSize(EXPECTED_CONTEXT_SIZE))
+                .body("'@graph'[0].local_identifier", equalTo("https://doi.org/10.1038/nature12373"))
+                .body("'@graph'[0].product_type", equalTo("literature"))
+                .body("'@graph'[0].identifiers[0].scheme", equalTo("doi"));
     }
 
     /**
@@ -111,9 +115,9 @@ class CrossrefProductsResourceTest {
                 .then()
                 .statusCode(HTTP_OK)
                 .body("'@graph'[0].manifestations[0].biblio.in.local_identifier",
-                        Matchers.equalTo("https://doi.org/10.1038/41586.1476-4687"))
+                        equalTo("https://doi.org/10.1038/41586.1476-4687"))
                 .body("'@graph'[0].manifestations[0].biblio.in.identifiers.scheme",
-                        Matchers.hasItems("doi", "issn"));
+                        hasItems("doi", "issn"));
     }
 
     /**
@@ -134,7 +138,7 @@ class CrossrefProductsResourceTest {
                 .when().get(BASE + "/crossref/products/10.1038/nature12373")
                 .then()
                 .statusCode(HTTP_OK)
-                .body("'@graph'[0].manifestations[0].biblio.in.local_identifier", Matchers.startsWith("otf___"));
+                .body("'@graph'[0].manifestations[0].biblio.in.local_identifier", startsWith("otf___"));
     }
 
     /**
@@ -152,11 +156,11 @@ class CrossrefProductsResourceTest {
                 .when().get(BASE + "/crossref/products/10.1038/s41467-022-33468-6")
                 .then()
                 .statusCode(HTTP_OK)
-                .body("'@graph'[0].local_identifier", Matchers.equalTo("https://doi.org/10.1038/s41467-022-33468-6"))
-                .body("'@graph'[0].product_type", Matchers.equalTo("literature"))
-                .body("'@graph'[0].identifiers[0].scheme", Matchers.equalTo("doi"))
-                .body("'@graph'[0].contributions[0].by.identifiers[0].scheme", Matchers.equalTo("orcid"))
-                .body("'@graph'[0].manifestations[0].access_rights.status", Matchers.equalTo("open"));
+                .body("'@graph'[0].local_identifier", equalTo("https://doi.org/10.1038/s41467-022-33468-6"))
+                .body("'@graph'[0].product_type", equalTo("literature"))
+                .body("'@graph'[0].identifiers[0].scheme", equalTo("doi"))
+                .body("'@graph'[0].contributions[0].by.identifiers[0].scheme", equalTo("orcid"))
+                .body("'@graph'[0].manifestations[0].access_rights.status", equalTo("open"));
     }
 
     /**
@@ -174,9 +178,9 @@ class CrossrefProductsResourceTest {
                 .when().get(BASE + "/crossref/products/10.17537/icmbb18.42")
                 .then()
                 .statusCode(HTTP_OK)
-                .body("'@graph'[0].local_identifier", Matchers.equalTo("https://doi.org/10.17537/icmbb18.42"))
-                .body("'@graph'[0].product_type", Matchers.equalTo("literature"))
-                .body("'@graph'[0].identifiers[0].scheme", Matchers.equalTo("doi"));
+                .body("'@graph'[0].local_identifier", equalTo("https://doi.org/10.17537/icmbb18.42"))
+                .body("'@graph'[0].product_type", equalTo("literature"))
+                .body("'@graph'[0].identifiers[0].scheme", equalTo("doi"));
     }
 
     /**
@@ -194,12 +198,12 @@ class CrossrefProductsResourceTest {
                 .when().get(BASE + "/crossref/products/10.1103/physrevb.110.174515")
                 .then()
                 .statusCode(HTTP_OK)
-                .body("'@graph'[0].local_identifier", Matchers.equalTo("https://doi.org/10.1103/physrevb.110.174515"))
-                .body("'@graph'[0].product_type", Matchers.equalTo("literature"))
+                .body("'@graph'[0].local_identifier", equalTo("https://doi.org/10.1103/physrevb.110.174515"))
+                .body("'@graph'[0].product_type", equalTo("literature"))
                 .body("'@graph'[0].contributions[0].declared_affiliations[0].identifiers[0].scheme",
-                        Matchers.equalTo("ror"))
+                        equalTo("ror"))
                 .body("'@graph'[0].contributions[0].declared_affiliations[0].identifiers[0].value",
-                        Matchers.equalTo("00tmb7y09"));
+                        equalTo("00tmb7y09"));
     }
 
     /**
@@ -225,15 +229,15 @@ class CrossrefProductsResourceTest {
                 .when().get(BASE + "/crossref/products/10.1007/978-3-319-66787-4_9")
                 .then()
                 .statusCode(HTTP_OK)
-                .body("'@graph'[0].local_identifier", Matchers.equalTo("https://doi.org/10.1007/978-3-319-66787-4_9"))
-                .body("'@graph'[0].product_type", Matchers.equalTo("literature"))
+                .body("'@graph'[0].local_identifier", equalTo("https://doi.org/10.1007/978-3-319-66787-4_9"))
+                .body("'@graph'[0].product_type", equalTo("literature"))
                 .body("'@graph'[0].manifestations[0].biblio.in.name",
-                        Matchers.equalTo("Cryptographic Hardware and Embedded Systems – CHES 2017"))
+                        equalTo("Cryptographic Hardware and Embedded Systems – CHES 2017"))
                 .body("'@graph'[0].manifestations[0].biblio.in.local_identifier",
-                        Matchers.equalTo("https://doi.org/10.1007/978-3-319-66787-4"))
+                        equalTo("https://doi.org/10.1007/978-3-319-66787-4"))
                 .body("'@graph'[0].manifestations[0].biblio.in.identifiers.scheme",
-                        Matchers.hasItems("doi", "issn", "isbn"))
-                .body("'@graph'[0].manifestations[0].biblio.volume", Matchers.equalTo("10529"));
+                        hasItems("doi", "issn", "isbn"))
+                .body("'@graph'[0].manifestations[0].biblio.volume", equalTo("10529"));
     }
 
     /**
@@ -256,7 +260,7 @@ class CrossrefProductsResourceTest {
                 .then()
                 .statusCode(HTTP_OK)
                 .body("'@graph'[0].manifestations[0].biblio.in.name",
-                        Matchers.equalTo("Lecture Notes in Computer Science"));
+                        equalTo("Lecture Notes in Computer Science"));
     }
 
     /**
@@ -280,15 +284,15 @@ class CrossrefProductsResourceTest {
                 .when().get(BASE + "/crossref/products/10.2991/assehr.k.211222.032")
                 .then()
                 .statusCode(HTTP_OK)
-                .body("'@graph'[0].local_identifier", Matchers.equalTo("https://doi.org/10.2991/assehr.k.211222.032"))
-                .body("'@graph'[0].product_type", Matchers.equalTo("literature"))
-                .body("'@graph'[0].manifestations[0].biblio.in.name", Matchers.equalTo(
+                .body("'@graph'[0].local_identifier", equalTo("https://doi.org/10.2991/assehr.k.211222.032"))
+                .body("'@graph'[0].product_type", equalTo("literature"))
+                .body("'@graph'[0].manifestations[0].biblio.in.name", equalTo(
                         "Proceedings of the 4th International Conference on Innovative Research Across Disciplines " +
                                 "(ICIRAD 2021)"))
-                .body("'@graph'[0].manifestations[0].biblio.in.local_identifier", Matchers.startsWith("otf___"))
+                .body("'@graph'[0].manifestations[0].biblio.in.local_identifier", startsWith("otf___"))
                 .body("'@graph'[0].manifestations[0].biblio.in.identifiers.scheme",
-                        Matchers.hasItems("issn", "isbn"))
-                .body("'@graph'[0].manifestations[0].biblio.volume", Matchers.equalTo("613"));
+                        hasItems("issn", "isbn"))
+                .body("'@graph'[0].manifestations[0].biblio.volume", equalTo("613"));
     }
 
     @Test
@@ -299,8 +303,8 @@ class CrossrefProductsResourceTest {
                 .when().get(BASE + "/crossref/products/10.9999/does-not-exist")
                 .then()
                 .statusCode(HTTP_NOT_FOUND)
-                .body("status", Matchers.equalTo("404"))
-                .body("title", Matchers.equalTo("NOT_FOUND"));
+                .body("status", equalTo("404"))
+                .body("title", equalTo("NOT_FOUND"));
     }
 
     /**
@@ -318,8 +322,8 @@ class CrossrefProductsResourceTest {
                 .when().get(BASE + "/crossref/products/10.35802/218300")
                 .then()
                 .statusCode(HTTP_NOT_FOUND)
-                .body("status", Matchers.equalTo("404"))
-                .body("detail", Matchers.containsString("/crossref/grants/10.35802/218300"));
+                .body("status", equalTo("404"))
+                .body("detail", containsString("/crossref/grants/10.35802/218300"));
     }
 
     @Test
@@ -328,8 +332,8 @@ class CrossrefProductsResourceTest {
                 .when().get(BASE + "/crossref/products?filter=bogus_filter:xyz")
                 .then()
                 .statusCode(HTTP_UNPROCESSABLE_ENTITY)
-                .body("status", Matchers.equalTo("422"))
-                .body("title", Matchers.equalTo("INVALID_FILTER"));
+                .body("status", equalTo("422"))
+                .body("title", equalTo("INVALID_FILTER"));
     }
 
     /**
@@ -351,8 +355,8 @@ class CrossrefProductsResourceTest {
                 .when().get(BASE + "/crossref/products?page_size=5")
                 .then()
                 .statusCode(HTTP_OK)
-                .body("'@graph'", Matchers.hasSize(1))
-                .body("'@graph'[0].local_identifier", Matchers.equalTo("https://doi.org/10.1038/nature12373"));
+                .body("'@graph'", hasSize(1))
+                .body("'@graph'[0].local_identifier", equalTo("https://doi.org/10.1038/nature12373"));
     }
 
     @Test
@@ -366,11 +370,11 @@ class CrossrefProductsResourceTest {
                 .when().get(BASE + "/crossref/products?page_size=5")
                 .then()
                 .statusCode(HTTP_OK)
-                .body("meta.entity_type", Matchers.equalTo("search_result_page"))
-                .body("meta.part_of.total_items", Matchers.equalTo(1))
-                .body("'@graph'[0].local_identifier", Matchers.equalTo("https://doi.org/10.1038/nature12373"))
-                .body("meta.api_items[0].local_identifier", Matchers.equalTo("https://doi.org/10.1038/nature12373"))
+                .body("meta.entity_type", equalTo("search_result_page"))
+                .body("meta.part_of.total_items", equalTo(1))
+                .body("'@graph'[0].local_identifier", equalTo("https://doi.org/10.1038/nature12373"))
+                .body("meta.api_items[0].local_identifier", equalTo("https://doi.org/10.1038/nature12373"))
                 .body("meta.api_items[0].urls[0].href",
-                        Matchers.equalTo("http://localhost:8081/skg-if/api/crossref/products/10.1038/nature12373"));
+                        equalTo("http://localhost:8081/skg-if/api/crossref/products/10.1038/nature12373"));
     }
 }

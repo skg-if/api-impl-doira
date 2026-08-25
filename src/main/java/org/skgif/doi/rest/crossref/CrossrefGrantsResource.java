@@ -42,8 +42,8 @@ import org.skgif.doi.util.LocalIdentifiers;
 // ArchUnit-enforceable provider independence) means the shared JsonLd*/RequestPagination/
 // FilterQuerySyntax helpers below need explicit imports instead of the same-package access this
 // class previously got for free.
-@SuppressWarnings("PMD.ExcessiveImports")
 @Path("/crossref/grants")
+@SuppressWarnings("PMD.ExcessiveImports")
 public class CrossrefGrantsResource {
 
     /** This resource's own base path, used to build pagination/context links. */
@@ -67,13 +67,13 @@ public class CrossrefGrantsResource {
     String fallbackContextBase;
 
     /** Crossref DOI prefix this deployment is restricted to, if configured. */
-    @SuppressWarnings("OptionalUsedAsFieldOrParameterType") //ok https://quarkus.io/guides/config-reference
-    @ConfigProperty(name = "crossref.prefix")
+    @ConfigProperty(name = "crossref.prefix") //ok https://quarkus.io/guides/config-reference
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     Optional<String> crossrefPrefix;
 
     /** Contact email for Crossref's polite-pool API access, if configured. */
-    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     @ConfigProperty(name = "crossref.mailto")
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     Optional<String> crossrefMailto;
 
     /** Page size used when a list request doesn't specify one. */
@@ -109,9 +109,8 @@ public class CrossrefGrantsResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getGrantById(
             @Parameter(description = "DOI to look up (with or without the SKG base domain prefix)",
-                    examples = {
-                            @ExampleObject(name = "grant", value = "10.35802/218300")
-                    }) @PathParam("local_identifier") String localIdentifierParam,
+                    examples = @ExampleObject(name = "grant",
+                            value = "10.35802/218300")) @PathParam("local_identifier") String localIdentifierParam,
             @Context UriInfo uriInfo) {
         String doi = localIdentifiers.toDoi(localIdentifierParam);
 
@@ -119,7 +118,7 @@ public class CrossrefGrantsResource {
         if (workOpt.isEmpty()) {
             return notFound(localIdentifierParam);
         }
-        CrossrefWork work = workOpt.get();
+        CrossrefWork work = workOpt.orElseThrow();
         if (!CrossrefTypeMapping.isGrant(work)) {
             return JsonLdErrors.notFound("No grant found for local_identifier '" + localIdentifierParam +
                     "' - this DOI is a product, see /crossref/products/" + localIdentifierParam);

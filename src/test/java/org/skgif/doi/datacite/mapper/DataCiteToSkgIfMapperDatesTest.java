@@ -1,17 +1,16 @@
 package org.skgif.doi.datacite.mapper;
 
+import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
 import org.skgif.doi.datacite.dto.DataCiteDate;
 import org.skgif.doi.generated.model.Product;
 
-class DataCiteToSkgIfMapperDatesTest extends DataCiteToSkgIfMapperTestBase {
+final class DataCiteToSkgIfMapperDatesTest extends DataCiteToSkgIfMapperTestBase {
 
     private static DataCiteAttributes withLifecycleDates(DataCiteAttributes attributes, @Nullable String created,
             @Nullable String registered, @Nullable String updated, @Nullable String published) {
@@ -36,10 +35,10 @@ class DataCiteToSkgIfMapperDatesTest extends DataCiteToSkgIfMapperTestBase {
         Product product = mapper.toProduct(attributes);
 
         var dates = product.getManifestations().getFirst().getDates();
-        assertThat(dates.getCreation()).isEqualTo(List.of(attributes.created()));
-        assertThat(dates.getDeposit()).isEqualTo(List.of(attributes.registered()));
-        assertThat(dates.getModified()).isEqualTo(List.of(attributes.updated()));
-        assertThat(dates.getPublication()).isEqualTo(List.of(attributes.published()));
+        assertThat(dates.getCreation()).containsExactly(attributes.created());
+        assertThat(dates.getDeposit()).containsExactly(attributes.registered());
+        assertThat(dates.getModified()).containsExactly(attributes.updated());
+        assertThat(dates.getPublication()).containsExactly(attributes.published());
     }
 
     @Test
@@ -56,13 +55,13 @@ class DataCiteToSkgIfMapperDatesTest extends DataCiteToSkgIfMapperTestBase {
     void explicitDatesEntryWinsOverTopLevelAttributeFallback() throws IOException {
         var attributes = readFixture("datacite-esrf-dc-2493599001.json");
         var created = new DataCiteDate("2020-01-01", "Created");
-        Objects.requireNonNull(attributes.dates()).add(created);
+        requireNonNull(attributes.dates()).add(created);
         assertThat(created.date()).isNotEqualTo(attributes.created());
 
         Product product = mapper.toProduct(attributes);
 
-        assertThat(product.getManifestations().getFirst().getDates().getCreation())
-                .isEqualTo(List.of(created.date()));
+        assertThat(product.getManifestations().getFirst().getDates().getCreation()).containsExactly(
+                created.date());
     }
 
     @Test
@@ -74,7 +73,7 @@ class DataCiteToSkgIfMapperDatesTest extends DataCiteToSkgIfMapperTestBase {
         var attributes = withLifecycleDates(
                 readFixture("datacite-thesis-crossref-funder-id-4342.json"), null, null, null, null);
         var coverage = new DataCiteDate("1990/2000", "Coverage");
-        Objects.requireNonNull(attributes.dates()).add(coverage);
+        requireNonNull(attributes.dates()).add(coverage);
 
         Product product = mapper.toProduct(attributes);
 
@@ -89,7 +88,7 @@ class DataCiteToSkgIfMapperDatesTest extends DataCiteToSkgIfMapperTestBase {
         Product product = mapFixture("datacite-esrf-es-2210534378.json");
 
         var dates = product.getManifestations().getFirst().getDates();
-        assertThat(dates.getEmbargo()).isEqualTo(List.of("2028-09-06"));
+        assertThat(dates.getEmbargo()).containsExactly("2028-09-06");
         assertThat(dates.getAccess()).isNull();
     }
 

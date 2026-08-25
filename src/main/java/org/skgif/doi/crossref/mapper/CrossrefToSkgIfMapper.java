@@ -1,8 +1,9 @@
 package org.skgif.doi.crossref.mapper;
 
+import static java.util.Objects.requireNonNull;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import org.jspecify.annotations.Nullable;
 import org.skgif.doi.crossref.CrossrefJournalDoiResolver;
@@ -93,7 +94,7 @@ public class CrossrefToSkgIfMapper implements GrantCapableMapper<CrossrefWork> {
      * @return the mapped Product
      */
     public Product toProduct(CrossrefWork work, @Nullable CrossrefVenueMetadata venueMetadata) {
-        Objects.requireNonNull(work.doi(), "Crossref record has no DOI");
+        requireNonNull(work.doi(), "Crossref record has no DOI");
 
         return new Product()
                 .localIdentifier(localIdentifiers.toFullLocalIdentifier(work.doi()))
@@ -126,7 +127,7 @@ public class CrossrefToSkgIfMapper implements GrantCapableMapper<CrossrefWork> {
      */
     @Override
     public Grant toGrant(CrossrefWork work) {
-        Objects.requireNonNull(work.doi(), "Crossref record has no DOI");
+        requireNonNull(work.doi(), "Crossref record has no DOI");
 
         List<CrossrefProject> projects = Optional.ofNullable(work.project()).orElseGet(List::of);
         CrossrefProject primaryProject = projects.isEmpty() ? null : projects.getFirst();

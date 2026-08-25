@@ -123,7 +123,7 @@ public class MedraProductsResource {
             return notFound(localIdentifierParam);
         }
 
-        Product product = mapper.toProduct(work.get());
+        Product product = mapper.toProduct(work.orElseThrow());
 
         String contextBase =
                 JsonLdContextBase.contextBaseFor(Optional.<String>empty(), sandboxBaseUrl, fallbackContextBase);

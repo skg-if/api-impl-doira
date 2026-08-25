@@ -1,9 +1,10 @@
 package org.skgif.doi.datacite.mapper;
 
+import static java.util.Objects.requireNonNull;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Objects;
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
 import org.skgif.doi.datacite.dto.DataCiteDoiData;
 import org.skgif.doi.datacite.dto.DataCiteDoiResponse;
@@ -27,11 +28,11 @@ abstract class DataCiteToSkgIfMapperTestBase {
 
     protected DataCiteAttributes readFixture(String resourceName) throws IOException {
         try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
-            Objects.requireNonNull(in, "Fixture not found on classpath: " + resourceName);
+            requireNonNull(in, "Fixture not found on classpath: " + resourceName);
             DataCiteDoiResponse response = objectMapper.readValue(in, DataCiteDoiResponse.class);
-            DataCiteDoiData data = Objects.requireNonNull(response.data(), "Fixture has no data block: " +
+            DataCiteDoiData data = requireNonNull(response.data(), "Fixture has no data block: " +
                     resourceName);
-            return Objects.requireNonNull(data.attributes(), "Fixture has no attributes block: " + resourceName);
+            return requireNonNull(data.attributes(), "Fixture has no attributes block: " + resourceName);
         }
     }
 }

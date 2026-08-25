@@ -10,8 +10,8 @@ import org.skgif.doi.crossref.dto.CrossrefWorkListResponse;
 import org.skgif.doi.crossref.dto.CrossrefWorkResponse;
 
 /** MicroProfile REST client for the Crossref REST API's {@code works} endpoints. */
-@RegisterRestClient(configKey = "crossref-api")
 @Path("/works")
+@RegisterRestClient(configKey = "crossref-api")
 public interface CrossrefClient {
 
     /**
@@ -44,8 +44,8 @@ public interface CrossrefClient {
     // Each parameter maps 1:1 to its own @QueryParam - the standard MicroProfile REST Client
     // interface shape; bundling them into a container object would need a @BeanParam DTO for no
     // real clarity gain over six named, individually-documented query parameters.
-    @SuppressWarnings("PMD.UseObjectForClearerAPI")
     @GET
+    @SuppressWarnings("PMD.UseObjectForClearerAPI")
     CrossrefWorkListResponse listWorks(
             @QueryParam("filter") @Nullable String filter,
             @QueryParam("query.title") @Nullable String queryTitle,

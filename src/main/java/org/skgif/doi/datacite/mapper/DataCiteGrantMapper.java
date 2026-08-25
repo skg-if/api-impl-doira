@@ -41,7 +41,7 @@ final class DataCiteGrantMapper {
     static Optional<Organisation> grantFundingAgency(@Nullable String doi,
             Optional<DataCiteCreator> fundingAgencyCreator, @Nullable String publisher) {
         if (fundingAgencyCreator.isPresent()) {
-            DataCiteCreator creator = fundingAgencyCreator.get();
+            DataCiteCreator creator = fundingAgencyCreator.orElseThrow();
             String ror = DataCiteContributionMapper.firstRor(creator.nameIdentifiers()).orElse(null);
             return Optional.of(new Organisation()
                     .localIdentifier(ExternalIdentifierUrls.ROR_BASE_URL + ror)

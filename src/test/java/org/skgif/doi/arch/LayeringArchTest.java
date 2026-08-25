@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
  * Guards two layering invariants that hold today (grep-verified) between {@code org.skgif.doi.rest}
  * and the rest of the codebase.
  */
-class LayeringArchTest {
+final class LayeringArchTest {
 
     /** The whole {@code org.skgif.doi} main-source tree, imported once for every rule below. */
     private static JavaClasses classes;

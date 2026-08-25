@@ -1,6 +1,10 @@
 package org.skgif.doi.rest.medra;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -9,7 +13,6 @@ import io.quarkus.test.junit.QuarkusTest;
 import jakarta.ws.rs.core.Response;
 import java.io.IOException;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.skgif.doi.medra.MedraClient;
 import org.skgif.doi.rest.XmlFixtureResponses;
@@ -21,7 +24,7 @@ import org.skgif.doi.rest.XmlFixtureResponses;
  * JSON-LD output regression tests live in {@code ProductsGoldenTest}.
  */
 @QuarkusTest
-class MedraProductsResourceTest {
+final class MedraProductsResourceTest {
 
     /** Base path this API is served under. */
     private static final String BASE = "/skg-if/api";
@@ -51,12 +54,12 @@ class MedraProductsResourceTest {
                 .when().get(BASE + "/medra/products/10.19276/plinius.2019.01004")
                 .then()
                 .statusCode(HTTP_OK)
-                .body("@context", Matchers.hasSize(EXPECTED_CONTEXT_SIZE))
+                .body("@context", hasSize(EXPECTED_CONTEXT_SIZE))
                 .body("'@graph'[0].local_identifier",
-                        Matchers.equalTo("https://doi.org/10.19276/plinius.2019.01004"))
-                .body("'@graph'[0].product_type", Matchers.equalTo("literature"))
-                .body("'@graph'[0].identifiers[0].scheme", Matchers.equalTo("doi"))
-                .body("'@graph'[0].contributions[0].by.name", Matchers.equalTo("Daniela D'Alessio"));
+                        equalTo("https://doi.org/10.19276/plinius.2019.01004"))
+                .body("'@graph'[0].product_type", equalTo("literature"))
+                .body("'@graph'[0].identifiers[0].scheme", equalTo("doi"))
+                .body("'@graph'[0].contributions[0].by.name", equalTo("Daniela D'Alessio"));
     }
 
     @Test
@@ -69,13 +72,13 @@ class MedraProductsResourceTest {
                 .then()
                 .statusCode(HTTP_OK)
                 .body("'@graph'[0].local_identifier",
-                        Matchers.equalTo("https://doi.org/10.1393/ncc/i2021-21084-7"))
-                .body("'@graph'[0]", Matchers.not(Matchers.hasKey("contributions")));
+                        equalTo("https://doi.org/10.1393/ncc/i2021-21084-7"))
+                .body("'@graph'[0]", not(hasKey("contributions")));
     }
 
     @Test
     void getProductById_nonOkStatusFromMedra_returns404WithRfc7807Error() {
-        Response response = mock(Response.class);
+        Response response = mock();
         when(response.getStatus()).thenReturn(HTTP_NOT_FOUND);
         when(medraClient.getMetadata("10.9999/does-not-exist")).thenReturn(response);
 
@@ -83,13 +86,13 @@ class MedraProductsResourceTest {
                 .when().get(BASE + "/medra/products/10.9999/does-not-exist")
                 .then()
                 .statusCode(HTTP_NOT_FOUND)
-                .body("status", Matchers.equalTo("404"))
-                .body("title", Matchers.equalTo("NOT_FOUND"));
+                .body("status", equalTo("404"))
+                .body("title", equalTo("NOT_FOUND"));
     }
 
     @Test
     void getProductById_unparseableXml_returns404WithRfc7807Error() {
-        Response response = mock(Response.class);
+        Response response = mock();
         when(response.getStatus()).thenReturn(HTTP_OK);
         when(response.readEntity(String.class)).thenReturn("<not-well-formed-onix");
         when(medraClient.getMetadata("10.19276/plinius.2019.01004")).thenReturn(response);
@@ -98,7 +101,7 @@ class MedraProductsResourceTest {
                 .when().get(BASE + "/medra/products/10.19276/plinius.2019.01004")
                 .then()
                 .statusCode(HTTP_NOT_FOUND)
-                .body("status", Matchers.equalTo("404"));
+                .body("status", equalTo("404"));
     }
 
     @Test
@@ -110,6 +113,6 @@ class MedraProductsResourceTest {
                 .when().get(BASE + "/medra/products/10.9999/does-not-exist")
                 .then()
                 .statusCode(HTTP_NOT_FOUND)
-                .body("status", Matchers.equalTo("404"));
+                .body("status", equalTo("404"));
     }
 }

@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
  * files agreeing on a Java version the code doesn't actually build under), or a skill that
  * describes the toolchain incorrectly in prose without naming a version.
  */
-class ToolchainVersionConsistencyTest {
+final class ToolchainVersionConsistencyTest {
 
     /** The repository's root directory. */
     private static final Path REPO_ROOT = Path.of("").toAbsolutePath();
@@ -91,9 +91,11 @@ class ToolchainVersionConsistencyTest {
         }
 
         assertThat(stale)
-                .withFailMessage("pom.xml declares Java " + version + ", but these files still pin a different " +
-                        "version: " + stale + ". They can't read pom.xml at the point they're evaluated (two image " +
-                        "tags and README prose), so update each by hand to match.")
+                .withFailMessage(
+                        "pom.xml declares Java %s, but these files still pin a different version: %s. " +
+                                "They can't read pom.xml at the point they're evaluated (two image tags " +
+                                "and README prose), so update each by hand to match.",
+                        version, stale)
                 .isEmpty();
     }
 
@@ -120,10 +122,13 @@ class ToolchainVersionConsistencyTest {
         }
 
         assertThat(offenders)
-                .withFailMessage("These files hardcode a toolchain version that used to be duplicated across every " +
-                        "skill: " + offenders + ". Dot-source " +
-                        ".claude/skills/skg-if-build-toolchain/activate.ps1 (or source activate.sh) and call " +
-                        "./mvnw instead - the JDK version comes from pom.xml and Maven's from the wrapper.")
+                .withFailMessage(
+                        "These files hardcode a toolchain version that used to be duplicated across " +
+                                "every skill: %s. Dot-source " +
+                                ".claude/skills/skg-if-build-toolchain/activate.ps1 (or source activate.sh) " +
+                                "and call ./mvnw instead - the JDK version comes from pom.xml and Maven's " +
+                                "from the wrapper.",
+                        offenders)
                 .isEmpty();
     }
 
@@ -160,10 +165,13 @@ class ToolchainVersionConsistencyTest {
         }
 
         assertThat(drifted)
-                .withFailMessage("The Windows and Linux JDK bootstrap scripts have drifted apart: " + drifted +
-                        ". They may differ only in how they unpack the archive (Expand-Archive vs tar) - the " +
-                        "download URL and the .tools/jdk-<major> cache layout must stay identical, because " +
-                        "activate.sh dispatches to either one and then checks the same path afterwards.")
+                .withFailMessage(
+                        "The Windows and Linux JDK bootstrap scripts have drifted apart: %s. They may " +
+                                "differ only in how they unpack the archive (Expand-Archive vs tar) - the " +
+                                "download URL and the .tools/jdk-<major> cache layout must stay identical, " +
+                                "because activate.sh dispatches to either one and then checks the same path " +
+                                "afterwards.",
+                        drifted)
                 .isEmpty();
     }
 

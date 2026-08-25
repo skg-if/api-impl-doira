@@ -1,9 +1,10 @@
 package org.skgif.doi.datacite.mapper;
 
+import static java.util.Objects.requireNonNull;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import org.skgif.doi.datacite.ResourceTypeMapping;
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
@@ -69,7 +70,7 @@ public class DataCiteToSkgIfMapper implements GrantCapableMapper<DataCiteAttribu
      */
     @Override
     public Product toProduct(DataCiteAttributes attributes) {
-        Objects.requireNonNull(attributes.doi(), "DataCite record has no DOI");
+        requireNonNull(attributes.doi(), "DataCite record has no DOI");
 
         return new Product()
                 // Full https://doi.org/... form, consistent with every other entity in this
@@ -102,7 +103,7 @@ public class DataCiteToSkgIfMapper implements GrantCapableMapper<DataCiteAttribu
      */
     @Override
     public Grant toGrant(DataCiteAttributes attributes) {
-        Objects.requireNonNull(attributes.doi(), "DataCite record has no DOI");
+        requireNonNull(attributes.doi(), "DataCite record has no DOI");
 
         List<DataCiteCreator> creators = Optional.ofNullable(attributes.creators()).orElseGet(List::of);
         List<DataCiteContributor> contributors = Optional.ofNullable(attributes.contributors()).orElseGet(List::of);

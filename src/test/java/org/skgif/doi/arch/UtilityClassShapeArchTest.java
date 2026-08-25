@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
  * below exempt any class carrying that annotation. If a second exception type is ever needed,
  * extend the {@code .areNotAnnotatedWith(...)} clause in both rules rather than weakening them.
  */
-class UtilityClassShapeArchTest {
+final class UtilityClassShapeArchTest {
 
     /** The whole {@code org.skgif.doi} main-source tree, imported once for every rule below. */
     private static JavaClasses classes;

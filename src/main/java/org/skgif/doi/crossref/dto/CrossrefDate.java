@@ -27,7 +27,7 @@ public record CrossrefDate(
      */
     public Optional<String> toIsoDate() {
         return firstValidParts().map(parts -> {
-            StringBuilder iso = new StringBuilder(String.format("%04d", parts.getFirst()));
+            StringBuilder iso = new StringBuilder("%04d".formatted(parts.getFirst()));
             appendMonthAndDay(iso, parts);
             return iso.toString();
         });
@@ -48,9 +48,9 @@ public record CrossrefDate(
         if (parts.size() <= 1 || parts.get(1) == null) {
             return;
         }
-        iso.append('-').append(String.format("%02d", parts.get(1)));
+        iso.append('-').append("%02d".formatted(parts.get(1)));
         if (parts.size() > 2 && parts.get(2) != null) {
-            iso.append('-').append(String.format("%02d", parts.get(2)));
+            iso.append('-').append("%02d".formatted(parts.get(2)));
         }
     }
 }

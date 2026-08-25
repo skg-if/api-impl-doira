@@ -1,11 +1,12 @@
 package org.skgif.doi.crossref.mapper;
 
+import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,7 +20,7 @@ import org.skgif.doi.generated.model.ProductContribution;
 import org.skgif.doi.generated.model.ProductManifestation;
 import org.skgif.doi.generated.model.ProductManifestationAccessRights;
 
-class CrossrefToSkgIfMapperTest extends CrossrefToSkgIfMapperTestBase {
+final class CrossrefToSkgIfMapperTest extends CrossrefToSkgIfMapperTestBase {
 
     @Test
     void mapsCoreFieldsFromRealJournalArticle() throws IOException {
@@ -33,17 +34,17 @@ class CrossrefToSkgIfMapperTest extends CrossrefToSkgIfMapperTestBase {
         assertThat(product.getIdentifiers().getFirst().getValue()).isEqualTo("10.1038/nature12373");
     }
 
-    @Test
     @SuppressWarnings("unchecked")
+    @Test
     void mapsTitles() throws IOException {
         Product product = mapFixture("crossref-journal-article.json");
 
         Map<String, List<String>> titles = (Map<String, List<String>>) product.getTitles();
-        assertThat(Objects.requireNonNull(titles.get("en")).getFirst()).contains("Nanometre-scale thermometry");
+        assertThat(requireNonNull(titles.get("en")).getFirst()).contains("Nanometre-scale thermometry");
     }
 
-    @ParameterizedTest
     @MethodSource("resourceTypeToProductTypeFixtures")
+    @ParameterizedTest
     void mapsResourceTypeToProductType(String fixtureName,
             Product.ProductTypeEnum expectedProductType) throws IOException {
         Product.ProductTypeEnum actualProductType = mapFixture(fixtureName).getProductType();
@@ -53,28 +54,26 @@ class CrossrefToSkgIfMapperTest extends CrossrefToSkgIfMapperTestBase {
 
     private static Stream<Arguments> resourceTypeToProductTypeFixtures() {
         return Stream.of(
-                Arguments.of("crossref-journal-article.json", Product.ProductTypeEnum.LITERATURE),
-                Arguments.of("crossref-dataset.json", Product.ProductTypeEnum.RESEARCH_DATA));
+                arguments("crossref-journal-article.json", Product.ProductTypeEnum.LITERATURE),
+                arguments("crossref-dataset.json", Product.ProductTypeEnum.RESEARCH_DATA));
     }
 
-    @ParameterizedTest(name = "{0}")
     @MethodSource("coreFieldsFromRealRecordsFixtures")
+    @ParameterizedTest(name = "{0}")
     void mapsCoreFieldsFromReal(String label, String fixtureName, String expectedDoi) throws IOException {
         Product product = mapFixture(fixtureName);
 
-        assertThat(product.getLocalIdentifier()).isEqualTo("https://doi.org/" + expectedDoi);
+        assertThat(product.getLocalIdentifier()).isEqualTo("https://doi.org/%s", expectedDoi);
         assertThat(product.getProductType()).isEqualTo(Product.ProductTypeEnum.LITERATURE);
         assertThat(product.getIdentifiers().getFirst().getValue()).isEqualTo(expectedDoi);
     }
 
     private static Stream<Arguments> coreFieldsFromRealRecordsFixtures() {
         return Stream.of(
-                Arguments.of("Article with ORCID Authors",
-                        "crossref-journal-article-with-orcid.json", "10.1038/s41467-022-33468-6"),
-                Arguments.of("Book Chapter",
-                        "crossref-book-chapter.json", "10.1007/978-3-319-66787-4_9"),
-                Arguments.of("Proceedings Article",
-                        "crossref-proceedings-article.json", "10.17537/icmbb18.42"));
+                arguments("Article with ORCID Authors", "crossref-journal-article-with-orcid.json",
+                        "10.1038/s41467-022-33468-6"),
+                arguments("Book Chapter", "crossref-book-chapter.json", "10.1007/978-3-319-66787-4_9"),
+                arguments("Proceedings Article", "crossref-proceedings-article.json", "10.17537/icmbb18.42"));
     }
 
     @Test
@@ -161,7 +160,7 @@ class CrossrefToSkgIfMapperTest extends CrossrefToSkgIfMapperTestBase {
         final int expectedFundingCount = 4;
         assertThat(product.getFunding()).hasSize(expectedFundingCount);
         List<GrantLite> horizon2020Entries = product.getFunding().stream()
-                .map(f -> (GrantLite) f)
+                .map(GrantLite.class::cast)
                 .filter(f -> "Horizon 2020".equals(f.getFundingAgency().getName()))
                 .toList();
         assertThat(horizon2020Entries).hasSize(2)
@@ -198,7 +197,7 @@ class CrossrefToSkgIfMapperTest extends CrossrefToSkgIfMapperTestBase {
         Product product = mapFixture("crossref-journal-article-with-funder.json");
 
         Map<String, List<String>> abstracts = (Map<String, List<String>>) product.getAbstracts();
-        String abstractText = Objects.requireNonNull(abstracts.get("en")).getFirst();
+        String abstractText = requireNonNull(abstracts.get("en")).getFirst();
         assertThat(abstractText).contains("Lissajous scanner").doesNotContain("<jats:p>");
     }
 

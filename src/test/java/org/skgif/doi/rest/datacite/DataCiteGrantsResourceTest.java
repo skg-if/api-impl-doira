@@ -1,9 +1,11 @@
 package org.skgif.doi.rest.datacite;
 
 import static io.restassured.RestAssured.given;
+import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
@@ -15,7 +17,6 @@ import io.quarkus.test.junit.QuarkusTest;
 import jakarta.ws.rs.NotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Objects;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -27,7 +28,7 @@ import org.skgif.doi.datacite.dto.DataCiteDoiResponse;
  * Golden JSON-LD output regression tests live in {@code GrantsGoldenTest}.
  */
 @QuarkusTest
-class DataCiteGrantsResourceTest {
+final class DataCiteGrantsResourceTest {
 
     /** Base path this API is served under. */
     private static final String BASE = "/skg-if/api";
@@ -49,7 +50,7 @@ class DataCiteGrantsResourceTest {
     private DataCiteDoiResponse loadFixture(String resourceName) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
-            Objects.requireNonNull(in, "Fixture not found on classpath: " + resourceName);
+            requireNonNull(in, "Fixture not found on classpath: " + resourceName);
             return objectMapper.readValue(in, DataCiteDoiResponse.class);
         }
     }
@@ -63,7 +64,7 @@ class DataCiteGrantsResourceTest {
                 .when().get(BASE + "/datacite/grants/10.71707/r3sy-7371")
                 .then()
                 .statusCode(HTTP_OK)
-                .body("@context", org.hamcrest.Matchers.hasSize(EXPECTED_CONTEXT_SIZE))
+                .body("@context", hasSize(EXPECTED_CONTEXT_SIZE))
                 .body("'@graph'[0].local_identifier", equalTo("https://doi.org/10.71707/r3sy-7371"))
                 .body("'@graph'[0].entity_type", equalTo("grant"))
                 .body("'@graph'[0].identifiers[0].scheme", equalTo("doi"))

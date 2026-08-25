@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-class ExternalIdentifierUrlsTest {
+final class ExternalIdentifierUrlsTest {
 
     @Test
     void stripOrcidUrl_stripsHttpsPrefix() {

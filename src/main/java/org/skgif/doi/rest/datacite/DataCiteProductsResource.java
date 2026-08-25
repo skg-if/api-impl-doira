@@ -50,8 +50,8 @@ import org.skgif.doi.util.LocalIdentifiers;
 // ArchUnit-enforceable provider independence) means the shared JsonLd*/RequestPagination/
 // FilterQuerySyntax helpers below need explicit imports instead of the same-package access this
 // class previously got for free.
-@SuppressWarnings("PMD.ExcessiveImports")
 @Path("/datacite/products")
+@SuppressWarnings("PMD.ExcessiveImports")
 public class DataCiteProductsResource {
 
     /** This resource's own base path, used to build pagination/context links. */
@@ -78,8 +78,8 @@ public class DataCiteProductsResource {
     // value" for a plain String property, which throws at startup unless it's Optional (or
     // has a defaultValue) - and blank is exactly this property's own documented default.
     /** DataCite DOI prefix this deployment is restricted to, if configured. */
-    @SuppressWarnings("OptionalUsedAsFieldOrParameterType") //ok https://quarkus.io/guides/config-reference
-    @ConfigProperty(name = "datacite.prefix")
+    @ConfigProperty(name = "datacite.prefix") //ok https://quarkus.io/guides/config-reference
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     Optional<String> dataCitePrefix;
 
     /** Page size used when a list request doesn't specify one. */
@@ -141,7 +141,7 @@ public class DataCiteProductsResource {
         if (dataOpt.isEmpty()) {
             return notFound(localIdentifierParam);
         }
-        DataCiteDoiData data = dataOpt.get();
+        DataCiteDoiData data = dataOpt.orElseThrow();
         // A record with no attributes block carries nothing this API can map, so it is reported
         // as not-found rather than dereferenced - DataCite always sends one, but the DTO cannot
         // promise that.

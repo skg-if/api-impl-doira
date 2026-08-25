@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
  * {@code org.skgif.doi.rest} was split into one subpackage per provider - before that split, the
  * REST layer had no package boundary between providers to check against.
  */
-class ProviderIndependenceArchTest {
+final class ProviderIndependenceArchTest {
 
     /** The whole {@code org.skgif.doi} main-source tree, imported once for every rule below. */
     private static JavaClasses classes;

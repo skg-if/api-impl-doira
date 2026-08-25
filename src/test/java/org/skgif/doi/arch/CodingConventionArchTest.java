@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
  * reviewed decision rather than an accidental one-off {@code System.out.println} or a new
  * logging dependency creeping in - it is not meant as a permanent architectural law.
  */
-class CodingConventionArchTest {
+final class CodingConventionArchTest {
 
     /** The whole {@code org.skgif.doi} main-source tree, imported once for every rule below. */
     private static JavaClasses classes;

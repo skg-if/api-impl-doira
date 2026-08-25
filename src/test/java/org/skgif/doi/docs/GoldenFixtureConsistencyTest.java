@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
  * it. See {@code ProductsGoldenTest}/{@code GrantsGoldenTest} for how a golden pair is normally
  * produced and regenerated.
  */
-class GoldenFixtureConsistencyTest {
+final class GoldenFixtureConsistencyTest {
 
     /** The repository's root directory. */
     private static final Path REPO_ROOT = Path.of("").toAbsolutePath();
@@ -69,11 +69,13 @@ class GoldenFixtureConsistencyTest {
         assertThat(missingGolden)
                 .withFailMessage(
                         "These fixtures under src/test/resources have no matching " +
-                                "expected/<name>-out.json: " + missingGolden + ". Add a golden test in " +
-                                "ProductsGoldenTest/GrantsGoldenTest and regenerate it (see their class Javadoc), " +
-                                "or add the fixture to GoldenFixtureConsistencyTest.EXCLUDED_FROM_GOLDEN with a " +
-                                "reason if it's genuinely not a standalone product/grant record (e.g. a list/" +
-                                "search-endpoint lookup helper).")
+                                "expected/<name>-out.json: %s. Add a golden test in " +
+                                "ProductsGoldenTest/GrantsGoldenTest and regenerate it (see their class " +
+                                "Javadoc), or add the fixture to " +
+                                "GoldenFixtureConsistencyTest.EXCLUDED_FROM_GOLDEN with a reason if it's " +
+                                "genuinely not a standalone product/grant record (e.g. a " +
+                                "list/search-endpoint lookup helper).",
+                        missingGolden)
                 .isEmpty();
     }
 }

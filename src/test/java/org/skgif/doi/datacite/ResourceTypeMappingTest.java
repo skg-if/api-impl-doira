@@ -9,19 +9,12 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
 import org.skgif.doi.generated.model.Product;
 
-class ResourceTypeMappingTest {
+final class ResourceTypeMappingTest {
 
+    @CsvSource({"Dataset, RESEARCH_DATA", "Instrument, OTHER", "JournalArticle, LITERATURE", "Other, OTHER",
+            "Poster, LITERATURE", "Presentation, LITERATURE", "Software, RESEARCH_SOFTWARE",
+            "SomeFutureDataCiteType, OTHER"})
     @ParameterizedTest
-    @CsvSource({
-            "Software, RESEARCH_SOFTWARE",
-            "Dataset, RESEARCH_DATA",
-            "JournalArticle, LITERATURE",
-            "Poster, LITERATURE",
-            "Presentation, LITERATURE",
-            "Instrument, OTHER",
-            "Other, OTHER",
-            "SomeFutureDataCiteType, OTHER"
-    })
     void mapsResourceTypeGeneralToProductType(String resourceTypeGeneral, Product.ProductTypeEnum expected) {
         assertThat(ResourceTypeMapping.productType(resourceTypeGeneral)).isEqualTo(expected);
     }

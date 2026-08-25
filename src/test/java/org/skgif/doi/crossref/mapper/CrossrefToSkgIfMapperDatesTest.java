@@ -3,11 +3,10 @@ package org.skgif.doi.crossref.mapper;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.skgif.doi.generated.model.Product;
 
-class CrossrefToSkgIfMapperDatesTest extends CrossrefToSkgIfMapperTestBase {
+final class CrossrefToSkgIfMapperDatesTest extends CrossrefToSkgIfMapperTestBase {
 
     @Test
     void mapsDepositedIntoBothDepositAndModified() throws IOException {
@@ -16,8 +15,8 @@ class CrossrefToSkgIfMapperDatesTest extends CrossrefToSkgIfMapperTestBase {
         Product product = mapFixture("crossref-journal-article.json");
 
         var dates = product.getManifestations().getFirst().getDates();
-        assertThat(dates.getDeposit()).isEqualTo(List.of("2023-05-18"));
-        assertThat(dates.getModified()).isEqualTo(List.of("2023-05-18"));
+        assertThat(dates.getDeposit()).containsExactly("2023-05-18");
+        assertThat(dates.getModified()).containsExactly("2023-05-18");
     }
 
     @Test
@@ -25,8 +24,8 @@ class CrossrefToSkgIfMapperDatesTest extends CrossrefToSkgIfMapperTestBase {
         Product product = mapFixture("crossref-journal-article-with-update-to.json");
 
         var dates = product.getManifestations().getFirst().getDates();
-        assertThat(dates.getCorrection()).isEqualTo(List.of("2021-03-05"));
-        assertThat(dates.getRetraction()).isEqualTo(List.of("2022-06-20"));
+        assertThat(dates.getCorrection()).containsExactly("2021-03-05");
+        assertThat(dates.getRetraction()).containsExactly("2022-06-20");
     }
 
     @Test

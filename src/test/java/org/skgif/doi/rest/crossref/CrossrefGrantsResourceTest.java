@@ -1,7 +1,11 @@
 package org.skgif.doi.rest.crossref;
 
 import static io.restassured.RestAssured.given;
+import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
@@ -14,9 +18,7 @@ import jakarta.ws.rs.NotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Objects;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.skgif.doi.crossref.CrossrefClient;
@@ -29,7 +31,7 @@ import org.skgif.doi.crossref.dto.CrossrefWorkResponse;
  * {@code GrantsGoldenTest}.
  */
 @QuarkusTest
-class CrossrefGrantsResourceTest {
+final class CrossrefGrantsResourceTest {
 
     /** Base path this API is served under. */
     private static final String BASE = "/skg-if/api";
@@ -51,7 +53,7 @@ class CrossrefGrantsResourceTest {
     private CrossrefWorkResponse loadFixture(String resourceName) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
-            Objects.requireNonNull(in, "Fixture not found on classpath: " + resourceName);
+            requireNonNull(in, "Fixture not found on classpath: " + resourceName);
             return objectMapper.readValue(in, CrossrefWorkResponse.class);
         }
     }
@@ -64,11 +66,11 @@ class CrossrefGrantsResourceTest {
                 .when().get(BASE + "/crossref/grants/10.35802/218300")
                 .then()
                 .statusCode(HTTP_OK)
-                .body("@context", Matchers.hasSize(EXPECTED_CONTEXT_SIZE))
-                .body("'@graph'[0].local_identifier", Matchers.equalTo("https://doi.org/10.35802/218300"))
-                .body("'@graph'[0].entity_type", Matchers.equalTo("grant"))
-                .body("'@graph'[0].identifiers[0].scheme", Matchers.equalTo("doi"))
-                .body("'@graph'[0].funding_agency.name", Matchers.equalTo("Wellcome Trust"));
+                .body("@context", hasSize(EXPECTED_CONTEXT_SIZE))
+                .body("'@graph'[0].local_identifier", equalTo("https://doi.org/10.35802/218300"))
+                .body("'@graph'[0].entity_type", equalTo("grant"))
+                .body("'@graph'[0].identifiers[0].scheme", equalTo("doi"))
+                .body("'@graph'[0].funding_agency.name", equalTo("Wellcome Trust"));
     }
 
     @Test
@@ -79,8 +81,8 @@ class CrossrefGrantsResourceTest {
                 .when().get(BASE + "/crossref/grants/10.9999/does-not-exist")
                 .then()
                 .statusCode(HTTP_NOT_FOUND)
-                .body("status", Matchers.equalTo("404"))
-                .body("title", Matchers.equalTo("NOT_FOUND"));
+                .body("status", equalTo("404"))
+                .body("title", equalTo("NOT_FOUND"));
     }
 
     /**
@@ -98,8 +100,8 @@ class CrossrefGrantsResourceTest {
                 .when().get(BASE + "/crossref/grants/10.1038/nature12373")
                 .then()
                 .statusCode(HTTP_NOT_FOUND)
-                .body("status", Matchers.equalTo("404"))
-                .body("detail", Matchers.containsString("/crossref/products/10.1038/nature12373"));
+                .body("status", equalTo("404"))
+                .body("detail", containsString("/crossref/products/10.1038/nature12373"));
     }
 
     @Test
@@ -108,8 +110,8 @@ class CrossrefGrantsResourceTest {
                 .when().get(BASE + "/crossref/grants?filter=bogus_filter:xyz")
                 .then()
                 .statusCode(HTTP_UNPROCESSABLE_ENTITY)
-                .body("status", Matchers.equalTo("422"))
-                .body("title", Matchers.equalTo("INVALID_FILTER"));
+                .body("status", equalTo("422"))
+                .body("title", equalTo("INVALID_FILTER"));
     }
 
     @Test
@@ -135,11 +137,11 @@ class CrossrefGrantsResourceTest {
                 .when().get(BASE + "/crossref/grants?page_size=5")
                 .then()
                 .statusCode(HTTP_OK)
-                .body("meta.entity_type", Matchers.equalTo("search_result_page"))
-                .body("meta.part_of.total_items", Matchers.equalTo(1))
-                .body("'@graph'[0].local_identifier", Matchers.equalTo("https://doi.org/10.35802/218300"))
-                .body("meta.api_items[0].local_identifier", Matchers.equalTo("https://doi.org/10.35802/218300"))
+                .body("meta.entity_type", equalTo("search_result_page"))
+                .body("meta.part_of.total_items", equalTo(1))
+                .body("'@graph'[0].local_identifier", equalTo("https://doi.org/10.35802/218300"))
+                .body("meta.api_items[0].local_identifier", equalTo("https://doi.org/10.35802/218300"))
                 .body("meta.api_items[0].urls[0].href",
-                        Matchers.equalTo("http://localhost:8081/skg-if/api/crossref/grants/10.35802/218300"));
+                        equalTo("http://localhost:8081/skg-if/api/crossref/grants/10.35802/218300"));
     }
 }

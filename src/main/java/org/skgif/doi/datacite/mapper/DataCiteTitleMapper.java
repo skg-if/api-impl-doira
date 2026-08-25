@@ -1,12 +1,15 @@
 package org.skgif.doi.datacite.mapper;
 
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toList;
+
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
 import org.skgif.doi.datacite.dto.DataCiteDescription;
 import org.skgif.doi.generated.model.ProductAllOfTopics;
@@ -96,10 +99,10 @@ final class DataCiteTitleMapper {
             Function<T, String> lang) {
         return items.stream()
                 .filter(item -> text.apply(item) != null)
-                .collect(Collectors.groupingBy(
+                .collect(groupingBy(
                         item -> normalizeLanguage(lang.apply(item)),
                         LinkedHashMap::new,
-                        Collectors.mapping(text, Collectors.toList())));
+                        mapping(text, toList())));
     }
 
     private static String normalizeLanguage(String lang) {

@@ -1,5 +1,7 @@
 package org.skgif.doi.crossref.mapper;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -121,7 +123,7 @@ final class CrossrefBiblioMapper {
         }
         // Non-null by the hasNoContainerTitle guard above; asserted here because that guard lives
         // in another method, where the nullness checker cannot follow it.
-        String name = Objects.requireNonNull(work.containerTitle()).getFirst();
+        String name = requireNonNull(work.containerTitle()).getFirst();
         List<String> issns = work.issn() != null ?
                 work.issn().stream().filter(Objects::nonNull).toList() :
                 List.of();

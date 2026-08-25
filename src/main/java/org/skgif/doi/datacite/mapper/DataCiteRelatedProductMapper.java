@@ -1,13 +1,14 @@
 package org.skgif.doi.datacite.mapper;
 
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import org.jspecify.annotations.Nullable;
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
 import org.skgif.doi.datacite.dto.DataCiteRelatedIdentifier;
@@ -63,7 +64,7 @@ final class DataCiteRelatedProductMapper {
 
         /** Reverse lookup from {@link #value()} back to the enum constant. */
         private static final Map<String, DataCiteRelatedIdentifierType> BY_VALUE = Arrays.stream(values())
-                .collect(Collectors.toMap(DataCiteRelatedIdentifierType::value, Function.identity()));
+                .collect(toMap(DataCiteRelatedIdentifierType::value, identity()));
 
         /** The constant's underlying DataCite {@code relatedIdentifierType} value. */
         @SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")

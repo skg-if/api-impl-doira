@@ -37,7 +37,7 @@ final class CrossrefSearchResponses {
             int offset, CrossrefWorkListResponse response, Predicate<CrossrefWork> include,
             Function<CrossrefWork, T> convert) {
         List<CrossrefWork> items = response.message() != null ?
-                Optional.ofNullable(response.message().items()).orElse(List.of()) :
+                Optional.ofNullable(response.message().items()).orElseGet(List::of) :
                 List.of();
         long totalResults = response.message() != null ? response.message().totalResults() : 0;
         boolean hasNext = offset + request.size() < totalResults;

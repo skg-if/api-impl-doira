@@ -43,8 +43,8 @@ import org.skgif.doi.util.LocalIdentifiers;
 // ArchUnit-enforceable provider independence) means the shared JsonLd*/RequestPagination/
 // FilterQuerySyntax helpers below need explicit imports instead of the same-package access this
 // class previously got for free.
-@SuppressWarnings("PMD.ExcessiveImports")
 @Path("/crossref/products")
+@SuppressWarnings("PMD.ExcessiveImports")
 public class CrossrefProductsResource {
 
     /** This resource's own base path, used to build pagination/context links. */
@@ -70,13 +70,13 @@ public class CrossrefProductsResource {
     String fallbackContextBase;
 
     /** Crossref DOI prefix this deployment is restricted to, if configured. */
-    @SuppressWarnings("OptionalUsedAsFieldOrParameterType") //ok https://quarkus.io/guides/config-reference
-    @ConfigProperty(name = "crossref.prefix")
+    @ConfigProperty(name = "crossref.prefix") //ok https://quarkus.io/guides/config-reference
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     Optional<String> crossrefPrefix;
 
     /** Contact email for Crossref's polite-pool API access, if configured. */
-    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     @ConfigProperty(name = "crossref.mailto")
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     Optional<String> crossrefMailto;
 
     /** Page size used when a list request doesn't specify one. */
@@ -144,7 +144,7 @@ public class CrossrefProductsResource {
         if (workOpt.isEmpty()) {
             return notFound(localIdentifierParam);
         }
-        CrossrefWork work = workOpt.get();
+        CrossrefWork work = workOpt.orElseThrow();
         if (CrossrefTypeMapping.isGrant(work)) {
             return JsonLdErrors.notFound("No product found for local_identifier '" + localIdentifierParam +
                     "' - this DOI is a grant, see /crossref/grants/" + localIdentifierParam);

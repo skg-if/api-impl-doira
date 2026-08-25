@@ -10,7 +10,7 @@ import org.skgif.doi.generated.model.Organisation;
 import org.skgif.doi.generated.model.PersonLite;
 import org.skgif.doi.generated.model.PersonLiteAllOfIdentifiers;
 
-class EntityRefsTest {
+final class EntityRefsTest {
 
     @Test
     void hostingDataSource_buildsOtfIdentifiedDataSource() {
@@ -38,8 +38,8 @@ class EntityRefsTest {
         assertThat(org.getLocalIdentifier()).isEqualTo("https://ror.org/01an7q238");
         assertThat(org.getName()).isEqualTo("Example University");
         assertThat(org.getEntityType()).isEqualTo("organisation");
-        assertThat(org.getIdentifiers())
-                .isEqualTo(List.of(new AgentAllOfIdentifiers().scheme("ror").value("01an7q238")));
+        assertThat(org.getIdentifiers()).containsExactly(new AgentAllOfIdentifiers().scheme("ror")
+                .value("01an7q238"));
     }
 
     @Test
@@ -57,8 +57,8 @@ class EntityRefsTest {
                 "https://doi.org/10.13039/501100000038", "10.13039/501100000038");
 
         assertThat(org.getLocalIdentifier()).isEqualTo("https://ror.org/01an7q238");
-        assertThat(org.getIdentifiers())
-                .isEqualTo(List.of(new AgentAllOfIdentifiers().scheme("ror").value("01an7q238")));
+        assertThat(org.getIdentifiers()).containsExactly(new AgentAllOfIdentifiers().scheme("ror")
+                .value("01an7q238"));
     }
 
     @Test
@@ -68,8 +68,8 @@ class EntityRefsTest {
 
         assertThat(org.getLocalIdentifier()).isEqualTo("https://doi.org/10.13039/501100000038");
         assertThat(org.getName()).isEqualTo("Example Funder");
-        assertThat(org.getIdentifiers())
-                .isEqualTo(List.of(new AgentAllOfIdentifiers().scheme("doi").value("10.13039/501100000038")));
+        assertThat(org.getIdentifiers()).containsExactly(new AgentAllOfIdentifiers().scheme("doi")
+                .value("10.13039/501100000038"));
     }
 
     @Test
@@ -93,7 +93,7 @@ class EntityRefsTest {
         assertThat(person.getGivenName()).isEqualTo("Jane");
         assertThat(person.getFamilyName()).isEqualTo("Doe");
         assertThat(person.getEntityType()).isEqualTo("person");
-        assertThat(person.getIdentifiers()).isEqualTo(orcidIdentifiers);
+        assertThat(person.getIdentifiers()).containsExactlyElementsOf(orcidIdentifiers);
     }
 
     @Test

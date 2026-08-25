@@ -1,9 +1,9 @@
 package org.skgif.doi.crossref.mapper;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.skgif.doi.generated.model.Grant;
@@ -11,7 +11,7 @@ import org.skgif.doi.generated.model.GrantContribution;
 import org.skgif.doi.generated.model.Organisation;
 import org.skgif.doi.generated.model.PersonLite;
 
-class CrossrefToSkgIfMapperGrantTest extends CrossrefToSkgIfMapperTestBase {
+final class CrossrefToSkgIfMapperGrantTest extends CrossrefToSkgIfMapperTestBase {
 
     private Grant mapGrantFixture(String resourceName) throws IOException {
         return mapper.toGrant(readFixture(resourceName));
@@ -33,8 +33,8 @@ class CrossrefToSkgIfMapperGrantTest extends CrossrefToSkgIfMapperTestBase {
         assertThat(grant.getGrantNumber()).isEqualTo("218300");
     }
 
-    @Test
     @SuppressWarnings("unchecked")
+    @Test
     void toGrant_mapsTitlesAndAbstractsFromProject() throws IOException {
         Grant grant = mapGrantFixture("crossref-grant.json");
 
@@ -73,7 +73,8 @@ class CrossrefToSkgIfMapperGrantTest extends CrossrefToSkgIfMapperTestBase {
                 .filter(c -> "Halim".equals(((PersonLite) ((GrantContribution) c).getBy()).getFamilyName()))
                 .findFirst()
                 .orElseThrow();
-        assertThat(lead.getRoles()).isEqualTo(Collections.singletonList(GrantContribution.RolesEnum.LEAD_APPLICANT));
+        assertThat(lead.getRoles()).containsExactlyElementsOf(singletonList(
+                GrantContribution.RolesEnum.LEAD_APPLICANT));
         PersonLite leadBy = (PersonLite) lead.getBy();
         assertThat(leadBy.getIdentifiers().getFirst().getScheme()).isEqualTo("orcid");
         assertThat(leadBy.getIdentifiers().getFirst().getValue()).isEqualTo("0000-0001-9773-0023");
@@ -82,8 +83,8 @@ class CrossrefToSkgIfMapperGrantTest extends CrossrefToSkgIfMapperTestBase {
                 .filter(c -> "Caldas".equals(((PersonLite) ((GrantContribution) c).getBy()).getFamilyName()))
                 .findFirst()
                 .orElseThrow();
-        assertThat(coApplicant.getRoles())
-                .isEqualTo(Collections.singletonList(GrantContribution.RolesEnum.CO_APPLICANT));
+        assertThat(coApplicant.getRoles()).containsExactlyElementsOf(singletonList(
+                GrantContribution.RolesEnum.CO_APPLICANT));
         Organisation coApplicantAffiliation = (Organisation) coApplicant.getDeclaredAffiliations().getFirst();
         assertThat(coApplicantAffiliation.getIdentifiers().getFirst().getScheme()).isEqualTo("ror");
         assertThat(coApplicantAffiliation.getIdentifiers().getFirst().getValue()).isEqualTo("013meh722");

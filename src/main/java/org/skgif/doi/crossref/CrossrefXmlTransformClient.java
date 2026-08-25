@@ -20,9 +20,9 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
  */
 // Single abstract method by coincidence, not a lambda target: Quarkus generates the implementation
 // from @RegisterRestClient, so @FunctionalInterface would advertise a use that never happens.
-@SuppressWarnings("PMD.ImplicitFunctionalInterface")
-@RegisterRestClient(configKey = "crossref-xml-transform-api")
 @Path("/works")
+@RegisterRestClient(configKey = "crossref-xml-transform-api")
+@SuppressWarnings("PMD.ImplicitFunctionalInterface")
 public interface CrossrefXmlTransformClient {
 
     /**

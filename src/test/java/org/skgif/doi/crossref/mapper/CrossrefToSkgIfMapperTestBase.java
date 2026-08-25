@@ -1,11 +1,11 @@
 package org.skgif.doi.crossref.mapper;
 
+import static java.util.Objects.requireNonNull;
 import static org.mockito.Mockito.mock;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Objects;
 import java.util.Optional;
 import org.skgif.doi.crossref.CrossrefClient;
 import org.skgif.doi.crossref.CrossrefJournalDoiResolver;
@@ -27,7 +27,7 @@ abstract class CrossrefToSkgIfMapperTestBase {
     protected final ObjectMapper objectMapper = new ObjectMapper();
 
     /** Mocked Crossref REST client, unstubbed by default (see class javadoc above). */
-    protected final CrossrefClient crossrefClient = mock(CrossrefClient.class);
+    protected final CrossrefClient crossrefClient = mock();
     /** The mapper under test. */
     protected final CrossrefToSkgIfMapper mapper = new CrossrefToSkgIfMapper(new LocalIdentifiers("https://doi.org/"),
             new CrossrefJournalDoiResolver(crossrefClient, Optional.empty()));
@@ -38,9 +38,9 @@ abstract class CrossrefToSkgIfMapperTestBase {
 
     protected CrossrefWork readFixture(String resourceName) throws IOException {
         try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
-            Objects.requireNonNull(in, "Fixture not found on classpath: " + resourceName);
+            requireNonNull(in, "Fixture not found on classpath: " + resourceName);
             CrossrefWorkResponse response = objectMapper.readValue(in, CrossrefWorkResponse.class);
-            return Objects.requireNonNull(response.message(), "Fixture has no message block: " + resourceName);
+            return requireNonNull(response.message(), "Fixture has no message block: " + resourceName);
         }
     }
 }

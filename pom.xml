@@ -25,6 +25,7 @@
     <spotbugs-plugin.version>4.10.4.0</spotbugs-plugin.version>
     <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
     <error-prone.version>2.50.0</error-prone.version>
+    <error-prone-support.version>0.30.0</error-prone-support.version>
     <nullaway.version>0.14.0</nullaway.version>
     <jspecify.version>1.0.0</jspecify.version>
     <!--
@@ -181,7 +182,7 @@
           launcher verbatim, and a "#..." line fails the build with "Could not find or load main
           class #" (confirmed empirically) - explain changes to it here instead.
 
-          Wired for its default check set only: no -Xep:Check:SEVERITY overrides. Its
+          Its
           ERROR-severity default checks already fail the build (a compile error), same effect as
           the failOnViolation=true gates below. failOnWarning=true below closes the remaining gap
           for its WARNING-severity checks: unlike javac's own -Werror (which Error Prone's issue
@@ -203,8 +204,54 @@
           phase -DskipTests never skips (that flag only skips test execution), so there is no
           equivalent lever here and none is being invented.
 
-          NULLAWAY rides on the same Error Prone plugin as an extra check, and is the one place the
-          "no -Xep:Check:SEVERITY overrides" rule above is deliberately broken: NullAway ships with
+          ERROR PRONE SUPPORT (Picnic, tech.picnic.error-prone-support) adds ~100 extra
+          @BugPattern checks via error-prone-contrib plus Refaster template rewrites via
+          refaster-runner. 0.30.0 is built against Error Prone 2.50.0, so the two versions must
+          move together. -XDaddTypeAnnotationsToSymbol=true above is required by it on JDK 21+.
+
+          Nearly all of its checks ship at SUGGESTION severity, which javac reports as notes -
+          invisible to failOnWarning, so without -XepAllSuggestionsAsWarnings adopting the library
+          would enforce almost nothing and the cleanup it motivated would silently regress. That
+          flag is what makes those checks blocking; the three -Xep:...:OFF / NamePattern exclusions
+          below are what keep it from blocking on things this project cannot or should not adopt.
+          The trade-off is that an error-prone-support bump introducing a new SUGGESTION check
+          fails the build until it is triaged - intended, and the same bargain failOnWarning
+          already makes.
+
+          RequireExplicitNullMarking is turned OFF because it is NullAway's, not Picnic's, and only
+          becomes visible under -XepAllSuggestionsAsWarnings: it demands @NullMarked on all 150
+          top-level classes, which is precisely the per-package annotation scheme the NullAway
+          section of STATIC_ANALYSIS_POLICY.md records as deliberately abandoned in favour of the
+          AnnotatedPackages prefix flag. Enabling it would re-litigate a settled decision.
+
+          LexicographicalAnnotationAttributeListing is turned OFF (3 findings, all in the
+          *ProductsResource @Parameter(examples = {...}) arrays). Sorting those attributes gains
+          nothing semantically and makes spotless reflow a readable multi-line @ExampleObject array
+          into a deeply-indented cascade that then breaks checkstyle's 120-char LineLength - a gate
+          deadlock with no formatting config that resolves it, since spotless owns formatting and
+          never yields to checkstyle.
+
+          Refaster's NamePattern is a DENY-list (negative lookahead), not an allow-list, so new
+          rule families in a future release apply automatically and only the known-bad ones stay
+          out. Excluded families, each measured:
+            - Immutable{List,Map,Set}Rules / PreconditionsRules (90 findings): these do not fire on
+              existing Guava usage - they rewrite JDK List.of()/Map.of() INTO Guava, which would
+              force com.google.guava onto a project that has no Guava dependency at all. Applying
+              them broke compilation in 29 files.
+            - NullRules (21): requireNonNullElseGet(work.title(), List::of) infers T as
+              "capture of ? extends Object" rather than List<String>, so every downstream member
+              access fails. Applying it produced 82 compile errors.
+            - StreamRules (4): reordering .map(f).findFirst() to .findFirst().map(f) is behaviour-
+              preserving but costs NullAway provability - it models Optional.map strictly and
+              Stream.map not at all, so the rewrite turned 3 clean sites into NullAway findings.
+            - OptionalRules.RefasterEmitComment* (2): this rule injects a comment into source.
+          A matching-nothing NamePattern silently disables Refaster entirely rather than erroring,
+          which is indistinguishable from a green build - so this pattern is negative-tested (see
+          STATIC_ANALYSIS_POLICY.md) in BOTH directions: an allowed rule must fail the build, and a
+          denied one must not fire.
+
+          NULLAWAY rides on the same Error Prone plugin as an extra check, and is one of the places
+          a -Xep:Check:SEVERITY override is used deliberately: NullAway ships with
           a default severity of WARNING, and while failOnWarning=true would already make that
           blocking, -Xep:NullAway:ERROR is NullAway's own documented setup and keeps this gate
           independent of that flag.
@@ -253,18 +300,29 @@
           <failOnWarning>${maven.compiler.failOnWarning}</failOnWarning>
           <compilerArgs>
             <arg>-XDcompilePolicy=simple</arg>
+            <arg>-XDaddTypeAnnotationsToSymbol=true</arg>
             <arg>--should-stop=ifError=FLOW</arg>
             <arg>-Xmaxerrs</arg>
             <arg>2000</arg>
             <arg>-Xmaxwarns</arg>
             <arg>2000</arg>
-            <arg>-Xplugin:ErrorProne -XepDisableWarningsInGeneratedCode -XepExcludedPaths:.*/generated-sources/.* -Xep:NullAway:${nullaway.severity} -XepOpt:NullAway:AnnotatedPackages=org.skgif.doi -XepOpt:NullAway:UnannotatedSubPackages=${nullaway.unannotated} -XepOpt:NullAway:ExcludedFieldAnnotations=org.eclipse.microprofile.config.inject.ConfigProperty,jakarta.inject.Inject,org.eclipse.microprofile.rest.client.inject.RestClient,io.quarkus.test.InjectMock</arg>
+            <arg>-Xplugin:ErrorProne -XepAllSuggestionsAsWarnings -Xep:RequireExplicitNullMarking:OFF -Xep:LexicographicalAnnotationAttributeListing:OFF -XepOpt:Refaster:NamePattern=(?!(ImmutableListRules|ImmutableMapRules|ImmutableSetRules|PreconditionsRules|NullRules|StreamRules|OptionalRules.RefasterEmitComment)).* -XepDisableWarningsInGeneratedCode -XepExcludedPaths:.*/generated-sources/.* -Xep:NullAway:${nullaway.severity} -XepOpt:NullAway:AnnotatedPackages=org.skgif.doi -XepOpt:NullAway:UnannotatedSubPackages=${nullaway.unannotated} -XepOpt:NullAway:ExcludedFieldAnnotations=org.eclipse.microprofile.config.inject.ConfigProperty,jakarta.inject.Inject,org.eclipse.microprofile.rest.client.inject.RestClient,io.quarkus.test.InjectMock</arg>
           </compilerArgs>
           <annotationProcessorPaths>
             <path>
               <groupId>com.google.errorprone</groupId>
               <artifactId>error_prone_core</artifactId>
               <version>${error-prone.version}</version>
+            </path>
+            <path>
+              <groupId>tech.picnic.error-prone-support</groupId>
+              <artifactId>error-prone-contrib</artifactId>
+              <version>${error-prone-support.version}</version>
+            </path>
+            <path>
+              <groupId>tech.picnic.error-prone-support</groupId>
+              <artifactId>refaster-runner</artifactId>
+              <version>${error-prone-support.version}</version>
             </path>
             <path>
               <groupId>com.uber.nullaway</groupId>
