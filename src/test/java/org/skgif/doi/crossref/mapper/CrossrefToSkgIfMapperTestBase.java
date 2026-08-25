@@ -5,6 +5,7 @@ import static org.mockito.Mockito.mock;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 import java.util.Optional;
 import org.skgif.doi.crossref.CrossrefClient;
 import org.skgif.doi.crossref.CrossrefJournalDoiResolver;
@@ -37,6 +38,7 @@ abstract class CrossrefToSkgIfMapperTestBase {
 
     protected CrossrefWork readFixture(String resourceName) throws IOException {
         try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
+            Objects.requireNonNull(in, "Fixture not found on classpath: " + resourceName);
             CrossrefWorkResponse response = objectMapper.readValue(in, CrossrefWorkResponse.class);
             return response.message();
         }

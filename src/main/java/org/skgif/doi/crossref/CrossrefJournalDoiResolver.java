@@ -12,6 +12,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.jspecify.annotations.Nullable;
 import org.skgif.doi.crossref.dto.CrossrefWork;
 import org.skgif.doi.crossref.dto.CrossrefWorkListResponse;
 import org.skgif.doi.crossref.dto.CrossrefWorkListResponse.Message;
@@ -40,8 +41,8 @@ public class CrossrefJournalDoiResolver {
 
     /** The Crossref REST client used to look up journal-level DOIs. */
     private final CrossrefClient crossrefClient;
-    /** Contact email for Crossref's polite-pool API access, if configured. */
-    private final String mailto;
+    /** Contact email for Crossref's polite-pool API access, or null if none is configured. */
+    private final @Nullable String mailto;
     /** Journal-level DOIs found so far this request, keyed by ISSN. */
     private final Map<String, String> cache = new ConcurrentHashMap<>();
 
@@ -67,7 +68,7 @@ public class CrossrefJournalDoiResolver {
      * record - degrades to an empty result for that ISSN rather than propagating, so callers can
      * always fall back to their existing otf-id behavior.
      *
-     * @param issns the journal's ISSN(s) to try, in order
+     * @param issns the journal's ISSN(s) to try, in order; null or empty yields an empty result
      * @return the first journal-level DOI found, or empty if none resolve
      */
     // A per-call virtual-thread executor for at most a handful of short-lived HTTP lookups is the
@@ -75,7 +76,7 @@ public class CrossrefJournalDoiResolver {
     // try-with-resources closes it, never left running past this method) - not the kind of
     // unmanaged, long-lived thread pool PMD's J2EE-compliance rule is meant to catch.
     @SuppressWarnings("PMD.DoNotUseThreads")
-    public Optional<String> resolveJournalDoi(List<String> issns) {
+    public Optional<String> resolveJournalDoi(@Nullable List<String> issns) {
         if (issns == null) {
             return Optional.empty();
         }

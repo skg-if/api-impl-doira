@@ -45,6 +45,57 @@ record of what the skill used to get wrong.
 
 ---
 
+## `-Dmaven.compiler.*` overrides for compiler-plugin config are silently ignored
+
+- Date: 2026-08-25
+- Skill: `skg-if-build-toolchain/SKILL.md`
+- Symptom: trying to run a one-off NullAway discovery pass at reduced severity, both
+  `'-Dmaven.compiler.compilerArgs=-Xplugin:ErrorProne ... -Xep:NullAway:WARN ...'` and
+  `-Dmaven.compiler.failOnWarning=false` appeared to be accepted - no error, no warning - but had
+  no effect. The first run still emitted findings at `[ERROR]` and aborted in `default-compile`;
+  after fixing that, the second still failed with `warnings found and -Werror specified`. Both
+  looked like the flag was wrong or misspelled, and each cost a full ~1-minute build cycle to
+  disprove.
+- Root cause: pom-declared plugin configuration wins over the corresponding user property in both
+  cases, and neither failure mode is visible. `-Dmaven.compiler.compilerArgs` cannot override a
+  `<compilerArgs>` *list* element at all, and an explicit `<failOnWarning>true</failOnWarning>`
+  takes precedence over the plugin's own `${maven.compiler.failOnWarning}` expression. Any
+  compiler-plugin setting that needs to be dialled down from the command line has to be routed
+  through a `<properties>` entry that the plugin config interpolates - it cannot be overridden
+  where it is written as a literal. The skill documents the useful `mvn` flags (`-q`/`-B`/`-Dtest=`)
+  but says nothing about this class of silently-ineffective `-D` override, so the natural first
+  attempt is the one that doesn't work.
+- Fix: not yet fixed in the skill. The repo-side half is done - `pom.xml` now routes both settings
+  through `nullaway.severity` and `maven.compiler.failOnWarning` properties, and
+  `STATIC_ANALYSIS_POLICY.md` records it under "Gotchas worth not rediscovering" plus the NullAway
+  section's severity levers. What's still missing is a line in
+  `skg-if-build-toolchain/SKILL.md`'s flags guidance warning that `-D` overrides of
+  compiler-plugin config fail silently, and pointing at the properties in `pom.xml` as the
+  supported levers.
+- Status: Open
+
+## A compile-phase gate at `ERROR` severity silently skips `test-compile`
+
+- Date: 2026-08-25
+- Skill: `skg-if-build-toolchain/SKILL.md`
+- Symptom: two `mvn compile test-compile` discovery runs for NullAway produced a finding list that
+  looked like a complete survey of the codebase (100 findings, then 88 after a config change) and
+  was used to conclude the tool was unusable here. Both logs in fact contained **zero** `src/test`
+  diagnostics, ended in `BUILD FAILURE`, and had only ever reached
+  `maven-compiler-plugin:compile (default-compile)` - the test-source count was never measured at
+  all. The wrong conclusion survived several turns before the goal list was checked.
+- Root cause: at `ERROR` severity javac aborts within `default-compile`, so `test-compile` never
+  runs - but the run still prints a long, plausible findings list, so nothing signals that a whole
+  source root went unanalysed. Measured afterwards, test sources dominated: one package produced 36
+  findings, 26 of them in test files. Any measurement pass over a compile-phase tool (Error Prone
+  and NullAway both) must run at `WARN` with warnings non-fatal, and must confirm it actually
+  reached `test-compile` before its output is trusted as a count.
+- Fix: not yet fixed in the skill. Captured on the repo side in `STATIC_ANALYSIS_POLICY.md`
+  ("Gotchas worth not rediscovering", and the NullAway section's discovery recipe) and in a
+  `pom.xml` comment. The skill's own guidance on reading build output should grow a "check which
+  goals actually ran before trusting a findings count" note, since this is not NullAway-specific.
+- Status: Open
+
 ## `2>&1 | <cmdlet>` on `.\mvnw.cmd` reports a false failure from a benign JVM stderr warning
 
 - Date: 2026-08-25

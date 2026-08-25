@@ -15,6 +15,7 @@ import jakarta.ws.rs.core.Response;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.Test;
 import org.skgif.doi.crossref.CrossrefClient;
@@ -79,6 +80,7 @@ class ProductsGoldenTest {
     private DataCiteDoiResponse loadDataCiteFixture(String resourceName) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
+            Objects.requireNonNull(in, "Fixture not found on classpath: " + resourceName);
             return objectMapper.readValue(in, DataCiteDoiResponse.class);
         }
     }
@@ -86,6 +88,7 @@ class ProductsGoldenTest {
     private CrossrefWorkResponse loadCrossrefFixture(String resourceName) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
+            Objects.requireNonNull(in, "Fixture not found on classpath: " + resourceName);
             return objectMapper.readValue(in, CrossrefWorkResponse.class);
         }
     }
@@ -93,6 +96,7 @@ class ProductsGoldenTest {
     private CrossrefWorkListResponse loadCrossrefWorkListFixture(String resourceName) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
+            Objects.requireNonNull(in, "Fixture not found on classpath: " + resourceName);
             return objectMapper.readValue(in, CrossrefWorkListResponse.class);
         }
     }
@@ -651,7 +655,9 @@ class ProductsGoldenTest {
             return;
         }
 
-        var expected = objectMapper.readTree(getClass().getClassLoader().getResourceAsStream(expectedResource));
+        var expected = objectMapper.readTree(Objects.requireNonNull(
+                getClass().getClassLoader().getResourceAsStream(expectedResource),
+                "Fixture not found on classpath: " + expectedResource));
 
         assertThat(actual)
                 .as("Actual JSON-LD output no longer matches " + expectedResource +

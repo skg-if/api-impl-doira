@@ -25,6 +25,27 @@
     <spotbugs-plugin.version>4.10.4.0</spotbugs-plugin.version>
     <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
     <error-prone.version>2.50.0</error-prone.version>
+    <nullaway.version>0.14.0</nullaway.version>
+    <jspecify.version>1.0.0</jspecify.version>
+    <!--
+      NullAway's severity, indirected through a property purely so a discovery run can lower it
+      from the command line: `-Dnullaway.severity=WARN -Dmaven.compiler.failOnWarning=false`.
+      -Dmaven.compiler.compilerArgs cannot do this - it does not override a <compilerArgs> list
+      declared in the POM (confirmed empirically: the findings still came out at ERROR), so
+      without this property there is no way to run a non-aborting discovery pass short of editing
+      the POM. See the maven-compiler-plugin block below for why that matters.
+    -->
+    <nullaway.severity>ERROR</nullaway.severity>
+    <!--
+      Error Prone's/javac's warnings-are-fatal gate (see maven-compiler-plugin below), indirected
+      for the same reason as nullaway.severity above: an explicit <failOnWarning>true</> in the
+      plugin config takes precedence over the plugin's own ${maven.compiler.failOnWarning}
+      expression, so a bare -Dmaven.compiler.failOnWarning=false is silently ignored (confirmed
+      empirically: the build still failed with "warnings found and -Werror specified"). Routing
+      the config through this property is what makes that override actually work. Stays true for
+      every normal build; only a discovery run lowers it.
+    -->
+    <maven.compiler.failOnWarning>true</maven.compiler.failOnWarning>
     <!--
       Checkstyle engine version, pinned independently of maven-checkstyle-plugin above.
       That plugin hardcodes a default engine of 9.3 (Jan 2022, a Java-17-era grammar),
@@ -83,6 +104,21 @@
     <dependency>
       <groupId>jakarta.validation</groupId>
       <artifactId>jakarta.validation-api</artifactId>
+    </dependency>
+    <!--
+      Nullness annotations (@NullMarked/@Nullable) for NullAway - see the maven-compiler-plugin
+      block below and STATIC_ANALYSIS_POLICY.md's NullAway section. Declared explicitly even
+      though junit-jupiter-api already drags it in transitively: that path is test-scoped, and
+      main source must not rely on a test transitive for annotations it references.
+
+      JSpecify rather than JSR-305's javax.annotation.Nullable, which is not on this project's
+      compile classpath at all (confirmed: "package javax.annotation does not exist") and comes
+      from a JSR abandoned unratified in 2012 that squats a javax.* namespace it does not own.
+    -->
+    <dependency>
+      <groupId>org.jspecify</groupId>
+      <artifactId>jspecify</artifactId>
+      <version>${jspecify.version}</version>
     </dependency>
 
     <dependency>
@@ -152,22 +188,60 @@
           Not gated by ${skipTests} like the other four tools: Error Prone runs during compile, a
           phase -DskipTests never skips (that flag only skips test execution), so there is no
           equivalent lever here and none is being invented.
+
+          NULLAWAY rides on the same Error Prone plugin as an extra check, and is the one place the
+          "no -Xep:Check:SEVERITY overrides" rule above is deliberately broken: NullAway ships with
+          a default severity of WARNING, and while failOnWarning=true would already make that
+          blocking, -Xep:NullAway:ERROR is NullAway's own documented setup and keeps this gate
+          independent of that flag.
+
+          OnlyNullMarked=true is the important choice. The alternative,
+          AnnotatedPackages=org.skgif.doi, opts the whole main tree in at once - measured at 100
+          findings, which is what sank an earlier attempt at this. OnlyNullMarked instead treats
+          just @NullMarked code as in scope, so packages opt in one at a time via their existing
+          package-info.java (checkstyle's JavadocPackage guarantees every package has one). Three
+          consequences worth knowing before "fixing" something that looks under-configured:
+
+            - src/test/java is out of scope structurally, not by an exclusion list: it has no
+              package-info.java files at all, so no test package can be marked by accident.
+            - The generated openapi model is likewise out of scope for free - it carries no
+              @NullMarked - so unlike -XepExcludedPaths above, NullAway needs no generated-code
+              exclusion. Do NOT add UnannotatedSubPackages=org.skgif.doi.generated; it is dead
+              config under OnlyNullMarked.
+            - JSpecifyMode is deliberately NOT set. That flag turns on deep generic-type nullness
+              checking, is documented as still under development with known false positives, and is
+              orthogonal to using @NullMarked for scoping, which works in standard mode.
+
+          When opting a new package in, run the discovery pass with
+
+            -Dnullaway.severity=WARN -Dmaven.compiler.failOnWarning=false
+
+          and NOT at the default ERROR. At ERROR javac aborts inside default-compile, so
+          test-compile never runs and every finding in later sources is silently hidden - the exact
+          trap that made an earlier discovery run under-report its own scope by an unknown margin.
+          Note that -Dmaven.compiler.compilerArgs=... does NOT work for this: it does not override
+          a <compilerArgs> list declared here, which is why the severity is a property.
         -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${maven-compiler-plugin.version}</version>
         <configuration>
-          <failOnWarning>true</failOnWarning>
+          <failOnWarning>${maven.compiler.failOnWarning}</failOnWarning>
           <compilerArgs>
             <arg>-XDcompilePolicy=simple</arg>
             <arg>--should-stop=ifError=FLOW</arg>
-            <arg>-Xplugin:ErrorProne -XepDisableWarningsInGeneratedCode -XepExcludedPaths:.*/generated-sources/.*</arg>
+            <arg>-Xplugin:ErrorProne -XepDisableWarningsInGeneratedCode -XepExcludedPaths:.*/generated-sources/.* -Xep:NullAway:${nullaway.severity} -XepOpt:NullAway:OnlyNullMarked=true</arg>
           </compilerArgs>
           <annotationProcessorPaths>
             <path>
               <groupId>com.google.errorprone</groupId>
               <artifactId>error_prone_core</artifactId>
               <version>${error-prone.version}</version>
+            </path>
+            <path>
+              <groupId>com.uber.nullaway</groupId>
+              <artifactId>nullaway</artifactId>
+              <version>${nullaway.version}</version>
             </path>
           </annotationProcessorPaths>
         </configuration>

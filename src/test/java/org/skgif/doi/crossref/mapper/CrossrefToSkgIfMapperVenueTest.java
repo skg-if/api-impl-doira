@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Objects;
 import org.junit.jupiter.api.Test;
 import org.skgif.doi.crossref.dto.CrossrefWorkListResponse;
 import org.skgif.doi.crossref.xml.CrossrefVenueMetadata;
@@ -30,12 +31,14 @@ class CrossrefToSkgIfMapperVenueTest extends CrossrefToSkgIfMapperTestBase {
 
     private String readXmlResource(String resourceName) throws IOException {
         try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
+            Objects.requireNonNull(in, "Fixture not found on classpath: " + resourceName);
             return new String(in.readAllBytes(), StandardCharsets.UTF_8);
         }
     }
 
     private CrossrefWorkListResponse journalDoiLookupResponse(String resourceName) throws IOException {
         try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
+            Objects.requireNonNull(in, "Fixture not found on classpath: " + resourceName);
             return objectMapper.readValue(in, CrossrefWorkListResponse.class);
         }
     }

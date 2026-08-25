@@ -18,7 +18,7 @@ Read this before adding, removing or retuning a rule in any of those files.
 
 ## Division of labour
 
-Four tools, and mixing up their jobs is the single most expensive mistake available here.
+Six tools, and mixing up their jobs is the single most expensive mistake available here.
 
 | Tool | Owns | Enforced? |
 |---|---|---|
@@ -27,6 +27,7 @@ Four tools, and mixing up their jobs is the single most expensive mistake availa
 | **PMD** | correctness, design, complexity, error-prone patterns | yes - both source roots |
 | **SpotBugs** | bytecode/dataflow correctness Checkstyle's style rules and PMD's AST-level rules can't reach: null dataflow, resource leaks, concurrency hazards | yes - `check` fails the build |
 | **Error Prone** | compile-time, type-aware bug patterns caught via `javac`'s own type information - a different reach than PMD's pure-AST rules or SpotBugs's post-compile bytecode analysis | yes - `failOnWarning=true` fails the compile on any diagnostic, `WARNING`-severity default checks included, not just its `ERROR`-severity ones |
+| **NullAway** | nullness specifically: that a `@Nullable` value never reaches a `@NonNull` field, parameter or return. Rides on Error Prone's `javac` plugin but is opt-in per package, so unlike the five above it does **not** cover the whole tree | yes, but only inside `@NullMarked` packages - `-Xep:NullAway:ERROR` fails the compile there, and everything else is unchecked by design |
 | **Sonar** | nothing - no Sonar server runs here | **no** |
 
 Sonar is used only as a *naming scheme*: `SXXXX` ids give each concern a stable, documented
@@ -313,6 +314,16 @@ Two traps here, both cost a wasted run:
 - **PMD rules referenced by name keep running when deprecated**, emitting only a warning.
   `UnnecessaryLocalBeforeReturn` was deprecated in PMD 7.17.0 and had to be spotted by reading the
   category XML inside `pmd-java-<ver>.jar`; nothing failed.
+- **Two `maven-compiler-plugin` settings cannot be overridden from the command line**, and both fail
+  *silently* rather than erroring: `-Dmaven.compiler.compilerArgs=...` does not override a
+  `<compilerArgs>` list declared in the pom, and an explicit `<failOnWarning>true</failOnWarning>`
+  beats the plugin's own `${maven.compiler.failOnWarning}` expression. Anything that needs to be
+  dialled down for a one-off probe has to be routed through a `<properties>` entry first - see the
+  NullAway section's severity levers.
+- **A compile-phase gate at `ERROR` severity hides every later source root.** javac aborts inside
+  `default-compile`, so `test-compile` never runs and its findings are invisible while the run still
+  looks like a full survey. Any discovery/measurement pass over a compile-phase tool must run at
+  `WARN` with warnings non-fatal, and should confirm it actually reached `test-compile`.
 
 ## SpotBugs decision register
 
@@ -401,3 +412,124 @@ proves a rule is enforced" gotcha below: a scratch `record`-typed `==` compariso
 `ReferenceEquality`, no other check involved) failed `test-compile` with "warnings found and
 -Werror specified" - confirming `failOnWarning` genuinely reaches Error Prone's diagnostics, not
 just javac's own `-Xlint` categories.
+
+## NullAway
+
+Added 2026-08-25 (NullAway 0.14.0), riding on the Error Prone `javac` plugin configured above -
+one extra `<path>` in `annotationProcessorPaths` plus two flags on the existing `-Xplugin:ErrorProne`
+arg. Requires Error Prone >= 2.36.0; this pom pins 2.50.0, and the pairing was verified by
+compiling, not by trusting the compatibility note.
+
+### Why it is opt-in per package
+
+This is the second attempt. The first wired it as `-XepOpt:NullAway:AnnotatedPackages=org.skgif.doi`,
+which opts the entire main tree in at once, measured **100 findings**, and was reverted - there was
+no way to land partial progress, so the only choices were one enormous change or nothing.
+
+The current wiring is `-XepOpt:NullAway:OnlyNullMarked=true` (NullAway >= 0.12.3, and mutually
+exclusive with `AnnotatedPackages` - passing both is an error). Only code annotated
+`@org.jspecify.annotations.NullMarked` is in scope, so a package opts in by adding that annotation
+to the `package-info.java` it already has - checkstyle's `JavadocPackage`/`MissingJavadocPackage`
+guarantee all 19 main packages have one, so this is a two-line edit and never a new file.
+Everything unmarked is not "excluded", it is simply not analysed.
+
+Two consequences of `OnlyNullMarked` that look like missing configuration but are not:
+
+- **No generated-code exclusion.** The openapi-generator model in `target/generated-sources`
+  carries no `@NullMarked`, so it is out of scope for free. Do **not** add
+  `-XepOpt:NullAway:UnannotatedSubPackages=org.skgif.doi.generated`; it is dead config here. This
+  matters because generated builder setters carry no nullness annotations at all, which made the
+  `builder.setX(foo.orElse(null))` idiom the single largest noise category in the first attempt.
+- **No `ExcludedFieldAnnotations`.** No field-initialization finding has appeared yet, because the
+  marked package uses constructor injection only. Add the flag when a `@Inject`-field package is
+  marked, not pre-emptively.
+
+`-XepOpt:NullAway:JSpecifyMode=true` is deliberately **not** set. That flag turns on deep
+generic-type nullness checking, is documented as still under development with known false
+positives, and is orthogonal to using `@NullMarked` for scoping, which works in standard mode.
+
+### Why JSpecify annotations
+
+There is no standard nullness annotation in Java - the one attempt, JSR-305, was abandoned
+unratified in 2012. JSpecify is the multi-vendor successor (Google, JetBrains, Uber, Oracle,
+Microsoft, Broadcom) and the only candidate that costs this project nothing: `org.jspecify:jspecify`
+1.0.0 was already on the compile classpath via `junit-jupiter-api`, and main source compiles against
+it with no pom change. `javax.annotation.Nullable` was tried and fails outright here - `package
+javax.annotation does not exist` - and would need a new `com.google.code.findbugs:jsr305`
+dependency. NullAway itself does not force the choice: it matches `@Nullable` by *simple name*, so
+any vendor's would work. `@NullMarked` is the differentiator, since it is what makes per-package
+adoption possible at all.
+
+Note that JSpecify's `@Nullable` is `TYPE_USE`, so it sits immediately before the type
+(`@Nullable String mailto`). NullAway 0.14.0 removed the `LegacyAnnotationLocations` escape hatch
+and enforces correct placement on qualified and array types.
+
+### The two severity levers, and why they are properties
+
+Both `nullaway.severity` (default `ERROR`) and `maven.compiler.failOnWarning` (default `true`) are
+`<properties>` that the plugin config interpolates, rather than literals in the plugin config. That
+indirection exists because **neither can otherwise be overridden from the command line**, both
+confirmed empirically:
+
+- `-Dmaven.compiler.compilerArgs=...` does not override a `<compilerArgs>` *list* declared in the
+  pom. The override is silently ignored and the pom's value still applies.
+- An explicit `<failOnWarning>true</failOnWarning>` takes precedence over the plugin's own
+  `${maven.compiler.failOnWarning}` expression, so a bare `-Dmaven.compiler.failOnWarning=false`
+  is also silently ignored - the build still fails with "warnings found and -Werror specified".
+
+This matters because of a trap that cost real time in the first attempt: **run discovery at `WARN`,
+never at `ERROR`.**
+
+```bash
+./mvnw -B compile test-compile -Dnullaway.severity=WARN -Dmaven.compiler.failOnWarning=false
+```
+
+At `ERROR`, javac aborts inside `default-compile`, so `test-compile` never runs and every finding in
+test sources is silently invisible. The first attempt's "100 findings" figure was produced that way
+and is **main-source only** - the test-source count was never measured at all, while the run looked
+like a complete survey. Always confirm a discovery run actually reached `test-compile`.
+
+### Test sources are in scope - the non-obvious part
+
+A package's `@NullMarked` applies to **both source roots**. `src/test/java` has no
+`package-info.java` files of its own, which makes it tempting to conclude test code is structurally
+out of scope; it is not. The test compilation sees the *main* `package-info.class` on its classpath
+and inherits the annotation, so marking `org.skgif.doi.crossref` puts
+`src/test/java/org/skgif/doi/crossref/**` in scope too.
+
+Measured, and it dominates: marking `org.skgif.doi.crossref.mapper` as a scope experiment produced
+**36 findings, 26 of them in test files** (`CrossrefGrantMapperTest` alone accounts for 23). Budget
+for test-side churn when planning a package, and do not size the work from a main-source-only
+number.
+
+### NullAway adoption register
+
+| Package | Findings | Outcome |
+|---|---|---|
+| `org.skgif.doi.crossref` | 5 (4 main, 1 test) | all fixed, none suppressed - see below |
+| everything else (18 main packages) | not marked | unchecked by design; adopt one package at a time |
+
+The pilot's 5 findings were all *documentation* gaps rather than latent NPEs - in each case the code
+already handled null correctly and the signature simply failed to say so, which is the useful thing
+NullAway does here:
+
+| Finding | Fix |
+|---|---|
+| `CrossrefJournalDoiResolver:58` assigning `@Nullable` to `@NonNull` field | field `mailto` is `@Nullable` - its own Javadoc already said "if configured", and the constructor assigns `crossrefMailto.filter(...).orElse(null)` |
+| `CrossrefJournalDoiResolver:125` x3, passing `null` where `@NonNull` required | `CrossrefClient.listWorks`'s `queryTitle`/`queryBibliographic`/`offset`/`mailto` are `@Nullable`. Each is a `@QueryParam`, where null means "omit this parameter" per the MicroProfile REST Client contract, so `@Nullable` is simply the honest signature. `filter`/`rows` deliberately left alone - no checked call site passes them null |
+| `CrossrefJournalDoiResolverTest:48` passing `null` where `@NonNull` required | `resolveJournalDoi`'s `issns` parameter is `@Nullable`; the method opens with `if (issns == null) return Optional.empty();` and the test asserting this is literally named `resolvesToNullIssnList` |
+
+Negative-tested twice, per the "a green build never proves a rule is enforced" gotcha:
+
+1. **The gate bites.** Removing `@Nullable` from the `mailto` field failed `compile` with
+   `[NullAway] assigning @Nullable expression to @NonNull field`.
+2. **Unmarked really is unchecked** - load-bearing for the whole incremental strategy, so it was
+   verified rather than assumed. Temporarily marking `org.skgif.doi.crossref.mapper` surfaced 36
+   findings that the green build had not been reporting; removing the annotation returned it to
+   green with those same violations still in the source.
+
+The second test also shows why the first attempt's per-package numbers are not a usable backlog:
+that package measured 21 under `AnnotatedPackages=org.skgif.doi` but 36 under `OnlyNullMarked`.
+The figures move in both directions - up because test sources are now actually reached, down because
+calls into *other* unmarked packages stop being checked - so they are neither upper nor lower bounds.
+Re-measure per package at adoption time.

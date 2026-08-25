@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import org.junit.jupiter.api.Test;
 import org.skgif.doi.medra.dto.MedraContributor;
 import org.skgif.doi.medra.dto.MedraTitle;
@@ -14,6 +15,7 @@ class MedraOnixXmlParserTest {
 
     private MedraWork parseFixture(String resourceName) throws IOException {
         try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
+            Objects.requireNonNull(in, "Fixture not found on classpath: " + resourceName);
             String xml = new String(in.readAllBytes(), StandardCharsets.UTF_8);
             return MedraOnixXmlParser.parse(xml)
                     .orElseThrow(() -> new AssertionError("Fixture did not parse: " + resourceName));

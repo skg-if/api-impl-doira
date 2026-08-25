@@ -15,6 +15,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import jakarta.ws.rs.NotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -52,6 +53,7 @@ class DataCiteProductsResourceTest {
     private DataCiteDoiResponse loadFixture(String resourceName) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
+            Objects.requireNonNull(in, "Fixture not found on classpath: " + resourceName);
             return objectMapper.readValue(in, DataCiteDoiResponse.class);
         }
     }

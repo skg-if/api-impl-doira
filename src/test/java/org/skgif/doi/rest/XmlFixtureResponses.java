@@ -7,6 +7,7 @@ import jakarta.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 /**
  * Shared classpath-XML-fixture helpers for REST resource tests that mock a Crossref
@@ -30,6 +31,7 @@ public final class XmlFixtureResponses {
      */
     public static String loadRawResource(Class<?> testClass, String resourceName) throws IOException {
         try (InputStream in = testClass.getClassLoader().getResourceAsStream(resourceName)) {
+            Objects.requireNonNull(in, "Fixture not found on classpath: " + resourceName);
             return new String(in.readAllBytes(), StandardCharsets.UTF_8);
         }
     }

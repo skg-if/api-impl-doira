@@ -3,6 +3,7 @@ package org.skgif.doi.datacite.mapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 import org.skgif.doi.datacite.dto.DataCiteAttributes;
 import org.skgif.doi.datacite.dto.DataCiteDoiResponse;
 import org.skgif.doi.generated.model.Product;
@@ -25,6 +26,7 @@ abstract class DataCiteToSkgIfMapperTestBase {
 
     protected DataCiteAttributes readFixture(String resourceName) throws IOException {
         try (InputStream in = getClass().getClassLoader().getResourceAsStream(resourceName)) {
+            Objects.requireNonNull(in, "Fixture not found on classpath: " + resourceName);
             DataCiteDoiResponse response = objectMapper.readValue(in, DataCiteDoiResponse.class);
             return response.data().attributes();
         }
