@@ -38,7 +38,7 @@
     <error-prone.version>2.50.0</error-prone.version>
     <error-prone-support.version>0.30.0</error-prone-support.version>
     <nullaway.version>0.14.0</nullaway.version>
-    <jspecify.version>1.0.0</jspecify.version>
+    <jspecify.version>1.0.1</jspecify.version>
     <!--
       NullAway's severity, indirected through a property purely so a discovery run can lower it
       from the command line: `-Dnullaway.severity=WARN -Dmaven.compiler.failOnWarning=false`.
