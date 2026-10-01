@@ -82,7 +82,7 @@
     -->
     <checkstyle.version>14.0.0</checkstyle.version>
     <assertj.version>3.27.7</assertj.version>
-    <archunit.version>1.5.0</archunit.version>
+    <archunit.version>1.5.1</archunit.version>
   </properties>
 
   <dependencyManagement>
